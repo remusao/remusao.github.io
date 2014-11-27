@@ -132,7 +132,7 @@ Timing is now about *74 seconds*, this is *10 seconds* faster than the first *Py
 
 ## Timings
 
-[!Bench]({{ site.url }}/images/bz2-julia-bench.png)
+![Bench]({{ site.url }}/images/bz2-julia-bench.png)
 
 Timings are relatively close since the big work is done in the decompression, that's why there isn't much difference between *Julia* and *Python*.
 
