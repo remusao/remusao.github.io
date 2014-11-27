@@ -13,6 +13,11 @@ highlighter: pygments
 markdown: kramdown
 
 comments:
-  provider: disqus
-  disqus:
-    short_name: remusaogithubio
+    provider: disqus
+    disqus:
+        short_name: remusaogithubio
+
+pages_list:       
+    About: '/about'
+    Archive: '/archive'
+    Feed: '/feed.xml'

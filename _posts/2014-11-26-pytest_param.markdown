@@ -3,6 +3,7 @@ layout: post
 title:  "[py.test] Paramaterize tests with external data"
 date:   2014-11-26 15:00:00
 categories: python pytest
+comments: true
 ---
 
 I recently began to make heavy use of [py.test](http://pytest.org/latest/)
