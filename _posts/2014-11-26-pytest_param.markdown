@@ -159,9 +159,11 @@ test_example.py:6: AssertionError
 {% endhighlight %}
 
 Great, so the last things to do is:
+
 1. Detect functions that make use of a fixture whose name starts with `data_`
 2. Load the corresponding file or resource for the test source
 3. Parametrize the function with each of the data
+
 For example, here is what you can do:
 
 {% highlight python %}
@@ -178,9 +180,11 @@ def pytest_generate_tests(metafunc):
 
 Here, the `load_tests` function takes as argument the name of the fixture `data_X`
 and will:
+
 1. Load the corresponding file
 2. Extract the different test-cases
 3. Return a list of all the cases
+
 For example, if your tests are stored in a Python file:
 
 {% highlight python %}
@@ -221,6 +225,7 @@ def test_feature(data_my_feature):
 ## Conclusion
 
 Here it's not really interesting, but the benefits are numerous:
+
 1. storing your data in a database, or in yaml/json formatted files, or whatever
 2. other people can add tests to your project, without having to dig into the code
 3. provide a common format to define tests in external files
