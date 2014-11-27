@@ -234,4 +234,4 @@ Here it's not really interesting, but the benefits are numerous:
 5. the data is not hard-coded in Python source-code
 
 
-TL;DR: `py.test` is awesome. Make tests. Get data for your tests from extern sources.
+TL;DR: `py.test` is awesome. Make tests. Get data for your tests from external sources.
