@@ -3,6 +3,7 @@ layout: post
 title:  "Installation de Julia"
 date:   2014-02-14 22:00:42
 categories: julia
+comments: true
 ---
 
 
