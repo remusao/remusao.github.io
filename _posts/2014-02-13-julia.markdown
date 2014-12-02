@@ -4,6 +4,7 @@ title:  "Julia"
 date:   2014-02-13 22:53:41
 categories: julia
 comments: true
+permalink: julia-starter
 ---
 
 Aujourd'hui j'aimerais parler d'un langage de programmation que je viens de
