@@ -8,6 +8,7 @@ url: "http://remusao.github.io" # the base hostname & protocol for your site
 twitter_username: Pythux
 github_username: remusao
 highlighter: pygments
+exclude: ['vendor/']
 
 # Build settings
 markdown: kramdown
@@ -17,7 +18,8 @@ comments:
     disqus:
         short_name: remusaogithubio
 
-pages_list:       
+pages_list:
     About: '/about'
     Archive: '/archive'
     Feed: '/feed.xml'
+
