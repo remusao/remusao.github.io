@@ -311,44 +311,7 @@ This time is about &lt;em&gt;66 seconds&lt;/em&gt;, more or less the same than w
 &lt;p&gt;Timings are relatively close since the big work is done in the decompression, that's why there isn't much difference between &lt;em&gt;Julia&lt;/em&gt; and &lt;em&gt;Python&lt;/em&gt;.&lt;/p&gt;
 &lt;h2&gt;Conclusion&lt;/h2&gt;
 &lt;p&gt;I was first tempted to implement a &lt;em&gt;Julia&lt;/em&gt; wrapper over &lt;em&gt;bzlib&lt;/em&gt;, but what for? When it's so easy to invoke external commands and manipulate their input and output streams.
-&lt;em&gt;Julia&lt;/em&gt; is a young language, but it's so flexible and extensible, that often I forget about it!&lt;/p&gt;</summary></entry><entry><title>"Python inheriting from str class"</title><link href="http://remusao.github.com/python-inheriting-from-str-class.html" rel="alternate"></link><updated>2014-03-05T14:50:40+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2014-03-05:python-inheriting-from-str-class.html</id><summary type="html">&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;MyString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-        &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__repr__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;
-
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__str__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;
-
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;__main__&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-    &lt;span class="n"&gt;s&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;String&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;foo&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-    &lt;span class="c"&gt;# Runtime Error&lt;/span&gt;
-    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</summary></entry><entry><title>"Python inheriting tuple class"</title><link href="http://remusao.github.com/python-inheriting-tuple-class.html" rel="alternate"></link><updated>2014-03-05T10:15:40+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2014-03-05:python-inheriting-tuple-class.html</id><summary type="html">&lt;p&gt;I recently faced some problem while using inheritance in Python.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-    &lt;span class="c"&gt;# Do something&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;tuple&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;MyTuple&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;tuple&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-        &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-        &lt;span class="c"&gt;# Call constructor from base class tuple&lt;/span&gt;
-        &lt;span class="nb"&gt;tuple&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-        &lt;span class="c"&gt;# False&lt;/span&gt;
-        &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;
-
-        &lt;span class="c"&gt;# True&lt;/span&gt;
-        &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;arg&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;So what is the problem here ?&lt;/p&gt;</summary></entry><entry><title>"Installation de Julia"</title><link href="http://remusao.github.com/installation-de-julia.html" rel="alternate"></link><updated>2014-02-14T22:00:42+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2014-02-14:installation-de-julia.html</id><summary type="html">&lt;p&gt;Suite au premier article sur le langage Julia, voici un guide rapide de mise en
+&lt;em&gt;Julia&lt;/em&gt; is a young language, but it's so flexible and extensible, that often I forget about it!&lt;/p&gt;</summary></entry><entry><title>"Installation de Julia"</title><link href="http://remusao.github.com/installation-de-julia.html" rel="alternate"></link><updated>2014-02-14T22:00:42+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2014-02-14:installation-de-julia.html</id><summary type="html">&lt;p&gt;Suite au premier article sur le langage Julia, voici un guide rapide de mise en
 route de votre environnement pour utiliser le langage. Voici le plan :&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Compiler Julia depuis les sources&lt;/li&gt;
