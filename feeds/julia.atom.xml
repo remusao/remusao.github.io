@@ -67,20 +67,18 @@
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;Here is the invocation:
-{% highlight sh %}
-$ bzcat wikidump.xml.bz2 | julia bz2_bench.jl&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nx"&gt;Timing&lt;/span&gt; &lt;span class="nx"&gt;is&lt;/span&gt; &lt;span class="nx"&gt;now&lt;/span&gt; &lt;span class="nx"&gt;a&lt;/span&gt; &lt;span class="nx"&gt;more&lt;/span&gt; &lt;span class="nx"&gt;reasonable&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="mi"&gt;72&lt;/span&gt; &lt;span class="nx"&gt;seconds&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;So&lt;/span&gt; &lt;span class="nx"&gt;that&lt;/span&gt; &lt;span class="nx"&gt;is&lt;/span&gt; &lt;span class="nx"&gt;less&lt;/span&gt; &lt;span class="nx"&gt;than&lt;/span&gt; &lt;span class="nx"&gt;the&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;Python&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="nx"&gt;version&lt;/span&gt; &lt;span class="nx"&gt;shown&lt;/span&gt; &lt;span class="nx"&gt;above&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;But&lt;/span&gt; &lt;span class="k"&gt;this&lt;/span&gt; &lt;span class="nx"&gt;is&lt;/span&gt; &lt;span class="nx"&gt;not&lt;/span&gt; &lt;span class="nx"&gt;satisfactory&lt;/span&gt; &lt;span class="nx"&gt;enough&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;Why&lt;/span&gt; &lt;span class="nx"&gt;not&lt;/span&gt; &lt;span class="nx"&gt;use&lt;/span&gt; &lt;span class="nx"&gt;the&lt;/span&gt; &lt;span class="nx"&gt;wonderful&lt;/span&gt; &lt;span class="nx"&gt;capabilities&lt;/span&gt; &lt;span class="nx"&gt;of&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;Julia&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="nx"&gt;to&lt;/span&gt; &lt;span class="nx"&gt;run&lt;/span&gt; &lt;span class="nx"&gt;external&lt;/span&gt; &lt;span class="nx"&gt;commands&lt;/span&gt; &lt;span class="nx"&gt;an&lt;/span&gt; &lt;span class="nx"&gt;pipe&lt;/span&gt; &lt;span class="nx"&gt;results&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;
+&lt;p&gt;Here is the invocation:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;bzcat wikidump.xml.bz2 &lt;span class="p"&gt;|&lt;/span&gt; julia bz2_bench.jl
+&lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;span class="err"&gt;###&lt;/span&gt; &lt;span class="nx"&gt;Invoking&lt;/span&gt; &lt;span class="nx"&gt;bzcat&lt;/span&gt; &lt;span class="nx"&gt;from&lt;/span&gt; &lt;span class="nx"&gt;Julia&lt;/span&gt;
-
-&lt;span class="nx"&gt;It&lt;/span&gt; &lt;span class="nx"&gt;is&lt;/span&gt; &lt;span class="nx"&gt;easy&lt;/span&gt; &lt;span class="nx"&gt;to&lt;/span&gt; &lt;span class="nx"&gt;invoke&lt;/span&gt; &lt;span class="nx"&gt;commands&lt;/span&gt; &lt;span class="nx"&gt;from&lt;/span&gt; &lt;span class="nx"&gt;inside&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;Julia&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="nx"&gt;using&lt;/span&gt; &lt;span class="nx"&gt;backquotes&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="err"&gt;``&lt;/span&gt;&lt;span class="nx"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="nx"&gt;cmd&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;``&lt;/span&gt; &lt;span class="nx"&gt;and&lt;/span&gt; &lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="o"&gt;|&amp;gt;&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt; &lt;span class="nx"&gt;to&lt;/span&gt; &lt;span class="nx"&gt;pipe&lt;/span&gt; &lt;span class="nx"&gt;between&lt;/span&gt; &lt;span class="nx"&gt;commands&lt;/span&gt; &lt;span class="nx"&gt;and&lt;/span&gt; &lt;span class="nx"&gt;streams&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;Let&lt;/span&gt;&lt;span class="err"&gt;&amp;#39;&lt;/span&gt;&lt;span class="nx"&gt;s&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="nx"&gt;it&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-&lt;span class="err"&gt;```&lt;/span&gt;&lt;span class="nx"&gt;julia&lt;/span&gt;
-&lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-    &lt;span class="nx"&gt;file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;ARGS&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;
-    &lt;span class="nx"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="nx"&gt;bzcat&lt;/span&gt; &lt;span class="nx"&gt;$&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;file&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt; &lt;span class="o"&gt;|&amp;gt;&lt;/span&gt; &lt;span class="nx"&gt;STDOUT&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="nx"&gt;end&lt;/span&gt;
+&lt;p&gt;Timing is now a more reasonable &lt;em&gt;72 seconds&lt;/em&gt;. So that is less than the &lt;em&gt;Python&lt;/em&gt; version shown above. But this is not satisfactory enough. Why not use the wonderful capabilities of &lt;em&gt;Julia&lt;/em&gt; to run external commands an pipe results?&lt;/p&gt;
+&lt;h3&gt;Invoking bzcat from Julia&lt;/h3&gt;
+&lt;p&gt;It is easy to invoke commands from inside &lt;em&gt;Julia&lt;/em&gt; using backquotes: &lt;code&gt;run(`cmd`)&lt;/code&gt; and &lt;code&gt;|&amp;gt;&lt;/code&gt; to pipe between commands and streams. Let's do it:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="nf"&gt; main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ARGS&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sb"&gt;`bzcat $(file)`&lt;/span&gt; &lt;span class="o"&gt;|&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;STDOUT&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -99,7 +97,7 @@ This time is about &lt;em&gt;66 seconds&lt;/em&gt;, more or less the same than w
 
 &lt;p&gt;Timing is now about &lt;em&gt;74 seconds&lt;/em&gt;, this is &lt;em&gt;10 seconds&lt;/em&gt; faster than the first &lt;em&gt;Python&lt;/em&gt; version. But we don't rely on a module. Instead, we make use of the ability to play with command invocations, stream pipings, and the like that &lt;em&gt;Julia&lt;/em&gt; allows.&lt;/p&gt;
 &lt;h2&gt;Timings&lt;/h2&gt;
-&lt;p&gt;&lt;img alt="Bench" src="{{" title="filename }}/images/bz2-julia-bench.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Bench" src="/images/bz2-julia-bench.png" /&gt;&lt;/p&gt;
 &lt;p&gt;Timings are relatively close since the big work is done in the decompression, that's why there isn't much difference between &lt;em&gt;Julia&lt;/em&gt; and &lt;em&gt;Python&lt;/em&gt;.&lt;/p&gt;
 &lt;h2&gt;Conclusion&lt;/h2&gt;
 &lt;p&gt;I was first tempted to implement a &lt;em&gt;Julia&lt;/em&gt; wrapper over &lt;em&gt;bzlib&lt;/em&gt;, but what for? When it's so easy to invoke external commands and manipulate their input and output streams.
