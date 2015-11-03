@@ -1,71 +1,142 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
+    <title>Pythux - Julia</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Pythux, ">
+    <meta name="description" content="">
+    <meta name="author" content="Pythux">
 
-        <link rel="alternate"  href="http://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" title="Pythux Full Atom Feed"/>
+    <!-- Le styles -->
+    <link rel="stylesheet" href="http://remusao.github.com/theme/css/bootstrap.min.css" type="text/css" />
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+      .tag-1 {
+        font-size: 13pt;
+      }
+      .tag-2 {
+        font-size: 10pt;
+      }
+      .tag-2 {
+        font-size: 8pt;
+      }
+      .tag-4 {
+        font-size: 6pt;
+     }
+    </style>
+    <link href="http://remusao.github.com/theme/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="http://remusao.github.com/theme/css/font-awesome.css" rel="stylesheet">
 
-        <title>Julia category // Pythux // </title>
+    <link href="http://remusao.github.com/theme/css/pygments.css" rel="stylesheet">
 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="http://remusao.github.com/theme/css/pure.css">
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="http://remusao.github.com/theme/images/favicon.ico">
+    <link rel="apple-touch-icon" href="http://remusao.github.com/theme/images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="http://remusao.github.com/theme/images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="http://remusao.github.com/theme/images/apple-touch-icon-114x114.png">
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-</head>
+    <link href="http://remusao.github.com/" type="application/atom+xml" rel="alternate" title="Pythux ATOM Feed" />
 
-<body>
-    <div class="pure-g-r" id="layout">
-        <div class="sidebar pure-u">
-            <div class="cover-img" style="background-image: url('')">
-                <div class="cover-body">
-                    <header class="header">
-                        <hgroup>
-                            <h1 class="brand-main"><a href="http://remusao.github.com">Pythux</a></h1>
-                            <p class="tagline"></p>
-                                <p class="links"><a href="https://github.com/remusao">GitHub</a></p>
-                                <p class="social">
-                                    <a href="#">
-                                        <i class="fa fa-You can add links in your config file fa-3x"></i>
-                                    </a>
-                                    <a href="#">
-                                        <i class="fa fa-Another social link fa-3x"></i>
-                                    </a>
-                                </p>
-                        </hgroup>
-                    </header>
-                </div>
-            </div>
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://remusao.github.com/index.html">Pythux </a>
+          <div class="nav-collapse">
+            <ul class="nav">
+                  <li><a href="https://github.com/remusao">GitHub</a></li>
+                <li><a href="http://remusao.github.com/pages/about.html">About</a></li>
+                          <li class="divider-vertical"></li>
+                  <li class="active">
+                    <a href="http://remusao.github.com/category/julia.html">
+						<i class="icon-folder-open icon-large"></i>Julia
+					</a>
+                  </li>
+                  <li >
+                    <a href="http://remusao.github.com/category/misc.html">
+						<i class="icon-folder-open icon-large"></i>misc
+					</a>
+                  </li>
+                  <li >
+                    <a href="http://remusao.github.com/category/python.html">
+						<i class="icon-folder-open icon-large"></i>python
+					</a>
+                  </li>
+
+                          <ul class="nav pull-right">
+                                <li><a href="http://remusao.github.com/archives.html"><i class="icon-th-list"></i>Archives</a></li>
+                          </ul>
+
+            </ul>
+            <!--<p class="navbar-text pull-right">Logged in as <a href="#">username</a></p>-->
+          </div><!--/.nav-collapse -->
         </div>
-    <div class="pure-u">
-        <div class="content">
-            <!-- A wrapper for all the blog posts -->
-            <div class="posts">
-                <h1 class="content-subhead">
-Posts in 'Julia'                </h1>
-                    <section class="post">
-                        <header class="post-header">
-                            <h3><a class="post-title" href="http://remusao.github.com/decompressing-bzipped-files-with-julia.html">Decompressing BZipped files with Julia</a></h3>
-                            <p class="post-meta"><p>I'm currently working with Wikipedia dumps, and to save space, it's a good thing to make scripts that read directly content from (and write results to) BZipped files.</p>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="span9" id="content">
+        <div class="article">
+                <h1><a href="http://remusao.github.com/decompressing-bzipped-files-with-julia.html">Decompressing BZipped files with Julia</a></h1>
+                <div class="well small"><footer class="post-info">
+<span class="label">Date</span>
+<abbr class="published" title="2014-07-22T22:33:41+02:00">
+        <i class="icon-calendar"></i>Tue 22 July 2014
+</abbr>
+<span class="label">By</span>
+<a href="http://remusao.github.com/author/pythux.html"><i class="icon-user"></i>Pythux</a>
+<span class="label">Category</span>
+<a href="http://remusao.github.com/category/julia.html"><i class="icon-folder-open"></i>Julia</a>.
+
+
+</footer><!-- /.post-info --></div>
+                <div class="summary"><p>I'm currently working with Wikipedia dumps, and to save space, it's a good thing to make scripts that read directly content from (and write results to) BZipped files.</p>
 <h2>Setup</h2>
 <p>Tests where executed on my personnal computer:</p>
 <ul>
 <li>i7</li>
 <li>16GB of ram</li>
 </ul>
-<p>On a small wikipedia dump of <em>407MB</em>. All ...</p></p>
-                            <p class="post-meta">
-                                in <a href="http://remusao.github.com/category/julia.html">Julia</a> &middot; Tue 22 July 2014
-                            </p>
-                        </header>
-                    </section>
-                    <section class="post">
-                        <header class="post-header">
-                            <h3><a class="post-title" href="http://remusao.github.com/julia.html">Julia</a></h3>
-                            <p class="post-meta"><p>Aujourd'hui j'aimerais parler d'un langage de programmation que je viens de
+<p>On a small wikipedia dump of <em>407MB</em>. All ...</p>
+                        <a class="btn primary xsmall" href="http://remusao.github.com/decompressing-bzipped-files-with-julia.html">more ...</a>
+                </div>
+        </div>
+        <hr />
+        <div class="article">
+                <h1><a href="http://remusao.github.com/julia.html">Julia</a></h1>
+                <div class="well small"><footer class="post-info">
+<span class="label">Date</span>
+<abbr class="published" title="2014-02-13T22:53:41+01:00">
+        <i class="icon-calendar"></i>Thu 13 February 2014
+</abbr>
+<span class="label">By</span>
+<a href="http://remusao.github.com/author/pythux.html"><i class="icon-user"></i>Pythux</a>
+<span class="label">Category</span>
+<a href="http://remusao.github.com/category/julia.html"><i class="icon-folder-open"></i>julia</a>.
+
+
+</footer><!-- /.post-info --></div>
+                <div class="summary"><p>Aujourd'hui j'aimerais parler d'un langage de programmation que je viens de
 découvrir : <strong>Julia</strong>. Je vais donc vous le présenter succinctement et donner
 mon ressenti après quelques jours d'utilisation.</p>
 <h2>Qu'est-ce que c'est ?</h2>
@@ -74,64 +145,91 @@ mon ressenti après quelques jours d'utilisation.</p>
 <li><strong>Haut niveau</strong> (<em>garbage collection</em>)</li>
 <li><strong>Dynamique</strong></li>
 <li><strong>Interprété</strong></li>
-<li><strong>Disposant d ...</strong></li></ul></p>
-                            <p class="post-meta">
-                                in <a href="http://remusao.github.com/category/julia.html">julia</a> &middot; Thu 13 February 2014
-                            </p>
-                        </header>
-                    </section>
-<div class="pagination-wrapper content-subhead">
-    <div class="pagination">
-        <div class="pagination-left">
-                &nbsp;
+<li><strong>Disposant d ...</strong></li></ul>
+                        <a class="btn primary xsmall" href="http://remusao.github.com/julia.html">more ...</a>
+                </div>
         </div>
-        <span>Page 1 / 1</span>
-        <div class="pagination-right">
-        </div>
-    </div>
-</div><footer class="footer">
-    <p>&copy; Pythux &ndash;
-        Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
-        for <a href="http://blog.getpelican.com/">Pelican</a>
-    </p>
-</footer>            </div>
-        </div>
-    </div>
-    </div>
-    <script>
-        var $top = $('.go-top');
+        <hr />
 
-        // Show or hide the sticky footer button
-        $(window).scroll(function() {
-            if ($(this).scrollTop() > 200) {
-                $top.fadeIn(200);
-            } else {
-                $top.fadeOut(200);
-            }
-        });
+                <section id="content" class="body">
+                <h1>Pages</h1>
+                        <li><a href="http://remusao.github.com/pages/about.html">About</a></li>
+                </section>
+        </div><!--/span-->
 
-        // Animate the scroll to top
-        $top.click(function(event) {
-            event.preventDefault();
-            $('html, body').animate({scrollTop: 0}, 300);
-        })
+                <div class="span3 well sidebar-nav" id="sidebar">
+<ul class="nav nav-list">
+<li class="nav-header"><h4><i class="icon-external-link"></i>blogroll</h4></li>
+    <li><a href="http://getpelican.com/"><i class="icon-external-link"></i>Pelican</a></li>
+    <li><a href="http://python.org/"><i class="icon-external-link"></i>Python.org</a></li>
+    <li><a href="http://jinja.pocoo.org/"><i class="icon-external-link"></i>Jinja2</a></li>
+    <li><a href="#"><i class="icon-external-link"></i>You can modify those links in your config file</a></li>
+<li class="nav-header"><h4><i class="icon-home icon-large"></i> social</h4></li>
+<li><a href="http://remusao.github.com/" rel="alternate"><i class="icon-bookmark icon-large"></i>atom feed</a></li>
+    <li><a href="#"><i class="icon-You can add links in your config file-sign icon-large"></i>You can add links in your config file</a></li>
+    <li><a href="#"><i class="icon-Another social link-sign icon-large"></i>Another social link</a></li>
 
-        // Makes sure that the href="#" attached to the <a> elements
-        // don't scroll you back up the page.
-        $('body').on('click', 'a[href="#"]', function(event) {
-            event.preventDefault();
-        });
-    </script>
-    <script type="text/javascript">
-        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-    </script>
-    <script type="text/javascript">
-        try {
-            var pageTracker = _gat._getTracker("UA-57162019-1 ");
-            pageTracker._trackPageview();
-            } catch(err) {}
-    </script>
+<li class="nav-header"><h4><i class="icon-folder-close icon-large"></i>Categories</h4></li>
+<li>
+<a href="http://remusao.github.com/category/julia.html">
+    <i class="icon-folder-open icon-large"></i>Julia
+</a>
+</li>
+<li>
+<a href="http://remusao.github.com/category/misc.html">
+    <i class="icon-folder-open icon-large"></i>misc
+</a>
+</li>
+<li>
+<a href="http://remusao.github.com/category/python.html">
+    <i class="icon-folder-open icon-large"></i>python
+</a>
+</li>
 
-</body>
+<li class="nav-header"><h4><i class="icon-tags icon-large"></i>Tags</h4></li>
+
+
+</ul>        </div><!--/.well -->
+
+      </div><!--/row-->
+
+      <hr>
+
+      <footer>
+        <address id="about">
+                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican <i class="icon-external-link"></i></a>,
+                                which takes great advantage of <a href="http://python.org">Python <i class="icon-external-link"></i></a>.
+        </address><!-- /#about -->
+
+        <p>The theme is from <a href="http://twitter.github.com/bootstrap/">Bootstrap from Twitter <i class="icon-external-link"></i></a>,
+                   and <a href="http://fortawesome.github.com/Font-Awesome/">Font-Awesome <i class="icon-external-link"></i></a>, thanks!</p>
+      </footer>
+
+    </div><!--/.fluid-container-->
+
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+	var pageTracker = _gat._getTracker("UA-57162019-1 ");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+<script type="text/javascript">
+    var disqus_shortname = 'remusao.github.io';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+
+    <!-- Le javascript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://remusao.github.com/theme/js/jquery-1.7.2.min.js"></script>
+    <script src="http://remusao.github.com/theme/js/bootstrap.min.js"></script>
+  </body>
 </html>
