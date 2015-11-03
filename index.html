@@ -1,381 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>Pythux</title>
-    <link rel="shortcut icon" type="image/png" href="http://remusao.github.com/favicon.png">
-    <link rel="shortcut icon" type="image/x-icon" href="http://remusao.github.com/favicon.ico">
-    <link href="http://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Full Atom Feed" />
-    <link rel="stylesheet" href="http://remusao.github.com/theme/css/screen.css" type="text/css" />
-    <link rel="stylesheet" href="http://remusao.github.com/theme/css/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="http://remusao.github.com/theme/css/print.css" type="text/css" media="print" />
-    <meta name="generator" content="Pelican" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pythux, ">
+
+        <link rel="alternate"  href="http://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" title="Pythux Full Atom Feed"/>
+
+        <title>Pythux // </title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="http://remusao.github.com/theme/css/pure.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 </head>
+
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li class="selected"><a href="http://remusao.github.com">Home</a></li>
-                <li><a href="http://remusao.github.com/pages/about.html">About</a></li>
-                <li><a href="https://github.com/remusao">GitHub</a></li>
-            </ul>
-        </nav>
-        <div class="header_box">
-            <h1><a href="http://remusao.github.com">Pythux</a></h1>
+    <div class="pure-g-r" id="layout">
+        <div class="sidebar pure-u">
+            <div class="cover-img" style="background-image: url('')">
+                <div class="cover-body">
+                    <header class="header">
+                        <hgroup>
+                            <h1 class="brand-main"><a href="http://remusao.github.com">Pythux</a></h1>
+                            <p class="tagline"></p>
+                                <p class="links"><a href="https://github.com/remusao">GitHub</a></p>
+                                <p class="social">
+                                    <a href="#">
+                                        <i class="fa fa-You can add links in your config file fa-3x"></i>
+                                    </a>
+                                    <a href="#">
+                                        <i class="fa fa-Another social link fa-3x"></i>
+                                    </a>
+                                </p>
+                        </hgroup>
+                    </header>
+                </div>
+            </div>
         </div>
-    </header>
-    <div id="wrapper">
-        <div id="content">            <h4 class="date">Nov 26, 2014</h4>
-
-            <article class="post">
-                <h2 class="title">
-                    <a href="http://remusao.github.com/pytest-paramaterize-tests-with-external-data.html" rel="bookmark" title="Permanent Link to &quot;[py.test] Paramaterize tests with external data&quot;">[py.test] Paramaterize tests with external data</a>
-                </h2>
-
-                <p>I recently began to make heavy use of <a href="http://pytest.org/latest/">py.test</a>
+    <div class="pure-u">
+        <div class="content">
+            <!-- A wrapper for all the blog posts -->
+            <div class="posts">
+                <h1 class="content-subhead">
+                            Latest posts
+                </h1>
+                    <section class="post">
+                        <header class="post-header">
+                            <h3><a class="post-title" href="http://remusao.github.com/pytest-paramaterize-tests-with-external-data.html">[py.test] Paramaterize tests with external data</a></h3>
+                            <p class="post-meta"><p>I recently began to make heavy use of <a href="http://pytest.org/latest/">py.test</a>
 in my day-to-day Python development. It's a wonderful tool, but I won't
 explain to you every features it provides and why it's awesome. Instead,
-I'll explain how I managed to cleanly externalize the data used for my
-tests in external files (that can be of any format: yaml, json, python
-files). The idea here is to <em>separate the code that performs the test</em>,
-from the <em>input data used to perform the test</em>.</p>
-<p><code>test_feature.py</code></p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">test_my_feature</span><span class="p">(</span><span class="n">one_example</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="n">one_example</span>
-</pre></div>
-
-
-<p><code>data_feature.yaml</code></p>
-<div class="highlight"><pre><span class="l-Scalar-Plain">tests</span><span class="p-Indicator">:</span>
-    <span class="l-Scalar-Plain">test1</span><span class="p-Indicator">:</span>
-        <span class="l-Scalar-Plain">...</span>
-    <span class="l-Scalar-Plain">test2</span><span class="p-Indicator">:</span>
-        <span class="l-Scalar-Plain">...</span>
-</pre></div>
-
-
-<h2>First solution: yield</h2>
-<p>The first solution would be to use <code>yield</code> to generate tests, as it's supported
-by <code>py.test</code> (as long as you don't want to use fixtures in your test function...).</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">example</span><span class="p">):</span>
-    <span class="c"># perform your test</span>
-
-<span class="k">def</span> <span class="nf">test_feature</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">generate_tests</span><span class="p">():</span>
-        <span class="k">yield</span> <span class="n">check</span><span class="p">,</span> <span class="n">test</span>
-</pre></div>
-
-
-<p>Here, <code>py.test</code> will understand that <code>test_feature</code> will yield several tests and that
-the <code>check</code> function must be used to perform the test, so it is almost equivalent to do:</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">test_feature</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">generate_tests</span><span class="p">():</span>
-        <span class="n">check</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
-</pre></div>
-
-
-<p>Except that in this last snippet of code, the tests will stop as soon as one fails.
-With the <code>yield</code>-version, every tests will be ran even if some fail. This is useful
-if you have lot of tests, and you want to know which ones fail (not just the first one).</p>
-<p><strong>Problem</strong>: if you want to use fixtures with your <code>test_feature</code> functions, it breaks:</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">example</span><span class="p">):</span>
-    <span class="c"># perform your test</span>
-
-<span class="k">def</span> <span class="nf">test_feature</span><span class="p">(</span><span class="n">my_fixture</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">generate_tests</span><span class="p">():</span>
-        <span class="k">yield</span> <span class="n">check</span><span class="p">,</span> <span class="n">test</span>
-</pre></div>
-
-
-<p>This will tell you that <code>test_feature</code> expects one argument but that none are provided.</p>
-<p>End of the story...
-Wait, no, <code>py.test</code> is awesome remember? So there must be a solution!</p>
-<h2>Parametrization</h2>
-<p>One of the cool features of <code>py.test</code> is the ability to add parameters on our
-tests or fixtures, so that a test is ran once for each parameter (from <a href="http://pytest.org/latest/parametrize.html">py.test doc</a>):</p>
-<div class="highlight"><pre><span class="c"># content of test_expectation.py</span>
-<span class="kn">import</span> <span class="nn">pytest</span>
-<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s">&quot;input,expected&quot;</span><span class="p">,</span> <span class="p">[</span>
-    <span class="p">(</span><span class="s">&quot;3+5&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
-    <span class="p">(</span><span class="s">&quot;2+4&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
-    <span class="p">(</span><span class="s">&quot;6*9&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">),</span>
-<span class="p">])</span>
-<span class="k">def</span> <span class="nf">test_eval</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span class="err">$</span> <span class="n">py</span><span class="o">.</span><span class="n">test</span>
-<span class="o">===========================</span> <span class="n">test</span> <span class="n">session</span> <span class="n">starts</span> <span class="o">============================</span>
-<span class="n">platform</span> <span class="n">linux</span> <span class="o">--</span> <span class="n">Python</span> <span class="mf">3.4</span><span class="o">.</span><span class="mi">0</span> <span class="o">--</span> <span class="n">py</span><span class="o">-</span><span class="mf">1.4</span><span class="o">.</span><span class="mi">26</span> <span class="o">--</span> <span class="n">pytest</span><span class="o">-</span><span class="mf">2.6</span><span class="o">.</span><span class="mi">4</span>
-<span class="n">collected</span> <span class="mi">3</span> <span class="n">items</span>
-
-<span class="n">test_expectation</span><span class="o">.</span><span class="n">py</span> <span class="o">..</span><span class="n">F</span>
-
-<span class="o">=================================</span> <span class="n">FAILURES</span> <span class="o">=================================</span>
-<span class="n">____________________________</span> <span class="n">test_eval</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="mi">9</span><span class="o">-</span><span class="mi">42</span><span class="p">]</span> <span class="n">_____________________________</span>
-
-<span class="nb">input</span> <span class="o">=</span> <span class="s">&#39;6*9&#39;</span><span class="p">,</span> <span class="n">expected</span> <span class="o">=</span> <span class="mi">42</span>
-
-    <span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s">&quot;input,expected&quot;</span><span class="p">,</span> <span class="p">[</span>
-        <span class="p">(</span><span class="s">&quot;3+5&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&quot;2+4&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&quot;6*9&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">),</span>
-    <span class="p">])</span>
-    <span class="k">def</span> <span class="nf">test_eval</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
-<span class="o">&gt;</span>       <span class="k">assert</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected</span>
-<span class="n">E</span>       <span class="k">assert</span> <span class="mi">54</span> <span class="o">==</span> <span class="mi">42</span>
-<span class="n">E</span>        <span class="o">+</span>  <span class="n">where</span> <span class="mi">54</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&#39;6*9&#39;</span><span class="p">)</span>
-
-<span class="n">test_expectation</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span> <span class="ne">AssertionError</span>
-<span class="o">====================</span> <span class="mi">1</span> <span class="n">failed</span><span class="p">,</span> <span class="mi">2</span> <span class="n">passed</span> <span class="ow">in</span> <span class="mf">0.01</span> <span class="n">seconds</span> <span class="o">====================</span>
-</pre></div>
-
-
-<p>So here our <code>test_eval</code> function has been called <em>three times</em>. Once for each parameter.
-Great! But what if you want your parameters to come from another file, or from a function.
-In other words, what if you want to <em>dynamically parametrize</em> your function?</p>
-<h2>Hooks at the rescue</h2>
-<p><a href="http://pytest.org/latest/plugins.html#well-specified-hooks">Hooks</a> allow you to plug code into <code>py.test</code> at diffent stages of the test run.
-The hook that can be useful for us is <code>pytest_generate_tests</code> that will allow
-to generate several calls to the same test function, but with different arguments
-(from <a href="http://pytest.org/latest/funcargs.html#basic-generated-test-example">py.test doc</a>):</p>
-<div class="highlight"><pre><span class="c"># content of test_example.py</span>
-<span class="k">def</span> <span class="nf">pytest_generate_tests</span><span class="p">(</span><span class="n">metafunc</span><span class="p">):</span>
-    <span class="k">if</span> <span class="s">&quot;numiter&quot;</span> <span class="ow">in</span> <span class="n">metafunc</span><span class="o">.</span><span class="n">funcargnames</span><span class="p">:</span>
-        <span class="n">metafunc</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s">&quot;numiter&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
-
-<span class="k">def</span> <span class="nf">test_func</span><span class="p">(</span><span class="n">numiter</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="n">numiter</span> <span class="o">&lt;</span> <span class="mi">9</span>
-</pre></div>
-
-
-<div class="highlight"><pre><span class="err">$</span> <span class="n">py</span><span class="o">.</span><span class="n">test</span> <span class="n">test_example</span><span class="o">.</span><span class="n">py</span>
-<span class="o">===========================</span> <span class="n">test</span> <span class="n">session</span> <span class="n">starts</span> <span class="o">============================</span>
-<span class="n">platform</span> <span class="n">linux2</span> <span class="o">--</span> <span class="n">Python</span> <span class="mf">2.7</span><span class="o">.</span><span class="mi">1</span> <span class="o">--</span> <span class="n">pytest</span><span class="o">-</span><span class="mf">2.2</span><span class="o">.</span><span class="mi">4</span>
-<span class="n">collecting</span> <span class="o">...</span> <span class="n">collected</span> <span class="mi">10</span> <span class="n">items</span>
-
-<span class="n">test_example</span><span class="o">.</span><span class="n">py</span> <span class="o">.........</span><span class="n">F</span>
-
-<span class="o">=================================</span> <span class="n">FAILURES</span> <span class="o">=================================</span>
-<span class="n">_______________________________</span> <span class="n">test_func</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="n">_______________________________</span>
-
-<span class="n">numiter</span> <span class="o">=</span> <span class="mi">9</span>
-
-    <span class="k">def</span> <span class="nf">test_func</span><span class="p">(</span><span class="n">numiter</span><span class="p">):</span>
-<span class="o">&gt;</span>       <span class="k">assert</span> <span class="n">numiter</span> <span class="o">&lt;</span> <span class="mi">9</span>
-<span class="n">E</span>       <span class="k">assert</span> <span class="mi">9</span> <span class="o">&lt;</span> <span class="mi">9</span>
-
-<span class="n">test_example</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">6</span><span class="p">:</span> <span class="ne">AssertionError</span>
-<span class="o">====================</span> <span class="mi">1</span> <span class="n">failed</span><span class="p">,</span> <span class="mi">9</span> <span class="n">passed</span> <span class="ow">in</span> <span class="mf">0.02</span> <span class="n">seconds</span> <span class="o">====================</span>
-</pre></div>
-
-
-<p>Great, so the last things to do is:</p>
-<ol>
-<li>Detect functions that make use of a fixture whose name starts with <code>data_</code></li>
-<li>Load the corresponding file or resource for the test source</li>
-<li>Parametrize the function with each of the data</li>
-</ol>
-<p>For example, here is what you can do:</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">pytest_generate_tests</span><span class="p">(</span><span class="n">metafunc</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; This allows us to load tests from external files by</span>
-<span class="sd">    parametrizing tests with each test case found in a data_X</span>
-<span class="sd">    file &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">fixture</span> <span class="ow">in</span> <span class="n">metafunc</span><span class="o">.</span><span class="n">fixturenames</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">fixture</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;data_&#39;</span><span class="p">):</span>
-            <span class="c"># Load associated test data</span>
-            <span class="n">tests</span> <span class="o">=</span> <span class="n">load_tests</span><span class="p">(</span><span class="n">fixture</span><span class="p">)</span>
-            <span class="n">metafunc</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="n">fixture</span><span class="p">,</span> <span class="n">tests</span><span class="p">)</span>
-</pre></div>
-
-
-<p>Here, the <code>load_tests</code> function takes as argument the name of the fixture <code>data_X</code>
-and will:</p>
-<ol>
-<li>Load the corresponding file</li>
-<li>Extract the different test-cases</li>
-<li>Return a list of all the cases</li>
-</ol>
-<p>For example, if your tests are stored in a Python file:</p>
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">importlib</span>
-
-
-<span class="k">def</span> <span class="nf">load_tests</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="c"># Load module which contains test data</span>
-    <span class="n">tests_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-    <span class="c"># Tests are to be found in the variable `tests` of the module</span>
-    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests_module</span><span class="o">.</span><span class="n">tests</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-        <span class="k">yield</span> <span class="n">test</span>
-</pre></div>
-
-
-<p>The data file (<code>data_my_feature.py</code>) could look something like:</p>
-<div class="highlight"><pre><span class="n">tests</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="mi">1</span><span class="p">,</span>
-    <span class="mi">2</span><span class="p">,</span>
-    <span class="mi">3</span><span class="p">,</span>
-    <span class="mi">4</span><span class="p">,</span>
-    <span class="mi">5</span><span class="p">,</span>
-    <span class="mi">6</span><span class="p">,</span>
-    <span class="mi">7</span><span class="p">,</span>
-    <span class="mi">8</span><span class="p">,</span>
-    <span class="mi">9</span>
-<span class="p">]</span>
-</pre></div>
-
-
-<p>The test function will then be invoked for each case.</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">test_feature</span><span class="p">(</span><span class="n">data_my_feature</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="n">data_my_feature</span> <span class="o">&lt;</span> <span class="mi">5</span>
-</pre></div>
-
-
-<h2>Conclusion</h2>
-<p>Here it's not really interesting, but the benefits are numerous:</p>
-<ol>
-<li>storing your data in a database, or in yaml/json formatted files, or whatever</li>
-<li>other people can add tests to your project, without having to dig into the code</li>
-<li>provide a common format to define tests in external files</li>
-<li>reuse the same data for several tests</li>
-<li>the data is not hard-coded in Python source-code</li>
-</ol>
-<p>TL;DR: <code>py.test</code> is awesome. Make tests. Get data for your tests from external sources.</p>
-                <div class="clear"></div>
-
-                <div class="info">
-                    <a href="http://remusao.github.com/pytest-paramaterize-tests-with-external-data.html">posted at 15:00</a>
-                    &nbsp;&middot;&nbsp;<a href="http://remusao.github.com/category/python.html" rel="tag">python</a>
-                    &nbsp;&middot;
-                    &nbsp;<a href="http://remusao.github.com/tag/python.html" class="tags">python</a>
-                    &nbsp;<a href="http://remusao.github.com/tag/pytest.html" class="tags">pytest</a>
-                </div>
-            </article>            <h4 class="date">Jul 22, 2014</h4>
-
-            <article class="post">
-                <h2 class="title">
-                    <a href="http://remusao.github.com/decompressing-bzipped-files-with-julia.html" rel="bookmark" title="Permanent Link to &quot;Decompressing BZipped files with Julia&quot;">Decompressing BZipped files with Julia</a>
-                </h2>
-
-                <p>I'm currently working with Wikipedia dumps, and to save space, it's a good thing to make scripts that read directly content from (and write results to) BZipped files.</p>
+I'll explain how I managed to cleanly externalize the data used for ...</p></p>
+                            <p class="post-meta">
+                                in <a href="http://remusao.github.com/category/python.html">python</a> &middot; Wed 26 November 2014
+                            </p>
+                        </header>
+                    </section>
+                    <section class="post">
+                        <header class="post-header">
+                            <h3><a class="post-title" href="http://remusao.github.com/decompressing-bzipped-files-with-julia.html">Decompressing BZipped files with Julia</a></h3>
+                            <p class="post-meta"><p>I'm currently working with Wikipedia dumps, and to save space, it's a good thing to make scripts that read directly content from (and write results to) BZipped files.</p>
 <h2>Setup</h2>
 <p>Tests where executed on my personnal computer:</p>
 <ul>
 <li>i7</li>
 <li>16GB of ram</li>
 </ul>
-<p>On a small wikipedia dump of <em>407MB</em>. All timings are in <em>seconds</em>.</p>
-<h2>bzcat alone</h2>
-<p>To have a point of comparison, I decompressed the dump using <em>bzcat</em> alone. The timing is <em>64 seconds</em>.</p>
-<div class="highlight"><pre><span class="nv">$ </span><span class="nb">time </span>1&gt;/dev/null bzcat wikidump.xml.bz2
-</pre></div>
-
-
-<h2>Using Python</h2>
-<p>It's easy enough with <em>Python</em> thanks to the <code>bz2</code> module that allows to transparently manipulate a compressed file as if it were a normal opened file. Before jumping to Julia, let see how it is done in Python:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">bz2</span>
-
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">in_stream</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">in_stream</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-    <span class="n">in_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
-</pre></div>
-
-
-<p>Nothing easier, it takes <em>85 seconds</em> to run.</p>
-<h2>What about Julia?</h2>
-<p>Since I really love <em>Julia</em> language, I was tempted to do the same with Julia. Here are the differents solutions that I went through, with their respective timings.</p>
-<h3>Using bz2 Python module through PyCall</h3>
-<p>The first naive option is to use the original module from Python. It's easy enough using the <code>PyCall</code> module. We can install it like so:</p>
-<div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;PyCall&quot;</span><span class="p">)</span>
-<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-</pre></div>
-
-
-<p>The script:</p>
-<div class="highlight"><pre><span class="k">using</span> <span class="n">PyCall</span>
-<span class="p">@</span><span class="n">pyimport</span> <span class="n">bz2</span>
-
-<span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
-    <span class="n">in_stream</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">ARGS</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">in_stream</span>
-        <span class="n">println</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-    <span class="k">end</span>
-    <span class="n">in_stream</span><span class="p">[:</span><span class="n">close</span><span class="p">]()</span>
-<span class="k">end</span>
-</pre></div>
-
-
-<p>But then we hit the wall... timing is: <em>1352 seconds</em>. This is likely due to the conversion between <em>Python</em> and <em>Julia</em> datatypes. So not the best option for a data-intensive usage.</p>
-<h3>Piping result of bzcat to Julia</h3>
-<p>The second option that came to my mind was: "why not using <em>bzcat</em>?". It's easy enough, we just have to read from <code>STDIN</code>:</p>
-<div class="highlight"><pre><span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">eachline</span><span class="p">(</span><span class="n">STDIN</span><span class="p">)</span>
-        <span class="n">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-    <span class="k">end</span>
-<span class="k">end</span>
-</pre></div>
-
-
-<p>Here is the invocation:
-{% highlight sh %}
-$ bzcat wikidump.xml.bz2 | julia bz2_bench.jl</p>
-<div class="highlight"><pre><span class="nx">Timing</span> <span class="nx">is</span> <span class="nx">now</span> <span class="nx">a</span> <span class="nx">more</span> <span class="nx">reasonable</span> <span class="o">*</span><span class="mi">72</span> <span class="nx">seconds</span><span class="o">*</span><span class="p">.</span> <span class="nx">So</span> <span class="nx">that</span> <span class="nx">is</span> <span class="nx">less</span> <span class="nx">than</span> <span class="nx">the</span> <span class="o">*</span><span class="nx">Python</span><span class="o">*</span> <span class="nx">version</span> <span class="nx">shown</span> <span class="nx">above</span><span class="p">.</span> <span class="nx">But</span> <span class="k">this</span> <span class="nx">is</span> <span class="nx">not</span> <span class="nx">satisfactory</span> <span class="nx">enough</span><span class="p">.</span> <span class="nx">Why</span> <span class="nx">not</span> <span class="nx">use</span> <span class="nx">the</span> <span class="nx">wonderful</span> <span class="nx">capabilities</span> <span class="nx">of</span> <span class="o">*</span><span class="nx">Julia</span><span class="o">*</span> <span class="nx">to</span> <span class="nx">run</span> <span class="nx">external</span> <span class="nx">commands</span> <span class="nx">an</span> <span class="nx">pipe</span> <span class="nx">results</span><span class="o">?</span>
-
-
-<span class="err">###</span> <span class="nx">Invoking</span> <span class="nx">bzcat</span> <span class="nx">from</span> <span class="nx">Julia</span>
-
-<span class="nx">It</span> <span class="nx">is</span> <span class="nx">easy</span> <span class="nx">to</span> <span class="nx">invoke</span> <span class="nx">commands</span> <span class="nx">from</span> <span class="nx">inside</span> <span class="o">*</span><span class="nx">Julia</span><span class="o">*</span> <span class="nx">using</span> <span class="nx">backquotes</span><span class="o">:</span> <span class="err">``</span><span class="nx">run</span><span class="p">(</span><span class="err">`</span><span class="nx">cmd</span><span class="err">`</span><span class="p">)</span><span class="err">``</span> <span class="nx">and</span> <span class="err">`</span><span class="o">|&gt;</span><span class="err">`</span> <span class="nx">to</span> <span class="nx">pipe</span> <span class="nx">between</span> <span class="nx">commands</span> <span class="nx">and</span> <span class="nx">streams</span><span class="p">.</span> <span class="nx">Let</span><span class="err">&#39;</span><span class="nx">s</span> <span class="k">do</span> <span class="nx">it</span><span class="o">:</span>
-<span class="err">```</span><span class="nx">julia</span>
-<span class="kd">function</span> <span class="nx">main</span><span class="p">()</span>
-    <span class="nx">file</span> <span class="o">=</span> <span class="nx">ARGS</span><span class="cp">[</span><span class="mi">1</span><span class="cp">]</span>
-    <span class="nx">run</span><span class="p">(</span><span class="err">`</span><span class="nx">bzcat</span> <span class="nx">$</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span><span class="err">`</span> <span class="o">|&gt;</span> <span class="nx">STDOUT</span><span class="p">)</span>
-<span class="nx">end</span>
-</pre></div>
-
-
-<p>The script is equivalent to: <code>bzcat wikidump.xml.bz2</code>, but it's quite impressive to see how easy it is to do this inside a Julia script.
-This time is about <em>66 seconds</em>, more or less the same than with the external piping from <code>bzcat</code>.</p>
-<p>But it would be useful to get lines of contents from the stream, like it was in the original <em>Python</em> script. For this task, <em>Julia</em> standard library offers a multitudes of handy functions. The one we will use is <code>readsfrom</code> that returns two things: stdout of the given process, and the process itself. Here it is in action:</p>
-<div class="highlight"><pre><span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
-    <span class="n">file</span> <span class="o">=</span> <span class="n">ARGS</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">stdout</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">readsfrom</span><span class="p">(</span><span class="sb">`bzcat $(file)`</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">eachline</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span>
-        <span class="n">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-    <span class="k">end</span>
-<span class="k">end</span>
-</pre></div>
-
-
-<p>Timing is now about <em>74 seconds</em>, this is <em>10 seconds</em> faster than the first <em>Python</em> version. But we don't rely on a module. Instead, we make use of the ability to play with command invocations, stream pipings, and the like that <em>Julia</em> allows.</p>
-<h2>Timings</h2>
-<p><img alt="Bench" src="{{" title="filename }}/images/bz2-julia-bench.png" /></p>
-<p>Timings are relatively close since the big work is done in the decompression, that's why there isn't much difference between <em>Julia</em> and <em>Python</em>.</p>
-<h2>Conclusion</h2>
-<p>I was first tempted to implement a <em>Julia</em> wrapper over <em>bzlib</em>, but what for? When it's so easy to invoke external commands and manipulate their input and output streams.
-<em>Julia</em> is a young language, but it's so flexible and extensible, that often I forget about it!</p>
-                <div class="clear"></div>
-
-                <div class="info">
-                    <a href="http://remusao.github.com/decompressing-bzipped-files-with-julia.html">posted at 22:33</a>
-                    &nbsp;&middot;&nbsp;<a href="http://remusao.github.com/category/julia.html" rel="tag">Julia</a>
-                </div>
-            </article>            <h4 class="date">Feb 14, 2014</h4>
-
-            <article class="post">
-                <h2 class="title">
-                    <a href="http://remusao.github.com/installation-de-julia.html" rel="bookmark" title="Permanent Link to &quot;Installation de Julia&quot;">Installation de Julia</a>
-                </h2>
-
-                <p>Suite au premier article sur le langage Julia, voici un guide rapide de mise en
+<p>On a small wikipedia dump of <em>407MB</em>. All ...</p></p>
+                            <p class="post-meta">
+                                in <a href="http://remusao.github.com/category/julia.html">Julia</a> &middot; Tue 22 July 2014
+                            </p>
+                        </header>
+                    </section>
+                    <section class="post">
+                        <header class="post-header">
+                            <h3><a class="post-title" href="http://remusao.github.com/installation-de-julia.html">Installation de Julia</a></h3>
+                            <p class="post-meta"><p>Suite au premier article sur le langage Julia, voici un guide rapide de mise en
 route de votre environnement pour utiliser le langage. Voici le plan :</p>
 <ul>
 <li>Compiler Julia depuis les sources</li>
@@ -383,136 +86,16 @@ route de votre environnement pour utiliser le langage. Voici le plan :</p>
 <li>Environnement IJulia (équivalement de IPython)</li>
 </ul>
 <h2>Compilation</h2>
-<p>Tout d'abord compiler l'interpréteur Julia depuis les sources. Notez que si
-votre distribution <em>linux</em> dispose d'un paquet Julia dans ses dépôt ou si vous
-ne désirez pas compiler Julia depuis les sources, il est toujours possible
-d'installer une version pré-compilée depuis la
-<a href="http://julialang.org/downloads/">page téléchargement</a> du site officiel.</p>
-<p>Commençons tout d'abord par récupérer les sources de Julia :</p>
-<div class="highlight"><pre>git clone https://github.com/JuliaLang/julia.git
-<span class="nb">cd </span>julia
-</pre></div>
-
-
-<p>Ensuite, vérifiez que les dépendances suivantes sont bien disponibles sur votre
-système :
-<em> <a href="http://www.gnu.org/software/make/">GNU make</a>
-</em> <a href="http://gcc.gnu.org/">gcc et g++</a> (ou <a href="http://clang.llvm.org/">Clang</a>)
-<em> <a href="http://gcc.gnu.org/">gfortran</a>
-</em> <a href="http://git-scm.com/">git</a>
-<em> <a href="http://www.perl.org/">perl</a>
-</em> <a href="http://www.gnu.org/software/wget/">wget</a> (ou <a href="http://curl.haxx.se/">curl</a>, ou <em>fetch</em>)
-<em> <a href="http://www.gnu.org/software/m4/">m4</a>
-</em> <a href="http://www.gnu.org/software/patch/">patch</a></p>
-<p>Si tout est installé, lancez la compilation (notez que <strong>N</strong> est à remplacer
-par le nombre de cœurs dont dispose votre processeur, cela peut grandement
-améliorer le temps de compilation) :</p>
-<div class="highlight"><pre>make -j N
-</pre></div>
-
-
-<p>La première fois que vous compilez Julia, des dépendances vont être téléchargées
-puis compilées, c'est pourquoi cela peut prendre un certains temps. La
-compilation peut consommer jusqu'à <em>700 Mo de mémoire</em> et <em>1.5 Go d'espace
-disque</em>. Les éventuelles compilations futures seront moins gourmandes.</p>
-<p>Une fois la compilation terminée, vous disposez d'un
-<a href="http://en.wikipedia.org/wiki/Symbolic_link">lien symbolique</a> vers l'exécutable
-Julia. Afin qu'il soit accessible depuis n'importe quel endroit, vous pouvez
-le rajouter à votre <code>PATH</code> (vous pouvez le rajouter dans le fichier de
-configuration de votre Shell favori en remplaçant <code>$(pwd)</code> par le chemin
-absolu vers le dossier julia dans lequel se trouve le lien symbolique) :</p>
-<div class="highlight"><pre><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
-</pre></div>
-
-
-<p>Julia intègre tout le nécessaire pour gérer l'installation, la mise à jour
-et la création de packages. Ces fonctionnalités sont disponibles depuis un
-prompt Julia. La première fois que vous lancez Julia, il est nécessaire
-d'initialiser les packages :</p>
-<div class="highlight"><pre><span class="nv">$ </span>julia
-julia&gt; Pkg.update<span class="o">()</span>
-</pre></div>
-
-
-<p>Les principales commandes disponibles sont :</p>
-<ul>
-<li><strong>Pkg.update()</strong> : met à jours les différents packages installés</li>
-<li><strong>Pkg.add("Package")</strong> : installe le package <em>Package</em> ainsi que ses éventuelles dépendances</li>
-<li><strong>Pkg.rm("Package")</strong> : supprime le package <em>Package</em></li>
-</ul>
-<h2>Coloration syntaxique et indentation</h2>
-<p>Cette explication n'est valide que pour les utilisateurs de l'éditeur
-<a href="http://www.vim.org/">Vim</a>. Voici des explications différentes en
-fonction de la manière dont vous gérez les extensions.</p>
-<h4>Pathogen</h4>
-<div class="highlight"><pre><span class="nb">cd</span> ~/.vim
-mkdir -p bundle <span class="o">&amp;&amp;</span> <span class="nb">cd </span>bundle
-git clone git://github.com/JuliaLang/julia-vim.git
-</pre></div>
-
-
-<h4>Vundle</h4>
-<p>Ajouter un nouveau Bundle à votre <code>.vimrc</code> :</p>
-<div class="highlight"><pre>Bundle <span class="s1">&#39;JuliaLang/julia-vim&#39;</span>
-</pre></div>
-
-
-<p>Lancer Vim et mettre à jour vos Bundle :</p>
-<div class="highlight"><pre>:BundleInstall!
-</pre></div>
-
-
-<h4>Manuel</h4>
-<div class="highlight"><pre>git clone git://github.com/JuliaLang/julia-vim.git
-<span class="nb">cd </span>julia-vim
-cp -R * ~/.vim
-</pre></div>
-
-
-<p>Voilà qui devrait vous fournir la coloration syntaxique ainsi que l'indentation
-pour les fichier dont l'extension et <code>.jl</code>.</p>
-<h2>IJulia</h2>
-<p>IJulia permet d'interfacer Julia à l'environnement de développement interactif
-<strong>IPython</strong>. Cela permet notamment d'utiliser le mode <strong>notebook</strong>, qui combine
-du code, du texte, et des contenus multimédias (dessin, etc.) dans un même
-environnement. Pour l'installer vous aurez besoin d'avoir sur votre système :</p>
-<ul>
-<li><strong>IPython</strong> en version <code>1.0</code> ou supérieure</li>
-<li><a href="http://jinja.pocoo.org/docs/">Jinja2</a>, <a href="http://www.tornadoweb.org/en/stable/">Tornado</a>, et <a href="https://github.com/zeromq/pyzmq">pyzmq</a></li>
-</ul>
-<p>Ensuite il faut installer le package IJulia depuis un prompt julia :</p>
-<div class="highlight"><pre><span class="o">$</span> <span class="n">julia</span>
-<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;IJulia&quot;</span><span class="p">)</span>
-<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-</pre></div>
-
-
-<p>Une fois ceci fait, vous n'avez plus qu'à lancer IPython de la manière
-suivante. Pour le mode notebook :</p>
-<div class="highlight"><pre>ipython notebook --profile julia
-</pre></div>
-
-
-<p>Et voilà, le tour est joué. C'est tout pour cet article. Vous devriez
-normalement avoir de quoi démarrer à programmer en Julia et exécuter
-vos programmes. A bientôt pour de nouvelles aventures !</p>
-<p>Afin de réaliser cet articles je me suis inspiré de la documentation présente
-sur les dépôts officiels de <a href="https://github.com/JuliaLang/julia">Julia</a>,
-<a href="https://github.com/JuliaLang/julia-vim">julia-vim</a> et
-<a href="https://github.com/JuliaLang/IJulia.jl">IJulia</a>.</p>
-                <div class="clear"></div>
-
-                <div class="info">
-                    <a href="http://remusao.github.com/installation-de-julia.html">posted at 22:00</a>
-                </div>
-            </article>            <h4 class="date">Feb 13, 2014</h4>
-
-            <article class="post">
-                <h2 class="title">
-                    <a href="http://remusao.github.com/julia.html" rel="bookmark" title="Permanent Link to &quot;Julia&quot;">Julia</a>
-                </h2>
-
-                <p>Aujourd'hui j'aimerais parler d'un langage de programmation que je viens de
+<p>Tout d'abord compiler l'interpréteur Julia ...</p></p>
+                            <p class="post-meta">
+                                in <a href="http://remusao.github.com/category/misc.html">misc</a> &middot; Fri 14 February 2014
+                            </p>
+                        </header>
+                    </section>
+                    <section class="post">
+                        <header class="post-header">
+                            <h3><a class="post-title" href="http://remusao.github.com/julia.html">Julia</a></h3>
+                            <p class="post-meta"><p>Aujourd'hui j'aimerais parler d'un langage de programmation que je viens de
 découvrir : <strong>Julia</strong>. Je vais donc vous le présenter succinctement et donner
 mon ressenti après quelques jours d'utilisation.</p>
 <h2>Qu'est-ce que c'est ?</h2>
@@ -521,173 +104,64 @@ mon ressenti après quelques jours d'utilisation.</p>
 <li><strong>Haut niveau</strong> (<em>garbage collection</em>)</li>
 <li><strong>Dynamique</strong></li>
 <li><strong>Interprété</strong></li>
-<li><strong>Disposant d'un compilateur JIT</strong> (<em>backend LLVM</em>)</li>
-<li><strong>Performant</strong></li>
-</ul>
-<p>Il s'agit d'un subtile mélange entre les langage <strong>Python</strong>, <strong>R</strong> et
-<strong>Matlab</strong>. Python pour une partie de la syntaxe et les constructions élégantes du
-langage (<em>list comprehension</em>, boucles <em>for</em>, etc.), Matlab et R pour l'intégration
-des vecteurs, matrices et opérations associées dans la bibliothèque standard,
-en faisant un langage particulièrement adapté pour l'analyse numérique, le
-<em>machine learning</em>, et toute autre application nécessitant des outils d'algèbre
-linéaire, et des fonctions mathématiques diverses.</p>
-<div class="highlight"><pre><span class="c"># Dynamic type</span>
-<span class="n">a</span> <span class="o">=</span> <span class="mi">42</span>          <span class="c"># Int</span>
-<span class="n">a</span> <span class="o">=</span> <span class="s">&quot;toto&quot;</span>      <span class="c"># String</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>   <span class="c"># Vector</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">]</span>     <span class="c"># 1x3 Matrix</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>       <span class="c"># same 1x3 Matrix</span>
-
-<span class="k">for</span> <span class="n">e</span> <span class="k">in</span> <span class="n">a</span>
-    <span class="n">println</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
-<span class="k">end</span>
-
-<span class="c"># Output</span>
-<span class="c"># 1</span>
-<span class="c"># 2</span>
-<span class="c"># 3</span>
-</pre></div>
-
-
-<p>Julia dispose également des atouts suivants :</p>
-<ul>
-<li><strong>Multi-méthode</strong> permettant un dispatch dynamique en fonction du type des arguments passés aux fonctions</li>
-</ul>
-<div class="highlight"><pre><span class="c"># Method declaration</span>
-<span class="c"># foo is a function taking one argument of any type</span>
-<span class="k">function</span><span class="nf"> foo</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>
-    <span class="n">println</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>
-    <span class="k">end</span>
-
-<span class="c"># Shorter function declaration</span>
-<span class="n">baz</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
-<span class="c"># Multimethod</span>
-<span class="c"># Takes an argument of type Int (Haskelish syntax)</span>
-<span class="n">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">::</span><span class="kt">Int</span><span class="p">)</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Int&quot;</span><span class="p">)</span>
-<span class="c"># Takes an argument of type Matrix (of any type)</span>
-<span class="n">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">::</span><span class="n">Matrix</span><span class="p">)</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Matrix&quot;</span><span class="p">)</span>
-<span class="c"># Take an argument of type Matrix of Float64</span>
-<span class="n">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">::</span><span class="n">Matrix</span><span class="p">{</span><span class="kt">Float64</span><span class="p">})</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Matrix of Float64&quot;</span><span class="p">)</span>
-
-<span class="n">myprint</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>         <span class="c"># First one is called</span>
-<span class="n">myprint</span><span class="p">([</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">])</span>    <span class="c"># Second one is called</span>
-<span class="n">myprint</span><span class="p">([</span><span class="mf">0.5</span> <span class="mf">0.42</span><span class="p">])</span> <span class="c"># Third one is called</span>
-</pre></div>
-
-
-<ul>
-<li>Un système de <strong>template</strong> pour créer du code générique</li>
-</ul>
-<div class="highlight"><pre><span class="k">function</span><span class="nf"> printtype</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Any type&quot;</span><span class="p">)</span>
-<span class="k">end</span>
-
-<span class="c"># Takes argument of type T, in julia a type</span>
-<span class="c"># is an object, so you can print it</span>
-<span class="k">function</span><span class="nf"> printtype</span><span class="p">{</span><span class="n">T</span><span class="p">}(</span><span class="n">m</span><span class="p">::</span><span class="n">T</span><span class="p">)</span>
-    <span class="n">println</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
-<span class="k">end</span>
-
-<span class="c"># Takes an argument of type T, with the constraint FloatingPoint</span>
-<span class="k">function</span><span class="nf"> printtype</span><span class="p">{</span><span class="n">T</span> <span class="o">&lt;:</span> <span class="n">FloatingPoint</span><span class="p">}(</span><span class="n">m</span><span class="p">::</span><span class="n">T</span><span class="p">)</span>
-    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Floating Point&quot;</span><span class="p">)</span>
-<span class="k">end</span>
-
-<span class="n">printtype</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
-<span class="n">printtype</span><span class="p">(</span><span class="mf">0.42</span><span class="p">)</span>
-</pre></div>
-
-
-<ul>
-<li>Des <strong>expressions rationnelles</strong> compatible Perl</li>
-<li>Des <strong>macros</strong> à la Lisp grâce à l’auto-iconicité du langage</li>
-<li>La possibilité de lancer des <strong>commandes Shell</strong>, de piper, etc.</li>
-<li><strong>Interfaçage avec le C</strong> sans bindings (simple utilisation de ccall comme une fonction)</li>
-</ul>
-<div class="highlight"><pre><span class="c"># Simple function that wrap a call to libc clock function</span>
-<span class="n">clock</span><span class="p">()</span> <span class="o">=</span> <span class="k">ccall</span><span class="p">(</span> <span class="p">(:</span><span class="n">clock</span><span class="p">,</span> <span class="s">&quot;libc&quot;</span><span class="p">),</span> <span class="kt">Int32</span><span class="p">,</span> <span class="p">())</span>
-
-<span class="n">t</span> <span class="o">=</span> <span class="n">clock</span><span class="p">()</span>
-
-<span class="c"># Do some stuff</span>
-
-<span class="n">println</span><span class="p">(</span><span class="n">clock</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span>
-</pre></div>
-
-
-<ul>
-<li><strong>Duck-typing</strong> mais possibilité de spécifier les types</li>
-<li><strong>Parallélisation</strong> du code aisée en multithreading sur une unique machine ou sur un cluster (tasks, parallel for, etc.)</li>
-</ul>
-<p>Cet article n'a pas pour but d'être exhaustif à propos de Julia, pour plus
-d'exemples je vous redirige vers le documentation officielle du langage :
-<a href="http://docs.julialang.org/en/latest/manual/">Documentation</a>.</p>
-<h2>Pourquoi l'utiliser ?</h2>
-<p>Julia est un langage jeune mais dynamique. Il est pour le moment peu utilisé
-mais il gagne à être connu. Grâce aux avantages cités ci-dessus, c'est un
-parfait candidat pour tous les projets nécessitant :</p>
-<ul>
-<li><strong>Performances</strong> (compilation JIT),</li>
-<li><strong>Bibliothèque standard</strong> très riche : <em>algèbre linéaire</em>, <em>fonctions mathématiques</em> diverses, etc.</li>
-<li>Rassemble les qualités de plusieurs langages bien connus (Matlab, R, Python)</li>
-</ul>
-<p>Il est très aisé de convertir du code Matlab ou Python vers du Julia car les
-différences sont assez peu nombreuses. La manipulation de matrice est très
-similaire à celle de Matlab.</p>
-<h2>Défauts de jeunesse</h2>
-<p>Néanmoins le langage dispose de quelques points faibles, sans doute liés à sa
-jeunesse et au manque de projets l'utilisant. Mis à part la richesse de sa
-bibliothèque standard, les packages sont encore relativement peu nombreux et
-donc selon le projet vous ne trouverez pas forcément les outils nécessaires
-(par exemple pour du traitement d'image, il n'existe pas de binding ou
-d'équivalent à OpenCV, des packages existent mais les fonctionnalités sont
-encore limitées).</p>
-<p>L'interpréteur met du temps à se lancer. Selon les ressources de la machine
-que vous utilisez cela peut aller de 2-3 secondes à 30 secondes (sur mon
-ordinateur portable peu puissant). Bien sûr il est possible de lancer une
-session de l'interpréteur une bonne fois pour toutes et de travailler depuis
-le prompt, mais cela reste gênant quand vous voulez simplement lancer un
-script. Néanmoins, cela devrait s'améliorer à l'avenir, espérons-le, le
-langage est encore en phase de release candidate.</p>
-<p>Voilà pour cette rapide introduction du langage Julia, cet article n'avait
-pas pour but d'être un tutoriel, mais juste de faire connaitre un projet qui
-semble avoir de l'avenir. Il est possible que j'utilise ce langage dans mes
-prochains articles pour les démonstrations de code.</p>
-<p>Quelques ressources supplémentaires :</p>
-<ul>
-<li><a href="https://github.com/JuliaLang/julia">Github</a></li>
-<li><a href="http://docs.julialang.org/en/latest/manual/">Documentation</a></li>
-<li><a href="http://julialang.org/">Site officiel</a></li>
-</ul>
-                <div class="clear"></div>
-
-                <div class="info">
-                    <a href="http://remusao.github.com/julia.html">posted at 22:53</a>
-                    &nbsp;&middot;&nbsp;<a href="http://remusao.github.com/category/julia.html" rel="tag">julia</a>
-                </div>
-            </article>
-
-            <div class="clear"></div>
-            <footer>
-                <p>
-                <a href="https://github.com/jody-frankowski/blue-penguin">Blue Penguin</a> Theme
-                &middot;
-                Powered by <a href="http://getpelican.com">Pelican</a>
-                &middot;
-                <a href="http://remusao.github.com/feeds/all.atom.xml" rel="alternate">Atom Feed</a>
-            </footer>
+<li><strong>Disposant d ...</strong></li></ul></p>
+                            <p class="post-meta">
+                                in <a href="http://remusao.github.com/category/julia.html">julia</a> &middot; Thu 13 February 2014
+                            </p>
+                        </header>
+                    </section>
+<div class="pagination-wrapper content-subhead">
+    <div class="pagination">
+        <div class="pagination-left">
+                &nbsp;
         </div>
-        <div class="clear"></div>
+        <span>Page 1 / 1</span>
+        <div class="pagination-right">
+        </div>
     </div>
-    <script type="text/javascript">
-    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</div><footer class="footer">
+    <p>&copy; Pythux &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
     </script>
     <script type="text/javascript">
-    try {
-        var pageTracker = _gat._getTracker("UA-57162019-1 ");
-    pageTracker._trackPageview();
-    } catch(err) {}</script>
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("UA-57162019-1 ");
+            pageTracker._trackPageview();
+            } catch(err) {}
+    </script>
+
 </body>
 </html>

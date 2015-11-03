@@ -1,41 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>Pythux | articles in the "misc" category</title>
-    <link rel="shortcut icon" type="image/png" href="http://remusao.github.com/favicon.png">
-    <link rel="shortcut icon" type="image/x-icon" href="http://remusao.github.com/favicon.ico">
-    <link href="http://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Full Atom Feed" />
-    <link href="http://remusao.github.com/feeds/misc.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Categories Atom Feed" />
-    <link rel="stylesheet" href="http://remusao.github.com/theme/css/screen.css" type="text/css" />
-    <link rel="stylesheet" href="http://remusao.github.com/theme/css/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="http://remusao.github.com/theme/css/print.css" type="text/css" media="print" />
-    <meta name="generator" content="Pelican" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pythux, ">
+
+        <link rel="alternate"  href="http://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" title="Pythux Full Atom Feed"/>
+
+        <title>misc category // Pythux // </title>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="http://remusao.github.com/theme/css/pure.css">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 </head>
+
 <body>
-    <header>
-        <nav>
-            <ul>
-
-                <li class="ephemeral selected"><a href="http://remusao.github.com/category/misc.html">misc</a></li>
-                <li><a href="http://remusao.github.com">Home</a></li>
-                <li><a href="http://remusao.github.com/pages/about.html">About</a></li>
-                <li><a href="https://github.com/remusao">GitHub</a></li>
-            </ul>
-        </nav>
-        <div class="header_box">
-            <h1><a href="http://remusao.github.com">Pythux</a></h1>
+    <div class="pure-g-r" id="layout">
+        <div class="sidebar pure-u">
+            <div class="cover-img" style="background-image: url('')">
+                <div class="cover-body">
+                    <header class="header">
+                        <hgroup>
+                            <h1 class="brand-main"><a href="http://remusao.github.com">Pythux</a></h1>
+                            <p class="tagline"></p>
+                                <p class="links"><a href="https://github.com/remusao">GitHub</a></p>
+                                <p class="social">
+                                    <a href="#">
+                                        <i class="fa fa-You can add links in your config file fa-3x"></i>
+                                    </a>
+                                    <a href="#">
+                                        <i class="fa fa-Another social link fa-3x"></i>
+                                    </a>
+                                </p>
+                        </hgroup>
+                    </header>
+                </div>
+            </div>
         </div>
-    </header>
-    <div id="wrapper">
-        <div id="content">            <h4 class="date">Feb 14, 2014</h4>
-
-            <article class="post">
-                <h2 class="title">
-                    <a href="http://remusao.github.com/installation-de-julia.html" rel="bookmark" title="Permanent Link to &quot;Installation de Julia&quot;">Installation de Julia</a>
-                </h2>
-
-                <p>Suite au premier article sur le langage Julia, voici un guide rapide de mise en
+    <div class="pure-u">
+        <div class="content">
+            <!-- A wrapper for all the blog posts -->
+            <div class="posts">
+                <h1 class="content-subhead">
+Posts in 'misc'                </h1>
+                    <section class="post">
+                        <header class="post-header">
+                            <h3><a class="post-title" href="http://remusao.github.com/installation-de-julia.html">Installation de Julia</a></h3>
+                            <p class="post-meta"><p>Suite au premier article sur le langage Julia, voici un guide rapide de mise en
 route de votre environnement pour utiliser le langage. Voici le plan :</p>
 <ul>
 <li>Compiler Julia depuis les sources</li>
@@ -43,150 +57,64 @@ route de votre environnement pour utiliser le langage. Voici le plan :</p>
 <li>Environnement IJulia (équivalement de IPython)</li>
 </ul>
 <h2>Compilation</h2>
-<p>Tout d'abord compiler l'interpréteur Julia depuis les sources. Notez que si
-votre distribution <em>linux</em> dispose d'un paquet Julia dans ses dépôt ou si vous
-ne désirez pas compiler Julia depuis les sources, il est toujours possible
-d'installer une version pré-compilée depuis la
-<a href="http://julialang.org/downloads/">page téléchargement</a> du site officiel.</p>
-<p>Commençons tout d'abord par récupérer les sources de Julia :</p>
-<div class="highlight"><pre>git clone https://github.com/JuliaLang/julia.git
-<span class="nb">cd </span>julia
-</pre></div>
-
-
-<p>Ensuite, vérifiez que les dépendances suivantes sont bien disponibles sur votre
-système :
-<em> <a href="http://www.gnu.org/software/make/">GNU make</a>
-</em> <a href="http://gcc.gnu.org/">gcc et g++</a> (ou <a href="http://clang.llvm.org/">Clang</a>)
-<em> <a href="http://gcc.gnu.org/">gfortran</a>
-</em> <a href="http://git-scm.com/">git</a>
-<em> <a href="http://www.perl.org/">perl</a>
-</em> <a href="http://www.gnu.org/software/wget/">wget</a> (ou <a href="http://curl.haxx.se/">curl</a>, ou <em>fetch</em>)
-<em> <a href="http://www.gnu.org/software/m4/">m4</a>
-</em> <a href="http://www.gnu.org/software/patch/">patch</a></p>
-<p>Si tout est installé, lancez la compilation (notez que <strong>N</strong> est à remplacer
-par le nombre de cœurs dont dispose votre processeur, cela peut grandement
-améliorer le temps de compilation) :</p>
-<div class="highlight"><pre>make -j N
-</pre></div>
-
-
-<p>La première fois que vous compilez Julia, des dépendances vont être téléchargées
-puis compilées, c'est pourquoi cela peut prendre un certains temps. La
-compilation peut consommer jusqu'à <em>700 Mo de mémoire</em> et <em>1.5 Go d'espace
-disque</em>. Les éventuelles compilations futures seront moins gourmandes.</p>
-<p>Une fois la compilation terminée, vous disposez d'un
-<a href="http://en.wikipedia.org/wiki/Symbolic_link">lien symbolique</a> vers l'exécutable
-Julia. Afin qu'il soit accessible depuis n'importe quel endroit, vous pouvez
-le rajouter à votre <code>PATH</code> (vous pouvez le rajouter dans le fichier de
-configuration de votre Shell favori en remplaçant <code>$(pwd)</code> par le chemin
-absolu vers le dossier julia dans lequel se trouve le lien symbolique) :</p>
-<div class="highlight"><pre><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
-</pre></div>
-
-
-<p>Julia intègre tout le nécessaire pour gérer l'installation, la mise à jour
-et la création de packages. Ces fonctionnalités sont disponibles depuis un
-prompt Julia. La première fois que vous lancez Julia, il est nécessaire
-d'initialiser les packages :</p>
-<div class="highlight"><pre><span class="nv">$ </span>julia
-julia&gt; Pkg.update<span class="o">()</span>
-</pre></div>
-
-
-<p>Les principales commandes disponibles sont :</p>
-<ul>
-<li><strong>Pkg.update()</strong> : met à jours les différents packages installés</li>
-<li><strong>Pkg.add("Package")</strong> : installe le package <em>Package</em> ainsi que ses éventuelles dépendances</li>
-<li><strong>Pkg.rm("Package")</strong> : supprime le package <em>Package</em></li>
-</ul>
-<h2>Coloration syntaxique et indentation</h2>
-<p>Cette explication n'est valide que pour les utilisateurs de l'éditeur
-<a href="http://www.vim.org/">Vim</a>. Voici des explications différentes en
-fonction de la manière dont vous gérez les extensions.</p>
-<h4>Pathogen</h4>
-<div class="highlight"><pre><span class="nb">cd</span> ~/.vim
-mkdir -p bundle <span class="o">&amp;&amp;</span> <span class="nb">cd </span>bundle
-git clone git://github.com/JuliaLang/julia-vim.git
-</pre></div>
-
-
-<h4>Vundle</h4>
-<p>Ajouter un nouveau Bundle à votre <code>.vimrc</code> :</p>
-<div class="highlight"><pre>Bundle <span class="s1">&#39;JuliaLang/julia-vim&#39;</span>
-</pre></div>
-
-
-<p>Lancer Vim et mettre à jour vos Bundle :</p>
-<div class="highlight"><pre>:BundleInstall!
-</pre></div>
-
-
-<h4>Manuel</h4>
-<div class="highlight"><pre>git clone git://github.com/JuliaLang/julia-vim.git
-<span class="nb">cd </span>julia-vim
-cp -R * ~/.vim
-</pre></div>
-
-
-<p>Voilà qui devrait vous fournir la coloration syntaxique ainsi que l'indentation
-pour les fichier dont l'extension et <code>.jl</code>.</p>
-<h2>IJulia</h2>
-<p>IJulia permet d'interfacer Julia à l'environnement de développement interactif
-<strong>IPython</strong>. Cela permet notamment d'utiliser le mode <strong>notebook</strong>, qui combine
-du code, du texte, et des contenus multimédias (dessin, etc.) dans un même
-environnement. Pour l'installer vous aurez besoin d'avoir sur votre système :</p>
-<ul>
-<li><strong>IPython</strong> en version <code>1.0</code> ou supérieure</li>
-<li><a href="http://jinja.pocoo.org/docs/">Jinja2</a>, <a href="http://www.tornadoweb.org/en/stable/">Tornado</a>, et <a href="https://github.com/zeromq/pyzmq">pyzmq</a></li>
-</ul>
-<p>Ensuite il faut installer le package IJulia depuis un prompt julia :</p>
-<div class="highlight"><pre><span class="o">$</span> <span class="n">julia</span>
-<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;IJulia&quot;</span><span class="p">)</span>
-<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-</pre></div>
-
-
-<p>Une fois ceci fait, vous n'avez plus qu'à lancer IPython de la manière
-suivante. Pour le mode notebook :</p>
-<div class="highlight"><pre>ipython notebook --profile julia
-</pre></div>
-
-
-<p>Et voilà, le tour est joué. C'est tout pour cet article. Vous devriez
-normalement avoir de quoi démarrer à programmer en Julia et exécuter
-vos programmes. A bientôt pour de nouvelles aventures !</p>
-<p>Afin de réaliser cet articles je me suis inspiré de la documentation présente
-sur les dépôts officiels de <a href="https://github.com/JuliaLang/julia">Julia</a>,
-<a href="https://github.com/JuliaLang/julia-vim">julia-vim</a> et
-<a href="https://github.com/JuliaLang/IJulia.jl">IJulia</a>.</p>
-                <div class="clear"></div>
-
-                <div class="info">
-                    <a href="http://remusao.github.com/installation-de-julia.html">posted at 22:00</a>
-                </div>
-            </article>
-
-            <div class="clear"></div>
-            <footer>
-                <p>
-                <a href="https://github.com/jody-frankowski/blue-penguin">Blue Penguin</a> Theme
-                &middot;
-                Powered by <a href="http://getpelican.com">Pelican</a>
-                &middot;
-                <a href="http://remusao.github.com/feeds/all.atom.xml" rel="alternate">Atom Feed</a>
-            </footer>
+<p>Tout d'abord compiler l'interpréteur Julia ...</p></p>
+                            <p class="post-meta">
+                                in <a href="http://remusao.github.com/category/misc.html">misc</a> &middot; Fri 14 February 2014
+                            </p>
+                        </header>
+                    </section>
+<div class="pagination-wrapper content-subhead">
+    <div class="pagination">
+        <div class="pagination-left">
+                &nbsp;
         </div>
-        <div class="clear"></div>
+        <span>Page 1 / 1</span>
+        <div class="pagination-right">
+        </div>
     </div>
-    <script type="text/javascript">
-    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</div><footer class="footer">
+    <p>&copy; Pythux &ndash;
+        Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
+        for <a href="http://blog.getpelican.com/">Pelican</a>
+    </p>
+</footer>            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        var $top = $('.go-top');
+
+        // Show or hide the sticky footer button
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 200) {
+                $top.fadeIn(200);
+            } else {
+                $top.fadeOut(200);
+            }
+        });
+
+        // Animate the scroll to top
+        $top.click(function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop: 0}, 300);
+        })
+
+        // Makes sure that the href="#" attached to the <a> elements
+        // don't scroll you back up the page.
+        $('body').on('click', 'a[href="#"]', function(event) {
+            event.preventDefault();
+        });
     </script>
     <script type="text/javascript">
-    try {
-        var pageTracker = _gat._getTracker("UA-57162019-1 ");
-    pageTracker._trackPageview();
-    } catch(err) {}</script>
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("UA-57162019-1 ");
+            pageTracker._trackPageview();
+            } catch(err) {}
+    </script>
+
 </body>
 </html>
