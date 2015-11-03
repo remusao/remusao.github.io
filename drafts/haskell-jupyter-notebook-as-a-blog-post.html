@@ -17,11 +17,11 @@
 
   <link href="http://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Atom" />
 
-<link href="http://remusao.github.com/feeds/misc.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux misc Category Atom" />
+<meta name="keywords" content="">
 
   <title>
     Pythux
-&ndash; Category: misc  </title>
+&ndash; Haskell Jupyter Notebook as a blog post  </title>
 
 <script type="text/javascript">
   var _gaq = _gaq || [];
@@ -57,33 +57,53 @@
       <p>
       <a href="http://remusao.github.com">Index</a> &brvbar; <a href="http://remusao.github.com/archives.html">Archives</a>
       &brvbar; <a href="http://remusao.github.com/feeds/all.atom.xml">Atom</a>
-&gt; Category: misc
-&brvbar; <a href="http://remusao.github.com/feeds/misc.atom.xml">Atom</a>
       </p>
     </header>
 
 <article>
   <div class="article_title">
-    <h3><a href="http://remusao.github.com/installation-de-julia.html">Installation de Julia</a></h3>
+    <h3><a href="http://remusao.github.com/drafts/haskell-jupyter-notebook-as-a-blog-post.html">Haskell Jupyter Notebook as a blog post</a></h3>
   </div>
   <div class="article_text">
-    <p>Suite au premier article sur le langage Julia, voici un guide rapide de mise en
-route de votre environnement pour utiliser le langage. Voici le plan :</p>
-<ul>
-<li>Compiler Julia depuis les sources</li>
-<li>Coloration syntaxique et indentation sous vim</li>
-<li>Environnement IJulia (équivalement de IPython)</li>
-</ul>
-<h2>Compilation</h2>
-<p>Tout d'abord compiler l'interpréteur Julia ...</p>
+    <h1>Creating a blogpost from a Jupyter Notebook?</h1>
+<p>Why not! Let's try.</p>
+<div class="highlight"><pre><span class="nf">fact</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">fact</span> <span class="mi">0</span> <span class="ow">=</span> <span class="mi">1</span>
+<span class="nf">fact</span> <span class="mi">1</span> <span class="ow">=</span> <span class="mi">1</span>
+<span class="nf">fact</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">n</span> <span class="o">*</span> <span class="n">fact</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span class="nf">fact</span> <span class="mi">10</span>
+</pre></div>
+
+
+<div class="highlight"><pre>3628800
+</pre></div>
+
+
+<p>Excellent!</p>
   </div>
+  <div class="article_meta">
+    <p>Posted on: Tue 03 November 2015</p>
+    <p>Category: <a href="http://remusao.github.com/category/haskell.html">haskell</a>
+    </p>
+  </div>
+
+  <div id="article_comments">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_identifier = "drafts/haskell-jupyter-notebook-as-a-blog-post.html";
+        (function() {
+             var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+             dsq.src = 'http://pythux.disqus.com/embed.js';
+             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+         })();
+    </script>
+  </div>
+
 </article>
 
-<footer>
-<div id="paginator">
-
-</div>
-</footer>
 
     <div id="ending_message">
       <p>&copy; Pythux. Built using <a href="http://getpelican.com" target="_blank">Pelican</a>. Theme by Giulio Fidente on <a href="https://github.com/gfidente/pelican-svbhack" target="_blank">github</a>. Member of the <a href="http://internetdefenseleague.org">Internet Defense League</a>.</p>
