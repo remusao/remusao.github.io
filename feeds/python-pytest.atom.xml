@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Pythux</title><link href="http://remusao.github.com/" rel="alternate"></link><link href="http://remusao.github.com/feeds/python-pytest.atom.xml" rel="self"></link><id>http://remusao.github.com/</id><updated>2014-11-26T15:00:00+01:00</updated><entry><title>"[py.test] Paramaterize tests with external data"</title><link href="http://remusao.github.com/pytest-paramaterize-tests-with-external-data.html" rel="alternate"></link><updated>2014-11-26T15:00:00+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2014-11-26:pytest-paramaterize-tests-with-external-data.html</id><summary type="html">&lt;p&gt;I recently began to make heavy use of &lt;a href="http://pytest.org/latest/"&gt;py.test&lt;/a&gt;
+in my day-to-day Python development. It's a wonderful tool, but I won't
+explain to you every features it provides and why it's awesome. Instead,
+I'll explain how I managed to cleanly externalize the data used for my
+tests in external files (that can be of any format: yaml, json, python
+files). The idea here is to &lt;em&gt;separate the code that performs the test&lt;/em&gt;,
+from the &lt;em&gt;input data used to perform the test&lt;/em&gt;.&lt;/p&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;&lt;code&gt;test_feature.py&lt;/code&gt;
+{% highlight python %}
+def test_my_feature(one_example):
+    assert one_example&lt;/p&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;&lt;code&gt;data_feature.yaml&lt;/code&gt;
+{% highlight yaml %}
+tests:
+    test1:
+        ...
+    test2:
+        ...&lt;/p&gt;
+&lt;h2&gt;First solution: yield&lt;/h2&gt;
+&lt;p&gt;The first solution would be to use &lt;code&gt;yield&lt;/code&gt; to generate tests, as it's supported
+by &lt;code&gt;py.test&lt;/code&gt; (as long as you don't want to use fixtures in your test function...).&lt;/p&gt;
+&lt;p&gt;{% highlight python %}
+def check(example):
+    # perform your test&lt;/p&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;def test_feature():
+    for test in generate_tests():
+        yield check, test&lt;/p&gt;
+&lt;p&gt;Here, &lt;code&gt;py.test&lt;/code&gt; will understand that &lt;code&gt;test_feature&lt;/code&gt; will yield several tests and that
+the &lt;code&gt;check&lt;/code&gt; function must be used to perform the test, so it is almost equivalent to do:&lt;/p&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;{% highlight python %}
+def test_feature():
+    for test in generate_tests():
+        check(test)&lt;/p&gt;
+&lt;p&gt;Except that in this last snippet of code, the tests will stop as soon as one fails.
+With the &lt;code&gt;yield&lt;/code&gt;-version, every tests will be ran even if some fail. This is useful
+if you have lot of tests, and you want to know which ones fail (not just the first one).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Problem&lt;/strong&gt;: if you want to use fixtures with your &lt;code&gt;test_feature&lt;/code&gt; functions, it breaks:&lt;/p&gt;
+&lt;p&gt;{% highlight python %}
+def check(example):
+    # perform your test&lt;/p&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;def test_feature(my_fixture):
+    for test in generate_tests():
+        yield check, test&lt;/p&gt;
+&lt;p&gt;This will tell you that &lt;code&gt;test_feature&lt;/code&gt; expects one argument but that none are provided.&lt;/p&gt;
+&lt;p&gt;End of the story...
+Wait, no, &lt;code&gt;py.test&lt;/code&gt; is awesome remember? So there must be a solution!&lt;/p&gt;
+&lt;h2&gt;Parametrization&lt;/h2&gt;
+&lt;p&gt;One of the cool features of &lt;code&gt;py.test&lt;/code&gt; is the ability to add parameters on our
+tests or fixtures, so that a test is ran once for each parameter (from &lt;a href="http://pytest.org/latest/parametrize.html"&gt;py.test doc&lt;/a&gt;):&lt;/p&gt;
+&lt;p&gt;{% highlight python %}&lt;/p&gt;
+&lt;h1&gt;content of test_expectation.py&lt;/h1&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;import pytest
+@pytest.mark.parametrize("input,expected", [
+    ("3+5", 8),
+    ("2+4", 6),
+    ("6*9", 42),
+])
+def test_eval(input, expected):
+    assert eval(input) == expected&lt;/p&gt;
+&lt;p&gt;{% highlight python %}
+$ py.test
+=========================== test session starts ============================
+platform linux -- Python 3.4.0 -- py-1.4.26 -- pytest-2.6.4
+collected 3 items&lt;/p&gt;
+&lt;p&gt;test_expectation.py ..F&lt;/p&gt;
+&lt;p&gt;================================= FAILURES =================================
+&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt; test_eval[6*9-42] &lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;_&lt;/p&gt;
+&lt;p&gt;input = '6*9', expected = 42&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;@pytest.mark.parametrize(&amp;quot;input,expected&amp;quot;, [
+    (&amp;quot;3+5&amp;quot;, 8),
+    (&amp;quot;2+4&amp;quot;, 6),
+    (&amp;quot;6*9&amp;quot;, 42),
+])
+def test_eval(input, expected):
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;  assert eval(input) == expected
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;E       assert 54 == 42
+E        +  where 54 = eval('6*9')&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;test_expectation.py:8: AssertionError
+==================== 1 failed, 2 passed in 0.01 seconds ====================&lt;/p&gt;
+&lt;p&gt;So here our &lt;code&gt;test_eval&lt;/code&gt; function has been called &lt;em&gt;three times&lt;/em&gt;. Once for each parameter.
+Great! But what if you want your parameters to come from another file, or from a function.
+In other words, what if you want to &lt;em&gt;dynamically parametrize&lt;/em&gt; your function?&lt;/p&gt;
+&lt;h2&gt;Hooks at the rescue&lt;/h2&gt;
+&lt;p&gt;&lt;a href="http://pytest.org/latest/plugins.html#well-specified-hooks"&gt;Hooks&lt;/a&gt; allow you to plug code into &lt;code&gt;py.test&lt;/code&gt; at diffent stages of the test run.
+The hook that can be useful for us is &lt;code&gt;pytest_generate_tests&lt;/code&gt; that will allow
+to generate several calls to the same test function, but with different arguments
+(from &lt;a href="http://pytest.org/latest/funcargs.html#basic-generated-test-example"&gt;py.test doc&lt;/a&gt;):&lt;/p&gt;
+&lt;p&gt;{% highlight python %}&lt;/p&gt;
+&lt;h1&gt;content of test_example.py&lt;/h1&gt;
+&lt;p&gt;def pytest_generate_tests(metafunc):
+    if "numiter" in metafunc.funcargnames:
+        metafunc.parametrize("numiter", range(10))&lt;/p&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;def test_func(numiter):
+    assert numiter &amp;lt; 9&lt;/p&gt;
+&lt;p&gt;{% highlight python %}
+$ py.test test_example.py
+=========================== test session starts ============================
+platform linux2 -- Python 2.7.1 -- pytest-2.2.4
+collecting ... collected 10 items&lt;/p&gt;
+&lt;p&gt;test_example.py .........F&lt;/p&gt;
+&lt;p&gt;================================= FAILURES =================================
+&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt; test&lt;/em&gt;func[9] &lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;_&lt;/em&gt;&lt;/strong&gt;_&lt;/p&gt;
+&lt;p&gt;numiter = 9&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;def test_func(numiter):
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;  assert numiter &amp;lt; 9
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;E       assert 9 &amp;lt; 9&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;test_example.py:6: AssertionError
+==================== 1 failed, 9 passed in 0.02 seconds ====================&lt;/p&gt;
+&lt;p&gt;Great, so the last things to do is:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Detect functions that make use of a fixture whose name starts with &lt;code&gt;data_&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Load the corresponding file or resource for the test source&lt;/li&gt;
+&lt;li&gt;Parametrize the function with each of the data&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;For example, here is what you can do:&lt;/p&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;{% highlight python %}
+def pytest_generate_tests(metafunc):
+    """ This allows us to load tests from external files by
+    parametrizing tests with each test case found in a data_X
+    file """
+    for fixture in metafunc.fixturenames:
+        if fixture.startswith('data_'):
+            # Load associated test data
+            tests = load_tests(fixture)
+            metafunc.parametrize(fixture, tests)&lt;/p&gt;
+&lt;p&gt;Here, the &lt;code&gt;load_tests&lt;/code&gt; function takes as argument the name of the fixture &lt;code&gt;data_X&lt;/code&gt;
+and will:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Load the corresponding file&lt;/li&gt;
+&lt;li&gt;Extract the different test-cases&lt;/li&gt;
+&lt;li&gt;Return a list of all the cases&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;For example, if your tests are stored in a Python file:&lt;/p&gt;
+&lt;p&gt;{% highlight python %}
+import importlib&lt;/p&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;def load_tests(name):
+    # Load module which contains test data
+    tests_module = importlib.import_module(name)
+    # Tests are to be found in the variable &lt;code&gt;tests&lt;/code&gt; of the module
+    for test in tests_module.tests.iteritems():
+        yield test&lt;/p&gt;
+&lt;p&gt;The data file (&lt;code&gt;data_my_feature.py&lt;/code&gt;) could look something like:&lt;/p&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;{% highlight python %}
+tests = [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+]&lt;/p&gt;
+&lt;p&gt;The test function will then be invoked for each case.&lt;/p&gt;
+&lt;p _="%" endhighlight="endhighlight"&gt;{% highlight python %}
+def test_feature(data_my_feature):
+    assert data_my_feature &amp;lt; 5&lt;/p&gt;
+&lt;h2&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Here it's not really interesting, but the benefits are numerous:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;storing your data in a database, or in yaml/json formatted files, or whatever&lt;/li&gt;
+&lt;li&gt;other people can add tests to your project, without having to dig into the code&lt;/li&gt;
+&lt;li&gt;provide a common format to define tests in external files&lt;/li&gt;
+&lt;li&gt;reuse the same data for several tests&lt;/li&gt;
+&lt;li&gt;the data is not hard-coded in Python source-code&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;TL;DR: &lt;code&gt;py.test&lt;/code&gt; is awesome. Make tests. Get data for your tests from external sources.&lt;/p&gt;</summary></entry></feed>

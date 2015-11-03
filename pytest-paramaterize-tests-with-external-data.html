@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+    <title>Pythux | "[py.test] Paramaterize tests with external data"</title>
+    <link rel="shortcut icon" type="image/png" href="http://remusao.github.com/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="http://remusao.github.com/favicon.ico">
+    <link href="http://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Full Atom Feed" />
+    <link href="http://remusao.github.com/feeds/python-pytest.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Categories Atom Feed" />
+    <link rel="stylesheet" href="http://remusao.github.com/theme/css/screen.css" type="text/css" />
+    <link rel="stylesheet" href="http://remusao.github.com/theme/css/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="http://remusao.github.com/theme/css/print.css" type="text/css" media="print" />
+    <meta name="generator" content="Pelican" />
+
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="http://remusao.github.com">Home</a></li>
+                <li><a href="http://remusao.github.com/pages/about.html">About</a></li>
+                <li><a href="https://github.com/remusao">GitHub</a></li>
+            </ul>
+        </nav>
+        <div class="header_box">
+            <h1><a href="http://remusao.github.com">Pythux</a></h1>
+        </div>
+    </header>
+    <div id="wrapper">
+        <div id="content">            <h4 class="date">Nov 26, 2014</h4>
+
+            <article class="post">
+                <h2 class="title">
+                    <a href="http://remusao.github.com/pytest-paramaterize-tests-with-external-data.html" rel="bookmark" title="Permanent Link to &quot;"[py.test] Paramaterize tests with external data"&quot;">"[py.test] Paramaterize tests with external data"</a>
+                </h2>
+
+                <p>I recently began to make heavy use of <a href="http://pytest.org/latest/">py.test</a>
+in my day-to-day Python development. It's a wonderful tool, but I won't
+explain to you every features it provides and why it's awesome. Instead,
+I'll explain how I managed to cleanly externalize the data used for my
+tests in external files (that can be of any format: yaml, json, python
+files). The idea here is to <em>separate the code that performs the test</em>,
+from the <em>input data used to perform the test</em>.</p>
+<p _="%" endhighlight="endhighlight"><code>test_feature.py</code>
+{% highlight python %}
+def test_my_feature(one_example):
+    assert one_example</p>
+<p _="%" endhighlight="endhighlight"><code>data_feature.yaml</code>
+{% highlight yaml %}
+tests:
+    test1:
+        ...
+    test2:
+        ...</p>
+<h2>First solution: yield</h2>
+<p>The first solution would be to use <code>yield</code> to generate tests, as it's supported
+by <code>py.test</code> (as long as you don't want to use fixtures in your test function...).</p>
+<p>{% highlight python %}
+def check(example):
+    # perform your test</p>
+<p _="%" endhighlight="endhighlight">def test_feature():
+    for test in generate_tests():
+        yield check, test</p>
+<p>Here, <code>py.test</code> will understand that <code>test_feature</code> will yield several tests and that
+the <code>check</code> function must be used to perform the test, so it is almost equivalent to do:</p>
+<p _="%" endhighlight="endhighlight">{% highlight python %}
+def test_feature():
+    for test in generate_tests():
+        check(test)</p>
+<p>Except that in this last snippet of code, the tests will stop as soon as one fails.
+With the <code>yield</code>-version, every tests will be ran even if some fail. This is useful
+if you have lot of tests, and you want to know which ones fail (not just the first one).</p>
+<p><strong>Problem</strong>: if you want to use fixtures with your <code>test_feature</code> functions, it breaks:</p>
+<p>{% highlight python %}
+def check(example):
+    # perform your test</p>
+<p _="%" endhighlight="endhighlight">def test_feature(my_fixture):
+    for test in generate_tests():
+        yield check, test</p>
+<p>This will tell you that <code>test_feature</code> expects one argument but that none are provided.</p>
+<p>End of the story...
+Wait, no, <code>py.test</code> is awesome remember? So there must be a solution!</p>
+<h2>Parametrization</h2>
+<p>One of the cool features of <code>py.test</code> is the ability to add parameters on our
+tests or fixtures, so that a test is ran once for each parameter (from <a href="http://pytest.org/latest/parametrize.html">py.test doc</a>):</p>
+<p>{% highlight python %}</p>
+<h1>content of test_expectation.py</h1>
+<p _="%" endhighlight="endhighlight">import pytest
+@pytest.mark.parametrize("input,expected", [
+    ("3+5", 8),
+    ("2+4", 6),
+    ("6*9", 42),
+])
+def test_eval(input, expected):
+    assert eval(input) == expected</p>
+<p>{% highlight python %}
+$ py.test
+=========================== test session starts ============================
+platform linux -- Python 3.4.0 -- py-1.4.26 -- pytest-2.6.4
+collected 3 items</p>
+<p>test_expectation.py ..F</p>
+<p>================================= FAILURES =================================
+<strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong> test_eval[6*9-42] <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>_</p>
+<p>input = '6*9', expected = 42</p>
+<div class="highlight"><pre>@pytest.mark.parametrize(&quot;input,expected&quot;, [
+    (&quot;3+5&quot;, 8),
+    (&quot;2+4&quot;, 6),
+    (&quot;6*9&quot;, 42),
+])
+def test_eval(input, expected):
+</pre></div>
+
+
+<blockquote>
+<div class="highlight"><pre>  assert eval(input) == expected
+</pre></div>
+
+
+<p>E       assert 54 == 42
+E        +  where 54 = eval('6*9')</p>
+</blockquote>
+<p _="%" endhighlight="endhighlight">test_expectation.py:8: AssertionError
+==================== 1 failed, 2 passed in 0.01 seconds ====================</p>
+<p>So here our <code>test_eval</code> function has been called <em>three times</em>. Once for each parameter.
+Great! But what if you want your parameters to come from another file, or from a function.
+In other words, what if you want to <em>dynamically parametrize</em> your function?</p>
+<h2>Hooks at the rescue</h2>
+<p><a href="http://pytest.org/latest/plugins.html#well-specified-hooks">Hooks</a> allow you to plug code into <code>py.test</code> at diffent stages of the test run.
+The hook that can be useful for us is <code>pytest_generate_tests</code> that will allow
+to generate several calls to the same test function, but with different arguments
+(from <a href="http://pytest.org/latest/funcargs.html#basic-generated-test-example">py.test doc</a>):</p>
+<p>{% highlight python %}</p>
+<h1>content of test_example.py</h1>
+<p>def pytest_generate_tests(metafunc):
+    if "numiter" in metafunc.funcargnames:
+        metafunc.parametrize("numiter", range(10))</p>
+<p _="%" endhighlight="endhighlight">def test_func(numiter):
+    assert numiter &lt; 9</p>
+<p>{% highlight python %}
+$ py.test test_example.py
+=========================== test session starts ============================
+platform linux2 -- Python 2.7.1 -- pytest-2.2.4
+collecting ... collected 10 items</p>
+<p>test_example.py .........F</p>
+<p>================================= FAILURES =================================
+<strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em> test</em>func[9] </strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>_</p>
+<p>numiter = 9</p>
+<div class="highlight"><pre>def test_func(numiter):
+</pre></div>
+
+
+<blockquote>
+<div class="highlight"><pre>  assert numiter &lt; 9
+</pre></div>
+
+
+<p>E       assert 9 &lt; 9</p>
+</blockquote>
+<p _="%" endhighlight="endhighlight">test_example.py:6: AssertionError
+==================== 1 failed, 9 passed in 0.02 seconds ====================</p>
+<p>Great, so the last things to do is:</p>
+<ol>
+<li>Detect functions that make use of a fixture whose name starts with <code>data_</code></li>
+<li>Load the corresponding file or resource for the test source</li>
+<li>Parametrize the function with each of the data</li>
+</ol>
+<p>For example, here is what you can do:</p>
+<p _="%" endhighlight="endhighlight">{% highlight python %}
+def pytest_generate_tests(metafunc):
+    """ This allows us to load tests from external files by
+    parametrizing tests with each test case found in a data_X
+    file """
+    for fixture in metafunc.fixturenames:
+        if fixture.startswith('data_'):
+            # Load associated test data
+            tests = load_tests(fixture)
+            metafunc.parametrize(fixture, tests)</p>
+<p>Here, the <code>load_tests</code> function takes as argument the name of the fixture <code>data_X</code>
+and will:</p>
+<ol>
+<li>Load the corresponding file</li>
+<li>Extract the different test-cases</li>
+<li>Return a list of all the cases</li>
+</ol>
+<p>For example, if your tests are stored in a Python file:</p>
+<p>{% highlight python %}
+import importlib</p>
+<p _="%" endhighlight="endhighlight">def load_tests(name):
+    # Load module which contains test data
+    tests_module = importlib.import_module(name)
+    # Tests are to be found in the variable <code>tests</code> of the module
+    for test in tests_module.tests.iteritems():
+        yield test</p>
+<p>The data file (<code>data_my_feature.py</code>) could look something like:</p>
+<p _="%" endhighlight="endhighlight">{% highlight python %}
+tests = [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+]</p>
+<p>The test function will then be invoked for each case.</p>
+<p _="%" endhighlight="endhighlight">{% highlight python %}
+def test_feature(data_my_feature):
+    assert data_my_feature &lt; 5</p>
+<h2>Conclusion</h2>
+<p>Here it's not really interesting, but the benefits are numerous:</p>
+<ol>
+<li>storing your data in a database, or in yaml/json formatted files, or whatever</li>
+<li>other people can add tests to your project, without having to dig into the code</li>
+<li>provide a common format to define tests in external files</li>
+<li>reuse the same data for several tests</li>
+<li>the data is not hard-coded in Python source-code</li>
+</ol>
+<p>TL;DR: <code>py.test</code> is awesome. Make tests. Get data for your tests from external sources.</p>
+                <div class="clear"></div>
+
+                <div class="info">
+                    <a href="http://remusao.github.com/pytest-paramaterize-tests-with-external-data.html">posted at 15:00</a>
+                    &nbsp;&middot;&nbsp;<a href="http://remusao.github.com/category/python-pytest.html" rel="tag">python pytest</a>
+                </div>
+            </article>
+            <div class="clear"></div>
+            <footer>
+                <p>
+                <a href="https://github.com/jody-frankowski/blue-penguin">Blue Penguin</a> Theme
+                &middot;
+                Powered by <a href="http://getpelican.com">Pelican</a>
+                &middot;
+                <a href="http://remusao.github.com/feeds/all.atom.xml" rel="alternate">Atom Feed</a>
+            </footer>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+    try {
+        var pageTracker = _gat._getTracker("UA-57162019-1 ");
+    pageTracker._trackPageview();
+    } catch(err) {}</script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Pythux | articles in the "Julia" category</title>
+    <link rel="shortcut icon" type="image/png" href="http://remusao.github.com/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="http://remusao.github.com/favicon.ico">
+    <link href="http://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Full Atom Feed" />
+    <link href="http://remusao.github.com/feeds/julia.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Categories Atom Feed" />
+    <link rel="stylesheet" href="http://remusao.github.com/theme/css/screen.css" type="text/css" />
+    <link rel="stylesheet" href="http://remusao.github.com/theme/css/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="http://remusao.github.com/theme/css/print.css" type="text/css" media="print" />
+    <meta name="generator" content="Pelican" />
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+
+                <li class="ephemeral selected"><a href="http://remusao.github.com/category/julia.html">Julia</a></li>
+                <li><a href="http://remusao.github.com">Home</a></li>
+                <li><a href="http://remusao.github.com/pages/about.html">About</a></li>
+                <li><a href="https://github.com/remusao">GitHub</a></li>
+            </ul>
+        </nav>
+        <div class="header_box">
+            <h1><a href="http://remusao.github.com">Pythux</a></h1>
+        </div>
+    </header>
+    <div id="wrapper">
+        <div id="content">            <h4 class="date">Jul 22, 2014</h4>
+
+            <article class="post">
+                <h2 class="title">
+                    <a href="http://remusao.github.com/decompressing-bzipped-files-with-julia.html" rel="bookmark" title="Permanent Link to &quot;"Decompressing BZipped files with Julia"&quot;">"Decompressing BZipped files with Julia"</a>
+                </h2>
+
+                <p>I'm currently working with Wikipedia dumps, and to save space, it's a good thing to make scripts that read directly content from (and write results to) BZipped files.</p>
+<h2>Setup</h2>
+<p>Tests where executed on my personnal computer:</p>
+<ul>
+<li>i7</li>
+<li>16GB of ram</li>
+</ul>
+<p>On a small wikipedia dump of <em>407MB</em>. All timings are in <em>seconds</em>.</p>
+<h2>bzcat alone</h2>
+<p>To have a point of comparison, I decompressed the dump using <em>bzcat</em> alone. The timing is <em>64 seconds</em>.</p>
+<div class="highlight"><pre><span class="nv">$ </span><span class="nb">time </span>1&gt;/dev/null bzcat wikidump.xml.bz2
+</pre></div>
+
+
+<h2>Using Python</h2>
+<p>It's easy enough with <em>Python</em> thanks to the <code>bz2</code> module that allows to transparently manipulate a compressed file as if it were a normal opened file. Before jumping to Julia, let see how it is done in Python:</p>
+<p>{% highlight python %}
+from <strong>future</strong> import print_function
+import sys
+import bz2</p>
+<p>def main():
+    in_stream = bz2.BZ2File(sys.argv[1])
+    for line in in_stream:
+        print(line)
+    in_stream.close()</p>
+<p _="%" endhighlight="endhighlight">if <strong>name</strong> == "<strong>main</strong>":
+    main()</p>
+<p>Nothing easier, it takes <em>85 seconds</em> to run.</p>
+<h2>What about Julia?</h2>
+<p>Since I really love <em>Julia</em> language, I was tempted to do the same with Julia. Here are the differents solutions that I went through, with their respective timings.</p>
+<h3>Using bz2 Python module through PyCall</h3>
+<p>The first naive option is to use the original module from Python. It's easy enough using the <code>PyCall</code> module. We can install it like so:</p>
+<p _="%" endhighlight="endhighlight">{% highlight julia %}
+julia&gt; Pkg.add("PyCall")
+julia&gt; Pkg.update()</p>
+<p>The script:</p>
+<p>{% highlight julia %}
+using PyCall
+@pyimport bz2</p>
+<p _="%" endhighlight="endhighlight">function main()
+    in_stream = bz2.BZ2File(ARGS[1])
+    for line in in_stream
+        println(line)
+    end
+    in_stream<a href="">:close</a>
+end</p>
+<p>But then we hit the wall... timing is: <em>1352 seconds</em>. This is likely due to the conversion between <em>Python</em> and <em>Julia</em> datatypes. So not the best option for a data-intensive usage.</p>
+<h3>Piping result of bzcat to Julia</h3>
+<p _="%" endhighlight="endhighlight">The second option that came to my mind was: "why not using <em>bzcat</em>?". It's easy enough, we just have to read from <code>STDIN</code>:
+{% highlight julia %}
+function main()
+    for line in eachline(STDIN)
+        print(line)
+    end
+end</p>
+<p _="%" endhighlight="endhighlight">Here is the invocation:
+{% highlight sh %}
+$ bzcat wikidump.xml.bz2 | julia bz2_bench.jl</p>
+<p>Timing is now a more reasonable <em>72 seconds</em>. So that is less than the <em>Python</em> version shown above. But this is not satisfactory enough. Why not use the wonderful capabilities of <em>Julia</em> to run external commands an pipe results?</p>
+<h3>Invoking bzcat from Julia</h3>
+<p _="%" endhighlight="endhighlight">It is easy to invoke commands from inside <em>Julia</em> using backquotes: <code>run(`cmd`)</code> and <code>|&gt;</code> to pipe between commands and streams. Let's do it:
+{% highlight julia %}
+function main()
+    file = ARGS[1]
+    run(<code>bzcat $(file)</code> |&gt; STDOUT)
+end</p>
+<p>The script is equivalent to: <code>bzcat wikidump.xml.bz2</code>, but it's quite impressive to see how easy it is to do this inside a Julia script.
+This time is about <em>66 seconds</em>, more or less the same than with the external piping from <code>bzcat</code>.</p>
+<p _="%" endhighlight="endhighlight">But it would be useful to get lines of contents from the stream, like it was in the original <em>Python</em> script. For this task, <em>Julia</em> standard library offers a multitudes of handy functions. The one we will use is <code>readsfrom</code> that returns two things: stdout of the given process, and the process itself. Here it is in action:
+{% highlight julia %}
+function main()
+    file = ARGS[1]
+    stdout, p = readsfrom(<code>bzcat $(file)</code>)
+    for line in eachline(stdout)
+        print(line)
+    end
+end</p>
+<p>Timing is now about <em>74 seconds</em>, this is <em>10 seconds</em> faster than the first <em>Python</em> version. But we don't rely on a module. Instead, we make use of the ability to play with command invocations, stream pipings, and the like that <em>Julia</em> allows.</p>
+<h2>Timings</h2>
+<p><img alt="Bench" src="{{" title="filename }}/images/bz2-julia-bench.png" /></p>
+<p>Timings are relatively close since the big work is done in the decompression, that's why there isn't much difference between <em>Julia</em> and <em>Python</em>.</p>
+<h2>Conclusion</h2>
+<p>I was first tempted to implement a <em>Julia</em> wrapper over <em>bzlib</em>, but what for? When it's so easy to invoke external commands and manipulate their input and output streams.
+<em>Julia</em> is a young language, but it's so flexible and extensible, that often I forget about it!</p>
+                <div class="clear"></div>
+
+                <div class="info">
+                    <a href="http://remusao.github.com/decompressing-bzipped-files-with-julia.html">posted at 22:33</a>
+                    &nbsp;&middot;&nbsp;<a href="http://remusao.github.com/category/julia.html" rel="tag">Julia</a>
+                </div>
+            </article>            <h4 class="date">Feb 13, 2014</h4>
+
+            <article class="post">
+                <h2 class="title">
+                    <a href="http://remusao.github.com/julia.html" rel="bookmark" title="Permanent Link to &quot;"Julia"&quot;">"Julia"</a>
+                </h2>
+
+                <p>Aujourd'hui j'aimerais parler d'un langage de programmation que je viens de
+découvrir : <strong>Julia</strong>. Je vais donc vous le présenter succinctement et donner
+mon ressenti après quelques jours d'utilisation.</p>
+<h2>Qu'est-ce que c'est ?</h2>
+<p>Le Julia est un langage :</p>
+<ul>
+<li><strong>Haut niveau</strong> (<em>garbage collection</em>)</li>
+<li><strong>Dynamique</strong></li>
+<li><strong>Interprété</strong></li>
+<li><strong>Disposant d'un compilateur JIT</strong> (<em>backend LLVM</em>)</li>
+<li><strong>Performant</strong></li>
+</ul>
+<p>Il s'agit d'un subtile mélange entre les langage <strong>Python</strong>, <strong>R</strong> et
+<strong>Matlab</strong>. Python pour une partie de la syntaxe et les constructions élégantes du
+langage (<em>list comprehension</em>, boucles <em>for</em>, etc.), Matlab et R pour l'intégration
+des vecteurs, matrices et opérations associées dans la bibliothèque standard,
+en faisant un langage particulièrement adapté pour l'analyse numérique, le
+<em>machine learning</em>, et toute autre application nécessitant des outils d'algèbre
+linéaire, et des fonctions mathématiques diverses.</p>
+<p>{% highlight julia %}</p>
+<h1>Dynamic type</h1>
+<p>a = 42          # Int
+a = "toto"      # String
+a = [1, 2, 3]   # Vector
+a = [1 2 3]     # 1x3 Matrix
+a = [1:3]       # same 1x3 Matrix</p>
+<p>for e in a
+    println(test)
+end</p>
+<h1>Output</h1>
+<h1>1</h1>
+<h1>2</h1>
+<h1>3</h1>
+<p>{% endhighlight %}</p>
+<p>Julia dispose également des atouts suivants :</p>
+<ul>
+<li><strong>Multi-méthode</strong> permettant un dispatch dynamique en fonction du type des arguments passés aux fonctions</li>
+</ul>
+<p>{% highlight julia %}</p>
+<h1>Method declaration</h1>
+<h1>foo is a function taking one argument of any type</h1>
+<p>function foo(bar)
+    println(bar)
+    end</p>
+<h1>Shorter function declaration</h1>
+<p>baz(x) = println(x)</p>
+<h1>Multimethod</h1>
+<h1>Takes an argument of type Int (Haskelish syntax)</h1>
+<p>myprint(x::Int) = println("Int")</p>
+<h1>Takes an argument of type Matrix (of any type)</h1>
+<p>myprint(x::Matrix) = println("Matrix")</p>
+<h1>Take an argument of type Matrix of Float64</h1>
+<p>myprint(x::Matrix{Float64}) = println("Matrix of Float64")</p>
+<p _="%" endhighlight="endhighlight">myprint(42)         # First one is called
+myprint([1 2 3])    # Second one is called
+myprint([0.5 0.42]) # Third one is called</p>
+<ul>
+<li>Un système de <strong>template</strong> pour créer du code générique</li>
+</ul>
+<p>{% highlight julia %}
+function printtype(m)
+    println("Any type")
+end</p>
+<h1>Takes argument of type T, in julia a type</h1>
+<h1>is an object, so you can print it</h1>
+<p>function printtype{T}(m::T)
+    println(T)
+end</p>
+<h1>Takes an argument of type T, with the constraint FloatingPoint</h1>
+<p>function printtype{T &lt;: FloatingPoint}(m::T)
+    println("Floating Point")
+end</p>
+<p _="%" endhighlight="endhighlight">printtype(42)
+printtype(0.42)</p>
+<ul>
+<li>Des <strong>expressions rationnelles</strong> compatible Perl</li>
+<li>Des <strong>macros</strong> à la Lisp grâce à l’auto-iconicité du langage</li>
+<li>La possibilité de lancer des <strong>commandes Shell</strong>, de piper, etc.</li>
+<li><strong>Interfaçage avec le C</strong> sans bindings (simple utilisation de ccall comme une fonction)</li>
+</ul>
+<p>{% highlight julia %}</p>
+<h1>Simple function that wrap a call to libc clock function</h1>
+<p>clock() = ccall( (:clock, "libc"), Int32, ())</p>
+<p>t = clock()</p>
+<h1>Do some stuff</h1>
+<p _="%" endhighlight="endhighlight">println(clock() - t)</p>
+<ul>
+<li><strong>Duck-typing</strong> mais possibilité de spécifier les types</li>
+<li><strong>Parallélisation</strong> du code aisée en multithreading sur une unique machine ou sur un cluster (tasks, parallel for, etc.)</li>
+</ul>
+<p>Cet article n'a pas pour but d'être exhaustif à propos de Julia, pour plus
+d'exemples je vous redirige vers le documentation officielle du langage :
+<a href="http://docs.julialang.org/en/latest/manual/">Documentation</a>.</p>
+<h2>Pourquoi l'utiliser ?</h2>
+<p>Julia est un langage jeune mais dynamique. Il est pour le moment peu utilisé
+mais il gagne à être connu. Grâce aux avantages cités ci-dessus, c'est un
+parfait candidat pour tous les projets nécessitant :</p>
+<ul>
+<li><strong>Performances</strong> (compilation JIT),</li>
+<li><strong>Bibliothèque standard</strong> très riche : <em>algèbre linéaire</em>, <em>fonctions mathématiques</em> diverses, etc.</li>
+<li>Rassemble les qualités de plusieurs langages bien connus (Matlab, R, Python)</li>
+</ul>
+<p>Il est très aisé de convertir du code Matlab ou Python vers du Julia car les
+différences sont assez peu nombreuses. La manipulation de matrice est très
+similaire à celle de Matlab.</p>
+<h2>Défauts de jeunesse</h2>
+<p>Néanmoins le langage dispose de quelques points faibles, sans doute liés à sa
+jeunesse et au manque de projets l'utilisant. Mis à part la richesse de sa
+bibliothèque standard, les packages sont encore relativement peu nombreux et
+donc selon le projet vous ne trouverez pas forcément les outils nécessaires
+(par exemple pour du traitement d'image, il n'existe pas de binding ou
+d'équivalent à OpenCV, des packages existent mais les fonctionnalités sont
+encore limitées).</p>
+<p>L'interpréteur met du temps à se lancer. Selon les ressources de la machine
+que vous utilisez cela peut aller de 2-3 secondes à 30 secondes (sur mon
+ordinateur portable peu puissant). Bien sûr il est possible de lancer une
+session de l'interpréteur une bonne fois pour toutes et de travailler depuis
+le prompt, mais cela reste gênant quand vous voulez simplement lancer un
+script. Néanmoins, cela devrait s'améliorer à l'avenir, espérons-le, le
+langage est encore en phase de release candidate.</p>
+<p>Voilà pour cette rapide introduction du langage Julia, cet article n'avait
+pas pour but d'être un tutoriel, mais juste de faire connaitre un projet qui
+semble avoir de l'avenir. Il est possible que j'utilise ce langage dans mes
+prochains articles pour les démonstrations de code.</p>
+<p>Quelques ressources supplémentaires :</p>
+<ul>
+<li><a href="https://github.com/JuliaLang/julia">Github</a></li>
+<li><a href="http://docs.julialang.org/en/latest/manual/">Documentation</a></li>
+<li><a href="http://julialang.org/">Site officiel</a></li>
+</ul>
+                <div class="clear"></div>
+
+                <div class="info">
+                    <a href="http://remusao.github.com/julia.html">posted at 22:53</a>
+                    &nbsp;&middot;&nbsp;<a href="http://remusao.github.com/category/julia.html" rel="tag">julia</a>
+                </div>
+            </article>
+
+            <div class="clear"></div>
+            <footer>
+                <p>
+                <a href="https://github.com/jody-frankowski/blue-penguin">Blue Penguin</a> Theme
+                &middot;
+                Powered by <a href="http://getpelican.com">Pelican</a>
+                &middot;
+                <a href="http://remusao.github.com/feeds/all.atom.xml" rel="alternate">Atom Feed</a>
+            </footer>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+    try {
+        var pageTracker = _gat._getTracker("UA-57162019-1 ");
+    pageTracker._trackPageview();
+    } catch(err) {}</script>
+</body>
+</html>

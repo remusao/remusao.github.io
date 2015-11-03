@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+    <title>Pythux | "Installation de Julia"</title>
+    <link rel="shortcut icon" type="image/png" href="http://remusao.github.com/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="http://remusao.github.com/favicon.ico">
+    <link href="http://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Full Atom Feed" />
+    <link href="http://remusao.github.com/feeds/misc.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Categories Atom Feed" />
+    <link rel="stylesheet" href="http://remusao.github.com/theme/css/screen.css" type="text/css" />
+    <link rel="stylesheet" href="http://remusao.github.com/theme/css/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="http://remusao.github.com/theme/css/print.css" type="text/css" media="print" />
+    <meta name="generator" content="Pelican" />
+
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="http://remusao.github.com">Home</a></li>
+                <li><a href="http://remusao.github.com/pages/about.html">About</a></li>
+                <li><a href="https://github.com/remusao">GitHub</a></li>
+            </ul>
+        </nav>
+        <div class="header_box">
+            <h1><a href="http://remusao.github.com">Pythux</a></h1>
+        </div>
+    </header>
+    <div id="wrapper">
+        <div id="content">            <h4 class="date">Feb 14, 2014</h4>
+
+            <article class="post">
+                <h2 class="title">
+                    <a href="http://remusao.github.com/installation-de-julia.html" rel="bookmark" title="Permanent Link to &quot;"Installation de Julia"&quot;">"Installation de Julia"</a>
+                </h2>
+
+                <p>Suite au premier article sur le langage Julia, voici un guide rapide de mise en
+route de votre environnement pour utiliser le langage. Voici le plan :</p>
+<ul>
+<li>Compiler Julia depuis les sources</li>
+<li>Coloration syntaxique et indentation sous vim</li>
+<li>Environnement IJulia (équivalement de IPython)</li>
+</ul>
+<h2>Compilation</h2>
+<p>Tout d'abord compiler l'interpréteur Julia depuis les sources. Notez que si
+votre distribution <em>linux</em> dispose d'un paquet Julia dans ses dépôt ou si vous
+ne désirez pas compiler Julia depuis les sources, il est toujours possible
+d'installer une version pré-compilée depuis la
+<a href="http://julialang.org/downloads/">page téléchargement</a> du site officiel.</p>
+<p>Commençons tout d'abord par récupérer les sources de Julia :</p>
+<p _="%" endhighlight="endhighlight">{% highlight sh %}
+git clone https://github.com/JuliaLang/julia.git
+cd julia</p>
+<p>Ensuite, vérifiez que les dépendances suivantes sont bien disponibles sur votre
+système :
+<em> <a href="http://www.gnu.org/software/make/">GNU make</a>
+</em> <a href="http://gcc.gnu.org/">gcc et g++</a> (ou <a href="http://clang.llvm.org/">Clang</a>)
+<em> <a href="http://gcc.gnu.org/">gfortran</a>
+</em> <a href="http://git-scm.com/">git</a>
+<em> <a href="http://www.perl.org/">perl</a>
+</em> <a href="http://www.gnu.org/software/wget/">wget</a> (ou <a href="http://curl.haxx.se/">curl</a>, ou <em>fetch</em>)
+<em> <a href="http://www.gnu.org/software/m4/">m4</a>
+</em> <a href="http://www.gnu.org/software/patch/">patch</a></p>
+<p>Si tout est installé, lancez la compilation (notez que <strong>N</strong> est à remplacer
+par le nombre de cœurs dont dispose votre processeur, cela peut grandement
+améliorer le temps de compilation) :</p>
+<p _="%" endhighlight="endhighlight">{% highlight sh %}
+make -j N</p>
+<p>La première fois que vous compilez Julia, des dépendances vont être téléchargées
+puis compilées, c'est pourquoi cela peut prendre un certains temps. La
+compilation peut consommer jusqu'à <em>700 Mo de mémoire</em> et <em>1.5 Go d'espace
+disque</em>. Les éventuelles compilations futures seront moins gourmandes.</p>
+<p>Une fois la compilation terminée, vous disposez d'un
+<a href="http://en.wikipedia.org/wiki/Symbolic_link">lien symbolique</a> vers l'exécutable
+Julia. Afin qu'il soit accessible depuis n'importe quel endroit, vous pouvez
+le rajouter à votre <code>PATH</code> (vous pouvez le rajouter dans le fichier de
+configuration de votre Shell favori en remplaçant <code>$(pwd)</code> par le chemin
+absolu vers le dossier julia dans lequel se trouve le lien symbolique) :</p>
+<p _="%" endhighlight="endhighlight">{% highlight sh %}
+export PATH="$(pwd):$PATH"</p>
+<p>Julia intègre tout le nécessaire pour gérer l'installation, la mise à jour
+et la création de packages. Ces fonctionnalités sont disponibles depuis un
+prompt Julia. La première fois que vous lancez Julia, il est nécessaire
+d'initialiser les packages :</p>
+<p _="%" endhighlight="endhighlight">{% highlight sh %}
+$ julia
+julia&gt; Pkg.update()</p>
+<p>Les principales commandes disponibles sont :</p>
+<ul>
+<li><strong>Pkg.update()</strong> : met à jours les différents packages installés</li>
+<li><strong>Pkg.add("Package")</strong> : installe le package <em>Package</em> ainsi que ses éventuelles dépendances</li>
+<li><strong>Pkg.rm("Package")</strong> : supprime le package <em>Package</em></li>
+</ul>
+<h2>Coloration syntaxique et indentation</h2>
+<p>Cette explication n'est valide que pour les utilisateurs de l'éditeur
+<a href="http://www.vim.org/">Vim</a>. Voici des explications différentes en
+fonction de la manière dont vous gérez les extensions.</p>
+<h4>Pathogen</h4>
+<p _="%" endhighlight="endhighlight">{% highlight sh %}
+cd ~/.vim
+mkdir -p bundle &amp;&amp; cd bundle
+git clone git://github.com/JuliaLang/julia-vim.git</p>
+<h4>Vundle</h4>
+<p _="%" endhighlight="endhighlight">Ajouter un nouveau Bundle à votre <code>.vimrc</code> :
+{% highlight sh %}
+Bundle 'JuliaLang/julia-vim'</p>
+<p _="%" endhighlight="endhighlight">Lancer Vim et mettre à jour vos Bundle :
+{% highlight sh %}
+:BundleInstall!</p>
+<h4>Manuel</h4>
+<p _="%" endhighlight="endhighlight">{% highlight sh %}
+git clone git://github.com/JuliaLang/julia-vim.git
+cd julia-vim
+cp -R * ~/.vim</p>
+<p>Voilà qui devrait vous fournir la coloration syntaxique ainsi que l'indentation
+pour les fichier dont l'extension et <code>.jl</code>.</p>
+<h2>IJulia</h2>
+<p>IJulia permet d'interfacer Julia à l'environnement de développement interactif
+<strong>IPython</strong>. Cela permet notamment d'utiliser le mode <strong>notebook</strong>, qui combine
+du code, du texte, et des contenus multimédias (dessin, etc.) dans un même
+environnement. Pour l'installer vous aurez besoin d'avoir sur votre système :</p>
+<ul>
+<li><strong>IPython</strong> en version <code>1.0</code> ou supérieure</li>
+<li><a href="http://jinja.pocoo.org/docs/">Jinja2</a>, <a href="http://www.tornadoweb.org/en/stable/">Tornado</a>, et <a href="https://github.com/zeromq/pyzmq">pyzmq</a></li>
+</ul>
+<p>Ensuite il faut installer le package IJulia depuis un prompt julia :</p>
+<p _="%" endhighlight="endhighlight">{% highlight julia %}
+$ julia
+julia&gt; Pkg.add("IJulia")
+julia&gt; Pkg.update()</p>
+<p>Une fois ceci fait, vous n'avez plus qu'à lancer IPython de la manière
+suivante. Pour le mode notebook :</p>
+<p _="%" endhighlight="endhighlight">{% highlight sh %}
+ipython notebook --profile julia</p>
+<p>Et voilà, le tour est joué. C'est tout pour cet article. Vous devriez
+normalement avoir de quoi démarrer à programmer en Julia et exécuter
+vos programmes. A bientôt pour de nouvelles aventures !</p>
+<p>Afin de réaliser cet articles je me suis inspiré de la documentation présente
+sur les dépôts officiels de <a href="https://github.com/JuliaLang/julia">Julia</a>,
+<a href="https://github.com/JuliaLang/julia-vim">julia-vim</a> et
+<a href="https://github.com/JuliaLang/IJulia.jl">IJulia</a>.</p>
+                <div class="clear"></div>
+
+                <div class="info">
+                    <a href="http://remusao.github.com/installation-de-julia.html">posted at 22:00</a>
+                </div>
+            </article>
+            <div class="clear"></div>
+            <footer>
+                <p>
+                <a href="https://github.com/jody-frankowski/blue-penguin">Blue Penguin</a> Theme
+                &middot;
+                Powered by <a href="http://getpelican.com">Pelican</a>
+                &middot;
+                <a href="http://remusao.github.com/feeds/all.atom.xml" rel="alternate">Atom Feed</a>
+            </footer>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+    try {
+        var pageTracker = _gat._getTracker("UA-57162019-1 ");
+    pageTracker._trackPageview();
+    } catch(err) {}</script>
+</body>
+</html>
