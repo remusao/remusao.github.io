@@ -39,86 +39,99 @@ I'll explain how I managed to cleanly externalize the data used for my
 tests in external files (that can be of any format: yaml, json, python
 files). The idea here is to <em>separate the code that performs the test</em>,
 from the <em>input data used to perform the test</em>.</p>
-<p _="%" endhighlight="endhighlight"><code>test_feature.py</code>
-{% highlight python %}
-def test_my_feature(one_example):
-    assert one_example</p>
-<p _="%" endhighlight="endhighlight"><code>data_feature.yaml</code>
-{% highlight yaml %}
-tests:
-    test1:
-        ...
-    test2:
-        ...</p>
+<p><code>test_feature.py</code></p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">test_my_feature</span><span class="p">(</span><span class="n">one_example</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">one_example</span>
+</pre></div>
+
+
+<p><code>data_feature.yaml</code></p>
+<div class="highlight"><pre><span class="l-Scalar-Plain">tests</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">test1</span><span class="p-Indicator">:</span>
+        <span class="l-Scalar-Plain">...</span>
+    <span class="l-Scalar-Plain">test2</span><span class="p-Indicator">:</span>
+        <span class="l-Scalar-Plain">...</span>
+</pre></div>
+
+
 <h2>First solution: yield</h2>
 <p>The first solution would be to use <code>yield</code> to generate tests, as it's supported
 by <code>py.test</code> (as long as you don't want to use fixtures in your test function...).</p>
-<p>{% highlight python %}
-def check(example):
-    # perform your test</p>
-<p _="%" endhighlight="endhighlight">def test_feature():
-    for test in generate_tests():
-        yield check, test</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">example</span><span class="p">):</span>
+    <span class="c"># perform your test</span>
+
+<span class="k">def</span> <span class="nf">test_feature</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">generate_tests</span><span class="p">():</span>
+        <span class="k">yield</span> <span class="n">check</span><span class="p">,</span> <span class="n">test</span>
+</pre></div>
+
+
 <p>Here, <code>py.test</code> will understand that <code>test_feature</code> will yield several tests and that
 the <code>check</code> function must be used to perform the test, so it is almost equivalent to do:</p>
-<p _="%" endhighlight="endhighlight">{% highlight python %}
-def test_feature():
-    for test in generate_tests():
-        check(test)</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">test_feature</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">generate_tests</span><span class="p">():</span>
+        <span class="n">check</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+</pre></div>
+
+
 <p>Except that in this last snippet of code, the tests will stop as soon as one fails.
 With the <code>yield</code>-version, every tests will be ran even if some fail. This is useful
 if you have lot of tests, and you want to know which ones fail (not just the first one).</p>
 <p><strong>Problem</strong>: if you want to use fixtures with your <code>test_feature</code> functions, it breaks:</p>
-<p>{% highlight python %}
-def check(example):
-    # perform your test</p>
-<p _="%" endhighlight="endhighlight">def test_feature(my_fixture):
-    for test in generate_tests():
-        yield check, test</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">example</span><span class="p">):</span>
+    <span class="c"># perform your test</span>
+
+<span class="k">def</span> <span class="nf">test_feature</span><span class="p">(</span><span class="n">my_fixture</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">generate_tests</span><span class="p">():</span>
+        <span class="k">yield</span> <span class="n">check</span><span class="p">,</span> <span class="n">test</span>
+</pre></div>
+
+
 <p>This will tell you that <code>test_feature</code> expects one argument but that none are provided.</p>
 <p>End of the story...
 Wait, no, <code>py.test</code> is awesome remember? So there must be a solution!</p>
 <h2>Parametrization</h2>
 <p>One of the cool features of <code>py.test</code> is the ability to add parameters on our
 tests or fixtures, so that a test is ran once for each parameter (from <a href="http://pytest.org/latest/parametrize.html">py.test doc</a>):</p>
-<p>{% highlight python %}</p>
-<h1>content of test_expectation.py</h1>
-<p _="%" endhighlight="endhighlight">import pytest
-@pytest.mark.parametrize("input,expected", [
-    ("3+5", 8),
-    ("2+4", 6),
-    ("6*9", 42),
-])
-def test_eval(input, expected):
-    assert eval(input) == expected</p>
-<p>{% highlight python %}
-$ py.test
-=========================== test session starts ============================
-platform linux -- Python 3.4.0 -- py-1.4.26 -- pytest-2.6.4
-collected 3 items</p>
-<p>test_expectation.py ..F</p>
-<p>================================= FAILURES =================================
-<strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong> test_eval[6*9-42] <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>_</p>
-<p>input = '6*9', expected = 42</p>
-<div class="highlight"><pre>@pytest.mark.parametrize(&quot;input,expected&quot;, [
-    (&quot;3+5&quot;, 8),
-    (&quot;2+4&quot;, 6),
-    (&quot;6*9&quot;, 42),
-])
-def test_eval(input, expected):
+<div class="highlight"><pre><span class="c"># content of test_expectation.py</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s">&quot;input,expected&quot;</span><span class="p">,</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s">&quot;3+5&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;2+4&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;6*9&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">),</span>
+<span class="p">])</span>
+<span class="k">def</span> <span class="nf">test_eval</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected</span>
 </pre></div>
 
 
-<blockquote>
-<div class="highlight"><pre>  assert eval(input) == expected
+<div class="highlight"><pre><span class="err">$</span> <span class="n">py</span><span class="o">.</span><span class="n">test</span>
+<span class="o">===========================</span> <span class="n">test</span> <span class="n">session</span> <span class="n">starts</span> <span class="o">============================</span>
+<span class="n">platform</span> <span class="n">linux</span> <span class="o">--</span> <span class="n">Python</span> <span class="mf">3.4</span><span class="o">.</span><span class="mi">0</span> <span class="o">--</span> <span class="n">py</span><span class="o">-</span><span class="mf">1.4</span><span class="o">.</span><span class="mi">26</span> <span class="o">--</span> <span class="n">pytest</span><span class="o">-</span><span class="mf">2.6</span><span class="o">.</span><span class="mi">4</span>
+<span class="n">collected</span> <span class="mi">3</span> <span class="n">items</span>
+
+<span class="n">test_expectation</span><span class="o">.</span><span class="n">py</span> <span class="o">..</span><span class="n">F</span>
+
+<span class="o">=================================</span> <span class="n">FAILURES</span> <span class="o">=================================</span>
+<span class="n">____________________________</span> <span class="n">test_eval</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="mi">9</span><span class="o">-</span><span class="mi">42</span><span class="p">]</span> <span class="n">_____________________________</span>
+
+<span class="nb">input</span> <span class="o">=</span> <span class="s">&#39;6*9&#39;</span><span class="p">,</span> <span class="n">expected</span> <span class="o">=</span> <span class="mi">42</span>
+
+    <span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s">&quot;input,expected&quot;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&quot;3+5&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&quot;2+4&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&quot;6*9&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">),</span>
+    <span class="p">])</span>
+    <span class="k">def</span> <span class="nf">test_eval</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+<span class="o">&gt;</span>       <span class="k">assert</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected</span>
+<span class="n">E</span>       <span class="k">assert</span> <span class="mi">54</span> <span class="o">==</span> <span class="mi">42</span>
+<span class="n">E</span>        <span class="o">+</span>  <span class="n">where</span> <span class="mi">54</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&#39;6*9&#39;</span><span class="p">)</span>
+
+<span class="n">test_expectation</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span> <span class="ne">AssertionError</span>
+<span class="o">====================</span> <span class="mi">1</span> <span class="n">failed</span><span class="p">,</span> <span class="mi">2</span> <span class="n">passed</span> <span class="ow">in</span> <span class="mf">0.01</span> <span class="n">seconds</span> <span class="o">====================</span>
 </pre></div>
 
 
-<p>E       assert 54 == 42
-E        +  where 54 = eval('6*9')</p>
-</blockquote>
-<p _="%" endhighlight="endhighlight">test_expectation.py:8: AssertionError
-==================== 1 failed, 2 passed in 0.01 seconds ====================</p>
 <p>So here our <code>test_eval</code> function has been called <em>three times</em>. Once for each parameter.
 Great! But what if you want your parameters to come from another file, or from a function.
 In other words, what if you want to <em>dynamically parametrize</em> your function?</p>
@@ -127,35 +140,37 @@ In other words, what if you want to <em>dynamically parametrize</em> your functi
 The hook that can be useful for us is <code>pytest_generate_tests</code> that will allow
 to generate several calls to the same test function, but with different arguments
 (from <a href="http://pytest.org/latest/funcargs.html#basic-generated-test-example">py.test doc</a>):</p>
-<p>{% highlight python %}</p>
-<h1>content of test_example.py</h1>
-<p>def pytest_generate_tests(metafunc):
-    if "numiter" in metafunc.funcargnames:
-        metafunc.parametrize("numiter", range(10))</p>
-<p _="%" endhighlight="endhighlight">def test_func(numiter):
-    assert numiter &lt; 9</p>
-<p>{% highlight python %}
-$ py.test test_example.py
-=========================== test session starts ============================
-platform linux2 -- Python 2.7.1 -- pytest-2.2.4
-collecting ... collected 10 items</p>
-<p>test_example.py .........F</p>
-<p>================================= FAILURES =================================
-<strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em> test</em>func[9] </strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>_</p>
-<p>numiter = 9</p>
-<div class="highlight"><pre>def test_func(numiter):
+<div class="highlight"><pre><span class="c"># content of test_example.py</span>
+<span class="k">def</span> <span class="nf">pytest_generate_tests</span><span class="p">(</span><span class="n">metafunc</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s">&quot;numiter&quot;</span> <span class="ow">in</span> <span class="n">metafunc</span><span class="o">.</span><span class="n">funcargnames</span><span class="p">:</span>
+        <span class="n">metafunc</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s">&quot;numiter&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">test_func</span><span class="p">(</span><span class="n">numiter</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">numiter</span> <span class="o">&lt;</span> <span class="mi">9</span>
 </pre></div>
 
 
-<blockquote>
-<div class="highlight"><pre>  assert numiter &lt; 9
+<div class="highlight"><pre><span class="err">$</span> <span class="n">py</span><span class="o">.</span><span class="n">test</span> <span class="n">test_example</span><span class="o">.</span><span class="n">py</span>
+<span class="o">===========================</span> <span class="n">test</span> <span class="n">session</span> <span class="n">starts</span> <span class="o">============================</span>
+<span class="n">platform</span> <span class="n">linux2</span> <span class="o">--</span> <span class="n">Python</span> <span class="mf">2.7</span><span class="o">.</span><span class="mi">1</span> <span class="o">--</span> <span class="n">pytest</span><span class="o">-</span><span class="mf">2.2</span><span class="o">.</span><span class="mi">4</span>
+<span class="n">collecting</span> <span class="o">...</span> <span class="n">collected</span> <span class="mi">10</span> <span class="n">items</span>
+
+<span class="n">test_example</span><span class="o">.</span><span class="n">py</span> <span class="o">.........</span><span class="n">F</span>
+
+<span class="o">=================================</span> <span class="n">FAILURES</span> <span class="o">=================================</span>
+<span class="n">_______________________________</span> <span class="n">test_func</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="n">_______________________________</span>
+
+<span class="n">numiter</span> <span class="o">=</span> <span class="mi">9</span>
+
+    <span class="k">def</span> <span class="nf">test_func</span><span class="p">(</span><span class="n">numiter</span><span class="p">):</span>
+<span class="o">&gt;</span>       <span class="k">assert</span> <span class="n">numiter</span> <span class="o">&lt;</span> <span class="mi">9</span>
+<span class="n">E</span>       <span class="k">assert</span> <span class="mi">9</span> <span class="o">&lt;</span> <span class="mi">9</span>
+
+<span class="n">test_example</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">6</span><span class="p">:</span> <span class="ne">AssertionError</span>
+<span class="o">====================</span> <span class="mi">1</span> <span class="n">failed</span><span class="p">,</span> <span class="mi">9</span> <span class="n">passed</span> <span class="ow">in</span> <span class="mf">0.02</span> <span class="n">seconds</span> <span class="o">====================</span>
 </pre></div>
 
 
-<p>E       assert 9 &lt; 9</p>
-</blockquote>
-<p _="%" endhighlight="endhighlight">test_example.py:6: AssertionError
-==================== 1 failed, 9 passed in 0.02 seconds ====================</p>
 <p>Great, so the last things to do is:</p>
 <ol>
 <li>Detect functions that make use of a fixture whose name starts with <code>data_</code></li>
@@ -163,16 +178,18 @@ collecting ... collected 10 items</p>
 <li>Parametrize the function with each of the data</li>
 </ol>
 <p>For example, here is what you can do:</p>
-<p _="%" endhighlight="endhighlight">{% highlight python %}
-def pytest_generate_tests(metafunc):
-    """ This allows us to load tests from external files by
-    parametrizing tests with each test case found in a data_X
-    file """
-    for fixture in metafunc.fixturenames:
-        if fixture.startswith('data_'):
-            # Load associated test data
-            tests = load_tests(fixture)
-            metafunc.parametrize(fixture, tests)</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">pytest_generate_tests</span><span class="p">(</span><span class="n">metafunc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This allows us to load tests from external files by</span>
+<span class="sd">    parametrizing tests with each test case found in a data_X</span>
+<span class="sd">    file &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">fixture</span> <span class="ow">in</span> <span class="n">metafunc</span><span class="o">.</span><span class="n">fixturenames</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fixture</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;data_&#39;</span><span class="p">):</span>
+            <span class="c"># Load associated test data</span>
+            <span class="n">tests</span> <span class="o">=</span> <span class="n">load_tests</span><span class="p">(</span><span class="n">fixture</span><span class="p">)</span>
+            <span class="n">metafunc</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="n">fixture</span><span class="p">,</span> <span class="n">tests</span><span class="p">)</span>
+</pre></div>
+
+
 <p>Here, the <code>load_tests</code> function takes as argument the name of the fixture <code>data_X</code>
 and will:</p>
 <ol>
@@ -181,31 +198,39 @@ and will:</p>
 <li>Return a list of all the cases</li>
 </ol>
 <p>For example, if your tests are stored in a Python file:</p>
-<p>{% highlight python %}
-import importlib</p>
-<p _="%" endhighlight="endhighlight">def load_tests(name):
-    # Load module which contains test data
-    tests_module = importlib.import_module(name)
-    # Tests are to be found in the variable <code>tests</code> of the module
-    for test in tests_module.tests.iteritems():
-        yield test</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">importlib</span>
+
+
+<span class="k">def</span> <span class="nf">load_tests</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="c"># Load module which contains test data</span>
+    <span class="n">tests_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="c"># Tests are to be found in the variable `tests` of the module</span>
+    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests_module</span><span class="o">.</span><span class="n">tests</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">yield</span> <span class="n">test</span>
+</pre></div>
+
+
 <p>The data file (<code>data_my_feature.py</code>) could look something like:</p>
-<p _="%" endhighlight="endhighlight">{% highlight python %}
-tests = [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9
-]</p>
+<div class="highlight"><pre><span class="n">tests</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="mi">1</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">9</span>
+<span class="p">]</span>
+</pre></div>
+
+
 <p>The test function will then be invoked for each case.</p>
-<p _="%" endhighlight="endhighlight">{% highlight python %}
-def test_feature(data_my_feature):
-    assert data_my_feature &lt; 5</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">test_feature</span><span class="p">(</span><span class="n">data_my_feature</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">data_my_feature</span> <span class="o">&lt;</span> <span class="mi">5</span>
+</pre></div>
+
+
 <h2>Conclusion</h2>
 <p>Here it's not really interesting, but the benefits are numerous:</p>
 <ol>
@@ -245,67 +270,88 @@ def test_feature(data_my_feature):
 
 <h2>Using Python</h2>
 <p>It's easy enough with <em>Python</em> thanks to the <code>bz2</code> module that allows to transparently manipulate a compressed file as if it were a normal opened file. Before jumping to Julia, let see how it is done in Python:</p>
-<p>{% highlight python %}
-from <strong>future</strong> import print_function
-import sys
-import bz2</p>
-<p>def main():
-    in_stream = bz2.BZ2File(sys.argv[1])
-    for line in in_stream:
-        print(line)
-    in_stream.close()</p>
-<p _="%" endhighlight="endhighlight">if <strong>name</strong> == "<strong>main</strong>":
-    main()</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">bz2</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">in_stream</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">in_stream</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">in_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+
 <p>Nothing easier, it takes <em>85 seconds</em> to run.</p>
 <h2>What about Julia?</h2>
 <p>Since I really love <em>Julia</em> language, I was tempted to do the same with Julia. Here are the differents solutions that I went through, with their respective timings.</p>
 <h3>Using bz2 Python module through PyCall</h3>
 <p>The first naive option is to use the original module from Python. It's easy enough using the <code>PyCall</code> module. We can install it like so:</p>
-<p _="%" endhighlight="endhighlight">{% highlight julia %}
-julia&gt; Pkg.add("PyCall")
-julia&gt; Pkg.update()</p>
+<div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;PyCall&quot;</span><span class="p">)</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</pre></div>
+
+
 <p>The script:</p>
-<p>{% highlight julia %}
-using PyCall
-@pyimport bz2</p>
-<p _="%" endhighlight="endhighlight">function main()
-    in_stream = bz2.BZ2File(ARGS[1])
-    for line in in_stream
-        println(line)
-    end
-    in_stream<a href="">:close</a>
-end</p>
+<div class="highlight"><pre><span class="k">using</span> <span class="n">PyCall</span>
+<span class="p">@</span><span class="n">pyimport</span> <span class="n">bz2</span>
+
+<span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
+    <span class="n">in_stream</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">ARGS</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">in_stream</span>
+        <span class="n">println</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">in_stream</span><span class="p">[:</span><span class="n">close</span><span class="p">]()</span>
+<span class="k">end</span>
+</pre></div>
+
+
 <p>But then we hit the wall... timing is: <em>1352 seconds</em>. This is likely due to the conversion between <em>Python</em> and <em>Julia</em> datatypes. So not the best option for a data-intensive usage.</p>
 <h3>Piping result of bzcat to Julia</h3>
-<p _="%" endhighlight="endhighlight">The second option that came to my mind was: "why not using <em>bzcat</em>?". It's easy enough, we just have to read from <code>STDIN</code>:
-{% highlight julia %}
-function main()
-    for line in eachline(STDIN)
-        print(line)
-    end
-end</p>
-<p _="%" endhighlight="endhighlight">Here is the invocation:
+<p>The second option that came to my mind was: "why not using <em>bzcat</em>?". It's easy enough, we just have to read from <code>STDIN</code>:</p>
+<div class="highlight"><pre><span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">eachline</span><span class="p">(</span><span class="n">STDIN</span><span class="p">)</span>
+        <span class="n">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<p>Here is the invocation:
 {% highlight sh %}
 $ bzcat wikidump.xml.bz2 | julia bz2_bench.jl</p>
-<p>Timing is now a more reasonable <em>72 seconds</em>. So that is less than the <em>Python</em> version shown above. But this is not satisfactory enough. Why not use the wonderful capabilities of <em>Julia</em> to run external commands an pipe results?</p>
-<h3>Invoking bzcat from Julia</h3>
-<p _="%" endhighlight="endhighlight">It is easy to invoke commands from inside <em>Julia</em> using backquotes: <code>run(`cmd`)</code> and <code>|&gt;</code> to pipe between commands and streams. Let's do it:
-{% highlight julia %}
-function main()
-    file = ARGS[1]
-    run(<code>bzcat $(file)</code> |&gt; STDOUT)
-end</p>
+<div class="highlight"><pre><span class="nx">Timing</span> <span class="nx">is</span> <span class="nx">now</span> <span class="nx">a</span> <span class="nx">more</span> <span class="nx">reasonable</span> <span class="o">*</span><span class="mi">72</span> <span class="nx">seconds</span><span class="o">*</span><span class="p">.</span> <span class="nx">So</span> <span class="nx">that</span> <span class="nx">is</span> <span class="nx">less</span> <span class="nx">than</span> <span class="nx">the</span> <span class="o">*</span><span class="nx">Python</span><span class="o">*</span> <span class="nx">version</span> <span class="nx">shown</span> <span class="nx">above</span><span class="p">.</span> <span class="nx">But</span> <span class="k">this</span> <span class="nx">is</span> <span class="nx">not</span> <span class="nx">satisfactory</span> <span class="nx">enough</span><span class="p">.</span> <span class="nx">Why</span> <span class="nx">not</span> <span class="nx">use</span> <span class="nx">the</span> <span class="nx">wonderful</span> <span class="nx">capabilities</span> <span class="nx">of</span> <span class="o">*</span><span class="nx">Julia</span><span class="o">*</span> <span class="nx">to</span> <span class="nx">run</span> <span class="nx">external</span> <span class="nx">commands</span> <span class="nx">an</span> <span class="nx">pipe</span> <span class="nx">results</span><span class="o">?</span>
+
+
+<span class="err">###</span> <span class="nx">Invoking</span> <span class="nx">bzcat</span> <span class="nx">from</span> <span class="nx">Julia</span>
+
+<span class="nx">It</span> <span class="nx">is</span> <span class="nx">easy</span> <span class="nx">to</span> <span class="nx">invoke</span> <span class="nx">commands</span> <span class="nx">from</span> <span class="nx">inside</span> <span class="o">*</span><span class="nx">Julia</span><span class="o">*</span> <span class="nx">using</span> <span class="nx">backquotes</span><span class="o">:</span> <span class="err">``</span><span class="nx">run</span><span class="p">(</span><span class="err">`</span><span class="nx">cmd</span><span class="err">`</span><span class="p">)</span><span class="err">``</span> <span class="nx">and</span> <span class="err">`</span><span class="o">|&gt;</span><span class="err">`</span> <span class="nx">to</span> <span class="nx">pipe</span> <span class="nx">between</span> <span class="nx">commands</span> <span class="nx">and</span> <span class="nx">streams</span><span class="p">.</span> <span class="nx">Let</span><span class="err">&#39;</span><span class="nx">s</span> <span class="k">do</span> <span class="nx">it</span><span class="o">:</span>
+<span class="err">```</span><span class="nx">julia</span>
+<span class="kd">function</span> <span class="nx">main</span><span class="p">()</span>
+    <span class="nx">file</span> <span class="o">=</span> <span class="nx">ARGS</span><span class="cp">[</span><span class="mi">1</span><span class="cp">]</span>
+    <span class="nx">run</span><span class="p">(</span><span class="err">`</span><span class="nx">bzcat</span> <span class="nx">$</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span><span class="err">`</span> <span class="o">|&gt;</span> <span class="nx">STDOUT</span><span class="p">)</span>
+<span class="nx">end</span>
+</pre></div>
+
+
 <p>The script is equivalent to: <code>bzcat wikidump.xml.bz2</code>, but it's quite impressive to see how easy it is to do this inside a Julia script.
 This time is about <em>66 seconds</em>, more or less the same than with the external piping from <code>bzcat</code>.</p>
-<p _="%" endhighlight="endhighlight">But it would be useful to get lines of contents from the stream, like it was in the original <em>Python</em> script. For this task, <em>Julia</em> standard library offers a multitudes of handy functions. The one we will use is <code>readsfrom</code> that returns two things: stdout of the given process, and the process itself. Here it is in action:
-{% highlight julia %}
-function main()
-    file = ARGS[1]
-    stdout, p = readsfrom(<code>bzcat $(file)</code>)
-    for line in eachline(stdout)
-        print(line)
-    end
-end</p>
+<p>But it would be useful to get lines of contents from the stream, like it was in the original <em>Python</em> script. For this task, <em>Julia</em> standard library offers a multitudes of handy functions. The one we will use is <code>readsfrom</code> that returns two things: stdout of the given process, and the process itself. Here it is in action:</p>
+<div class="highlight"><pre><span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">ARGS</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">stdout</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">readsfrom</span><span class="p">(</span><span class="sb">`bzcat $(file)`</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">eachline</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="n">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+
 <p>Timing is now about <em>74 seconds</em>, this is <em>10 seconds</em> faster than the first <em>Python</em> version. But we don't rely on a module. Instead, we make use of the ability to play with command invocations, stream pipings, and the like that <em>Julia</em> allows.</p>
 <h2>Timings</h2>
 <p><img alt="Bench" src="{{" title="filename }}/images/bz2-julia-bench.png" /></p>
@@ -404,9 +450,11 @@ ne désirez pas compiler Julia depuis les sources, il est toujours possible
 d'installer une version pré-compilée depuis la
 <a href="http://julialang.org/downloads/">page téléchargement</a> du site officiel.</p>
 <p>Commençons tout d'abord par récupérer les sources de Julia :</p>
-<p _="%" endhighlight="endhighlight">{% highlight sh %}
-git clone https://github.com/JuliaLang/julia.git
-cd julia</p>
+<div class="highlight"><pre>git clone https://github.com/JuliaLang/julia.git
+<span class="nb">cd </span>julia
+</pre></div>
+
+
 <p>Ensuite, vérifiez que les dépendances suivantes sont bien disponibles sur votre
 système :
 <em> <a href="http://www.gnu.org/software/make/">GNU make</a>
@@ -420,8 +468,10 @@ système :
 <p>Si tout est installé, lancez la compilation (notez que <strong>N</strong> est à remplacer
 par le nombre de cœurs dont dispose votre processeur, cela peut grandement
 améliorer le temps de compilation) :</p>
-<p _="%" endhighlight="endhighlight">{% highlight sh %}
-make -j N</p>
+<div class="highlight"><pre>make -j N
+</pre></div>
+
+
 <p>La première fois que vous compilez Julia, des dépendances vont être téléchargées
 puis compilées, c'est pourquoi cela peut prendre un certains temps. La
 compilation peut consommer jusqu'à <em>700 Mo de mémoire</em> et <em>1.5 Go d'espace
@@ -432,15 +482,19 @@ Julia. Afin qu'il soit accessible depuis n'importe quel endroit, vous pouvez
 le rajouter à votre <code>PATH</code> (vous pouvez le rajouter dans le fichier de
 configuration de votre Shell favori en remplaçant <code>$(pwd)</code> par le chemin
 absolu vers le dossier julia dans lequel se trouve le lien symbolique) :</p>
-<p _="%" endhighlight="endhighlight">{% highlight sh %}
-export PATH="$(pwd):$PATH"</p>
+<div class="highlight"><pre><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
+</pre></div>
+
+
 <p>Julia intègre tout le nécessaire pour gérer l'installation, la mise à jour
 et la création de packages. Ces fonctionnalités sont disponibles depuis un
 prompt Julia. La première fois que vous lancez Julia, il est nécessaire
 d'initialiser les packages :</p>
-<p _="%" endhighlight="endhighlight">{% highlight sh %}
-$ julia
-julia&gt; Pkg.update()</p>
+<div class="highlight"><pre><span class="nv">$ </span>julia
+julia&gt; Pkg.update<span class="o">()</span>
+</pre></div>
+
+
 <p>Les principales commandes disponibles sont :</p>
 <ul>
 <li><strong>Pkg.update()</strong> : met à jours les différents packages installés</li>
@@ -452,22 +506,30 @@ julia&gt; Pkg.update()</p>
 <a href="http://www.vim.org/">Vim</a>. Voici des explications différentes en
 fonction de la manière dont vous gérez les extensions.</p>
 <h4>Pathogen</h4>
-<p _="%" endhighlight="endhighlight">{% highlight sh %}
-cd ~/.vim
-mkdir -p bundle &amp;&amp; cd bundle
-git clone git://github.com/JuliaLang/julia-vim.git</p>
-<h4>Vundle</h4>
-<p _="%" endhighlight="endhighlight">Ajouter un nouveau Bundle à votre <code>.vimrc</code> :
-{% highlight sh %}
-Bundle 'JuliaLang/julia-vim'</p>
-<p _="%" endhighlight="endhighlight">Lancer Vim et mettre à jour vos Bundle :
-{% highlight sh %}
-:BundleInstall!</p>
-<h4>Manuel</h4>
-<p _="%" endhighlight="endhighlight">{% highlight sh %}
+<div class="highlight"><pre><span class="nb">cd</span> ~/.vim
+mkdir -p bundle <span class="o">&amp;&amp;</span> <span class="nb">cd </span>bundle
 git clone git://github.com/JuliaLang/julia-vim.git
-cd julia-vim
-cp -R * ~/.vim</p>
+</pre></div>
+
+
+<h4>Vundle</h4>
+<p>Ajouter un nouveau Bundle à votre <code>.vimrc</code> :</p>
+<div class="highlight"><pre>Bundle <span class="s1">&#39;JuliaLang/julia-vim&#39;</span>
+</pre></div>
+
+
+<p>Lancer Vim et mettre à jour vos Bundle :</p>
+<div class="highlight"><pre>:BundleInstall!
+</pre></div>
+
+
+<h4>Manuel</h4>
+<div class="highlight"><pre>git clone git://github.com/JuliaLang/julia-vim.git
+<span class="nb">cd </span>julia-vim
+cp -R * ~/.vim
+</pre></div>
+
+
 <p>Voilà qui devrait vous fournir la coloration syntaxique ainsi que l'indentation
 pour les fichier dont l'extension et <code>.jl</code>.</p>
 <h2>IJulia</h2>
@@ -480,14 +542,18 @@ environnement. Pour l'installer vous aurez besoin d'avoir sur votre système :</
 <li><a href="http://jinja.pocoo.org/docs/">Jinja2</a>, <a href="http://www.tornadoweb.org/en/stable/">Tornado</a>, et <a href="https://github.com/zeromq/pyzmq">pyzmq</a></li>
 </ul>
 <p>Ensuite il faut installer le package IJulia depuis un prompt julia :</p>
-<p _="%" endhighlight="endhighlight">{% highlight julia %}
-$ julia
-julia&gt; Pkg.add("IJulia")
-julia&gt; Pkg.update()</p>
+<div class="highlight"><pre><span class="o">$</span> <span class="n">julia</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;IJulia&quot;</span><span class="p">)</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</pre></div>
+
+
 <p>Une fois ceci fait, vous n'avez plus qu'à lancer IPython de la manière
 suivante. Pour le mode notebook :</p>
-<p _="%" endhighlight="endhighlight">{% highlight sh %}
-ipython notebook --profile julia</p>
+<div class="highlight"><pre>ipython notebook --profile julia
+</pre></div>
+
+
 <p>Et voilà, le tour est joué. C'est tout pour cet article. Vous devriez
 normalement avoir de quoi démarrer à programmer en Julia et exécuter
 vos programmes. A bientôt pour de nouvelles aventures !</p>
@@ -526,73 +592,91 @@ des vecteurs, matrices et opérations associées dans la bibliothèque standard,
 en faisant un langage particulièrement adapté pour l'analyse numérique, le
 <em>machine learning</em>, et toute autre application nécessitant des outils d'algèbre
 linéaire, et des fonctions mathématiques diverses.</p>
-<p>{% highlight julia %}</p>
-<h1>Dynamic type</h1>
-<p>a = 42          # Int
-a = "toto"      # String
-a = [1, 2, 3]   # Vector
-a = [1 2 3]     # 1x3 Matrix
-a = [1:3]       # same 1x3 Matrix</p>
-<p>for e in a
-    println(test)
-end</p>
-<h1>Output</h1>
-<h1>1</h1>
-<h1>2</h1>
-<h1>3</h1>
-<p>{% endhighlight %}</p>
+<div class="highlight"><pre><span class="c"># Dynamic type</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mi">42</span>          <span class="c"># Int</span>
+<span class="n">a</span> <span class="o">=</span> <span class="s">&quot;toto&quot;</span>      <span class="c"># String</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>   <span class="c"># Vector</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">]</span>     <span class="c"># 1x3 Matrix</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>       <span class="c"># same 1x3 Matrix</span>
+
+<span class="k">for</span> <span class="n">e</span> <span class="k">in</span> <span class="n">a</span>
+    <span class="n">println</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c"># Output</span>
+<span class="c"># 1</span>
+<span class="c"># 2</span>
+<span class="c"># 3</span>
+</pre></div>
+
+
 <p>Julia dispose également des atouts suivants :</p>
 <ul>
 <li><strong>Multi-méthode</strong> permettant un dispatch dynamique en fonction du type des arguments passés aux fonctions</li>
 </ul>
-<p>{% highlight julia %}</p>
-<h1>Method declaration</h1>
-<h1>foo is a function taking one argument of any type</h1>
-<p>function foo(bar)
-    println(bar)
-    end</p>
-<h1>Shorter function declaration</h1>
-<p>baz(x) = println(x)</p>
-<h1>Multimethod</h1>
-<h1>Takes an argument of type Int (Haskelish syntax)</h1>
-<p>myprint(x::Int) = println("Int")</p>
-<h1>Takes an argument of type Matrix (of any type)</h1>
-<p>myprint(x::Matrix) = println("Matrix")</p>
-<h1>Take an argument of type Matrix of Float64</h1>
-<p>myprint(x::Matrix{Float64}) = println("Matrix of Float64")</p>
-<p _="%" endhighlight="endhighlight">myprint(42)         # First one is called
-myprint([1 2 3])    # Second one is called
-myprint([0.5 0.42]) # Third one is called</p>
+<div class="highlight"><pre><span class="c"># Method declaration</span>
+<span class="c"># foo is a function taking one argument of any type</span>
+<span class="k">function</span><span class="nf"> foo</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>
+    <span class="k">end</span>
+
+<span class="c"># Shorter function declaration</span>
+<span class="n">baz</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c"># Multimethod</span>
+<span class="c"># Takes an argument of type Int (Haskelish syntax)</span>
+<span class="n">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">::</span><span class="kt">Int</span><span class="p">)</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Int&quot;</span><span class="p">)</span>
+<span class="c"># Takes an argument of type Matrix (of any type)</span>
+<span class="n">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">::</span><span class="n">Matrix</span><span class="p">)</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Matrix&quot;</span><span class="p">)</span>
+<span class="c"># Take an argument of type Matrix of Float64</span>
+<span class="n">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">::</span><span class="n">Matrix</span><span class="p">{</span><span class="kt">Float64</span><span class="p">})</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Matrix of Float64&quot;</span><span class="p">)</span>
+
+<span class="n">myprint</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>         <span class="c"># First one is called</span>
+<span class="n">myprint</span><span class="p">([</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">])</span>    <span class="c"># Second one is called</span>
+<span class="n">myprint</span><span class="p">([</span><span class="mf">0.5</span> <span class="mf">0.42</span><span class="p">])</span> <span class="c"># Third one is called</span>
+</pre></div>
+
+
 <ul>
 <li>Un système de <strong>template</strong> pour créer du code générique</li>
 </ul>
-<p>{% highlight julia %}
-function printtype(m)
-    println("Any type")
-end</p>
-<h1>Takes argument of type T, in julia a type</h1>
-<h1>is an object, so you can print it</h1>
-<p>function printtype{T}(m::T)
-    println(T)
-end</p>
-<h1>Takes an argument of type T, with the constraint FloatingPoint</h1>
-<p>function printtype{T &lt;: FloatingPoint}(m::T)
-    println("Floating Point")
-end</p>
-<p _="%" endhighlight="endhighlight">printtype(42)
-printtype(0.42)</p>
+<div class="highlight"><pre><span class="k">function</span><span class="nf"> printtype</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Any type&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c"># Takes argument of type T, in julia a type</span>
+<span class="c"># is an object, so you can print it</span>
+<span class="k">function</span><span class="nf"> printtype</span><span class="p">{</span><span class="n">T</span><span class="p">}(</span><span class="n">m</span><span class="p">::</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c"># Takes an argument of type T, with the constraint FloatingPoint</span>
+<span class="k">function</span><span class="nf"> printtype</span><span class="p">{</span><span class="n">T</span> <span class="o">&lt;:</span> <span class="n">FloatingPoint</span><span class="p">}(</span><span class="n">m</span><span class="p">::</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Floating Point&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">printtype</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">printtype</span><span class="p">(</span><span class="mf">0.42</span><span class="p">)</span>
+</pre></div>
+
+
 <ul>
 <li>Des <strong>expressions rationnelles</strong> compatible Perl</li>
 <li>Des <strong>macros</strong> à la Lisp grâce à l’auto-iconicité du langage</li>
 <li>La possibilité de lancer des <strong>commandes Shell</strong>, de piper, etc.</li>
 <li><strong>Interfaçage avec le C</strong> sans bindings (simple utilisation de ccall comme une fonction)</li>
 </ul>
-<p>{% highlight julia %}</p>
-<h1>Simple function that wrap a call to libc clock function</h1>
-<p>clock() = ccall( (:clock, "libc"), Int32, ())</p>
-<p>t = clock()</p>
-<h1>Do some stuff</h1>
-<p _="%" endhighlight="endhighlight">println(clock() - t)</p>
+<div class="highlight"><pre><span class="c"># Simple function that wrap a call to libc clock function</span>
+<span class="n">clock</span><span class="p">()</span> <span class="o">=</span> <span class="k">ccall</span><span class="p">(</span> <span class="p">(:</span><span class="n">clock</span><span class="p">,</span> <span class="s">&quot;libc&quot;</span><span class="p">),</span> <span class="kt">Int32</span><span class="p">,</span> <span class="p">())</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">clock</span><span class="p">()</span>
+
+<span class="c"># Do some stuff</span>
+
+<span class="n">println</span><span class="p">(</span><span class="n">clock</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span>
+</pre></div>
+
+
 <ul>
 <li><strong>Duck-typing</strong> mais possibilité de spécifier les types</li>
 <li><strong>Parallélisation</strong> du code aisée en multithreading sur une unique machine ou sur un cluster (tasks, parallel for, etc.)</li>

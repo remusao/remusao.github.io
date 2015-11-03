@@ -15,67 +15,88 @@
 
 &lt;h2&gt;Using Python&lt;/h2&gt;
 &lt;p&gt;It's easy enough with &lt;em&gt;Python&lt;/em&gt; thanks to the &lt;code&gt;bz2&lt;/code&gt; module that allows to transparently manipulate a compressed file as if it were a normal opened file. Before jumping to Julia, let see how it is done in Python:&lt;/p&gt;
-&lt;p&gt;{% highlight python %}
-from &lt;strong&gt;future&lt;/strong&gt; import print_function
-import sys
-import bz2&lt;/p&gt;
-&lt;p&gt;def main():
-    in_stream = bz2.BZ2File(sys.argv[1])
-    for line in in_stream:
-        print(line)
-    in_stream.close()&lt;/p&gt;
-&lt;p _="%" endhighlight="endhighlight"&gt;if &lt;strong&gt;name&lt;/strong&gt; == "&lt;strong&gt;main&lt;/strong&gt;":
-    main()&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;__future__&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;print_function&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;bz2&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;in_stream&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;bz2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;BZ2File&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;in_stream&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;in_stream&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
 &lt;p&gt;Nothing easier, it takes &lt;em&gt;85 seconds&lt;/em&gt; to run.&lt;/p&gt;
 &lt;h2&gt;What about Julia?&lt;/h2&gt;
 &lt;p&gt;Since I really love &lt;em&gt;Julia&lt;/em&gt; language, I was tempted to do the same with Julia. Here are the differents solutions that I went through, with their respective timings.&lt;/p&gt;
 &lt;h3&gt;Using bz2 Python module through PyCall&lt;/h3&gt;
 &lt;p&gt;The first naive option is to use the original module from Python. It's easy enough using the &lt;code&gt;PyCall&lt;/code&gt; module. We can install it like so:&lt;/p&gt;
-&lt;p _="%" endhighlight="endhighlight"&gt;{% highlight julia %}
-julia&amp;gt; Pkg.add("PyCall")
-julia&amp;gt; Pkg.update()&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;julia&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;Pkg&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;PyCall&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;julia&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;Pkg&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;update&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
 &lt;p&gt;The script:&lt;/p&gt;
-&lt;p&gt;{% highlight julia %}
-using PyCall
-@pyimport bz2&lt;/p&gt;
-&lt;p _="%" endhighlight="endhighlight"&gt;function main()
-    in_stream = bz2.BZ2File(ARGS[1])
-    for line in in_stream
-        println(line)
-    end
-    in_stream&lt;a href=""&gt;:close&lt;/a&gt;
-end&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="n"&gt;PyCall&lt;/span&gt;
+&lt;span class="p"&gt;@&lt;/span&gt;&lt;span class="n"&gt;pyimport&lt;/span&gt; &lt;span class="n"&gt;bz2&lt;/span&gt;
+
+&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="nf"&gt; main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;in_stream&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;bz2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;BZ2File&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ARGS&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="n"&gt;in_stream&lt;/span&gt;
+        &lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+    &lt;span class="n"&gt;in_stream&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;]()&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
 &lt;p&gt;But then we hit the wall... timing is: &lt;em&gt;1352 seconds&lt;/em&gt;. This is likely due to the conversion between &lt;em&gt;Python&lt;/em&gt; and &lt;em&gt;Julia&lt;/em&gt; datatypes. So not the best option for a data-intensive usage.&lt;/p&gt;
 &lt;h3&gt;Piping result of bzcat to Julia&lt;/h3&gt;
-&lt;p _="%" endhighlight="endhighlight"&gt;The second option that came to my mind was: "why not using &lt;em&gt;bzcat&lt;/em&gt;?". It's easy enough, we just have to read from &lt;code&gt;STDIN&lt;/code&gt;:
-{% highlight julia %}
-function main()
-    for line in eachline(STDIN)
-        print(line)
-    end
-end&lt;/p&gt;
-&lt;p _="%" endhighlight="endhighlight"&gt;Here is the invocation:
+&lt;p&gt;The second option that came to my mind was: "why not using &lt;em&gt;bzcat&lt;/em&gt;?". It's easy enough, we just have to read from &lt;code&gt;STDIN&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="nf"&gt; main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="n"&gt;eachline&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;STDIN&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Here is the invocation:
 {% highlight sh %}
 $ bzcat wikidump.xml.bz2 | julia bz2_bench.jl&lt;/p&gt;
-&lt;p&gt;Timing is now a more reasonable &lt;em&gt;72 seconds&lt;/em&gt;. So that is less than the &lt;em&gt;Python&lt;/em&gt; version shown above. But this is not satisfactory enough. Why not use the wonderful capabilities of &lt;em&gt;Julia&lt;/em&gt; to run external commands an pipe results?&lt;/p&gt;
-&lt;h3&gt;Invoking bzcat from Julia&lt;/h3&gt;
-&lt;p _="%" endhighlight="endhighlight"&gt;It is easy to invoke commands from inside &lt;em&gt;Julia&lt;/em&gt; using backquotes: &lt;code&gt;run(`cmd`)&lt;/code&gt; and &lt;code&gt;|&amp;gt;&lt;/code&gt; to pipe between commands and streams. Let's do it:
-{% highlight julia %}
-function main()
-    file = ARGS[1]
-    run(&lt;code&gt;bzcat $(file)&lt;/code&gt; |&amp;gt; STDOUT)
-end&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nx"&gt;Timing&lt;/span&gt; &lt;span class="nx"&gt;is&lt;/span&gt; &lt;span class="nx"&gt;now&lt;/span&gt; &lt;span class="nx"&gt;a&lt;/span&gt; &lt;span class="nx"&gt;more&lt;/span&gt; &lt;span class="nx"&gt;reasonable&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="mi"&gt;72&lt;/span&gt; &lt;span class="nx"&gt;seconds&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;So&lt;/span&gt; &lt;span class="nx"&gt;that&lt;/span&gt; &lt;span class="nx"&gt;is&lt;/span&gt; &lt;span class="nx"&gt;less&lt;/span&gt; &lt;span class="nx"&gt;than&lt;/span&gt; &lt;span class="nx"&gt;the&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;Python&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="nx"&gt;version&lt;/span&gt; &lt;span class="nx"&gt;shown&lt;/span&gt; &lt;span class="nx"&gt;above&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;But&lt;/span&gt; &lt;span class="k"&gt;this&lt;/span&gt; &lt;span class="nx"&gt;is&lt;/span&gt; &lt;span class="nx"&gt;not&lt;/span&gt; &lt;span class="nx"&gt;satisfactory&lt;/span&gt; &lt;span class="nx"&gt;enough&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;Why&lt;/span&gt; &lt;span class="nx"&gt;not&lt;/span&gt; &lt;span class="nx"&gt;use&lt;/span&gt; &lt;span class="nx"&gt;the&lt;/span&gt; &lt;span class="nx"&gt;wonderful&lt;/span&gt; &lt;span class="nx"&gt;capabilities&lt;/span&gt; &lt;span class="nx"&gt;of&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;Julia&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="nx"&gt;to&lt;/span&gt; &lt;span class="nx"&gt;run&lt;/span&gt; &lt;span class="nx"&gt;external&lt;/span&gt; &lt;span class="nx"&gt;commands&lt;/span&gt; &lt;span class="nx"&gt;an&lt;/span&gt; &lt;span class="nx"&gt;pipe&lt;/span&gt; &lt;span class="nx"&gt;results&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;
+
+
+&lt;span class="err"&gt;###&lt;/span&gt; &lt;span class="nx"&gt;Invoking&lt;/span&gt; &lt;span class="nx"&gt;bzcat&lt;/span&gt; &lt;span class="nx"&gt;from&lt;/span&gt; &lt;span class="nx"&gt;Julia&lt;/span&gt;
+
+&lt;span class="nx"&gt;It&lt;/span&gt; &lt;span class="nx"&gt;is&lt;/span&gt; &lt;span class="nx"&gt;easy&lt;/span&gt; &lt;span class="nx"&gt;to&lt;/span&gt; &lt;span class="nx"&gt;invoke&lt;/span&gt; &lt;span class="nx"&gt;commands&lt;/span&gt; &lt;span class="nx"&gt;from&lt;/span&gt; &lt;span class="nx"&gt;inside&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;Julia&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="nx"&gt;using&lt;/span&gt; &lt;span class="nx"&gt;backquotes&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="err"&gt;``&lt;/span&gt;&lt;span class="nx"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="nx"&gt;cmd&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;``&lt;/span&gt; &lt;span class="nx"&gt;and&lt;/span&gt; &lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="o"&gt;|&amp;gt;&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt; &lt;span class="nx"&gt;to&lt;/span&gt; &lt;span class="nx"&gt;pipe&lt;/span&gt; &lt;span class="nx"&gt;between&lt;/span&gt; &lt;span class="nx"&gt;commands&lt;/span&gt; &lt;span class="nx"&gt;and&lt;/span&gt; &lt;span class="nx"&gt;streams&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;Let&lt;/span&gt;&lt;span class="err"&gt;&amp;#39;&lt;/span&gt;&lt;span class="nx"&gt;s&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="nx"&gt;it&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="err"&gt;```&lt;/span&gt;&lt;span class="nx"&gt;julia&lt;/span&gt;
+&lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="nx"&gt;file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;ARGS&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;
+    &lt;span class="nx"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="nx"&gt;bzcat&lt;/span&gt; &lt;span class="nx"&gt;$&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;file&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt; &lt;span class="o"&gt;|&amp;gt;&lt;/span&gt; &lt;span class="nx"&gt;STDOUT&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nx"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
 &lt;p&gt;The script is equivalent to: &lt;code&gt;bzcat wikidump.xml.bz2&lt;/code&gt;, but it's quite impressive to see how easy it is to do this inside a Julia script.
 This time is about &lt;em&gt;66 seconds&lt;/em&gt;, more or less the same than with the external piping from &lt;code&gt;bzcat&lt;/code&gt;.&lt;/p&gt;
-&lt;p _="%" endhighlight="endhighlight"&gt;But it would be useful to get lines of contents from the stream, like it was in the original &lt;em&gt;Python&lt;/em&gt; script. For this task, &lt;em&gt;Julia&lt;/em&gt; standard library offers a multitudes of handy functions. The one we will use is &lt;code&gt;readsfrom&lt;/code&gt; that returns two things: stdout of the given process, and the process itself. Here it is in action:
-{% highlight julia %}
-function main()
-    file = ARGS[1]
-    stdout, p = readsfrom(&lt;code&gt;bzcat $(file)&lt;/code&gt;)
-    for line in eachline(stdout)
-        print(line)
-    end
-end&lt;/p&gt;
+&lt;p&gt;But it would be useful to get lines of contents from the stream, like it was in the original &lt;em&gt;Python&lt;/em&gt; script. For this task, &lt;em&gt;Julia&lt;/em&gt; standard library offers a multitudes of handy functions. The one we will use is &lt;code&gt;readsfrom&lt;/code&gt; that returns two things: stdout of the given process, and the process itself. Here it is in action:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="nf"&gt; main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ARGS&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;stdout&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;readsfrom&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sb"&gt;`bzcat $(file)`&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="n"&gt;eachline&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;stdout&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
 &lt;p&gt;Timing is now about &lt;em&gt;74 seconds&lt;/em&gt;, this is &lt;em&gt;10 seconds&lt;/em&gt; faster than the first &lt;em&gt;Python&lt;/em&gt; version. But we don't rely on a module. Instead, we make use of the ability to play with command invocations, stream pipings, and the like that &lt;em&gt;Julia&lt;/em&gt; allows.&lt;/p&gt;
 &lt;h2&gt;Timings&lt;/h2&gt;
 &lt;p&gt;&lt;img alt="Bench" src="{{" title="filename }}/images/bz2-julia-bench.png" /&gt;&lt;/p&gt;
@@ -101,73 +122,91 @@ des vecteurs, matrices et opérations associées dans la bibliothèque standard,
 en faisant un langage particulièrement adapté pour l'analyse numérique, le
 &lt;em&gt;machine learning&lt;/em&gt;, et toute autre application nécessitant des outils d'algèbre
 linéaire, et des fonctions mathématiques diverses.&lt;/p&gt;
-&lt;p&gt;{% highlight julia %}&lt;/p&gt;
-&lt;h1&gt;Dynamic type&lt;/h1&gt;
-&lt;p&gt;a = 42          # Int
-a = "toto"      # String
-a = [1, 2, 3]   # Vector
-a = [1 2 3]     # 1x3 Matrix
-a = [1:3]       # same 1x3 Matrix&lt;/p&gt;
-&lt;p&gt;for e in a
-    println(test)
-end&lt;/p&gt;
-&lt;h1&gt;Output&lt;/h1&gt;
-&lt;h1&gt;1&lt;/h1&gt;
-&lt;h1&gt;2&lt;/h1&gt;
-&lt;h1&gt;3&lt;/h1&gt;
-&lt;p&gt;{% endhighlight %}&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# Dynamic type&lt;/span&gt;
+&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;42&lt;/span&gt;          &lt;span class="c"&gt;# Int&lt;/span&gt;
+&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;toto&amp;quot;&lt;/span&gt;      &lt;span class="c"&gt;# String&lt;/span&gt;
+&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;   &lt;span class="c"&gt;# Vector&lt;/span&gt;
+&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;     &lt;span class="c"&gt;# 1x3 Matrix&lt;/span&gt;
+&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;       &lt;span class="c"&gt;# same 1x3 Matrix&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;
+    &lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="c"&gt;# Output&lt;/span&gt;
+&lt;span class="c"&gt;# 1&lt;/span&gt;
+&lt;span class="c"&gt;# 2&lt;/span&gt;
+&lt;span class="c"&gt;# 3&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
 &lt;p&gt;Julia dispose également des atouts suivants :&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;Multi-méthode&lt;/strong&gt; permettant un dispatch dynamique en fonction du type des arguments passés aux fonctions&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;{% highlight julia %}&lt;/p&gt;
-&lt;h1&gt;Method declaration&lt;/h1&gt;
-&lt;h1&gt;foo is a function taking one argument of any type&lt;/h1&gt;
-&lt;p&gt;function foo(bar)
-    println(bar)
-    end&lt;/p&gt;
-&lt;h1&gt;Shorter function declaration&lt;/h1&gt;
-&lt;p&gt;baz(x) = println(x)&lt;/p&gt;
-&lt;h1&gt;Multimethod&lt;/h1&gt;
-&lt;h1&gt;Takes an argument of type Int (Haskelish syntax)&lt;/h1&gt;
-&lt;p&gt;myprint(x::Int) = println("Int")&lt;/p&gt;
-&lt;h1&gt;Takes an argument of type Matrix (of any type)&lt;/h1&gt;
-&lt;p&gt;myprint(x::Matrix) = println("Matrix")&lt;/p&gt;
-&lt;h1&gt;Take an argument of type Matrix of Float64&lt;/h1&gt;
-&lt;p&gt;myprint(x::Matrix{Float64}) = println("Matrix of Float64")&lt;/p&gt;
-&lt;p _="%" endhighlight="endhighlight"&gt;myprint(42)         # First one is called
-myprint([1 2 3])    # Second one is called
-myprint([0.5 0.42]) # Third one is called&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# Method declaration&lt;/span&gt;
+&lt;span class="c"&gt;# foo is a function taking one argument of any type&lt;/span&gt;
+&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="nf"&gt; foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="c"&gt;# Shorter function declaration&lt;/span&gt;
+&lt;span class="n"&gt;baz&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c"&gt;# Multimethod&lt;/span&gt;
+&lt;span class="c"&gt;# Takes an argument of type Int (Haskelish syntax)&lt;/span&gt;
+&lt;span class="n"&gt;myprint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="kt"&gt;Int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Int&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;# Takes an argument of type Matrix (of any type)&lt;/span&gt;
+&lt;span class="n"&gt;myprint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Matrix&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Matrix&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;# Take an argument of type Matrix of Float64&lt;/span&gt;
+&lt;span class="n"&gt;myprint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="n"&gt;Matrix&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="kt"&gt;Float64&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Matrix of Float64&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;myprint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;         &lt;span class="c"&gt;# First one is called&lt;/span&gt;
+&lt;span class="n"&gt;myprint&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;    &lt;span class="c"&gt;# Second one is called&lt;/span&gt;
+&lt;span class="n"&gt;myprint&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="mf"&gt;0.5&lt;/span&gt; &lt;span class="mf"&gt;0.42&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt; &lt;span class="c"&gt;# Third one is called&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
 &lt;ul&gt;
 &lt;li&gt;Un système de &lt;strong&gt;template&lt;/strong&gt; pour créer du code générique&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;{% highlight julia %}
-function printtype(m)
-    println("Any type")
-end&lt;/p&gt;
-&lt;h1&gt;Takes argument of type T, in julia a type&lt;/h1&gt;
-&lt;h1&gt;is an object, so you can print it&lt;/h1&gt;
-&lt;p&gt;function printtype{T}(m::T)
-    println(T)
-end&lt;/p&gt;
-&lt;h1&gt;Takes an argument of type T, with the constraint FloatingPoint&lt;/h1&gt;
-&lt;p&gt;function printtype{T &amp;lt;: FloatingPoint}(m::T)
-    println("Floating Point")
-end&lt;/p&gt;
-&lt;p _="%" endhighlight="endhighlight"&gt;printtype(42)
-printtype(0.42)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="nf"&gt; printtype&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Any type&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="c"&gt;# Takes argument of type T, in julia a type&lt;/span&gt;
+&lt;span class="c"&gt;# is an object, so you can print it&lt;/span&gt;
+&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="nf"&gt; printtype&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;}(&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="c"&gt;# Takes an argument of type T, with the constraint FloatingPoint&lt;/span&gt;
+&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="nf"&gt; printtype&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;:&lt;/span&gt; &lt;span class="n"&gt;FloatingPoint&lt;/span&gt;&lt;span class="p"&gt;}(&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Floating Point&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+
+&lt;span class="n"&gt;printtype&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;printtype&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mf"&gt;0.42&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
 &lt;ul&gt;
 &lt;li&gt;Des &lt;strong&gt;expressions rationnelles&lt;/strong&gt; compatible Perl&lt;/li&gt;
 &lt;li&gt;Des &lt;strong&gt;macros&lt;/strong&gt; à la Lisp grâce à l’auto-iconicité du langage&lt;/li&gt;
 &lt;li&gt;La possibilité de lancer des &lt;strong&gt;commandes Shell&lt;/strong&gt;, de piper, etc.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Interfaçage avec le C&lt;/strong&gt; sans bindings (simple utilisation de ccall comme une fonction)&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;{% highlight julia %}&lt;/p&gt;
-&lt;h1&gt;Simple function that wrap a call to libc clock function&lt;/h1&gt;
-&lt;p&gt;clock() = ccall( (:clock, "libc"), Int32, ())&lt;/p&gt;
-&lt;p&gt;t = clock()&lt;/p&gt;
-&lt;h1&gt;Do some stuff&lt;/h1&gt;
-&lt;p _="%" endhighlight="endhighlight"&gt;println(clock() - t)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# Simple function that wrap a call to libc clock function&lt;/span&gt;
+&lt;span class="n"&gt;clock&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;ccall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="p"&gt;(:&lt;/span&gt;&lt;span class="n"&gt;clock&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;libc&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="kt"&gt;Int32&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;())&lt;/span&gt;
+
+&lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;clock&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="c"&gt;# Do some stuff&lt;/span&gt;
+
+&lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;clock&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;Duck-typing&lt;/strong&gt; mais possibilité de spécifier les types&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Parallélisation&lt;/strong&gt; du code aisée en multithreading sur une unique machine ou sur un cluster (tasks, parallel for, etc.)&lt;/li&gt;

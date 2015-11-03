@@ -50,67 +50,88 @@
 
 <h2>Using Python</h2>
 <p>It's easy enough with <em>Python</em> thanks to the <code>bz2</code> module that allows to transparently manipulate a compressed file as if it were a normal opened file. Before jumping to Julia, let see how it is done in Python:</p>
-<p>{% highlight python %}
-from <strong>future</strong> import print_function
-import sys
-import bz2</p>
-<p>def main():
-    in_stream = bz2.BZ2File(sys.argv[1])
-    for line in in_stream:
-        print(line)
-    in_stream.close()</p>
-<p _="%" endhighlight="endhighlight">if <strong>name</strong> == "<strong>main</strong>":
-    main()</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">bz2</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">in_stream</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">in_stream</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">in_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+
 <p>Nothing easier, it takes <em>85 seconds</em> to run.</p>
 <h2>What about Julia?</h2>
 <p>Since I really love <em>Julia</em> language, I was tempted to do the same with Julia. Here are the differents solutions that I went through, with their respective timings.</p>
 <h3>Using bz2 Python module through PyCall</h3>
 <p>The first naive option is to use the original module from Python. It's easy enough using the <code>PyCall</code> module. We can install it like so:</p>
-<p _="%" endhighlight="endhighlight">{% highlight julia %}
-julia&gt; Pkg.add("PyCall")
-julia&gt; Pkg.update()</p>
+<div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;PyCall&quot;</span><span class="p">)</span>
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</pre></div>
+
+
 <p>The script:</p>
-<p>{% highlight julia %}
-using PyCall
-@pyimport bz2</p>
-<p _="%" endhighlight="endhighlight">function main()
-    in_stream = bz2.BZ2File(ARGS[1])
-    for line in in_stream
-        println(line)
-    end
-    in_stream<a href="">:close</a>
-end</p>
+<div class="highlight"><pre><span class="k">using</span> <span class="n">PyCall</span>
+<span class="p">@</span><span class="n">pyimport</span> <span class="n">bz2</span>
+
+<span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
+    <span class="n">in_stream</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">ARGS</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">in_stream</span>
+        <span class="n">println</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">in_stream</span><span class="p">[:</span><span class="n">close</span><span class="p">]()</span>
+<span class="k">end</span>
+</pre></div>
+
+
 <p>But then we hit the wall... timing is: <em>1352 seconds</em>. This is likely due to the conversion between <em>Python</em> and <em>Julia</em> datatypes. So not the best option for a data-intensive usage.</p>
 <h3>Piping result of bzcat to Julia</h3>
-<p _="%" endhighlight="endhighlight">The second option that came to my mind was: "why not using <em>bzcat</em>?". It's easy enough, we just have to read from <code>STDIN</code>:
-{% highlight julia %}
-function main()
-    for line in eachline(STDIN)
-        print(line)
-    end
-end</p>
-<p _="%" endhighlight="endhighlight">Here is the invocation:
+<p>The second option that came to my mind was: "why not using <em>bzcat</em>?". It's easy enough, we just have to read from <code>STDIN</code>:</p>
+<div class="highlight"><pre><span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">eachline</span><span class="p">(</span><span class="n">STDIN</span><span class="p">)</span>
+        <span class="n">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<p>Here is the invocation:
 {% highlight sh %}
 $ bzcat wikidump.xml.bz2 | julia bz2_bench.jl</p>
-<p>Timing is now a more reasonable <em>72 seconds</em>. So that is less than the <em>Python</em> version shown above. But this is not satisfactory enough. Why not use the wonderful capabilities of <em>Julia</em> to run external commands an pipe results?</p>
-<h3>Invoking bzcat from Julia</h3>
-<p _="%" endhighlight="endhighlight">It is easy to invoke commands from inside <em>Julia</em> using backquotes: <code>run(`cmd`)</code> and <code>|&gt;</code> to pipe between commands and streams. Let's do it:
-{% highlight julia %}
-function main()
-    file = ARGS[1]
-    run(<code>bzcat $(file)</code> |&gt; STDOUT)
-end</p>
+<div class="highlight"><pre><span class="nx">Timing</span> <span class="nx">is</span> <span class="nx">now</span> <span class="nx">a</span> <span class="nx">more</span> <span class="nx">reasonable</span> <span class="o">*</span><span class="mi">72</span> <span class="nx">seconds</span><span class="o">*</span><span class="p">.</span> <span class="nx">So</span> <span class="nx">that</span> <span class="nx">is</span> <span class="nx">less</span> <span class="nx">than</span> <span class="nx">the</span> <span class="o">*</span><span class="nx">Python</span><span class="o">*</span> <span class="nx">version</span> <span class="nx">shown</span> <span class="nx">above</span><span class="p">.</span> <span class="nx">But</span> <span class="k">this</span> <span class="nx">is</span> <span class="nx">not</span> <span class="nx">satisfactory</span> <span class="nx">enough</span><span class="p">.</span> <span class="nx">Why</span> <span class="nx">not</span> <span class="nx">use</span> <span class="nx">the</span> <span class="nx">wonderful</span> <span class="nx">capabilities</span> <span class="nx">of</span> <span class="o">*</span><span class="nx">Julia</span><span class="o">*</span> <span class="nx">to</span> <span class="nx">run</span> <span class="nx">external</span> <span class="nx">commands</span> <span class="nx">an</span> <span class="nx">pipe</span> <span class="nx">results</span><span class="o">?</span>
+
+
+<span class="err">###</span> <span class="nx">Invoking</span> <span class="nx">bzcat</span> <span class="nx">from</span> <span class="nx">Julia</span>
+
+<span class="nx">It</span> <span class="nx">is</span> <span class="nx">easy</span> <span class="nx">to</span> <span class="nx">invoke</span> <span class="nx">commands</span> <span class="nx">from</span> <span class="nx">inside</span> <span class="o">*</span><span class="nx">Julia</span><span class="o">*</span> <span class="nx">using</span> <span class="nx">backquotes</span><span class="o">:</span> <span class="err">``</span><span class="nx">run</span><span class="p">(</span><span class="err">`</span><span class="nx">cmd</span><span class="err">`</span><span class="p">)</span><span class="err">``</span> <span class="nx">and</span> <span class="err">`</span><span class="o">|&gt;</span><span class="err">`</span> <span class="nx">to</span> <span class="nx">pipe</span> <span class="nx">between</span> <span class="nx">commands</span> <span class="nx">and</span> <span class="nx">streams</span><span class="p">.</span> <span class="nx">Let</span><span class="err">&#39;</span><span class="nx">s</span> <span class="k">do</span> <span class="nx">it</span><span class="o">:</span>
+<span class="err">```</span><span class="nx">julia</span>
+<span class="kd">function</span> <span class="nx">main</span><span class="p">()</span>
+    <span class="nx">file</span> <span class="o">=</span> <span class="nx">ARGS</span><span class="cp">[</span><span class="mi">1</span><span class="cp">]</span>
+    <span class="nx">run</span><span class="p">(</span><span class="err">`</span><span class="nx">bzcat</span> <span class="nx">$</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span><span class="err">`</span> <span class="o">|&gt;</span> <span class="nx">STDOUT</span><span class="p">)</span>
+<span class="nx">end</span>
+</pre></div>
+
+
 <p>The script is equivalent to: <code>bzcat wikidump.xml.bz2</code>, but it's quite impressive to see how easy it is to do this inside a Julia script.
 This time is about <em>66 seconds</em>, more or less the same than with the external piping from <code>bzcat</code>.</p>
-<p _="%" endhighlight="endhighlight">But it would be useful to get lines of contents from the stream, like it was in the original <em>Python</em> script. For this task, <em>Julia</em> standard library offers a multitudes of handy functions. The one we will use is <code>readsfrom</code> that returns two things: stdout of the given process, and the process itself. Here it is in action:
-{% highlight julia %}
-function main()
-    file = ARGS[1]
-    stdout, p = readsfrom(<code>bzcat $(file)</code>)
-    for line in eachline(stdout)
-        print(line)
-    end
-end</p>
+<p>But it would be useful to get lines of contents from the stream, like it was in the original <em>Python</em> script. For this task, <em>Julia</em> standard library offers a multitudes of handy functions. The one we will use is <code>readsfrom</code> that returns two things: stdout of the given process, and the process itself. Here it is in action:</p>
+<div class="highlight"><pre><span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">ARGS</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">stdout</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">readsfrom</span><span class="p">(</span><span class="sb">`bzcat $(file)`</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">eachline</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="n">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+
 <p>Timing is now about <em>74 seconds</em>, this is <em>10 seconds</em> faster than the first <em>Python</em> version. But we don't rely on a module. Instead, we make use of the ability to play with command invocations, stream pipings, and the like that <em>Julia</em> allows.</p>
 <h2>Timings</h2>
 <p><img alt="Bench" src="{{" title="filename }}/images/bz2-julia-bench.png" /></p>
