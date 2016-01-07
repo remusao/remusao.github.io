@@ -51,6 +51,17 @@
 <div>
   <article class="hentry" role="article">
 <header>
+    
+    <div id="qr-code-pytest-paramaterize-tests-with-external-data.html" class="qr-code-image-block"></div>
+    <script src="http://remusao.github.com/theme/js/qr.min.js" type="text/javascript"></script>
+    <script>
+        var img = qr.image({
+            value: 'http://remusao.github.com/pytest-paramaterize-tests-with-external-data.html',
+            level: 'L',
+            size: 4
+        });
+        document.getElementById('qr-code-pytest-paramaterize-tests-with-external-data.html').appendChild(img);
+    </script>
       <h1 class="entry-title">[py.test] Paramaterize tests with external data</h1>
     <p class="meta">
 <time datetime="2014-11-26T15:00:00+01:00" pubdate>Wed 26 November 2014</time>    </p>
@@ -319,6 +330,33 @@ and will:</p>
     <a href="http://remusao.github.com/tag/python.html">python</a>,    <a href="http://remusao.github.com/tag/pytest.html">pytest</a>  </section>
 
 
+
+  <section>
+    <h1>GitHub Repos</h1>
+    <ul id="gh_repos">
+      <li class="loading">Status updating...</li>
+    </ul>
+    <script type="text/javascript">
+      $.domReady(function(){
+          if (!window.jXHR){
+              var jxhr = document.createElement('script');
+              jxhr.type = 'text/javascript';
+              jxhr.src = 'http://remusao.github.com/theme/js/jXHR.js';
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(jxhr, s);
+          }
+
+          github.showRepos({
+              user: 'remusao',
+              count: 5,
+              skip_forks: false,
+              target: '#gh_repos'
+          });
+      });
+    </script>
+    <script src="http://remusao.github.com/theme/js/github.js" type="text/javascript"> </script>
+  </section>
+
     <section>
         <h1>Social</h1>
         <ul>
@@ -327,6 +365,9 @@ and will:</p>
         </ul>
     </section>
 
+<section>
+    <a href="http://twitter.com/Pythux" class="twitter-follow-button" data-show-count="true">Follow @Pythux</a>
+</section>
 </aside>    </div>
   </div>
   <footer role="contentinfo"><p>
