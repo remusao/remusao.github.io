@@ -1,5 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Pythux</title><link href="http://remusao.github.com/" rel="alternate"></link><link href="http://remusao.github.com/feeds/haskell.atom.xml" rel="self"></link><id>http://remusao.github.com/</id><updated>2016-01-07T16:17:00+01:00</updated><entry><title>Install IHaskell on Ubuntu 14.04 with Stack</title><link href="http://remusao.github.com/install-ihaskell-on-ubuntu-1404-with-stack.html" rel="alternate"></link><updated>2016-01-07T16:17:00+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2016-01-07:install-ihaskell-on-ubuntu-1404-with-stack.html</id><summary type="html">&lt;p&gt;In this post, we're going through the installation of IHaskell on GNU/Linux (Ubuntu 14.04 in my case, though it should be pretty similar on other ditributions) step-by-step. We'll see how the use of &lt;em&gt;Stack&lt;/em&gt; will simplify the whole process, and how to get all the dependencies right!&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Pythux</title><link href="http://remusao.github.com/" rel="alternate"></link><link href="http://remusao.github.com/feeds/haskell.atom.xml" rel="self"></link><id>http://remusao.github.com/</id><updated>2016-01-08T14:25:00+01:00</updated><entry><title>Test notebook</title><link href="http://remusao.github.com/test-notebook.html" rel="alternate"></link><updated>2016-01-08T14:25:00+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2016-01-08:test-notebook.html</id><summary type="html">&lt;p&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[2]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-haskell"&gt;&lt;pre&gt;&lt;span class="nf"&gt;toto&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;Int&lt;/span&gt;
+&lt;span class="nf"&gt;toto&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;42&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[3]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-haskell"&gt;&lt;pre&gt;&lt;span class="nf"&gt;toto&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;&lt;div class="prompt"&gt;&lt;/div&gt;
+
+
+&lt;div class="output_text output_subarea "&gt;
+&lt;pre&gt;42&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[1]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-haskell"&gt;&lt;pre&gt;&lt;span class="s"&gt;&amp;quot;Hello World&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;&lt;div class="prompt"&gt;&lt;/div&gt;
+
+
+&lt;div class="output_text output_subarea "&gt;
+&lt;pre&gt;&amp;quot;Hello World&amp;quot;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;
+&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h1 id="Good-stuff"&gt;Good stuff&lt;a class="anchor-link" href="#Good-stuff"&gt;&amp;#182;&lt;/a&gt;&lt;/h1&gt;&lt;p&gt;Markdown aaaaall the way!&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[&amp;nbsp;]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-haskell"&gt;&lt;pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;&lt;/p&gt;</summary><category term="haskell"></category><category term="ihaskell"></category></entry><entry><title>Install IHaskell on Ubuntu 14.04 with Stack</title><link href="http://remusao.github.com/install-ihaskell-on-ubuntu-1404-with-stack.html" rel="alternate"></link><updated>2016-01-07T16:17:00+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2016-01-07:install-ihaskell-on-ubuntu-1404-with-stack.html</id><summary type="html">&lt;p&gt;In this post, we're going through the installation of IHaskell on GNU/Linux (Ubuntu 14.04 in my case, though it should be pretty similar on other ditributions) step-by-step. We'll see how the use of &lt;em&gt;Stack&lt;/em&gt; will simplify the whole process, and how to get all the dependencies right!&lt;/p&gt;
 &lt;h2&gt;Install Stack&lt;/h2&gt;
 &lt;p&gt;From &lt;em&gt;Stack&lt;/em&gt; official &lt;a href="http://docs.haskellstack.org/en/stable/install_and_upgrade.html"&gt;documentation&lt;/a&gt;:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442
