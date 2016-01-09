@@ -104,7 +104,7 @@ sudo ldconfig
 </pre></div>
 
 
-<p>That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (<code>--prefix=LOCATION</code>, and change <code>LD_LIBRARY_PATH</code> and <code>PATH</code> in your shell configuration accordingly).</p>
+<p>That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (Add the <code>--prefix=LOCATION</code> directive to <code>./configure</code>, and change <code>LD_LIBRARY_PATH</code> and <code>PATH</code> in your shell configuration accordingly).</p>
 <h2>Install <s>IPython</s> Jupyter</h2>
 <p><strong>EDIT</strong>: Following Florian's comment, it appears that <em>IPython</em> is now officialy named <em>Jupyter</em>, so we might as well install it in our virtualenv. The only change in the instructions is to replace <code>pip install ipython</code> by <code>pip install jupyter</code> (Note that <em>IPython</em> is a dependency of <em>Jupyter</em>).</p>
 <p>IHaskell requires a <s>version of <em>IPython &gt; 3.0.0 or up</em></s> recent version of <em>Jupyter</em>, so we need to install it ourselves. There are several options:</p>

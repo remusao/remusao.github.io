@@ -43,7 +43,7 @@ sudo ldconfig
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (&lt;code&gt;--prefix=LOCATION&lt;/code&gt;, and change &lt;code&gt;LD_LIBRARY_PATH&lt;/code&gt; and &lt;code&gt;PATH&lt;/code&gt; in your shell configuration accordingly).&lt;/p&gt;
+&lt;p&gt;That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (Add the &lt;code&gt;--prefix=LOCATION&lt;/code&gt; directive to &lt;code&gt;./configure&lt;/code&gt;, and change &lt;code&gt;LD_LIBRARY_PATH&lt;/code&gt; and &lt;code&gt;PATH&lt;/code&gt; in your shell configuration accordingly).&lt;/p&gt;
 &lt;h2&gt;Install &lt;s&gt;IPython&lt;/s&gt; Jupyter&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;EDIT&lt;/strong&gt;: Following Florian's comment, it appears that &lt;em&gt;IPython&lt;/em&gt; is now officialy named &lt;em&gt;Jupyter&lt;/em&gt;, so we might as well install it in our virtualenv. The only change in the instructions is to replace &lt;code&gt;pip install ipython&lt;/code&gt; by &lt;code&gt;pip install jupyter&lt;/code&gt; (Note that &lt;em&gt;IPython&lt;/em&gt; is a dependency of &lt;em&gt;Jupyter&lt;/em&gt;).&lt;/p&gt;
 &lt;p&gt;IHaskell requires a &lt;s&gt;version of &lt;em&gt;IPython &amp;gt; 3.0.0 or up&lt;/em&gt;&lt;/s&gt; recent version of &lt;em&gt;Jupyter&lt;/em&gt;, so we need to install it ourselves. There are several options:&lt;/p&gt;
