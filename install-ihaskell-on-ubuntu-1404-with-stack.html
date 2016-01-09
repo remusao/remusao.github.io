@@ -62,7 +62,7 @@
 
   <div class="entry-content"><p>In this post, we're going through the installation of IHaskell on GNU/Linux (Ubuntu 14.04 in my case, though it should be pretty similar on other ditributions) step-by-step. We'll see how the use of <em>Stack</em> will simplify the whole process, and how to get all the dependencies right!</p>
 <h2>Install Stack</h2>
-<p>From <em>Stack</em> official <a href="http://docs.haskellstack.org/en/stable/install_and_upgrade.html">documentation</a>:</p>
+<p>From <em>Stack</em> official <a href="http://docs.haskellstack.org/en/stable/install_and_upgrade.html">documentation</a>, for Ubuntu 14.04:</p>
 <div class="highlight"><pre>sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442
 <span class="nb">echo</span> <span class="s1">&#39;deb http://download.fpcomplete.com/ubuntu trusty main&#39;</span><span class="p">|</span>sudo tee /etc/apt/sources.list.d/fpco.list
 sudo apt-get update <span class="o">&amp;&amp;</span> sudo apt-get install stack -y
@@ -74,7 +74,7 @@ sudo apt-get update <span class="o">&amp;&amp;</span> sudo apt-get install stack
 </pre></div>
 
 
-<p>Being up-to-date is important, so setup your <em>Stack</em> global configuration <code>/home/berson_r/.stack/global/stack.yaml</code>:</p>
+<p>Being up-to-date is important, so setup your <em>Stack</em> global configuration <code>~/.stack/global/stack.yaml</code>:</p>
 <div class="highlight"><pre><span class="l-Scalar-Plain">flags</span><span class="p-Indicator">:</span> <span class="p-Indicator">{}</span>
 <span class="l-Scalar-Plain">resolver</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">lts-4.0</span>
 <span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
@@ -104,7 +104,7 @@ sudo ldconfig
 </pre></div>
 
 
-<p>That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (<code>--prefix=LOCATION</code>, and change <code>LD_LIBRARY_PATH</code> and <code>PATH</code> in your shell configuration).</p>
+<p>That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (<code>--prefix=LOCATION</code>, and change <code>LD_LIBRARY_PATH</code> and <code>PATH</code> in your shell configuration accordingly).</p>
 <h2>Install <s>IPython</s> Jupyter</h2>
 <p><strong>EDIT</strong>: Following Florian's comment, it appears that <em>IPython</em> is now officialy named <em>Jupyter</em>, so we might as well install it in our virtualenv. The only change in the instructions is to replace <code>pip install ipython</code> by <code>pip install jupyter</code> (Note that <em>IPython</em> is a dependency of <em>Jupyter</em>).</p>
 <p>IHaskell requires a <s>version of <em>IPython &gt; 3.0.0 or up</em></s> recent version of <em>Jupyter</em>, so we need to install it ourselves. There are several options:</p>
@@ -146,17 +146,16 @@ workon ihaskell
 <li>ihaskell-diagrams</li>
 </ul>
 <h2>Setup IHaskell</h2>
-<p>If everything went well, you should have <em><s>ipython</s></em> <em>Jupyter</em> (latest version) and <em>ihaskell</em> installed properly. The last step is to install the <em>IHaskell Kernel</em> into <em><s>IPython</s></em> <em>Jupyter</em>.</p>
+<p>If everything went well, you should have <em>Jupyter</em> (latest version) and <em>ihaskell</em> installed properly. The last step is to install the <em>IHaskell Kernel</em> into <em>Jupyter</em>.</p>
 <div class="highlight"><pre>stack <span class="nb">exec </span>ihaskell -- install
 </pre></div>
 
 
 <p>Now run the notebook server and enjoy:</p>
-<div class="highlight"><pre>stack <span class="nb">exec </span>ipython -- notebook
+<div class="highlight"><pre>stack <span class="nb">exec </span>jupyter -- notebook
 </pre></div>
 
 
-<p>(Please note that although we exec <code>ipython</code>, this will run the <em>Jupyter</em> backend)</p>
 <p>Open your browser and go to: <code>http://localhost:8000</code></p>
 <h2>What's next</h2>
 <p>Thanks to Stack, the install process went very smoothely (appart from some dependency we had to install ourselves).
