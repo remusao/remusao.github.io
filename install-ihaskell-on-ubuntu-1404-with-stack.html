@@ -104,7 +104,7 @@ sudo ldconfig
 </pre></div>
 
 
-<p>That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (Add the <code>--prefix=LOCATION</code> directive to <code>./configure</code>, and change <code>LD_LIBRARY_PATH</code> and <code>PATH</code> in your shell configuration accordingly).</p>
+<p>That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (<code>--prefix=LOCATION</code>, and change <code>LD_LIBRARY_PATH</code> and <code>PATH</code> in your shell configuration accordingly).</p>
 <h2>Install <s>IPython</s> Jupyter</h2>
 <p><strong>EDIT</strong>: Following Florian's comment, it appears that <em>IPython</em> is now officialy named <em>Jupyter</em>, so we might as well install it in our virtualenv. The only change in the instructions is to replace <code>pip install ipython</code> by <code>pip install jupyter</code> (Note that <em>IPython</em> is a dependency of <em>Jupyter</em>).</p>
 <p>IHaskell requires a <s>version of <em>IPython &gt; 3.0.0 or up</em></s> recent version of <em>Jupyter</em>, so we need to install it ourselves. There are several options:</p>
@@ -114,7 +114,7 @@ sudo ldconfig
 <li>Use <a href="https://nixos.org/nix/">nix</a> <em>(You're on your own)</em></li>
 <li>Use <a href="https://www.continuum.io/downloads">conda</a> (<s><em>conda update ipython</em></s><code>conda update jupyter</code>)</li>
 </ol>
-<p>If you're on a fresh install: <code>sudo apt-get install python-virtualenv</code></p>
+<p>If you're on a fresh install: <code>sudo apt-get install python-virtualenv python-dev ncurses-base</code></p>
 <p>With <code>virtualenv</code>:</p>
 <div class="highlight"><pre>virtualenv venv-ihaskell
 <span class="nb">source </span>venv-ihaskell/bin/activate
@@ -138,12 +138,23 @@ workon ihaskell
 </pre></div>
 
 
-<p>You may want to install extra packages to enhance <em>IHaskell</em> capabilities:</p>
+<p>You may want to install extra packages to enhance <em>IHaskell</em> capabilities. Here are the ones supported by Stackage:</p>
 <ul>
 <li>ihaskell-aeson</li>
 <li>ihaskell-blaze</li>
 <li>ihaskell-charts</li>
 <li>ihaskell-diagrams</li>
+<li>ihaskell-rlangqq</li>
+<li>ihaskell-magic</li>
+<li>ihaskell-juicypixels</li>
+<li>ihaskell-hatex</li>
+<li>ihaskell-basic</li>
+</ul>
+<p>Some others are not in the LTS snapshot of Stackage, but could be useful in the future. I don't know about the current maturity of these packages:</p>
+<ul>
+<li>ihaskell-widgets (conflict with current version of singletons)</li>
+<li>ihaskell-parsec (conflict with current version of aeson)</li>
+<li>ihaskell-plot</li>
 </ul>
 <h2>Setup IHaskell</h2>
 <p>If everything went well, you should have <em>Jupyter</em> (latest version) and <em>ihaskell</em> installed properly. The last step is to install the <em>IHaskell Kernel</em> into <em>Jupyter</em>.</p>
@@ -188,6 +199,9 @@ to export a notebook either in HTML or Markdown.</p></div>
     <h1>Recent Posts</h1>
     <ul id="recent_posts">
       <li class="post">
+          <a href="./a-tour-of-ihaskell-extensions-and-integrations.html">A tour of IHaskell extensions and integrations</a>
+      </li>
+      <li class="post">
           <a href="./install-ihaskell-on-ubuntu-1404-with-stack.html">Install IHaskell on Ubuntu 14.04 with Stack</a>
       </li>
       <li class="post">
@@ -198,9 +212,6 @@ to export a notebook either in HTML or Markdown.</p></div>
       </li>
       <li class="post">
           <a href="./installation-de-julia.html">Installation de Julia</a>
-      </li>
-      <li class="post">
-          <a href="./julia.html">Julia</a>
       </li>
     </ul>
   </section>
