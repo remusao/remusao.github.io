@@ -314,7 +314,7 @@ route de votre environnement pour utiliser le langage.
 <li>Coloration syntaxique et indentation sous vim</li>
 <li>Environnement IJulia (équivalement de IPython)</li>
 </ul>
-<h2>Compilation</h2>
+<h1>Compilation</h1>
 <p>Tout d'abord compiler l'interpréteur Julia depuis les sources. Notez que si
 votre distribution <em>linux</em> dispose d'un paquet Julia dans ses dépôt ou si vous
 ne désirez pas compiler Julia depuis les sources, il est toujours possible
@@ -372,18 +372,18 @@ julia&gt; Pkg.update<span class="o">()</span>
 <li><strong>Pkg.add("Package")</strong> : installe le package <em>Package</em> ainsi que ses éventuelles dépendances</li>
 <li><strong>Pkg.rm("Package")</strong> : supprime le package <em>Package</em></li>
 </ul>
-<h2>Coloration syntaxique et indentation</h2>
+<h1>Coloration syntaxique et indentation</h1>
 <p>Cette explication n'est valide que pour les utilisateurs de l'éditeur
 <a href="http://www.vim.org/">Vim</a>. Voici des explications différentes en
 fonction de la manière dont vous gérez les extensions.</p>
-<h4>Pathogen</h4>
+<h2>Pathogen</h2>
 <div class="highlight"><pre><span class="nb">cd</span> ~/.vim
 mkdir -p bundle <span class="o">&amp;&amp;</span> <span class="nb">cd </span>bundle
 git clone git://github.com/JuliaLang/julia-vim.git
 </pre></div>
 
 
-<h4>Vundle</h4>
+<h2>Vundle</h2>
 <p>Ajouter un nouveau Bundle à votre <code>.vimrc</code> :</p>
 <div class="highlight"><pre>Bundle <span class="s1">&#39;JuliaLang/julia-vim&#39;</span>
 </pre></div>
@@ -394,7 +394,7 @@ git clone git://github.com/JuliaLang/julia-vim.git
 </pre></div>
 
 
-<h4>Manuel</h4>
+<h2>Manuel</h2>
 <div class="highlight"><pre>git clone git://github.com/JuliaLang/julia-vim.git
 <span class="nb">cd </span>julia-vim
 cp -R * ~/.vim
@@ -403,7 +403,7 @@ cp -R * ~/.vim
 
 <p>Voilà qui devrait vous fournir la coloration syntaxique ainsi que l'indentation
 pour les fichier dont l'extension et <code>.jl</code>.</p>
-<h2>IJulia</h2>
+<h1>IJulia</h1>
 <p>IJulia permet d'interfacer Julia à l'environnement de développement interactif
 <strong>IPython</strong>. Cela permet notamment d'utiliser le mode <strong>notebook</strong>, qui combine
 du code, du texte, et des contenus multimédias (dessin, etc.) dans un même
