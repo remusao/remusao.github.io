@@ -1531,7 +1531,8 @@ font-weight: bold;
 
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;/p&gt;</summary><category term="haskell"></category><category term="ihaskell"></category></entry><entry><title>Install IHaskell on Ubuntu 14.04 with Stack</title><link href="http://remusao.github.com/install-ihaskell-on-ubuntu-1404-with-stack.html" rel="alternate"></link><updated>2016-01-07T16:17:00+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2016-01-07:install-ihaskell-on-ubuntu-1404-with-stack.html</id><summary type="html">&lt;p&gt;In this post, we're going through the installation of IHaskell on GNU/Linux (Ubuntu 14.04 in my case, though it should be pretty similar on other ditributions) step-by-step. We'll see how the use of &lt;em&gt;Stack&lt;/em&gt; will simplify the whole process, and how to get all the dependencies right!&lt;/p&gt;
+&lt;/div&gt;&lt;/p&gt;</summary><category term="haskell"></category><category term="ihaskell"></category></entry><entry><title>Install IHaskell on Ubuntu 14.04 with Stack</title><link href="http://remusao.github.com/install-ihaskell-on-ubuntu-1404-with-stack.html" rel="alternate"></link><updated>2016-01-07T16:17:00+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2016-01-07:install-ihaskell-on-ubuntu-1404-with-stack.html</id><summary type="html">&lt;p&gt;In this post, we're going through the installation of IHaskell on GNU/Linux (Ubuntu 14.04 in my case, though it should be pretty similar on other ditributions) step-by-step. We'll see how the use of &lt;em&gt;Stack&lt;/em&gt; will simplify the whole process, and how to get all the dependencies right!
+&lt;/p&gt;
 &lt;h2&gt;Install Stack&lt;/h2&gt;
 &lt;p&gt;From &lt;em&gt;Stack&lt;/em&gt; official &lt;a href="http://docs.haskellstack.org/en/stable/install_and_upgrade.html"&gt;documentation&lt;/a&gt;, for Ubuntu 14.04:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442
@@ -1575,7 +1576,7 @@ sudo ldconfig
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (&lt;code&gt;--prefix=LOCATION&lt;/code&gt;, and change &lt;code&gt;LD_LIBRARY_PATH&lt;/code&gt; and &lt;code&gt;PATH&lt;/code&gt; in your shell configuration accordingly).&lt;/p&gt;
+&lt;p&gt;That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (Add the &lt;code&gt;--prefix=LOCATION&lt;/code&gt; directive to &lt;code&gt;./configure&lt;/code&gt;, and change &lt;code&gt;LD_LIBRARY_PATH&lt;/code&gt; and &lt;code&gt;PATH&lt;/code&gt; in your shell configuration accordingly).&lt;/p&gt;
 &lt;h2&gt;Install &lt;s&gt;IPython&lt;/s&gt; Jupyter&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;EDIT&lt;/strong&gt;: Following Florian's comment, it appears that &lt;em&gt;IPython&lt;/em&gt; is now officialy named &lt;em&gt;Jupyter&lt;/em&gt;, so we might as well install it in our virtualenv. The only change in the instructions is to replace &lt;code&gt;pip install ipython&lt;/code&gt; by &lt;code&gt;pip install jupyter&lt;/code&gt; (Note that &lt;em&gt;IPython&lt;/em&gt; is a dependency of &lt;em&gt;Jupyter&lt;/em&gt;).&lt;/p&gt;
 &lt;p&gt;IHaskell requires a &lt;s&gt;version of &lt;em&gt;IPython &amp;gt; 3.0.0 or up&lt;/em&gt;&lt;/s&gt; recent version of &lt;em&gt;Jupyter&lt;/em&gt;, so we need to install it ourselves. There are several options:&lt;/p&gt;
@@ -1648,7 +1649,8 @@ explain to you every features it provides and why it's awesome. Instead,
 I'll explain how I managed to cleanly externalize the data used for my
 tests in external files (that can be of any format: yaml, json, python
 files). The idea here is to &lt;em&gt;separate the code that performs the test&lt;/em&gt;,
-from the &lt;em&gt;input data used to perform the test&lt;/em&gt;.&lt;/p&gt;
+from the &lt;em&gt;input data used to perform the test&lt;/em&gt;.
+&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;test_feature.py&lt;/code&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_my_feature&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;one_example&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
     &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;one_example&lt;/span&gt;
@@ -1850,7 +1852,8 @@ and will:&lt;/p&gt;
 &lt;li&gt;reuse the same data for several tests&lt;/li&gt;
 &lt;li&gt;the data is not hard-coded in Python source-code&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;TL;DR: &lt;code&gt;py.test&lt;/code&gt; is awesome. Make tests. Get data for your tests from external sources.&lt;/p&gt;</summary><category term="python"></category><category term="pytest"></category></entry><entry><title>Decompressing BZipped files with Julia</title><link href="http://remusao.github.com/decompressing-bzipped-files-with-julia.html" rel="alternate"></link><updated>2014-07-22T22:33:41+02:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2014-07-22:decompressing-bzipped-files-with-julia.html</id><summary type="html">&lt;p&gt;I'm currently working with Wikipedia dumps, and to save space, it's a good thing to make scripts that read directly content from (and write results to) BZipped files.&lt;/p&gt;
+&lt;p&gt;TL;DR: &lt;code&gt;py.test&lt;/code&gt; is awesome. Make tests. Get data for your tests from external sources.&lt;/p&gt;</summary><category term="python"></category><category term="pytest"></category></entry><entry><title>Decompressing BZipped files with Julia</title><link href="http://remusao.github.com/decompressing-bzipped-files-with-julia.html" rel="alternate"></link><updated>2014-07-22T22:33:41+02:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2014-07-22:decompressing-bzipped-files-with-julia.html</id><summary type="html">&lt;p&gt;I'm currently working with Wikipedia dumps, and to save space, it's a good thing to make scripts that read directly content from (and write results to) BZipped files.
+&lt;/p&gt;
 &lt;h2&gt;Setup&lt;/h2&gt;
 &lt;p&gt;Tests where executed on my personnal computer:&lt;/p&gt;
 &lt;ul&gt;
@@ -1952,8 +1955,10 @@ This time is about &lt;em&gt;66 seconds&lt;/em&gt;, more or less the same than w
 &lt;p&gt;Timings are relatively close since the big work is done in the decompression, that's why there isn't much difference between &lt;em&gt;Julia&lt;/em&gt; and &lt;em&gt;Python&lt;/em&gt;.&lt;/p&gt;
 &lt;h2&gt;Conclusion&lt;/h2&gt;
 &lt;p&gt;I was first tempted to implement a &lt;em&gt;Julia&lt;/em&gt; wrapper over &lt;em&gt;bzlib&lt;/em&gt;, but what for? When it's so easy to invoke external commands and manipulate their input and output streams.
-&lt;em&gt;Julia&lt;/em&gt; is a young language, but it's so flexible and extensible, that often I forget about it!&lt;/p&gt;</summary></entry><entry><title>Installation de Julia</title><link href="http://remusao.github.com/installation-de-julia.html" rel="alternate"></link><updated>2014-02-14T22:00:42+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2014-02-14:installation-de-julia.html</id><summary type="html">&lt;p&gt;Suite au premier article sur le langage Julia, voici un guide rapide de mise en
-route de votre environnement pour utiliser le langage. Voici le plan :&lt;/p&gt;
+&lt;em&gt;Julia&lt;/em&gt; is a young language, but it's so flexible and extensible, that often I forget about it!&lt;/p&gt;</summary><category term="julialang"></category><category term="programming"></category><category term="compression"></category></entry><entry><title>Installation de Julia</title><link href="http://remusao.github.com/installation-de-julia.html" rel="alternate"></link><updated>2014-02-14T22:00:42+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2014-02-14:installation-de-julia.html</id><summary type="html">&lt;p&gt;Suite au premier article sur le langage Julia, voici un guide rapide de mise en
+route de votre environnement pour utiliser le langage.
+&lt;/p&gt;
+&lt;p&gt;Voici le plan :&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Compiler Julia depuis les sources&lt;/li&gt;
 &lt;li&gt;Coloration syntaxique et indentation sous vim&lt;/li&gt;
@@ -2076,9 +2081,10 @@ vos programmes. A bientôt pour de nouvelles aventures !&lt;/p&gt;
 &lt;p&gt;Afin de réaliser cet articles je me suis inspiré de la documentation présente
 sur les dépôts officiels de &lt;a href="https://github.com/JuliaLang/julia"&gt;Julia&lt;/a&gt;,
 &lt;a href="https://github.com/JuliaLang/julia-vim"&gt;julia-vim&lt;/a&gt; et
-&lt;a href="https://github.com/JuliaLang/IJulia.jl"&gt;IJulia&lt;/a&gt;.&lt;/p&gt;</summary></entry><entry><title>Julia</title><link href="http://remusao.github.com/julia.html" rel="alternate"></link><updated>2014-02-13T22:53:41+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2014-02-13:julia.html</id><summary type="html">&lt;p&gt;Aujourd'hui j'aimerais parler d'un langage de programmation que je viens de
+&lt;a href="https://github.com/JuliaLang/IJulia.jl"&gt;IJulia&lt;/a&gt;.&lt;/p&gt;</summary><category term="julialang"></category><category term="quickstart"></category></entry><entry><title>Julia</title><link href="http://remusao.github.com/julia.html" rel="alternate"></link><updated>2014-02-13T22:53:41+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2014-02-13:julia.html</id><summary type="html">&lt;p&gt;Aujourd'hui j'aimerais parler d'un langage de programmation que je viens de
 découvrir : &lt;strong&gt;Julia&lt;/strong&gt;. Je vais donc vous le présenter succinctement et donner
-mon ressenti après quelques jours d'utilisation.&lt;/p&gt;
+mon ressenti après quelques jours d'utilisation.
+&lt;/p&gt;
 &lt;h2&gt;Qu'est-ce que c'est ?&lt;/h2&gt;
 &lt;p&gt;Le Julia est un langage :&lt;/p&gt;
 &lt;ul&gt;
@@ -2223,4 +2229,4 @@ prochains articles pour les démonstrations de code.&lt;/p&gt;
 &lt;li&gt;&lt;a href="https://github.com/JuliaLang/julia"&gt;Github&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://docs.julialang.org/en/latest/manual/"&gt;Documentation&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://julialang.org/"&gt;Site officiel&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</summary></entry></feed>
+&lt;/ul&gt;</summary><category term="julialang"></category></entry></feed>

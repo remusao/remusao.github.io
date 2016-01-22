@@ -5,7 +5,8 @@ explain to you every features it provides and why it's awesome. Instead,
 I'll explain how I managed to cleanly externalize the data used for my
 tests in external files (that can be of any format: yaml, json, python
 files). The idea here is to &lt;em&gt;separate the code that performs the test&lt;/em&gt;,
-from the &lt;em&gt;input data used to perform the test&lt;/em&gt;.&lt;/p&gt;
+from the &lt;em&gt;input data used to perform the test&lt;/em&gt;.
+&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;test_feature.py&lt;/code&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_my_feature&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;one_example&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
     &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;one_example&lt;/span&gt;
