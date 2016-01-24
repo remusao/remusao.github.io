@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Pythux</title><link href="http://remusao.github.com/" rel="alternate"></link><link href="http://remusao.github.com/feeds/haskell.atom.xml" rel="self"></link><id>http://remusao.github.com/</id><updated>2016-01-11T00:21:00+01:00</updated><entry><title>A tour of IHaskell extensions and integrations</title><link href="http://remusao.github.com/a-tour-of-ihaskell-extensions-and-integrations.html" rel="alternate"></link><updated>2016-01-11T00:21:00+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2016-01-11:a-tour-of-ihaskell-extensions-and-integrations.html</id><summary type="html">&lt;p&gt;{% notebook ihaskell-extensions.ipynb %}&lt;/p&gt;</summary><category term="haskell"></category><category term="ihaskell"></category></entry><entry><title>Install IHaskell on Ubuntu 14.04 with Stack</title><link href="http://remusao.github.com/install-ihaskell-on-ubuntu-1404-with-stack.html" rel="alternate"></link><updated>2016-01-07T16:17:00+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2016-01-07:install-ihaskell-on-ubuntu-1404-with-stack.html</id><summary type="html">&lt;p&gt;In this post, we're going through the installation of IHaskell on GNU/Linux (Ubuntu 14.04 in my case, though it should be pretty similar on other ditributions) step-by-step. We'll see how the use of &lt;em&gt;Stack&lt;/em&gt; will simplify the whole process, and how to get all the dependencies right!
+&lt;!-- PELICAN_END_SUMMARY --&gt;&lt;/p&gt;
+&lt;h2&gt;Install Stack&lt;/h2&gt;
+&lt;p&gt;From &lt;em&gt;Stack&lt;/em&gt; official &lt;a href="http://docs.haskellstack.org/en/stable/install_and_upgrade.html"&gt;documentation&lt;/a&gt;, for Ubuntu 14.04:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442
+&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;deb http://download.fpcomplete.com/ubuntu trusty main&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;sudo tee /etc/apt/sources.list.d/fpco.list
+sudo apt-get update &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; sudo apt-get install stack -y
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;You should now be able to run the &lt;code&gt;stack&lt;/code&gt; executable in a shell:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;stack --help
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Being up-to-date is important, so setup your &lt;em&gt;Stack&lt;/em&gt; global configuration &lt;code&gt;~/.stack/global/stack.yaml&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="l-Scalar-Plain"&gt;flags&lt;/span&gt;&lt;span class="p-Indicator"&gt;:&lt;/span&gt; &lt;span class="p-Indicator"&gt;{}&lt;/span&gt;
+&lt;span class="l-Scalar-Plain"&gt;resolver&lt;/span&gt;&lt;span class="p-Indicator"&gt;:&lt;/span&gt; &lt;span class="l-Scalar-Plain"&gt;lts-4.0&lt;/span&gt;
+&lt;span class="l-Scalar-Plain"&gt;packages&lt;/span&gt;&lt;span class="p-Indicator"&gt;:&lt;/span&gt; &lt;span class="p-Indicator"&gt;[]&lt;/span&gt;
+&lt;span class="l-Scalar-Plain"&gt;extra-deps&lt;/span&gt;&lt;span class="p-Indicator"&gt;:&lt;/span&gt; &lt;span class="p-Indicator"&gt;[]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Tell &lt;em&gt;Stack&lt;/em&gt; to setup everything (download package list, install latest &lt;em&gt;GHC&lt;/em&gt; release, etc.):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;stack setup
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Note that you can lookup the latest release of stackage at anytime on this &lt;a href="http://www.stackage.org/lts"&gt;page&lt;/a&gt;.&lt;/p&gt;
+&lt;h2&gt;Install ZeroMQ latest version&lt;/h2&gt;
+&lt;p&gt;If you try to install IHaskell directly, you'll get an error since Ubuntu 14.04 ships with an older version of ZeroMQ. We need a more recent release. There are several ways to install it:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Compile it from source&lt;/li&gt;
+&lt;li&gt;Use Nix&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;We're going to compile it from source. I'll follow the way of the official &lt;a href="https://github.com/gibiansky/IHaskell#install-zeromq"&gt;README&lt;/a&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# Compiling from source:&lt;/span&gt;
+git clone git@github.com:zeromq/zeromq4-x.git libzmq
+&lt;span class="nb"&gt;cd &lt;/span&gt;libzmq
+./autogen.sh &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; ./configure &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; make
+sudo make install
+sudo ldconfig
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (Add the &lt;code&gt;--prefix=LOCATION&lt;/code&gt; directive to &lt;code&gt;./configure&lt;/code&gt;, and change &lt;code&gt;LD_LIBRARY_PATH&lt;/code&gt; and &lt;code&gt;PATH&lt;/code&gt; in your shell configuration accordingly).&lt;/p&gt;
+&lt;h2&gt;Install &lt;s&gt;IPython&lt;/s&gt; Jupyter&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;EDIT&lt;/strong&gt;: Following Florian's comment, it appears that &lt;em&gt;IPython&lt;/em&gt; is now officialy named &lt;em&gt;Jupyter&lt;/em&gt;, so we might as well install it in our virtualenv. The only change in the instructions is to replace &lt;code&gt;pip install ipython&lt;/code&gt; by &lt;code&gt;pip install jupyter&lt;/code&gt; (Note that &lt;em&gt;IPython&lt;/em&gt; is a dependency of &lt;em&gt;Jupyter&lt;/em&gt;).&lt;/p&gt;
+&lt;p&gt;IHaskell requires a &lt;s&gt;version of &lt;em&gt;IPython &amp;gt; 3.0.0 or up&lt;/em&gt;&lt;/s&gt; recent version of &lt;em&gt;Jupyter&lt;/em&gt;, so we need to install it ourselves. There are several options:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Use pip and install it globaly (&lt;s&gt;&lt;em&gt;pip install ipython&lt;/em&gt;&lt;/s&gt;&lt;code&gt;pip install jupyter&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;Use pip and install it in a virtualenv (&lt;strong&gt;This is what we will do here&lt;/strong&gt;)&lt;/li&gt;
+&lt;li&gt;Use &lt;a href="https://nixos.org/nix/"&gt;nix&lt;/a&gt; &lt;em&gt;(You're on your own)&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;Use &lt;a href="https://www.continuum.io/downloads"&gt;conda&lt;/a&gt; (&lt;s&gt;&lt;em&gt;conda update ipython&lt;/em&gt;&lt;/s&gt;&lt;code&gt;conda update jupyter&lt;/code&gt;)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;If you're on a fresh install: &lt;code&gt;sudo apt-get install python-virtualenv python-dev ncurses-base&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;With &lt;code&gt;virtualenv&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;virtualenv venv-ihaskell
+&lt;span class="nb"&gt;source &lt;/span&gt;venv-ihaskell/bin/activate
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;With &lt;code&gt;virtualenvwrapper&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mkvirtualenv ihaskell
+workon ihaskell
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Now we install &lt;s&gt;&lt;em&gt;ipython&lt;/em&gt;&lt;/s&gt; &lt;em&gt;Jupyter&lt;/em&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;pip install jupyter
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Install IHaskell&lt;/h2&gt;
+&lt;p&gt;Nothing simpler, just use &lt;em&gt;Stack&lt;/em&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;stack build ihaskell
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;You may want to install extra packages to enhance &lt;em&gt;IHaskell&lt;/em&gt; capabilities. Here are the ones supported by Stackage:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ihaskell-aeson&lt;/li&gt;
+&lt;li&gt;ihaskell-blaze&lt;/li&gt;
+&lt;li&gt;ihaskell-charts&lt;/li&gt;
+&lt;li&gt;ihaskell-diagrams&lt;/li&gt;
+&lt;li&gt;ihaskell-rlangqq&lt;/li&gt;
+&lt;li&gt;ihaskell-magic&lt;/li&gt;
+&lt;li&gt;ihaskell-juicypixels&lt;/li&gt;
+&lt;li&gt;ihaskell-hatex&lt;/li&gt;
+&lt;li&gt;ihaskell-basic&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Some others are not in the LTS snapshot of Stackage, but could be useful in the future. I don't know about the current maturity of these packages:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ihaskell-widgets (conflict with current version of singletons)&lt;/li&gt;
+&lt;li&gt;ihaskell-parsec (conflict with current version of aeson)&lt;/li&gt;
+&lt;li&gt;ihaskell-plot&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Setup IHaskell&lt;/h2&gt;
+&lt;p&gt;If everything went well, you should have &lt;em&gt;Jupyter&lt;/em&gt; (latest version) and &lt;em&gt;ihaskell&lt;/em&gt; installed properly. The last step is to install the &lt;em&gt;IHaskell Kernel&lt;/em&gt; into &lt;em&gt;Jupyter&lt;/em&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;stack &lt;span class="nb"&gt;exec &lt;/span&gt;ihaskell -- install
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Now run the notebook server and enjoy:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;stack &lt;span class="nb"&gt;exec &lt;/span&gt;jupyter -- notebook
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Open your browser and go to: &lt;code&gt;http://localhost:8000&lt;/code&gt;&lt;/p&gt;
+&lt;h2&gt;What's next&lt;/h2&gt;
+&lt;p&gt;Thanks to Stack, the install process went very smoothely (appart from some dependency we had to install ourselves).
+Using IPython with a Haskell Kernel I believe writing about Haskell will be a much pleasant experience since it's really easy
+to export a notebook either in HTML or Markdown.&lt;/p&gt;</summary><category term="haskell"></category><category term="stack"></category><category term="ihaskell"></category><category term="ipython"></category><category term="ubuntu"></category></entry></feed>
