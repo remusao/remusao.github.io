@@ -289,66 +289,7 @@ jQuery(document).ready(function($) {
                 </h2>
             </a>
                 <p>I'm currently working with Wikipedia dumps, and to save space, it's a good thing to make scripts that read directly content from (and write results to) BZipped files.
-<!-- PELICAN_END_SUMMARY --></p>
-<h2>Setup</h2>
-<p>Tests where executed on my personnal computer:</p>
-<ul>
-<li>i7</li>
-<li>16GB of ram</li>
-</ul>
-<p>On a small wikipedia dump of <em>407MB</em>. All timings are in <em>seconds</em>.</p>
-<h2>bzcat alone</h2>
-<p>To have a point of comparison, I decompressed the dump using <em>bzcat</em> alone. The timing is <em>64 seconds</em>.</p>
-<div class="highlight"><pre><span class="nv">$ </span><span class="nb">time </span>1&gt;/dev/null bzcat wikidump.xml.bz2
-</pre></div>
 
-
-<h2>Using Python</h2>
-<p>It's easy enough with <em>Python</em> thanks to the <code>bz2</code> module that allows to transparently manipulate a compressed file as if it were a normal opened file. Before jumping to Julia, let see how it is done in Python:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">bz2</span>
-
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">in_stream</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">in_stream</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-    <span class="n">in_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
-</pre></div>
-
-
-<p>Nothing easier, it takes <em>85 seconds</em> to run.</p>
-<h2>What about Julia?</h2>
-<p>Since I really love <em>Julia</em> language, I was tempted to do the same with Julia. Here are the differents solutions that I went through, with their respective timings.</p>
-<h3>Using bz2 Python module through PyCall</h3>
-<p>The first naive option is to use the original module from Python. It's easy enough using the <code>PyCall</code> module. We can install it like so:</p>
-<div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;PyCall&quot;</span><span class="p">)</span>
-<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-</pre></div>
-
-
-<p>The script:</p>
-<div class="highlight"><pre><span class="k">using</span> <span class="n">PyCall</span>
-<span class="p">@</span><span class="n">pyimport</span> <span class="n">bz2</span>
-
-<span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
-    <span class="n">in_stream</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">ARGS</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">in_stream</span>
-        <span class="n">println</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-    <span class="k">end</span>
-    <span class="n">in_stream</span><span class="p">[:</span><span class="n">close</span><span class="p">]()</span>
-<span class="k">end</span>
-</pre></div>
-
-
-<p>But then we hit the wall... timing is: <em>1352 seconds</em>. This is likely due to the conversion between <em>Python</em> and <em>Julia</em> datatypes. So not the best option for a data-intensive usage.</p>
-<h3>Piping result of bzcat to Julia</h3>
-<p>The second option that came to my mind was: "why not ...</p>
             <p class="post-meta">Posted by
                     <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
                  on Tue 22 July 2014

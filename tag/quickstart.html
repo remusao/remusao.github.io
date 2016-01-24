@@ -290,57 +290,7 @@ jQuery(document).ready(function($) {
             </a>
                 <p>Suite au premier article sur le langage Julia, voici un guide rapide de mise en
 route de votre environnement pour utiliser le langage.
-<!-- PELICAN_END_SUMMARY --></p>
-<p>Voici le plan :</p>
-<ul>
-<li>Compiler Julia depuis les sources</li>
-<li>Coloration syntaxique et indentation sous vim</li>
-<li>Environnement IJulia (équivalement de IPython)</li>
-</ul>
-<h1>Compilation</h1>
-<p>Tout d'abord compiler l'interpréteur Julia depuis les sources. Notez que si
-votre distribution <em>linux</em> dispose d'un paquet Julia dans ses dépôt ou si vous
-ne désirez pas compiler Julia depuis les sources, il est toujours possible
-d'installer une version pré-compilée depuis la
-<a href="http://julialang.org/downloads/">page téléchargement</a> du site officiel.</p>
-<p>Commençons tout d'abord par récupérer les sources de Julia :</p>
-<div class="highlight"><pre>git clone https://github.com/JuliaLang/julia.git
-<span class="nb">cd </span>julia
-</pre></div>
 
-
-<p>Ensuite, vérifiez que les dépendances suivantes sont bien disponibles sur votre
-système :
-<em> <a href="http://www.gnu.org/software/make/">GNU make</a>
-</em> <a href="http://gcc.gnu.org/">gcc et g++</a> (ou <a href="http://clang.llvm.org/">Clang</a>)
-<em> <a href="http://gcc.gnu.org/">gfortran</a>
-</em> <a href="http://git-scm.com/">git</a>
-<em> <a href="http://www.perl.org/">perl</a>
-</em> <a href="http://www.gnu.org/software/wget/">wget</a> (ou <a href="http://curl.haxx.se/">curl</a>, ou <em>fetch</em>)
-<em> <a href="http://www.gnu.org/software/m4/">m4</a>
-</em> <a href="http://www.gnu.org/software/patch/">patch</a></p>
-<p>Si tout est installé, lancez la compilation (notez que <strong>N</strong> est à remplacer
-par le nombre de cœurs dont dispose votre processeur, cela peut grandement
-améliorer le temps de compilation) :</p>
-<div class="highlight"><pre>make -j N
-</pre></div>
-
-
-<p>La première fois que vous compilez Julia, des dépendances vont être téléchargées
-puis compilées, c'est pourquoi cela peut prendre un certains temps. La
-compilation peut consommer jusqu'à <em>700 Mo de mémoire</em> et <em>1.5 Go d'espace
-disque</em>. Les éventuelles compilations futures seront moins gourmandes.</p>
-<p>Une fois la compilation terminée, vous disposez d'un
-<a href="http://en.wikipedia.org/wiki/Symbolic_link">lien symbolique</a> vers l'exécutable
-Julia. Afin qu'il soit accessible depuis n'importe quel endroit, vous pouvez
-le rajouter à votre <code>PATH</code> (vous pouvez le rajouter dans le fichier de
-configuration de votre Shell favori en remplaçant <code>$(pwd)</code> par le chemin
-absolu vers le dossier julia dans lequel se trouve le lien symbolique) :</p>
-<div class="highlight"><pre><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
-</pre></div>
-
-
-<p>Julia intègre tout le nécessaire pour gérer l'installation, la ...</p>
             <p class="post-meta">Posted by
                     <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
                  on Fri 14 February 2014

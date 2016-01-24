@@ -305,53 +305,7 @@ jQuery(document).ready(function($) {
                 </h2>
             </a>
                 <p>In this post, we're going through the installation of IHaskell on GNU/Linux (Ubuntu 14.04 in my case, though it should be pretty similar on other ditributions) step-by-step. We'll see how the use of <em>Stack</em> will simplify the whole process, and how to get all the dependencies right!
-<!-- PELICAN_END_SUMMARY --></p>
-<h2>Install Stack</h2>
-<p>From <em>Stack</em> official <a href="http://docs.haskellstack.org/en/stable/install_and_upgrade.html">documentation</a>, for Ubuntu 14.04:</p>
-<div class="highlight"><pre>sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442
-<span class="nb">echo</span> <span class="s1">&#39;deb http://download.fpcomplete.com/ubuntu trusty main&#39;</span><span class="p">|</span>sudo tee /etc/apt/sources.list.d/fpco.list
-sudo apt-get update <span class="o">&amp;&amp;</span> sudo apt-get install stack -y
-</pre></div>
 
-
-<p>You should now be able to run the <code>stack</code> executable in a shell:</p>
-<div class="highlight"><pre>stack --help
-</pre></div>
-
-
-<p>Being up-to-date is important, so setup your <em>Stack</em> global configuration <code>~/.stack/global/stack.yaml</code>:</p>
-<div class="highlight"><pre><span class="l-Scalar-Plain">flags</span><span class="p-Indicator">:</span> <span class="p-Indicator">{}</span>
-<span class="l-Scalar-Plain">resolver</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">lts-4.0</span>
-<span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
-<span class="l-Scalar-Plain">extra-deps</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
-</pre></div>
-
-
-<p>Tell <em>Stack</em> to setup everything (download package list, install latest <em>GHC</em> release, etc.):</p>
-<div class="highlight"><pre>stack setup
-</pre></div>
-
-
-<p>Note that you can lookup the latest release of stackage at anytime on this <a href="http://www.stackage.org/lts">page</a>.</p>
-<h2>Install ZeroMQ latest version</h2>
-<p>If you try to install IHaskell directly, you'll get an error since Ubuntu 14.04 ships with an older version of ZeroMQ. We need a more recent release. There are several ways to install it:</p>
-<ol>
-<li>Compile it from source</li>
-<li>Use Nix</li>
-</ol>
-<p>We're going to compile it from source. I'll follow the way of the official <a href="https://github.com/gibiansky/IHaskell#install-zeromq">README</a>:</p>
-<div class="highlight"><pre><span class="c"># Compiling from source:</span>
-git clone git@github.com:zeromq/zeromq4-x.git libzmq
-<span class="nb">cd </span>libzmq
-./autogen.sh <span class="o">&amp;&amp;</span> ./configure <span class="o">&amp;&amp;</span> make
-sudo make install
-sudo ldconfig
-</pre></div>
-
-
-<p>That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (Add the <code>--prefix=LOCATION</code> directive to <code>./configure</code>, and change <code>LD_LIBRARY_PATH</code> and <code>PATH</code> in your shell configuration accordingly).</p>
-<h2>Install <s>IPython</s> Jupyter</h2>
-<p><strong>EDIT</strong>: Following Florian's comment, it appears that ...</p>
             <p class="post-meta">Posted by
                     <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
                  on Thu 07 January 2016
@@ -370,60 +324,7 @@ I'll explain how I managed to cleanly externalize the data used for my
 tests in external files (that can be of any format: yaml, json, python
 files). The idea here is to <em>separate the code that performs the test</em>,
 from the <em>input data used to perform the test</em>.
-<!-- PELICAN_END_SUMMARY --></p>
-<p><code>test_feature.py</code></p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">test_my_feature</span><span class="p">(</span><span class="n">one_example</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="n">one_example</span>
-</pre></div>
 
-
-<p><code>data_feature.yaml</code></p>
-<div class="highlight"><pre><span class="l-Scalar-Plain">tests</span><span class="p-Indicator">:</span>
-    <span class="l-Scalar-Plain">test1</span><span class="p-Indicator">:</span>
-        <span class="l-Scalar-Plain">...</span>
-    <span class="l-Scalar-Plain">test2</span><span class="p-Indicator">:</span>
-        <span class="l-Scalar-Plain">...</span>
-</pre></div>
-
-
-<h2>First solution: yield</h2>
-<p>The first solution would be to use <code>yield</code> to generate tests, as it's supported
-by <code>py.test</code> (as long as you don't want to use fixtures in your test function...).</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">example</span><span class="p">):</span>
-    <span class="c"># perform your test</span>
-
-<span class="k">def</span> <span class="nf">test_feature</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">generate_tests</span><span class="p">():</span>
-        <span class="k">yield</span> <span class="n">check</span><span class="p">,</span> <span class="n">test</span>
-</pre></div>
-
-
-<p>Here, <code>py.test</code> will understand that <code>test_feature</code> will yield several tests and that
-the <code>check</code> function must be used to perform the test, so it is almost equivalent to do:</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">test_feature</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">generate_tests</span><span class="p">():</span>
-        <span class="n">check</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
-</pre></div>
-
-
-<p>Except that in this last snippet of code, the tests will stop as soon as one fails.
-With the <code>yield</code>-version, every tests will be ran even if some fail. This is useful
-if you have lot of tests, and you want to know which ones fail (not just the first one).</p>
-<p><strong>Problem</strong>: if you want to use fixtures with your <code>test_feature</code> functions, it breaks:</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">example</span><span class="p">):</span>
-    <span class="c"># perform your test</span>
-
-<span class="k">def</span> <span class="nf">test_feature</span><span class="p">(</span><span class="n">my_fixture</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">generate_tests</span><span class="p">():</span>
-        <span class="k">yield</span> <span class="n">check</span><span class="p">,</span> <span class="n">test</span>
-</pre></div>
-
-
-<p>This will tell you that <code>test_feature</code> expects one argument but that none are provided.</p>
-<p>End of the story...
-Wait, no, <code>py.test</code> is awesome remember? So there must be a solution!</p>
-<h2>Parametrization</h2>
-<p>One ...</p>
             <p class="post-meta">Posted by
                     <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
                  on Wed 26 November 2014
@@ -436,66 +337,7 @@ Wait, no, <code>py.test</code> is awesome remember? So there must be a solution!
                 </h2>
             </a>
                 <p>I'm currently working with Wikipedia dumps, and to save space, it's a good thing to make scripts that read directly content from (and write results to) BZipped files.
-<!-- PELICAN_END_SUMMARY --></p>
-<h2>Setup</h2>
-<p>Tests where executed on my personnal computer:</p>
-<ul>
-<li>i7</li>
-<li>16GB of ram</li>
-</ul>
-<p>On a small wikipedia dump of <em>407MB</em>. All timings are in <em>seconds</em>.</p>
-<h2>bzcat alone</h2>
-<p>To have a point of comparison, I decompressed the dump using <em>bzcat</em> alone. The timing is <em>64 seconds</em>.</p>
-<div class="highlight"><pre><span class="nv">$ </span><span class="nb">time </span>1&gt;/dev/null bzcat wikidump.xml.bz2
-</pre></div>
 
-
-<h2>Using Python</h2>
-<p>It's easy enough with <em>Python</em> thanks to the <code>bz2</code> module that allows to transparently manipulate a compressed file as if it were a normal opened file. Before jumping to Julia, let see how it is done in Python:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">bz2</span>
-
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">in_stream</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">in_stream</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-    <span class="n">in_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
-</pre></div>
-
-
-<p>Nothing easier, it takes <em>85 seconds</em> to run.</p>
-<h2>What about Julia?</h2>
-<p>Since I really love <em>Julia</em> language, I was tempted to do the same with Julia. Here are the differents solutions that I went through, with their respective timings.</p>
-<h3>Using bz2 Python module through PyCall</h3>
-<p>The first naive option is to use the original module from Python. It's easy enough using the <code>PyCall</code> module. We can install it like so:</p>
-<div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;PyCall&quot;</span><span class="p">)</span>
-<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-</pre></div>
-
-
-<p>The script:</p>
-<div class="highlight"><pre><span class="k">using</span> <span class="n">PyCall</span>
-<span class="p">@</span><span class="n">pyimport</span> <span class="n">bz2</span>
-
-<span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
-    <span class="n">in_stream</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">ARGS</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">in_stream</span>
-        <span class="n">println</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-    <span class="k">end</span>
-    <span class="n">in_stream</span><span class="p">[:</span><span class="n">close</span><span class="p">]()</span>
-<span class="k">end</span>
-</pre></div>
-
-
-<p>But then we hit the wall... timing is: <em>1352 seconds</em>. This is likely due to the conversion between <em>Python</em> and <em>Julia</em> datatypes. So not the best option for a data-intensive usage.</p>
-<h3>Piping result of bzcat to Julia</h3>
-<p>The second option that came to my mind was: "why not ...</p>
             <p class="post-meta">Posted by
                     <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
                  on Tue 22 July 2014
@@ -509,57 +351,7 @@ Wait, no, <code>py.test</code> is awesome remember? So there must be a solution!
             </a>
                 <p>Suite au premier article sur le langage Julia, voici un guide rapide de mise en
 route de votre environnement pour utiliser le langage.
-<!-- PELICAN_END_SUMMARY --></p>
-<p>Voici le plan :</p>
-<ul>
-<li>Compiler Julia depuis les sources</li>
-<li>Coloration syntaxique et indentation sous vim</li>
-<li>Environnement IJulia (équivalement de IPython)</li>
-</ul>
-<h1>Compilation</h1>
-<p>Tout d'abord compiler l'interpréteur Julia depuis les sources. Notez que si
-votre distribution <em>linux</em> dispose d'un paquet Julia dans ses dépôt ou si vous
-ne désirez pas compiler Julia depuis les sources, il est toujours possible
-d'installer une version pré-compilée depuis la
-<a href="http://julialang.org/downloads/">page téléchargement</a> du site officiel.</p>
-<p>Commençons tout d'abord par récupérer les sources de Julia :</p>
-<div class="highlight"><pre>git clone https://github.com/JuliaLang/julia.git
-<span class="nb">cd </span>julia
-</pre></div>
 
-
-<p>Ensuite, vérifiez que les dépendances suivantes sont bien disponibles sur votre
-système :
-<em> <a href="http://www.gnu.org/software/make/">GNU make</a>
-</em> <a href="http://gcc.gnu.org/">gcc et g++</a> (ou <a href="http://clang.llvm.org/">Clang</a>)
-<em> <a href="http://gcc.gnu.org/">gfortran</a>
-</em> <a href="http://git-scm.com/">git</a>
-<em> <a href="http://www.perl.org/">perl</a>
-</em> <a href="http://www.gnu.org/software/wget/">wget</a> (ou <a href="http://curl.haxx.se/">curl</a>, ou <em>fetch</em>)
-<em> <a href="http://www.gnu.org/software/m4/">m4</a>
-</em> <a href="http://www.gnu.org/software/patch/">patch</a></p>
-<p>Si tout est installé, lancez la compilation (notez que <strong>N</strong> est à remplacer
-par le nombre de cœurs dont dispose votre processeur, cela peut grandement
-améliorer le temps de compilation) :</p>
-<div class="highlight"><pre>make -j N
-</pre></div>
-
-
-<p>La première fois que vous compilez Julia, des dépendances vont être téléchargées
-puis compilées, c'est pourquoi cela peut prendre un certains temps. La
-compilation peut consommer jusqu'à <em>700 Mo de mémoire</em> et <em>1.5 Go d'espace
-disque</em>. Les éventuelles compilations futures seront moins gourmandes.</p>
-<p>Une fois la compilation terminée, vous disposez d'un
-<a href="http://en.wikipedia.org/wiki/Symbolic_link">lien symbolique</a> vers l'exécutable
-Julia. Afin qu'il soit accessible depuis n'importe quel endroit, vous pouvez
-le rajouter à votre <code>PATH</code> (vous pouvez le rajouter dans le fichier de
-configuration de votre Shell favori en remplaçant <code>$(pwd)</code> par le chemin
-absolu vers le dossier julia dans lequel se trouve le lien symbolique) :</p>
-<div class="highlight"><pre><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
-</pre></div>
-
-
-<p>Julia intègre tout le nécessaire pour gérer l'installation, la ...</p>
             <p class="post-meta">Posted by
                     <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
                  on Fri 14 February 2014
@@ -574,76 +366,7 @@ absolu vers le dossier julia dans lequel se trouve le lien symbolique) :</p>
                 <p>Aujourd'hui j'aimerais parler d'un langage de programmation que je viens de
 découvrir : <strong>Julia</strong>. Je vais donc vous le présenter succinctement et donner
 mon ressenti après quelques jours d'utilisation.
-<!-- PELICAN_END_SUMMARY --></p>
-<h2>Qu'est-ce que c'est ?</h2>
-<p>Le Julia est un langage :</p>
-<ul>
-<li><strong>Haut niveau</strong> (<em>garbage collection</em>)</li>
-<li><strong>Dynamique</strong></li>
-<li><strong>Interprété</strong></li>
-<li><strong>Disposant d'un compilateur JIT</strong> (<em>backend LLVM</em>)</li>
-<li><strong>Performant</strong></li>
-</ul>
-<p>Il s'agit d'un subtile mélange entre les langage <strong>Python</strong>, <strong>R</strong> et
-<strong>Matlab</strong>. Python pour une partie de la syntaxe et les constructions élégantes du
-langage (<em>list comprehension</em>, boucles <em>for</em>, etc.), Matlab et R pour l'intégration
-des vecteurs, matrices et opérations associées dans la bibliothèque standard,
-en faisant un langage particulièrement adapté pour l'analyse numérique, le
-<em>machine learning</em>, et toute autre application nécessitant des outils d'algèbre
-linéaire, et des fonctions mathématiques diverses.</p>
-<div class="highlight"><pre><span class="c"># Dynamic type</span>
-<span class="n">a</span> <span class="o">=</span> <span class="mi">42</span>          <span class="c"># Int</span>
-<span class="n">a</span> <span class="o">=</span> <span class="s">&quot;toto&quot;</span>      <span class="c"># String</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>   <span class="c"># Vector</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">]</span>     <span class="c"># 1x3 Matrix</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>       <span class="c"># same 1x3 Matrix</span>
 
-<span class="k">for</span> <span class="n">e</span> <span class="k">in</span> <span class="n">a</span>
-    <span class="n">println</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
-<span class="k">end</span>
-
-<span class="c"># Output</span>
-<span class="c"># 1</span>
-<span class="c"># 2</span>
-<span class="c"># 3</span>
-</pre></div>
-
-
-<p>Julia dispose également des atouts suivants :</p>
-<ul>
-<li><strong>Multi-méthode</strong> permettant un dispatch dynamique en fonction du type des arguments passés aux fonctions</li>
-</ul>
-<div class="highlight"><pre><span class="c"># Method declaration</span>
-<span class="c"># foo is a function taking one argument of any type</span>
-<span class="k">function</span><span class="nf"> foo</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>
-    <span class="n">println</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>
-    <span class="k">end</span>
-
-<span class="c"># Shorter function declaration</span>
-<span class="n">baz</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
-<span class="c"># Multimethod</span>
-<span class="c"># Takes an argument of type Int (Haskelish syntax)</span>
-<span class="n">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">::</span><span class="kt">Int</span><span class="p">)</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Int&quot;</span><span class="p">)</span>
-<span class="c"># Takes an argument of type Matrix (of any type)</span>
-<span class="n">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">::</span><span class="n">Matrix</span><span class="p">)</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Matrix&quot;</span><span class="p">)</span>
-<span class="c"># Take an argument of type Matrix of Float64</span>
-<span class="n">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">::</span><span class="n">Matrix</span><span class="p">{</span><span class="kt">Float64</span><span class="p">})</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Matrix of Float64&quot;</span><span class="p">)</span>
-
-<span class="n">myprint</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>         <span class="c"># First one is called</span>
-<span class="n">myprint</span><span class="p">([</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">])</span>    <span class="c"># Second one is called</span>
-<span class="n">myprint</span><span class="p">([</span><span class="mf">0.5</span> <span class="mf">0.42</span><span class="p">])</span> <span class="c"># Third one is called</span>
-</pre></div>
-
-
-<ul>
-<li>Un système de <strong>template</strong> pour créer du code générique</li>
-</ul>
-<div class="highlight"><pre><span class="k">function</span><span class="nf"> printtype</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Any type&quot;</span><span class="p">)</span>
-<span class="k">end</span>
-
-<span class="c"># Takes argument of type ...</span></pre></div>
             <p class="post-meta">Posted by
                     <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
                  on Thu 13 February 2014

@@ -301,53 +301,7 @@ jQuery(document).ready(function($) {
                 </h2>
             </a>
                 <p>In this post, we're going through the installation of IHaskell on GNU/Linux (Ubuntu 14.04 in my case, though it should be pretty similar on other ditributions) step-by-step. We'll see how the use of <em>Stack</em> will simplify the whole process, and how to get all the dependencies right!
-<!-- PELICAN_END_SUMMARY --></p>
-<h2>Install Stack</h2>
-<p>From <em>Stack</em> official <a href="http://docs.haskellstack.org/en/stable/install_and_upgrade.html">documentation</a>, for Ubuntu 14.04:</p>
-<div class="highlight"><pre>sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442
-<span class="nb">echo</span> <span class="s1">&#39;deb http://download.fpcomplete.com/ubuntu trusty main&#39;</span><span class="p">|</span>sudo tee /etc/apt/sources.list.d/fpco.list
-sudo apt-get update <span class="o">&amp;&amp;</span> sudo apt-get install stack -y
-</pre></div>
 
-
-<p>You should now be able to run the <code>stack</code> executable in a shell:</p>
-<div class="highlight"><pre>stack --help
-</pre></div>
-
-
-<p>Being up-to-date is important, so setup your <em>Stack</em> global configuration <code>~/.stack/global/stack.yaml</code>:</p>
-<div class="highlight"><pre><span class="l-Scalar-Plain">flags</span><span class="p-Indicator">:</span> <span class="p-Indicator">{}</span>
-<span class="l-Scalar-Plain">resolver</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">lts-4.0</span>
-<span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
-<span class="l-Scalar-Plain">extra-deps</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
-</pre></div>
-
-
-<p>Tell <em>Stack</em> to setup everything (download package list, install latest <em>GHC</em> release, etc.):</p>
-<div class="highlight"><pre>stack setup
-</pre></div>
-
-
-<p>Note that you can lookup the latest release of stackage at anytime on this <a href="http://www.stackage.org/lts">page</a>.</p>
-<h2>Install ZeroMQ latest version</h2>
-<p>If you try to install IHaskell directly, you'll get an error since Ubuntu 14.04 ships with an older version of ZeroMQ. We need a more recent release. There are several ways to install it:</p>
-<ol>
-<li>Compile it from source</li>
-<li>Use Nix</li>
-</ol>
-<p>We're going to compile it from source. I'll follow the way of the official <a href="https://github.com/gibiansky/IHaskell#install-zeromq">README</a>:</p>
-<div class="highlight"><pre><span class="c"># Compiling from source:</span>
-git clone git@github.com:zeromq/zeromq4-x.git libzmq
-<span class="nb">cd </span>libzmq
-./autogen.sh <span class="o">&amp;&amp;</span> ./configure <span class="o">&amp;&amp;</span> make
-sudo make install
-sudo ldconfig
-</pre></div>
-
-
-<p>That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (Add the <code>--prefix=LOCATION</code> directive to <code>./configure</code>, and change <code>LD_LIBRARY_PATH</code> and <code>PATH</code> in your shell configuration accordingly).</p>
-<h2>Install <s>IPython</s> Jupyter</h2>
-<p><strong>EDIT</strong>: Following Florian's comment, it appears that ...</p>
             <p class="post-meta">Posted by
                     <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
                  on Thu 07 January 2016

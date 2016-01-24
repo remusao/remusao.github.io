@@ -289,66 +289,7 @@ jQuery(document).ready(function($) {
                 </h2>
             </a>
                 <p>I'm currently working with Wikipedia dumps, and to save space, it's a good thing to make scripts that read directly content from (and write results to) BZipped files.
-<!-- PELICAN_END_SUMMARY --></p>
-<h2>Setup</h2>
-<p>Tests where executed on my personnal computer:</p>
-<ul>
-<li>i7</li>
-<li>16GB of ram</li>
-</ul>
-<p>On a small wikipedia dump of <em>407MB</em>. All timings are in <em>seconds</em>.</p>
-<h2>bzcat alone</h2>
-<p>To have a point of comparison, I decompressed the dump using <em>bzcat</em> alone. The timing is <em>64 seconds</em>.</p>
-<div class="highlight"><pre><span class="nv">$ </span><span class="nb">time </span>1&gt;/dev/null bzcat wikidump.xml.bz2
-</pre></div>
 
-
-<h2>Using Python</h2>
-<p>It's easy enough with <em>Python</em> thanks to the <code>bz2</code> module that allows to transparently manipulate a compressed file as if it were a normal opened file. Before jumping to Julia, let see how it is done in Python:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">bz2</span>
-
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">in_stream</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">in_stream</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-    <span class="n">in_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
-</pre></div>
-
-
-<p>Nothing easier, it takes <em>85 seconds</em> to run.</p>
-<h2>What about Julia?</h2>
-<p>Since I really love <em>Julia</em> language, I was tempted to do the same with Julia. Here are the differents solutions that I went through, with their respective timings.</p>
-<h3>Using bz2 Python module through PyCall</h3>
-<p>The first naive option is to use the original module from Python. It's easy enough using the <code>PyCall</code> module. We can install it like so:</p>
-<div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;PyCall&quot;</span><span class="p">)</span>
-<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-</pre></div>
-
-
-<p>The script:</p>
-<div class="highlight"><pre><span class="k">using</span> <span class="n">PyCall</span>
-<span class="p">@</span><span class="n">pyimport</span> <span class="n">bz2</span>
-
-<span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
-    <span class="n">in_stream</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">(</span><span class="n">ARGS</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">in_stream</span>
-        <span class="n">println</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-    <span class="k">end</span>
-    <span class="n">in_stream</span><span class="p">[:</span><span class="n">close</span><span class="p">]()</span>
-<span class="k">end</span>
-</pre></div>
-
-
-<p>But then we hit the wall... timing is: <em>1352 seconds</em>. This is likely due to the conversion between <em>Python</em> and <em>Julia</em> datatypes. So not the best option for a data-intensive usage.</p>
-<h3>Piping result of bzcat to Julia</h3>
-<p>The second option that came to my mind was: "why not ...</p>
             <p class="post-meta">Posted by
                     <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
                  on Tue 22 July 2014
@@ -362,57 +303,7 @@ jQuery(document).ready(function($) {
             </a>
                 <p>Suite au premier article sur le langage Julia, voici un guide rapide de mise en
 route de votre environnement pour utiliser le langage.
-<!-- PELICAN_END_SUMMARY --></p>
-<p>Voici le plan :</p>
-<ul>
-<li>Compiler Julia depuis les sources</li>
-<li>Coloration syntaxique et indentation sous vim</li>
-<li>Environnement IJulia (équivalement de IPython)</li>
-</ul>
-<h1>Compilation</h1>
-<p>Tout d'abord compiler l'interpréteur Julia depuis les sources. Notez que si
-votre distribution <em>linux</em> dispose d'un paquet Julia dans ses dépôt ou si vous
-ne désirez pas compiler Julia depuis les sources, il est toujours possible
-d'installer une version pré-compilée depuis la
-<a href="http://julialang.org/downloads/">page téléchargement</a> du site officiel.</p>
-<p>Commençons tout d'abord par récupérer les sources de Julia :</p>
-<div class="highlight"><pre>git clone https://github.com/JuliaLang/julia.git
-<span class="nb">cd </span>julia
-</pre></div>
 
-
-<p>Ensuite, vérifiez que les dépendances suivantes sont bien disponibles sur votre
-système :
-<em> <a href="http://www.gnu.org/software/make/">GNU make</a>
-</em> <a href="http://gcc.gnu.org/">gcc et g++</a> (ou <a href="http://clang.llvm.org/">Clang</a>)
-<em> <a href="http://gcc.gnu.org/">gfortran</a>
-</em> <a href="http://git-scm.com/">git</a>
-<em> <a href="http://www.perl.org/">perl</a>
-</em> <a href="http://www.gnu.org/software/wget/">wget</a> (ou <a href="http://curl.haxx.se/">curl</a>, ou <em>fetch</em>)
-<em> <a href="http://www.gnu.org/software/m4/">m4</a>
-</em> <a href="http://www.gnu.org/software/patch/">patch</a></p>
-<p>Si tout est installé, lancez la compilation (notez que <strong>N</strong> est à remplacer
-par le nombre de cœurs dont dispose votre processeur, cela peut grandement
-améliorer le temps de compilation) :</p>
-<div class="highlight"><pre>make -j N
-</pre></div>
-
-
-<p>La première fois que vous compilez Julia, des dépendances vont être téléchargées
-puis compilées, c'est pourquoi cela peut prendre un certains temps. La
-compilation peut consommer jusqu'à <em>700 Mo de mémoire</em> et <em>1.5 Go d'espace
-disque</em>. Les éventuelles compilations futures seront moins gourmandes.</p>
-<p>Une fois la compilation terminée, vous disposez d'un
-<a href="http://en.wikipedia.org/wiki/Symbolic_link">lien symbolique</a> vers l'exécutable
-Julia. Afin qu'il soit accessible depuis n'importe quel endroit, vous pouvez
-le rajouter à votre <code>PATH</code> (vous pouvez le rajouter dans le fichier de
-configuration de votre Shell favori en remplaçant <code>$(pwd)</code> par le chemin
-absolu vers le dossier julia dans lequel se trouve le lien symbolique) :</p>
-<div class="highlight"><pre><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
-</pre></div>
-
-
-<p>Julia intègre tout le nécessaire pour gérer l'installation, la ...</p>
             <p class="post-meta">Posted by
                     <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
                  on Fri 14 February 2014
@@ -427,76 +318,7 @@ absolu vers le dossier julia dans lequel se trouve le lien symbolique) :</p>
                 <p>Aujourd'hui j'aimerais parler d'un langage de programmation que je viens de
 découvrir : <strong>Julia</strong>. Je vais donc vous le présenter succinctement et donner
 mon ressenti après quelques jours d'utilisation.
-<!-- PELICAN_END_SUMMARY --></p>
-<h2>Qu'est-ce que c'est ?</h2>
-<p>Le Julia est un langage :</p>
-<ul>
-<li><strong>Haut niveau</strong> (<em>garbage collection</em>)</li>
-<li><strong>Dynamique</strong></li>
-<li><strong>Interprété</strong></li>
-<li><strong>Disposant d'un compilateur JIT</strong> (<em>backend LLVM</em>)</li>
-<li><strong>Performant</strong></li>
-</ul>
-<p>Il s'agit d'un subtile mélange entre les langage <strong>Python</strong>, <strong>R</strong> et
-<strong>Matlab</strong>. Python pour une partie de la syntaxe et les constructions élégantes du
-langage (<em>list comprehension</em>, boucles <em>for</em>, etc.), Matlab et R pour l'intégration
-des vecteurs, matrices et opérations associées dans la bibliothèque standard,
-en faisant un langage particulièrement adapté pour l'analyse numérique, le
-<em>machine learning</em>, et toute autre application nécessitant des outils d'algèbre
-linéaire, et des fonctions mathématiques diverses.</p>
-<div class="highlight"><pre><span class="c"># Dynamic type</span>
-<span class="n">a</span> <span class="o">=</span> <span class="mi">42</span>          <span class="c"># Int</span>
-<span class="n">a</span> <span class="o">=</span> <span class="s">&quot;toto&quot;</span>      <span class="c"># String</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>   <span class="c"># Vector</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">]</span>     <span class="c"># 1x3 Matrix</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>       <span class="c"># same 1x3 Matrix</span>
 
-<span class="k">for</span> <span class="n">e</span> <span class="k">in</span> <span class="n">a</span>
-    <span class="n">println</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
-<span class="k">end</span>
-
-<span class="c"># Output</span>
-<span class="c"># 1</span>
-<span class="c"># 2</span>
-<span class="c"># 3</span>
-</pre></div>
-
-
-<p>Julia dispose également des atouts suivants :</p>
-<ul>
-<li><strong>Multi-méthode</strong> permettant un dispatch dynamique en fonction du type des arguments passés aux fonctions</li>
-</ul>
-<div class="highlight"><pre><span class="c"># Method declaration</span>
-<span class="c"># foo is a function taking one argument of any type</span>
-<span class="k">function</span><span class="nf"> foo</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>
-    <span class="n">println</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>
-    <span class="k">end</span>
-
-<span class="c"># Shorter function declaration</span>
-<span class="n">baz</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
-<span class="c"># Multimethod</span>
-<span class="c"># Takes an argument of type Int (Haskelish syntax)</span>
-<span class="n">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">::</span><span class="kt">Int</span><span class="p">)</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Int&quot;</span><span class="p">)</span>
-<span class="c"># Takes an argument of type Matrix (of any type)</span>
-<span class="n">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">::</span><span class="n">Matrix</span><span class="p">)</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Matrix&quot;</span><span class="p">)</span>
-<span class="c"># Take an argument of type Matrix of Float64</span>
-<span class="n">myprint</span><span class="p">(</span><span class="n">x</span><span class="p">::</span><span class="n">Matrix</span><span class="p">{</span><span class="kt">Float64</span><span class="p">})</span> <span class="o">=</span> <span class="n">println</span><span class="p">(</span><span class="s">&quot;Matrix of Float64&quot;</span><span class="p">)</span>
-
-<span class="n">myprint</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>         <span class="c"># First one is called</span>
-<span class="n">myprint</span><span class="p">([</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">])</span>    <span class="c"># Second one is called</span>
-<span class="n">myprint</span><span class="p">([</span><span class="mf">0.5</span> <span class="mf">0.42</span><span class="p">])</span> <span class="c"># Third one is called</span>
-</pre></div>
-
-
-<ul>
-<li>Un système de <strong>template</strong> pour créer du code générique</li>
-</ul>
-<div class="highlight"><pre><span class="k">function</span><span class="nf"> printtype</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Any type&quot;</span><span class="p">)</span>
-<span class="k">end</span>
-
-<span class="c"># Takes argument of type ...</span></pre></div>
             <p class="post-meta">Posted by
                     <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
                  on Thu 13 February 2014
