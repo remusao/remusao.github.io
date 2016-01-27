@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Pythux</title><link href="http://remusao.github.com/" rel="alternate"></link><link href="http://remusao.github.com/feeds/productivity.atom.xml" rel="self"></link><id>http://remusao.github.com/</id><updated>2016-01-12T19:51:00+01:00</updated><entry><title>Working in the cloud</title><link href="http://remusao.github.com/working-in-the-cloud.html" rel="alternate"></link><updated>2016-01-12T19:51:00+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2016-01-12:working-in-the-cloud.html</id><summary type="html">&lt;p&gt;During the last few month, I've been working almost exclusively on a remote server, as my main environnement. This machine is shared between several people (a small team of 6 people). Before that, I used to code, run programs, do stuff on my local machine, now, everything is done on a remote server.
-In this post I would like to give feedback about this way of working, why I wanted to tried this, what changed in the way a I work, what was bad, good, different, etc.
-I would like to emphasis that this is not a why-you-should-do-it-kind of post, instead, I would be glad to know what you think about it, and what was your own experience, in case you also tried remote working.&lt;/p&gt;
-&lt;h1&gt;What changed&lt;/h1&gt;
-&lt;h1&gt;Pros&lt;/h1&gt;
-&lt;h1&gt;Cons&lt;/h1&gt;
-&lt;h1&gt;How it could be different&lt;/h1&gt;
-&lt;h1&gt;Conclusion&lt;/h1&gt;</summary><category term="cloud"></category><category term="work"></category><category term="productivity"></category></entry></feed>
