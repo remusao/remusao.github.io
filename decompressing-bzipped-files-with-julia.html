@@ -319,7 +319,7 @@ jQuery(document).ready(function($) {
 <p>On a small wikipedia dump of <em>407MB</em>. All timings are in <em>seconds</em>.</p>
 <h2>bzcat alone</h2>
 <p>To have a point of comparison, I decompressed the dump using <em>bzcat</em> alone. The timing is <em>64 seconds</em>.</p>
-<div class="highlight"><pre><span class="nv">$ </span><span class="nb">time </span>1&gt;/dev/null bzcat wikidump.xml.bz2
+<div class="highlight"><pre>$ <span class="nb">time</span> 1&gt;/dev/null bzcat wikidump.xml.bz2
 </pre></div>
 
 
@@ -337,7 +337,7 @@ jQuery(document).ready(function($) {
     <span class="n">in_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 
@@ -378,7 +378,7 @@ jQuery(document).ready(function($) {
 
 
 <p>Here is the invocation:</p>
-<div class="highlight"><pre><span class="nv">$ </span>bzcat wikidump.xml.bz2 <span class="p">|</span> julia bz2_bench.jl
+<div class="highlight"><pre>$ bzcat wikidump.xml.bz2 <span class="p">|</span> julia bz2_bench.jl
 </pre></div>
 
 

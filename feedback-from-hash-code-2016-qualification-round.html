@@ -8,7 +8,7 @@
         <meta name="description" content=":: IO World">
         <meta name="author" content="Pythux">
 
-        <title>Python inheriting tuple class</title>
+        <title>Feedback from Hash Code 2016 qualification round</title>
 
             
 <style type="text/css">
@@ -218,7 +218,7 @@ jQuery(document).ready(function($) {
 
 
             <link href="http://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Full Atom Feed" />
-            <link href="http://remusao.github.com/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Categories Atom Feed" />
+            <link href="http://remusao.github.com/feeds/misc.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Categories Atom Feed" />
 
         <!-- Bootstrap Core CSS -->
         <link href="http://remusao.github.com/theme/css/bootstrap.min.css" rel="stylesheet">
@@ -238,6 +238,10 @@ jQuery(document).ready(function($) {
 
 
 
+        <meta name="tags" contents="hashcode" />
+        <meta name="tags" contents="programming" />
+        <meta name="tags" contents="contest" />
+        <meta name="tags" contents="google" />
 
 
 			<meta property="og:locale" content="en">
@@ -245,32 +249,18 @@ jQuery(document).ready(function($) {
 
 	<meta property="og:type" content="article">
 	<meta property="article:author" content="">
-	<meta property="og:url" content="http://remusao.github.com/drafts/python-inheriting-tuple-class.html">
-	<meta property="og:title" content="Python inheriting tuple class">
-	<meta property="og:description" content="<p>I recently faced some problem while using inheritance in Python.</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
-    <span class="c1"># Do something</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+	<meta property="og:url" content="http://remusao.github.com/feedback-from-hash-code-2016-qualification-round.html">
+	<meta property="og:title" content="Feedback from Hash Code 2016 qualification round">
+	<meta property="og:description" content="
 
-<span class="k">class</span> <span class="nc">MyTuple</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
-
-        <span class="c1"># Call constructor from base class tuple</span>
-        <span class="nb">tuple</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
-
-        <span class="c1"># False</span>
-        <span class="k">assert</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">result</span>
-
-        <span class="c1"># True</span>
-        <span class="k">assert</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">arg</span>
-</pre></div>
-
-
-<p>So what is the problem here ?</p>">
-	<meta property="article:published_time" content="2014-03-05 10:15:40+01:00">
-    <meta property="og:image" content="http://remusao.github.com/">
+<p>Yesterday was the qualification round for <a href="https://hashcode.withgoogle.com/">Hash Code 2016</a> contest, organized by
+Google. I already had the opportunity to participate next, and made it to the
+final round with my team.  For this new edition, the team and motivation was
+the same but we thought a bit about how we could improve our organization to be
+more efficient. This post is about what I will take away from this competition.
+">
+	<meta property="article:published_time" content="2016-02-12 15:00:00+01:00">
+    <meta property="og:image" content="http://remusao.github.com/images/hashcode2016.jpg">
 </head>
 
 <body>
@@ -307,10 +297,10 @@ jQuery(document).ready(function($) {
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="post-heading">
-                        <h1>Python inheriting tuple class</h1>
+                        <h1>Feedback from Hash Code 2016 qualification round</h1>
                         <span class="meta">Posted by
                                 <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
-                             on Wed 05 March 2014
+                             on Fri 12 February 2016
                         </span>
                         
                     </div>
@@ -325,33 +315,183 @@ jQuery(document).ready(function($) {
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
     <!-- Post Content -->
     <article>
-        <p>I recently faced some problem while using inheritance in Python.</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
-    <span class="c1"># Do something</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-
-<span class="k">class</span> <span class="nc">MyTuple</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
-
-        <span class="c1"># Call constructor from base class tuple</span>
-        <span class="nb">tuple</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
-
-        <span class="c1"># False</span>
-        <span class="k">assert</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">result</span>
-
-        <span class="c1"># True</span>
-        <span class="k">assert</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">arg</span>
-</pre></div>
+        <p><img src="images/hashcode2016.jpg" class="middle"></p>
 
 
-<p>So what is the problem here ?</p>
+<p>Yesterday was the qualification round for <a href="https://hashcode.withgoogle.com/">Hash Code 2016</a> contest, organized by
+Google. I already had the opportunity to participate next, and made it to the
+final round with my team.  For this new edition, the team and motivation was
+the same but we thought a bit about how we could improve our organization to be
+more efficient. This post is about what I will take away from this competition.
+</p>
+<h1>The Competition</h1>
+<p>For this third edition, the concept stays the same, you can participate in
+<em>teams</em>, and must perform well during the qualification round to make it to the
+final round (which takes place in Google headquarters in Paris). Duration of
+qualification round is about <em>4 hours</em>, and <em>final is a whole day</em>. Usually the
+difficulty of the problem of qualification is lower than for the final. Though
+this year's challenged seemed a bit more complex than the previous one.</p>
+<h1>The problems</h1>
+<p>All the problems from Hash Codes contests are pretty much of the same kind
+everytime since they are <em>optimization problems</em>. You're given a situation, and
+you want to maximize some output of the problem given an initial step:</p>
+<ul>
+<li><strong>2014 Final</strong>: <a href="https://hashcode.withgoogle.com/2014/tasks/hashcode2014_final_task.pdf">Optimize routing of Street view cars</a> in a city.</li>
+<li><strong>2015 Qualification</strong>: The task was about <a href="https://hashcode.withgoogle.com/2015/tasks/hashcode2015_qualification_task.pdf">optimizing a data center</a>.</li>
+<li><strong>2015 Final</strong>: <a href="https://hashcode.withgoogle.com/2015/tasks/hashcode2015_final_task.pdf">Optimize wireless internet coverage</a> using Loons.</li>
+<li><strong>2016 Qualification</strong>: Optimize schedule of drones to deliver orders to customers on a 2D grid.</li>
+<li><strong>2016 Final</strong>: Optimize something else...</li>
+</ul>
+<p>This kind of problems are interesting because it takes a <em>broad range of skill
+and knowledge to solve them</em>, plus, <em>you can't find the global optimum</em> (or at
+least not easily/in a reasonnable time).  So the goal of any of this
+competitions it to find a better solution than your competitors, or a least, a
+good enough solution.</p>
+<h1>Team Organization</h1>
+<p>Organizing a team during such a short period of time, on a complex problem is
+challenging. There are a lot of ways you can do it:</p>
+<ul>
+<li><em>Everyone is programming</em>.</li>
+<li><em>Split the tasks among team members</em>.</li>
+<li><em>You can define a schedule to brainstorm/code/visualize/give feedback</em>.</li>
+<li>etc.</li>
+</ul>
+<p>Last year, we chose an approach where we would <em>talk and brainstorm with the
+whole team</em> during the contest. <em>Not everyone was coding</em> and one of the team
+member did some very <em>useful visualization</em> to gain insight, while others were
+implementing some ideas from the discussions we had about the challenge.  This
+approach was kind of Ok, we made it to the final, but didn't perform very well
+during the final round. Here are some short comings:</p>
+<ul>
+<li>Not everyone was at ease with programming.</li>
+<li>Not everyone knows the same programming languages.</li>
+<li>We didn't participate in this kind of competition before.</li>
+<li>Brainstorming a lot can bring a lot of ideas, but <em>you can't try everything</em>, so it's better to stick to one or two promising ideas that aren't to difficult to implement in a short time.</li>
+<li>Coding speed matters so you better go with a programming language that you know very well.</li>
+</ul>
+<p>We weren't very satisfied with what we did that year, so we tried a different
+approach this year. We observed that a lot of teams seem to go with a more
+individual approach, where everyone is programming. That's what we tried:</p>
+<ol>
+<li>Read problem statement, <strong>making sure everyone understood the same things</strong>.</li>
+<li>Carefully consider the inputs, to <strong>list every information at our disposal</strong>.</li>
+<li><strong>Made sure that the score to optimize was clear to everyone</strong>.</li>
+<li>Initial brainstorm on some solutions, ways to solve the problem.</li>
+<li>Then everyone tried to implement a working solution, using what we discussed.</li>
+</ol>
+<p>We had little interactions after <strong>step 4</strong>, which wasn't a good thing in my
+opinion. What we observed is that <strong>we talked less</strong>, and had <strong>a bit less
+fun</strong>. We didn't interact as much as last year, and <strong>not everyone felt like
+they participated</strong> in the team's work, due to individual solutions.</p>
+<h1>Challenges</h1>
+<p>Here is what I found to be difficult during this qualification round:</p>
+<ul>
+<li><strong>Your worst ennemy is complexity</strong>.</li>
+<li><em>Your second worst is your concentration</em>.</li>
+<li>Being reasonable about the solution to choose.</li>
+</ul>
+<p>What I found useful was to decide early on <em>a method that isn't to complex</em> or
+to hard to implement. The most important is to <em>submit a solution</em>. <em>Better
+have a simple solution that works than a complex one that doesn't</em>. Your goal
+is not to find the best solution ever, but to find a solution <em>good enough</em> to
+make if to the final round.  Moreover if your first simple solution works, you
+should have sufficient time to improve it before the end of the round (if you
+don't, that means your solution was maybe too complex, or that you took a big
+risk).</p>
+<p>One of my teammates, Florian, posted a <a href="https://flothesof.github.io/thoughts-before-hashcode-2016.html">blog post</a>
+this week, before the competition to explain what he thought would be a good
+way to tackle the coming qualification. I mainly agree with him, in the light
+of what happened yesterday, but I tried to clarify some point in the comments
+(that was before the contest). Some of my thoughts on the subject evolved:</p>
+<blockquote>
+<p>[...] the top-down divide and conquer approach that you describe (as lazy
+evaluation), is more about breaking the problem into a maximum number of small
+sub-parts than it is about modelling the problem. You can see that, for
+example, last year's winners didn't create classes or structs, they just used
+plain C arrays. And this is more about breaking the complexity of the problem,
+and deferring complexity to later as much as you can. This helps keep track of
+what you've done, what you're doing, and what remain to be done, while managing
+complexity: "I know my solution must look like do A, then B, and C at a high
+level, and I know I can do A, B, C later, with the same top-down approach.
+Let's not think about this know, it would waste time and concentration."</p>
+</blockquote>
+<p>What I think now is that, you can go with a low-level language and less
+modelization if you are well prepared to program in a short period of time.
+Otherwise, you would better stick with the clean step-by-step approach to limit
+complexity, and <strong>validate your steps as you go</strong>. It's crucial to limit
+potential errors and bugs, so that you are confident your solution will work.
+<strong>You can't afford lot of debug in a competition</strong>.</p>
+<blockquote>
+<p>[...] the code doesn't have to be clean, or readable, in a general way. It
+must be clear to you, at least during the time of the competition, which is
+only a few hours. This is why I think it's not necessary to add comments, or
+create classes/struct/etc. to model your ideas into code. Rather it's a race
+against time and complexity and you can use this kind of programming constructs
+to break the complexity of the problem even further, but not to be readable.
+Breaking into small part is also useful to refactor, try new ideas, change
+stuff, quickly (and I agree that modelling can help too there, but I don't
+think it's a low hanging fruit in this kind of competition) .</p>
+</blockquote>
+<p>This point is similar to the previous one, except that you should not be too
+confident in your ability to handle a complex problem/solution in a short
+amount of time. <strong>Better be slow and right, than fast and wrong</strong>.</p>
+<blockquote>
+<p>[...] it's better to have a slow solution that works than a quick solution
+that doesn't. But I would argue that this argument can be held against what you
+say too, because we also can say that it's better to have an ugly/dirty/oneshot
+solution that works, than a beautifully designed/readable solution that
+doesn't. So it's more quick &amp; dirty but works, than high-level/well-designed
+code that doesn't [...]</p>
+<p>[...] it can be an advantage to develop the solution in a fast language like
+C++ or Java, instead of a more dynamic language like Python. I may be wrong,
+but I think you have better chances to have a fast-enough solution in C++ with
+ugly code, no modelling or optimization effort than it is to achieve reasonable
+performance in Python (this is mainly true for the kind of problem we have to
+tackle in the Hash Code: optimization and number crunching). When you have to
+explore big solution spaces looking for an optimum, with little time to think
+about an elegant solution, you're playing against time, so it's good to use a
+language in which you can go quick and dirty, but still get reasonable
+performances.</p>
+</blockquote>
+<p>It's true only if you can come up with a working program in this language,
+during the time of the competition. If you don't feel like you can, stick with
+the easier, well-known language. <strong>Working but slow solution in <em>Python</em> is
+better than a fast non-working solution in <em>C++</em>.</strong></p>
+<h1>Take-away</h1>
+<p><strong>TL;DR</strong>:</p>
+<ul>
+<li><em>Master your programming environment</em>.</li>
+<li><em>Manage/avoid complexity if you can</em>.</li>
+<li>Don't go for a too complex/fancy solution.</li>
+<li><em>Communication with your team members is good</em> if you want to feel like you're competing together.</li>
+<li><strong>Have fun!</strong></li>
+</ul>
+<p>Now we'll try to improve our solutions during the extended round. I'm eager to
+read some blog posts on the problem we had to tackle. Insight from other teams
+will definitely be interesting!</p>
     </article>
 
+        <div class="tags">
+            <p>tags: <a href="http://remusao.github.com/tag/hashcode.html">hashcode</a>, <a href="http://remusao.github.com/tag/programming.html">programming</a>, <a href="http://remusao.github.com/tag/contest.html">contest</a>, <a href="http://remusao.github.com/tag/google.html">google</a>, </p>
+        </div>
 
     <hr>
 
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'pythux';
+                var disqus_identifier = 'feedback-from-hash-code-2016-qualification-round.html';
+                var disqus_url = 'http://remusao.github.com/feedback-from-hash-code-2016-qualification-round.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//pythux.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
             </div>
         </div>
     </div>

@@ -326,10 +326,10 @@ sudo apt-get update <span class="o">&amp;&amp;</span> sudo apt-get install stack
 
 
 <p>Being up-to-date is important, so setup your <em>Stack</em> global configuration <code>~/.stack/global/stack.yaml</code>:</p>
-<div class="highlight"><pre><span class="l-Scalar-Plain">flags</span><span class="p-Indicator">:</span> <span class="p-Indicator">{}</span>
-<span class="l-Scalar-Plain">resolver</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">lts-4.0</span>
-<span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
-<span class="l-Scalar-Plain">extra-deps</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
+<div class="highlight"><pre><span class="l l-Scalar l-Scalar-Plain">flags</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{}</span>
+<span class="l l-Scalar l-Scalar-Plain">resolver</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">lts-4.0</span>
+<span class="l l-Scalar l-Scalar-Plain">packages</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[]</span>
+<span class="l l-Scalar l-Scalar-Plain">extra-deps</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[]</span>
 </pre></div>
 
 
@@ -346,9 +346,9 @@ sudo apt-get update <span class="o">&amp;&amp;</span> sudo apt-get install stack
 <li>Use Nix</li>
 </ol>
 <p>We're going to compile it from source. I'll follow the way of the official <a href="https://github.com/gibiansky/IHaskell#install-zeromq">README</a>:</p>
-<div class="highlight"><pre><span class="c"># Compiling from source:</span>
+<div class="highlight"><pre><span class="c1"># Compiling from source:</span>
 git clone git@github.com:zeromq/zeromq4-x.git libzmq
-<span class="nb">cd </span>libzmq
+<span class="nb">cd</span> libzmq
 ./autogen.sh <span class="o">&amp;&amp;</span> ./configure <span class="o">&amp;&amp;</span> make
 sudo make install
 sudo ldconfig
@@ -368,7 +368,7 @@ sudo ldconfig
 <p>If you're on a fresh install: <code>sudo apt-get install python-virtualenv python-dev ncurses-base</code></p>
 <p>With <code>virtualenv</code>:</p>
 <div class="highlight"><pre>virtualenv venv-ihaskell
-<span class="nb">source </span>venv-ihaskell/bin/activate
+<span class="nb">source</span> venv-ihaskell/bin/activate
 </pre></div>
 
 
@@ -409,12 +409,12 @@ workon ihaskell
 </ul>
 <h2>Setup IHaskell</h2>
 <p>If everything went well, you should have <em>Jupyter</em> (latest version) and <em>ihaskell</em> installed properly. The last step is to install the <em>IHaskell Kernel</em> into <em>Jupyter</em>.</p>
-<div class="highlight"><pre>stack <span class="nb">exec </span>ihaskell -- install
+<div class="highlight"><pre>stack <span class="nb">exec</span> ihaskell -- install
 </pre></div>
 
 
 <p>Now run the notebook server and enjoy:</p>
-<div class="highlight"><pre>stack <span class="nb">exec </span>jupyter -- notebook
+<div class="highlight"><pre>stack <span class="nb">exec</span> jupyter -- notebook
 </pre></div>
 
 

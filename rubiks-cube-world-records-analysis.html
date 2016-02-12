@@ -347,7 +347,7 @@ jQuery(document).ready(function($) {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span class="kn">import</span> <span class="nn">requests</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;https://www.worldcubeassociation.org/results/events.php?eventId=333&amp;regionId=&amp;years=&amp;show=All%2BPersons&amp;single=Single&quot;</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://www.worldcubeassociation.org/results/events.php?eventId=333&amp;regionId=&amp;years=&amp;show=All%2BPersons&amp;single=Single&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -371,7 +371,7 @@ jQuery(document).ready(function($) {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
-<span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s">&#39;html.parser&#39;</span><span class="p">)</span>
+<span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -394,8 +394,8 @@ jQuery(document).ready(function($) {
 <div class="prompt input_prompt">In&nbsp;[176]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span class="n">table</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;table-responsive&quot;</span><span class="p">})</span>
-<span class="n">raw_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">contents</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s">&quot;tr&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">6</span><span class="p">]</span>
+<div class=" highlight hl-ipython2"><pre><span class="n">table</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;table-responsive&quot;</span><span class="p">})</span>
+<span class="n">raw_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">contents</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;tr&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">6</span><span class="p">]</span>
 <span class="n">raw_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 
@@ -444,9 +444,9 @@ jQuery(document).ready(function($) {
 
 <span class="k">def</span> <span class="nf">get_table_raws</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">cols</span><span class="p">):</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s">&#39;html.parser&#39;</span><span class="p">)</span>
-    <span class="n">table</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;class&quot;</span><span class="p">:</span> <span class="s">&quot;table-responsive&quot;</span><span class="p">})</span>
-    <span class="n">raw_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">contents</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s">&quot;tr&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="n">cols</span><span class="p">]</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;table-responsive&quot;</span><span class="p">})</span>
+    <span class="n">raw_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">contents</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;tr&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="n">cols</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[[</span><span class="n">c</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">line</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">raw_lines</span><span class="p">]</span>
 </pre></div>
 
@@ -471,18 +471,18 @@ jQuery(document).ready(function($) {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span class="k">def</span> <span class="nf">extract_year_from_competition</span><span class="p">(</span><span class="n">competition</span><span class="p">):</span>
-    <span class="c"># Format is [name] [year]</span>
-    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">competition</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1"># Format is [name] [year]</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">competition</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 <span class="k">def</span> <span class="nf">convert_timing_to_seconds</span><span class="p">(</span><span class="n">timing</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="c"># Try to convert directly in seconds</span>
+        <span class="c1"># Try to convert directly in seconds</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">timing</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="c"># Format should be [minutes]:[seconds].[tenth]</span>
-            <span class="n">minutes</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">timing</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">seconds</span><span class="p">,</span> <span class="n">tenth</span> <span class="o">=</span> <span class="n">rest</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Format should be [minutes]:[seconds].[tenth]</span>
+            <span class="n">minutes</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">timing</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">seconds</span><span class="p">,</span> <span class="n">tenth</span> <span class="o">=</span> <span class="n">rest</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">tenth</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">None</span>
@@ -508,7 +508,7 @@ jQuery(document).ready(function($) {
 <div class="prompt input_prompt">In&nbsp;[339]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span class="n">url</span> <span class="o">=</span> <span class="s">&quot;https://www.worldcubeassociation.org/results/events.php?eventId=333&amp;regionId=&amp;years=&amp;show=All%2BPersons&amp;single=Single&quot;</span>
+<div class=" highlight hl-ipython2"><pre><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.worldcubeassociation.org/results/events.php?eventId=333&amp;regionId=&amp;years=&amp;show=All%2BPersons&amp;single=Single&quot;</span>
 <span class="n">clean_table</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">rank</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">person</span><span class="p">,</span> <span class="n">timing</span><span class="p">,</span> <span class="n">country</span><span class="p">,</span> <span class="n">competition</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">get_table_raws</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="mi">6</span><span class="p">)):</span>
     <span class="n">year</span> <span class="o">=</span> <span class="n">extract_year_from_competition</span><span class="p">(</span><span class="n">competition</span><span class="p">)</span>
@@ -603,7 +603,7 @@ jQuery(document).ready(function($) {
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><span class="n">clean_table</span><span class="p">,</span> 
-    <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;Rank&#39;</span><span class="p">,</span> <span class="s">&#39;Person&#39;</span><span class="p">,</span> <span class="s">&#39;Timing&#39;</span><span class="p">,</span> <span class="s">&#39;Country&#39;</span><span class="p">,</span> <span class="s">&#39;Competition&#39;</span><span class="p">,</span> <span class="s">&#39;Year&#39;</span><span class="p">))</span>
+    <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Rank&#39;</span><span class="p">,</span> <span class="s1">&#39;Person&#39;</span><span class="p">,</span> <span class="s1">&#39;Timing&#39;</span><span class="p">,</span> <span class="s1">&#39;Country&#39;</span><span class="p">,</span> <span class="s1">&#39;Competition&#39;</span><span class="p">,</span> <span class="s1">&#39;Year&#39;</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -715,7 +715,7 @@ jQuery(document).ready(function($) {
 <div class="prompt input_prompt">In&nbsp;[211]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span class="n">df</span><span class="p">[</span><span class="s">&quot;Timing&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<div class=" highlight hl-ipython2"><pre><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Timing&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -764,7 +764,7 @@ Name: Timing, dtype: float64</pre>
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span class="o">%</span><span class="k">matplotlib</span> inline
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s">&#39;ggplot&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;ggplot&#39;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -787,7 +787,7 @@ Name: Timing, dtype: float64</pre>
 <div class="prompt input_prompt">In&nbsp;[231]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span class="n">country_count</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s">&quot;Country&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">value_counts</span><span class="p">)</span>
+<div class=" highlight hl-ipython2"><pre><span class="n">country_count</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;Country&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">value_counts</span><span class="p">)</span>
 <span class="n">country_count</span><span class="p">[:</span><span class="mi">20</span><span class="p">]</span>
 </pre></div>
 
@@ -927,7 +927,7 @@ Name: Timing, dtype: float64</pre>
 <div class="prompt input_prompt">In&nbsp;[234]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span class="n">country_count</span><span class="p">[</span><span class="n">country_count</span> <span class="o">&gt;</span> <span class="mi">200</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s">&quot;bar&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython2"><pre><span class="n">country_count</span><span class="p">[</span><span class="n">country_count</span> <span class="o">&gt;</span> <span class="mi">200</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -1463,7 +1463,7 @@ RU5ErkJggg==
 <div class="prompt input_prompt">In&nbsp;[355]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span class="n">person_count</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s">&quot;Person&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">value_counts</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">value_counts</span><span class="p">)</span>
+<div class=" highlight hl-ipython2"><pre><span class="n">person_count</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;Person&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">value_counts</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">value_counts</span><span class="p">)</span>
 <span class="n">person_count</span>
 </pre></div>
 
@@ -1556,7 +1556,7 @@ RU5ErkJggg==
 <div class="prompt input_prompt">In&nbsp;[336]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span class="n">url</span> <span class="o">=</span> <span class="s">&quot;https://www.worldcubeassociation.org/results/regions.php?regionId=&amp;eventId=333&amp;years=&amp;history=History&quot;</span>
+<div class=" highlight hl-ipython2"><pre><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.worldcubeassociation.org/results/regions.php?regionId=&amp;eventId=333&amp;years=&amp;history=History&quot;</span>
 <span class="n">clean_table</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">single</span><span class="p">,</span> <span class="n">avg</span><span class="p">,</span> <span class="n">person</span><span class="p">,</span> <span class="n">country</span><span class="p">,</span> <span class="n">competition</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="n">get_table_raws</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
     <span class="n">single</span> <span class="o">=</span> <span class="n">convert_timing_to_seconds</span><span class="p">(</span><span class="n">single</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
@@ -1609,7 +1609,7 @@ RU5ErkJggg==
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><span class="n">clean_table</span><span class="p">,</span> 
-    <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;Person&#39;</span><span class="p">,</span> <span class="s">&#39;Single&#39;</span><span class="p">,</span> <span class="s">&#39;Avg&#39;</span><span class="p">,</span> <span class="s">&#39;Country&#39;</span><span class="p">,</span> <span class="s">&#39;Competition&#39;</span><span class="p">,</span> <span class="s">&#39;Year&#39;</span><span class="p">))</span>
+    <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Person&#39;</span><span class="p">,</span> <span class="s1">&#39;Single&#39;</span><span class="p">,</span> <span class="s1">&#39;Avg&#39;</span><span class="p">,</span> <span class="s1">&#39;Country&#39;</span><span class="p">,</span> <span class="s1">&#39;Competition&#39;</span><span class="p">,</span> <span class="s1">&#39;Year&#39;</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -1711,9 +1711,9 @@ RU5ErkJggg==
 <div class="prompt input_prompt">In&nbsp;[332]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort</span><span class="p">([</span><span class="s">&quot;Year&quot;</span><span class="p">,</span> <span class="s">&quot;Single&quot;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s">&quot;Single&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notnull</span><span class="p">()]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">&quot;Year&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;Single&quot;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s">&quot;Test&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;World records of Rubik&#39;s Cube&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython2"><pre><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort</span><span class="p">([</span><span class="s2">&quot;Year&quot;</span><span class="p">,</span> <span class="s2">&quot;Single&quot;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">])</span>
+<span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Single&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">notnull</span><span class="p">()]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;Year&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Single&quot;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;World records of Rubik&#39;s Cube&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
