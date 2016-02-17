@@ -2,13 +2,13 @@
 <html lang="en">
 
 <head>
-        <meta charset="utf-8">
+            <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content=":: IO World">
         <meta name="author" content="Pythux">
 
-        <title>Pythux - Tag remote</title>
+        <title>Why we chose to share a remote server as a main working machine</title>
 
             
 <style type="text/css">
@@ -218,6 +218,7 @@ jQuery(document).ready(function($) {
 
 
             <link href="https://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Full Atom Feed" />
+            <link href="https://remusao.github.com/feeds/misc.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Categories Atom Feed" />
 
         <!-- Bootstrap Core CSS -->
         <link href="https://remusao.github.com/theme/css/bootstrap.min.css" rel="stylesheet">
@@ -234,8 +235,69 @@ jQuery(document).ready(function($) {
         <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
-		<meta property="og:locale" content="en">
+
+
+
+        <meta name="tags" contents="working" />
+        <meta name="tags" contents="remote" />
+        <meta name="tags" contents="infrastructure" />
+
+
+			<meta property="og:locale" content="en">
 		<meta property="og:site_name" content="Pythux">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="https://remusao.github.com/drafts/why-we-chose-to-share-a-remote-server-as-a-main-working-machine.html">
+	<meta property="og:title" content="Why we chose to share a remote server as a main working machine">
+	<meta property="og:description" content="<p><img src="images/remote_server.jpg" class="middle"></p>
+<!-- PELICAN_BEGIN_SUMMARY -->
+
+<p>8 month ago at work, we decided to experience working on a remote server for
+everyone: everyone SSH into a server to work. In this post I intend to explain
+why we thought it could be a good idea, and what I think of it now, some months
+later.
+<!-- PELICAN_END_SUMMARY --></p>
+<h1>Tell me why we did it again?</h1>
+<p>Why?</p>
+<ul>
+<li>A bit machine for everyone is very costly</li>
+<li>No-one is using 100% of the resources continuously</li>
+<li>Sometimes we need lot of RAM/CPU</li>
+<li>We work remotely one day per week
+*</li>
+</ul>
+<h1>Pros</h1>
+<ul>
+<li>Controled and uniform working plateform</li>
+<li>Easy to setup and update (it works for everyone)</li>
+<li>Easy backup</li>
+<li>Easy resources scaling</li>
+<li>Easy to monitor</li>
+<li>Hardware flexibility</li>
+<li>Working from different location is easy (if you have an internet connection)</li>
+<li>Environment stays clean (no one is allowed to run stuff as root)</li>
+<li>More resources than on a personal workstation</li>
+<li>Costs are reduced</li>
+<li>Easier to share stuff</li>
+<li>You can use any laptop as a main machine, since you don't need the power, just something nice/confortable to use</li>
+<li>Easy to let long processes run</li>
+</ul>
+<h1>Cons</h1>
+<ul>
+<li>Can be hard to share resources (memory or cpu)</li>
+<li>Can be a bit clunky to add packages/stuff</li>
+<li>We can quickly accumulate running processes, virtual machines, etc.</li>
+</ul>
+<h1>What we could do better</h1>
+<ul>
+<li>Using virtual machines</li>
+<li>Using several machines instead of one</li>
+<li>Containerize</li>
+</ul>
+<h1>Remote perspective</h1>">
+	<meta property="article:published_time" content="2016-02-17 11:00:00+01:00">
+    <meta property="og:image" content="https://remusao.github.com/images/remote_server.jpg">
 </head>
 
 <body>
@@ -266,12 +328,18 @@ jQuery(document).ready(function($) {
         <!-- /.container -->
     </nav>
 
-        <header class="intro-header" style="background-image: url('static/haskell-logo.jpg')">
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('static/metal.jpg')">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                    <div class="page-heading">
-                        <h1>Tag remote</h1>
+                    <div class="post-heading">
+                        <h1>Why we chose to share a remote server as a main working machine</h1>
+                        <span class="meta">Posted by
+                                <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
+                             on Wed 17 February 2016
+                        </span>
+                        
                     </div>
                 </div>
             </div>
@@ -282,33 +350,62 @@ jQuery(document).ready(function($) {
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        <div class="post-preview">
-            <a href="https://remusao.github.com/why-we-chose-to-share-a-remote-server-as-a-main-working-machine.html" rel="bookmark" title="Permalink to Why we chose to share a remote server as a main working machine">
-                <h2 class="post-title">
-                    Why we chose to share a remote server as a main working machine
-                </h2>
-            </a>
-                
+    <!-- Post Content -->
+    <article>
+        <p><img src="images/remote_server.jpg" class="middle"></p>
+<!-- PELICAN_BEGIN_SUMMARY -->
 
 <p>8 month ago at work, we decided to experience working on a remote server for
 everyone: everyone SSH into a server to work. In this post I intend to explain
 why we thought it could be a good idea, and what I think of it now, some months
 later.
+<!-- PELICAN_END_SUMMARY --></p>
+<h1>Tell me why we did it again?</h1>
+<p>Why?</p>
+<ul>
+<li>A bit machine for everyone is very costly</li>
+<li>No-one is using 100% of the resources continuously</li>
+<li>Sometimes we need lot of RAM/CPU</li>
+<li>We work remotely one day per week
+*</li>
+</ul>
+<h1>Pros</h1>
+<ul>
+<li>Controled and uniform working plateform</li>
+<li>Easy to setup and update (it works for everyone)</li>
+<li>Easy backup</li>
+<li>Easy resources scaling</li>
+<li>Easy to monitor</li>
+<li>Hardware flexibility</li>
+<li>Working from different location is easy (if you have an internet connection)</li>
+<li>Environment stays clean (no one is allowed to run stuff as root)</li>
+<li>More resources than on a personal workstation</li>
+<li>Costs are reduced</li>
+<li>Easier to share stuff</li>
+<li>You can use any laptop as a main machine, since you don't need the power, just something nice/confortable to use</li>
+<li>Easy to let long processes run</li>
+</ul>
+<h1>Cons</h1>
+<ul>
+<li>Can be hard to share resources (memory or cpu)</li>
+<li>Can be a bit clunky to add packages/stuff</li>
+<li>We can quickly accumulate running processes, virtual machines, etc.</li>
+</ul>
+<h1>What we could do better</h1>
+<ul>
+<li>Using virtual machines</li>
+<li>Using several machines instead of one</li>
+<li>Containerize</li>
+</ul>
+<h1>Remote perspective</h1>
+    </article>
 
-            <p class="post-meta">Posted by
-                    <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
-                 on Wed 17 February 2016
-<p>There are <a href="https://remusao.github.com/why-we-chose-to-share-a-remote-server-as-a-main-working-machine.html#disqus_thread">comments</a>.</p>            </p>
+        <div class="tags">
+            <p>tags: <a href="https://remusao.github.com/tag/working.html">working</a>, <a href="https://remusao.github.com/tag/remote.html">remote</a>, <a href="https://remusao.github.com/tag/infrastructure.html">infrastructure</a>, </p>
         </div>
 
     <hr>
-    <!-- Pager -->
-    <ul class="pager">
-        <li class="next">
-        </li>
-    </ul>
-    Page 1 / 1
-    <hr>
+
             </div>
         </div>
     </div>

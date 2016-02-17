@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Pythux</title><link href="https://remusao.github.com/" rel="alternate"></link><link href="https://remusao.github.com/feeds/all.atom.xml" rel="self"></link><id>https://remusao.github.com/</id><updated>2016-02-17T11:00:00+01:00</updated><entry><title>Why we chose to share a remote server as a main working machine</title><link href="https://remusao.github.com/why-we-chose-to-share-a-remote-server-as-a-main-working-machine.html" rel="alternate"></link><updated>2016-02-17T11:00:00+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2016-02-17:why-we-chose-to-share-a-remote-server-as-a-main-working-machine.html</id><summary type="html">
-
-&lt;p&gt;8 month ago at work, we decided to experience working on a remote server for
-everyone: everyone SSH into a server to work. In this post I intend to explain
-why we thought it could be a good idea, and what I think of it now, some months
-later.
-</summary><category term="working"></category><category term="remote"></category><category term="infrastructure"></category></entry><entry><title>Feedback from Hash Code 2016 qualification round</title><link href="https://remusao.github.com/feedback-from-hash-code-2016-qualification-round.html" rel="alternate"></link><updated>2016-02-12T15:00:00+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2016-02-12:feedback-from-hash-code-2016-qualification-round.html</id><summary type="html">
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Pythux</title><link href="https://remusao.github.com/" rel="alternate"></link><link href="https://remusao.github.com/feeds/all.atom.xml" rel="self"></link><id>https://remusao.github.com/</id><updated>2016-02-12T15:00:00+01:00</updated><entry><title>Feedback from Hash Code 2016 qualification round</title><link href="https://remusao.github.com/feedback-from-hash-code-2016-qualification-round.html" rel="alternate"></link><updated>2016-02-12T15:00:00+01:00</updated><author><name>Pythux</name></author><id>tag:remusao.github.com,2016-02-12:feedback-from-hash-code-2016-qualification-round.html</id><summary type="html">
 
 &lt;p&gt;Yesterday was the qualification round for &lt;a href="https://hashcode.withgoogle.com/"&gt;Hash Code 2016&lt;/a&gt; contest, organized by
 Google. I already had the opportunity to participate next, and made it to the
