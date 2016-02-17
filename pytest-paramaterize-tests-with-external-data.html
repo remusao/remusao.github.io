@@ -217,17 +217,17 @@ jQuery(document).ready(function($) {
 
 
 
-            <link href="http://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Full Atom Feed" />
-            <link href="http://remusao.github.com/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Categories Atom Feed" />
+            <link href="https://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Full Atom Feed" />
+            <link href="https://remusao.github.com/feeds/python.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Categories Atom Feed" />
 
         <!-- Bootstrap Core CSS -->
-        <link href="http://remusao.github.com/theme/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://remusao.github.com/theme/css/bootstrap.min.css" rel="stylesheet">
 
         <!-- Custom CSS -->
-        <link href="http://remusao.github.com/theme/css/clean-blog.min.css" rel="stylesheet">
+        <link href="https://remusao.github.com/theme/css/clean-blog.min.css" rel="stylesheet">
 
         <!-- Code highlight color scheme -->
-            <link href="http://remusao.github.com/theme/css/code_blocks/notebook.css" rel="stylesheet">
+            <link href="https://remusao.github.com/theme/css/code_blocks/notebook.css" rel="stylesheet">
 
 
         <!-- Custom Fonts -->
@@ -247,7 +247,7 @@ jQuery(document).ready(function($) {
 
 	<meta property="og:type" content="article">
 	<meta property="article:author" content="">
-	<meta property="og:url" content="http://remusao.github.com/pytest-paramaterize-tests-with-external-data.html">
+	<meta property="og:url" content="https://remusao.github.com/pytest-paramaterize-tests-with-external-data.html">
 	<meta property="og:title" content="[py.test] Paramaterize tests with external data">
 	<meta property="og:description" content="<p>I recently began to make heavy use of <a href="http://pytest.org/latest/">py.test</a>
 in my day-to-day Python development. It's a wonderful tool, but I won't
@@ -258,7 +258,7 @@ files). The idea here is to <em>separate the code that performs the test</em>,
 from the <em>input data used to perform the test</em>.
 ">
 	<meta property="article:published_time" content="2014-11-26 15:00:00+01:00">
-    <meta property="og:image" content="http://remusao.github.com/">
+    <meta property="og:image" content="https://remusao.github.com/">
 </head>
 
 <body>
@@ -274,14 +274,14 @@ from the <em>input data used to perform the test</em>.
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="http://remusao.github.com/">Pythux</a>
+                <a class="navbar-brand" href="https://remusao.github.com/">Pythux</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
 
-                            <li><a href="http://remusao.github.com/pages/about.html">About</a></li>
+                            <li><a href="https://remusao.github.com/pages/about.html">About</a></li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -297,7 +297,7 @@ from the <em>input data used to perform the test</em>.
                     <div class="post-heading">
                         <h1>[py.test] Paramaterize tests with external data</h1>
                         <span class="meta">Posted by
-                                <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
+                                <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
                              on Wed 26 November 2014
                         </span>
                         
@@ -328,11 +328,11 @@ from the <em>input data used to perform the test</em>.
 
 
 <p><code>data_feature.yaml</code></p>
-<div class="highlight"><pre><span class="l l-Scalar l-Scalar-Plain">tests</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">test1</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">...</span>
-    <span class="l l-Scalar l-Scalar-Plain">test2</span><span class="p p-Indicator">:</span>
-        <span class="l l-Scalar l-Scalar-Plain">...</span>
+<div class="highlight"><pre><span class="l-Scalar-Plain">tests</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">test1</span><span class="p-Indicator">:</span>
+        <span class="l-Scalar-Plain">...</span>
+    <span class="l-Scalar-Plain">test2</span><span class="p-Indicator">:</span>
+        <span class="l-Scalar-Plain">...</span>
 </pre></div>
 
 
@@ -340,7 +340,7 @@ from the <em>input data used to perform the test</em>.
 <p>The first solution would be to use <code>yield</code> to generate tests, as it's supported
 by <code>py.test</code> (as long as you don't want to use fixtures in your test function...).</p>
 <div class="highlight"><pre><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">example</span><span class="p">):</span>
-    <span class="c1"># perform your test</span>
+    <span class="c"># perform your test</span>
 
 <span class="k">def</span> <span class="nf">test_feature</span><span class="p">():</span>
     <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">generate_tests</span><span class="p">():</span>
@@ -361,7 +361,7 @@ With the <code>yield</code>-version, every tests will be ran even if some fail. 
 if you have lot of tests, and you want to know which ones fail (not just the first one).</p>
 <p><strong>Problem</strong>: if you want to use fixtures with your <code>test_feature</code> functions, it breaks:</p>
 <div class="highlight"><pre><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">example</span><span class="p">):</span>
-    <span class="c1"># perform your test</span>
+    <span class="c"># perform your test</span>
 
 <span class="k">def</span> <span class="nf">test_feature</span><span class="p">(</span><span class="n">my_fixture</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">generate_tests</span><span class="p">():</span>
@@ -375,12 +375,12 @@ Wait, no, <code>py.test</code> is awesome remember? So there must be a solution!
 <h2>Parametrization</h2>
 <p>One of the cool features of <code>py.test</code> is the ability to add parameters on our
 tests or fixtures, so that a test is ran once for each parameter (from <a href="http://pytest.org/latest/parametrize.html">py.test doc</a>):</p>
-<div class="highlight"><pre><span class="c1"># content of test_expectation.py</span>
+<div class="highlight"><pre><span class="c"># content of test_expectation.py</span>
 <span class="kn">import</span> <span class="nn">pytest</span>
-<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">&quot;input,expected&quot;</span><span class="p">,</span> <span class="p">[</span>
-    <span class="p">(</span><span class="s2">&quot;3+5&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;2+4&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
-    <span class="p">(</span><span class="s2">&quot;6*9&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">),</span>
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s">&quot;input,expected&quot;</span><span class="p">,</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s">&quot;3+5&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;2+4&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;6*9&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">),</span>
 <span class="p">])</span>
 <span class="k">def</span> <span class="nf">test_eval</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
     <span class="k">assert</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected</span>
@@ -397,17 +397,17 @@ tests or fixtures, so that a test is ran once for each parameter (from <a href="
 <span class="o">=================================</span> <span class="n">FAILURES</span> <span class="o">=================================</span>
 <span class="n">____________________________</span> <span class="n">test_eval</span><span class="p">[</span><span class="mi">6</span><span class="o">*</span><span class="mi">9</span><span class="o">-</span><span class="mi">42</span><span class="p">]</span> <span class="n">_____________________________</span>
 
-<span class="nb">input</span> <span class="o">=</span> <span class="s1">&#39;6*9&#39;</span><span class="p">,</span> <span class="n">expected</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="nb">input</span> <span class="o">=</span> <span class="s">&#39;6*9&#39;</span><span class="p">,</span> <span class="n">expected</span> <span class="o">=</span> <span class="mi">42</span>
 
-    <span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">&quot;input,expected&quot;</span><span class="p">,</span> <span class="p">[</span>
-        <span class="p">(</span><span class="s2">&quot;3+5&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;2+4&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;6*9&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">),</span>
+    <span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s">&quot;input,expected&quot;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&quot;3+5&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&quot;2+4&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&quot;6*9&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">),</span>
     <span class="p">])</span>
     <span class="k">def</span> <span class="nf">test_eval</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
 <span class="o">&gt;</span>       <span class="k">assert</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected</span>
 <span class="n">E</span>       <span class="k">assert</span> <span class="mi">54</span> <span class="o">==</span> <span class="mi">42</span>
-<span class="n">E</span>        <span class="o">+</span>  <span class="n">where</span> <span class="mi">54</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s1">&#39;6*9&#39;</span><span class="p">)</span>
+<span class="n">E</span>        <span class="o">+</span>  <span class="n">where</span> <span class="mi">54</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&#39;6*9&#39;</span><span class="p">)</span>
 
 <span class="n">test_expectation</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span> <span class="ne">AssertionError</span>
 <span class="o">====================</span> <span class="mi">1</span> <span class="n">failed</span><span class="p">,</span> <span class="mi">2</span> <span class="n">passed</span> <span class="ow">in</span> <span class="mf">0.01</span> <span class="n">seconds</span> <span class="o">====================</span>
@@ -422,10 +422,10 @@ In other words, what if you want to <em>dynamically parametrize</em> your functi
 The hook that can be useful for us is <code>pytest_generate_tests</code> that will allow
 to generate several calls to the same test function, but with different arguments
 (from <a href="http://pytest.org/latest/funcargs.html#basic-generated-test-example">py.test doc</a>):</p>
-<div class="highlight"><pre><span class="c1"># content of test_example.py</span>
+<div class="highlight"><pre><span class="c"># content of test_example.py</span>
 <span class="k">def</span> <span class="nf">pytest_generate_tests</span><span class="p">(</span><span class="n">metafunc</span><span class="p">):</span>
-    <span class="k">if</span> <span class="s2">&quot;numiter&quot;</span> <span class="ow">in</span> <span class="n">metafunc</span><span class="o">.</span><span class="n">funcargnames</span><span class="p">:</span>
-        <span class="n">metafunc</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;numiter&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+    <span class="k">if</span> <span class="s">&quot;numiter&quot;</span> <span class="ow">in</span> <span class="n">metafunc</span><span class="o">.</span><span class="n">funcargnames</span><span class="p">:</span>
+        <span class="n">metafunc</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s">&quot;numiter&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">test_func</span><span class="p">(</span><span class="n">numiter</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">numiter</span> <span class="o">&lt;</span> <span class="mi">9</span>
@@ -465,8 +465,8 @@ to generate several calls to the same test function, but with different argument
 <span class="sd">    parametrizing tests with each test case found in a data_X</span>
 <span class="sd">    file &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">fixture</span> <span class="ow">in</span> <span class="n">metafunc</span><span class="o">.</span><span class="n">fixturenames</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">fixture</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;data_&#39;</span><span class="p">):</span>
-            <span class="c1"># Load associated test data</span>
+        <span class="k">if</span> <span class="n">fixture</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;data_&#39;</span><span class="p">):</span>
+            <span class="c"># Load associated test data</span>
             <span class="n">tests</span> <span class="o">=</span> <span class="n">load_tests</span><span class="p">(</span><span class="n">fixture</span><span class="p">)</span>
             <span class="n">metafunc</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="n">fixture</span><span class="p">,</span> <span class="n">tests</span><span class="p">)</span>
 </pre></div>
@@ -484,9 +484,9 @@ and will:</p>
 
 
 <span class="k">def</span> <span class="nf">load_tests</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="c1"># Load module which contains test data</span>
+    <span class="c"># Load module which contains test data</span>
     <span class="n">tests_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-    <span class="c1"># Tests are to be found in the variable `tests` of the module</span>
+    <span class="c"># Tests are to be found in the variable `tests` of the module</span>
     <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests_module</span><span class="o">.</span><span class="n">tests</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
         <span class="k">yield</span> <span class="n">test</span>
 </pre></div>
@@ -526,7 +526,7 @@ and will:</p>
     </article>
 
         <div class="tags">
-            <p>tags: <a href="http://remusao.github.com/tag/python.html">python</a>, <a href="http://remusao.github.com/tag/pytest.html">pytest</a>, </p>
+            <p>tags: <a href="https://remusao.github.com/tag/python.html">python</a>, <a href="https://remusao.github.com/tag/pytest.html">pytest</a>, </p>
         </div>
 
     <hr>
@@ -537,7 +537,7 @@ and will:</p>
             <script type="text/javascript">
                 var disqus_shortname = 'pythux';
                 var disqus_identifier = 'pytest-paramaterize-tests-with-external-data.html';
-                var disqus_url = 'http://remusao.github.com/pytest-paramaterize-tests-with-external-data.html';
+                var disqus_url = 'https://remusao.github.com/pytest-paramaterize-tests-with-external-data.html';
                 (function() {
                     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
                     dsq.src = '//pythux.disqus.com/embed.js';
@@ -583,10 +583,10 @@ and will:</p>
     </footer>
 
     <!-- jQuery -->
-    <script src="http://remusao.github.com/theme/js/jquery.js"></script>
+    <script src="https://remusao.github.com/theme/js/jquery.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="http://remusao.github.com/theme/js/bootstrap.min.js"></script>
+    <script src="https://remusao.github.com/theme/js/bootstrap.min.js"></script>
 
 
     <script type="text/javascript">

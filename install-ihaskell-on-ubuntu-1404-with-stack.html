@@ -217,17 +217,17 @@ jQuery(document).ready(function($) {
 
 
 
-            <link href="http://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Full Atom Feed" />
-            <link href="http://remusao.github.com/feeds/haskell.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Categories Atom Feed" />
+            <link href="https://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Full Atom Feed" />
+            <link href="https://remusao.github.com/feeds/haskell.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Categories Atom Feed" />
 
         <!-- Bootstrap Core CSS -->
-        <link href="http://remusao.github.com/theme/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://remusao.github.com/theme/css/bootstrap.min.css" rel="stylesheet">
 
         <!-- Custom CSS -->
-        <link href="http://remusao.github.com/theme/css/clean-blog.min.css" rel="stylesheet">
+        <link href="https://remusao.github.com/theme/css/clean-blog.min.css" rel="stylesheet">
 
         <!-- Code highlight color scheme -->
-            <link href="http://remusao.github.com/theme/css/code_blocks/notebook.css" rel="stylesheet">
+            <link href="https://remusao.github.com/theme/css/code_blocks/notebook.css" rel="stylesheet">
 
 
         <!-- Custom Fonts -->
@@ -250,12 +250,12 @@ jQuery(document).ready(function($) {
 
 	<meta property="og:type" content="article">
 	<meta property="article:author" content="">
-	<meta property="og:url" content="http://remusao.github.com/install-ihaskell-on-ubuntu-1404-with-stack.html">
+	<meta property="og:url" content="https://remusao.github.com/install-ihaskell-on-ubuntu-1404-with-stack.html">
 	<meta property="og:title" content="Install IHaskell on Ubuntu 14.04 with Stack">
 	<meta property="og:description" content="<p>In this post, we're going through the installation of IHaskell on GNU/Linux (Ubuntu 14.04 in my case, though it should be pretty similar on other ditributions) step-by-step. We'll see how the use of <em>Stack</em> will simplify the whole process, and how to get all the dependencies right!
 ">
 	<meta property="article:published_time" content="2016-01-07 16:17:00+01:00">
-    <meta property="og:image" content="http://remusao.github.com/">
+    <meta property="og:image" content="https://remusao.github.com/">
 </head>
 
 <body>
@@ -271,14 +271,14 @@ jQuery(document).ready(function($) {
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="http://remusao.github.com/">Pythux</a>
+                <a class="navbar-brand" href="https://remusao.github.com/">Pythux</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
 
-                            <li><a href="http://remusao.github.com/pages/about.html">About</a></li>
+                            <li><a href="https://remusao.github.com/pages/about.html">About</a></li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -294,7 +294,7 @@ jQuery(document).ready(function($) {
                     <div class="post-heading">
                         <h1>Install IHaskell on Ubuntu 14.04 with Stack</h1>
                         <span class="meta">Posted by
-                                <a href="http://remusao.github.com/author/pythux.html">Pythux</a>
+                                <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
                              on Thu 07 January 2016
                         </span>
                         
@@ -326,10 +326,10 @@ sudo apt-get update <span class="o">&amp;&amp;</span> sudo apt-get install stack
 
 
 <p>Being up-to-date is important, so setup your <em>Stack</em> global configuration <code>~/.stack/global/stack.yaml</code>:</p>
-<div class="highlight"><pre><span class="l l-Scalar l-Scalar-Plain">flags</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{}</span>
-<span class="l l-Scalar l-Scalar-Plain">resolver</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">lts-4.0</span>
-<span class="l l-Scalar l-Scalar-Plain">packages</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[]</span>
-<span class="l l-Scalar l-Scalar-Plain">extra-deps</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[]</span>
+<div class="highlight"><pre><span class="l-Scalar-Plain">flags</span><span class="p-Indicator">:</span> <span class="p-Indicator">{}</span>
+<span class="l-Scalar-Plain">resolver</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">lts-4.0</span>
+<span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
+<span class="l-Scalar-Plain">extra-deps</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
 </pre></div>
 
 
@@ -346,9 +346,9 @@ sudo apt-get update <span class="o">&amp;&amp;</span> sudo apt-get install stack
 <li>Use Nix</li>
 </ol>
 <p>We're going to compile it from source. I'll follow the way of the official <a href="https://github.com/gibiansky/IHaskell#install-zeromq">README</a>:</p>
-<div class="highlight"><pre><span class="c1"># Compiling from source:</span>
+<div class="highlight"><pre><span class="c"># Compiling from source:</span>
 git clone git@github.com:zeromq/zeromq4-x.git libzmq
-<span class="nb">cd</span> libzmq
+<span class="nb">cd </span>libzmq
 ./autogen.sh <span class="o">&amp;&amp;</span> ./configure <span class="o">&amp;&amp;</span> make
 sudo make install
 sudo ldconfig
@@ -368,7 +368,7 @@ sudo ldconfig
 <p>If you're on a fresh install: <code>sudo apt-get install python-virtualenv python-dev ncurses-base</code></p>
 <p>With <code>virtualenv</code>:</p>
 <div class="highlight"><pre>virtualenv venv-ihaskell
-<span class="nb">source</span> venv-ihaskell/bin/activate
+<span class="nb">source </span>venv-ihaskell/bin/activate
 </pre></div>
 
 
@@ -409,12 +409,12 @@ workon ihaskell
 </ul>
 <h2>Setup IHaskell</h2>
 <p>If everything went well, you should have <em>Jupyter</em> (latest version) and <em>ihaskell</em> installed properly. The last step is to install the <em>IHaskell Kernel</em> into <em>Jupyter</em>.</p>
-<div class="highlight"><pre>stack <span class="nb">exec</span> ihaskell -- install
+<div class="highlight"><pre>stack <span class="nb">exec </span>ihaskell -- install
 </pre></div>
 
 
 <p>Now run the notebook server and enjoy:</p>
-<div class="highlight"><pre>stack <span class="nb">exec</span> jupyter -- notebook
+<div class="highlight"><pre>stack <span class="nb">exec </span>jupyter -- notebook
 </pre></div>
 
 
@@ -426,7 +426,7 @@ to export a notebook either in HTML or Markdown.</p>
     </article>
 
         <div class="tags">
-            <p>tags: <a href="http://remusao.github.com/tag/haskell.html">haskell</a>, <a href="http://remusao.github.com/tag/stack.html">stack</a>, <a href="http://remusao.github.com/tag/ihaskell.html">ihaskell</a>, <a href="http://remusao.github.com/tag/ipython.html">ipython</a>, <a href="http://remusao.github.com/tag/ubuntu.html">ubuntu</a>, </p>
+            <p>tags: <a href="https://remusao.github.com/tag/haskell.html">haskell</a>, <a href="https://remusao.github.com/tag/stack.html">stack</a>, <a href="https://remusao.github.com/tag/ihaskell.html">ihaskell</a>, <a href="https://remusao.github.com/tag/ipython.html">ipython</a>, <a href="https://remusao.github.com/tag/ubuntu.html">ubuntu</a>, </p>
         </div>
 
     <hr>
@@ -437,7 +437,7 @@ to export a notebook either in HTML or Markdown.</p>
             <script type="text/javascript">
                 var disqus_shortname = 'pythux';
                 var disqus_identifier = 'install-ihaskell-on-ubuntu-1404-with-stack.html';
-                var disqus_url = 'http://remusao.github.com/install-ihaskell-on-ubuntu-1404-with-stack.html';
+                var disqus_url = 'https://remusao.github.com/install-ihaskell-on-ubuntu-1404-with-stack.html';
                 (function() {
                     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
                     dsq.src = '//pythux.disqus.com/embed.js';
@@ -483,10 +483,10 @@ to export a notebook either in HTML or Markdown.</p>
     </footer>
 
     <!-- jQuery -->
-    <script src="http://remusao.github.com/theme/js/jquery.js"></script>
+    <script src="https://remusao.github.com/theme/js/jquery.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="http://remusao.github.com/theme/js/bootstrap.min.js"></script>
+    <script src="https://remusao.github.com/theme/js/bootstrap.min.js"></script>
 
 
     <script type="text/javascript">
