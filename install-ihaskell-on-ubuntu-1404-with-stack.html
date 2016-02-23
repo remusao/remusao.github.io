@@ -314,27 +314,27 @@ jQuery(document).ready(function($) {
 </p>
 <h2>Install Stack</h2>
 <p>From <em>Stack</em> official <a href="http://docs.haskellstack.org/en/stable/install_and_upgrade.html">documentation</a>, for Ubuntu 14.04:</p>
-<div class="highlight"><pre>sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442
+<div class="highlight"><pre><span></span>sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442
 <span class="nb">echo</span> <span class="s1">&#39;deb http://download.fpcomplete.com/ubuntu trusty main&#39;</span><span class="p">|</span>sudo tee /etc/apt/sources.list.d/fpco.list
 sudo apt-get update <span class="o">&amp;&amp;</span> sudo apt-get install stack -y
 </pre></div>
 
 
 <p>You should now be able to run the <code>stack</code> executable in a shell:</p>
-<div class="highlight"><pre>stack --help
+<div class="highlight"><pre><span></span>stack --help
 </pre></div>
 
 
 <p>Being up-to-date is important, so setup your <em>Stack</em> global configuration <code>~/.stack/global/stack.yaml</code>:</p>
-<div class="highlight"><pre><span class="l-Scalar-Plain">flags</span><span class="p-Indicator">:</span> <span class="p-Indicator">{}</span>
-<span class="l-Scalar-Plain">resolver</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">lts-4.0</span>
-<span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
-<span class="l-Scalar-Plain">extra-deps</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
+<div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">flags</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">{}</span>
+<span class="l l-Scalar l-Scalar-Plain">resolver</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">lts-4.0</span>
+<span class="l l-Scalar l-Scalar-Plain">packages</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[]</span>
+<span class="l l-Scalar l-Scalar-Plain">extra-deps</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[]</span>
 </pre></div>
 
 
 <p>Tell <em>Stack</em> to setup everything (download package list, install latest <em>GHC</em> release, etc.):</p>
-<div class="highlight"><pre>stack setup
+<div class="highlight"><pre><span></span>stack setup
 </pre></div>
 
 
@@ -346,9 +346,9 @@ sudo apt-get update <span class="o">&amp;&amp;</span> sudo apt-get install stack
 <li>Use Nix</li>
 </ol>
 <p>We're going to compile it from source. I'll follow the way of the official <a href="https://github.com/gibiansky/IHaskell#install-zeromq">README</a>:</p>
-<div class="highlight"><pre><span class="c"># Compiling from source:</span>
+<div class="highlight"><pre><span></span><span class="c1"># Compiling from source:</span>
 git clone git@github.com:zeromq/zeromq4-x.git libzmq
-<span class="nb">cd </span>libzmq
+<span class="nb">cd</span> libzmq
 ./autogen.sh <span class="o">&amp;&amp;</span> ./configure <span class="o">&amp;&amp;</span> make
 sudo make install
 sudo ldconfig
@@ -367,25 +367,25 @@ sudo ldconfig
 </ol>
 <p>If you're on a fresh install: <code>sudo apt-get install python-virtualenv python-dev ncurses-base</code></p>
 <p>With <code>virtualenv</code>:</p>
-<div class="highlight"><pre>virtualenv venv-ihaskell
-<span class="nb">source </span>venv-ihaskell/bin/activate
+<div class="highlight"><pre><span></span>virtualenv venv-ihaskell
+<span class="nb">source</span> venv-ihaskell/bin/activate
 </pre></div>
 
 
 <p>With <code>virtualenvwrapper</code>:</p>
-<div class="highlight"><pre>mkvirtualenv ihaskell
+<div class="highlight"><pre><span></span>mkvirtualenv ihaskell
 workon ihaskell
 </pre></div>
 
 
 <p>Now we install <s><em>ipython</em></s> <em>Jupyter</em>:</p>
-<div class="highlight"><pre>pip install jupyter
+<div class="highlight"><pre><span></span>pip install jupyter
 </pre></div>
 
 
 <h2>Install IHaskell</h2>
 <p>Nothing simpler, just use <em>Stack</em>:</p>
-<div class="highlight"><pre>stack build ihaskell
+<div class="highlight"><pre><span></span>stack build ihaskell
 </pre></div>
 
 
@@ -409,12 +409,12 @@ workon ihaskell
 </ul>
 <h2>Setup IHaskell</h2>
 <p>If everything went well, you should have <em>Jupyter</em> (latest version) and <em>ihaskell</em> installed properly. The last step is to install the <em>IHaskell Kernel</em> into <em>Jupyter</em>.</p>
-<div class="highlight"><pre>stack <span class="nb">exec </span>ihaskell -- install
+<div class="highlight"><pre><span></span>stack <span class="nb">exec</span> ihaskell -- install
 </pre></div>
 
 
 <p>Now run the notebook server and enjoy:</p>
-<div class="highlight"><pre>stack <span class="nb">exec </span>jupyter -- notebook
+<div class="highlight"><pre><span></span>stack <span class="nb">exec</span> jupyter -- notebook
 </pre></div>
 
 

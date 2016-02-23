@@ -248,8 +248,8 @@ jQuery(document).ready(function($) {
 	<meta property="og:url" content="https://remusao.github.com/drafts/python-inheriting-tuple-class.html">
 	<meta property="og:title" content="Python inheriting tuple class">
 	<meta property="og:description" content="<p>I recently faced some problem while using inheritance in Python.</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
-    <span class="c"># Do something</span>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+    <span class="c1"># Do something</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">MyTuple</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
@@ -257,13 +257,13 @@ jQuery(document).ready(function($) {
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
 
-        <span class="c"># Call constructor from base class tuple</span>
+        <span class="c1"># Call constructor from base class tuple</span>
         <span class="nb">tuple</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
 
-        <span class="c"># False</span>
+        <span class="c1"># False</span>
         <span class="k">assert</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">result</span>
 
-        <span class="c"># True</span>
+        <span class="c1"># True</span>
         <span class="k">assert</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">arg</span>
 </pre></div>
 
@@ -326,8 +326,8 @@ jQuery(document).ready(function($) {
     <!-- Post Content -->
     <article>
         <p>I recently faced some problem while using inheritance in Python.</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
-    <span class="c"># Do something</span>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+    <span class="c1"># Do something</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">MyTuple</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
@@ -335,13 +335,13 @@ jQuery(document).ready(function($) {
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
 
-        <span class="c"># Call constructor from base class tuple</span>
+        <span class="c1"># Call constructor from base class tuple</span>
         <span class="nb">tuple</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
 
-        <span class="c"># False</span>
+        <span class="c1"># False</span>
         <span class="k">assert</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">result</span>
 
-        <span class="c"># True</span>
+        <span class="c1"># True</span>
         <span class="k">assert</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">arg</span>
 </pre></div>
 

@@ -2,13 +2,13 @@
 <html lang="en">
 
 <head>
-        <meta charset="utf-8">
+            <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content=":: IO World">
         <meta name="author" content="Pythux">
 
-        <title>Pythux</title>
+        <title>What's in a parser combinator?</title>
 
             
 <style type="text/css">
@@ -218,6 +218,7 @@ jQuery(document).ready(function($) {
 
 
             <link href="https://remusao.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Full Atom Feed" />
+            <link href="https://remusao.github.com/feeds/haskell.atom.xml" type="application/atom+xml" rel="alternate" title="Pythux Categories Atom Feed" />
 
         <!-- Bootstrap Core CSS -->
         <link href="https://remusao.github.com/theme/css/bootstrap.min.css" rel="stylesheet">
@@ -234,8 +235,25 @@ jQuery(document).ready(function($) {
         <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
-		<meta property="og:locale" content="en">
+
+
+
+        <meta name="tags" contents="haskell" />
+        <meta name="tags" contents="ihaskell" />
+        <meta name="tags" contents="parser" />
+        <meta name="tags" contents="combinator" />
+
+
+			<meta property="og:locale" content="en">
 		<meta property="og:site_name" content="Pythux">
+
+	<meta property="og:type" content="article">
+	<meta property="article:author" content="">
+	<meta property="og:url" content="https://remusao.github.com/whats-in-a-parser-combinator.html">
+	<meta property="og:title" content="What's in a parser combinator?">
+	<meta property="og:description" content="<p>Here we talk about what a parser is, how to make parsers compose, and how to make use of do notation to write more complex parsers in Haskell.</p>">
+	<meta property="article:published_time" content="2016-02-23 11:15:00+01:00">
+    <meta property="og:image" content="https://remusao.github.com/images/haskell-logo.png">
 </head>
 
 <body>
@@ -267,15 +285,17 @@ jQuery(document).ready(function($) {
     </nav>
 
     <!-- Page Header -->
-    <!-- Set your background image for this header on the line below. -->
-        <header class="intro-header" style="background-image: url('static/haskell-logo.jpg')">
+        <header class="intro-header" style="background-image: url('static/metal.jpg')">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                    <div class="page-heading">
-                        <h1>Pythux</h1>
-                            <hr class="small">
-                            <span class="subheading">:: IO World</span>
+                    <div class="post-heading">
+                        <h1>What's in a parser combinator?</h1>
+                        <span class="meta">Posted by
+                                <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
+                             on Tue 23 February 2016
+                        </span>
+                        
                     </div>
                 </div>
             </div>
@@ -286,167 +306,2132 @@ jQuery(document).ready(function($) {
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        <div class="post-preview">
-            <a href="https://remusao.github.com/whats-in-a-parser-combinator.html" rel="bookmark" title="Permalink to What's in a parser combinator?">
-                <h2 class="post-title">
-                    What's in a parser combinator?
-                </h2>
-            </a>
-                <p>Here we talk about what a parser is, how to make parsers compose, and how to make use of do notation to write more complex parsers in Haskell.</p>
-            <p class="post-meta">Posted by
-                    <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
-                 on Tue 23 February 2016
-<p>There are <a href="https://remusao.github.com/whats-in-a-parser-combinator.html#disqus_thread">comments</a>.</p>            </p>
-        </div>
-        <div class="post-preview">
-            <a href="https://remusao.github.com/feedback-from-hash-code-2016-qualification-round.html" rel="bookmark" title="Permalink to Feedback from Hash Code 2016 qualification round">
-                <h2 class="post-title">
-                    Feedback from Hash Code 2016 qualification round
-                </h2>
-            </a>
-                
-
-<p>Yesterday was the qualification round for <a href="https://hashcode.withgoogle.com/">Hash Code 2016</a> contest, organized by
-Google. I already had the opportunity to participate next, and made it to the
-final round with my team.  For this new edition, the team and motivation was
-the same but we thought a bit about how we could improve our organization to be
-more efficient. This post is about what I will take away from this competition.
-
-            <p class="post-meta">Posted by
-                    <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
-                 on Fri 12 February 2016
-<p>There are <a href="https://remusao.github.com/feedback-from-hash-code-2016-qualification-round.html#disqus_thread">comments</a>.</p>            </p>
-        </div>
-        <div class="post-preview">
-            <a href="https://remusao.github.com/rubiks-cube-world-records-analysis.html" rel="bookmark" title="Permalink to Rubik's Cube World Records Analysis">
-                <h2 class="post-title">
-                    Rubik's Cube World Records Analysis
-                </h2>
-            </a>
-                <p>Following on the recent hype around the new Rubik's Cube World Record among robots, I got interested in getting more insight into the Human World Records, which was a good opportunity to learn a bit more about Jupyter, Pandas, and Data Analysis.</p>
-            <p class="post-meta">Posted by
-                    <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
-                 on Wed 27 January 2016
-<p>There are <a href="https://remusao.github.com/rubiks-cube-world-records-analysis.html#disqus_thread">comments</a>.</p>            </p>
-        </div>
-        <div class="post-preview">
-            <a href="https://remusao.github.com/learning-a-new-language-the-tools.html" rel="bookmark" title="Permalink to Learning a New Language: the Tools">
-                <h2 class="post-title">
-                    Learning a New Language: the Tools
-                </h2>
-            </a>
-                
-
-<p><strong>Facts</strong>:</p>
+    <!-- Post Content -->
+    <article>
+        <p>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="What's-in-a-parser-combinator?">What's in a parser combinator?<a class="anchor-link" href="#What's-in-a-parser-combinator?">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As part of my ongoing effort to make progress in Haskell (that's one of my goals for 2016!), I'm following the <a href="https://courses.edx.org/courses/course-v1:DelftX+FP101x+3T2015/info">MOOC on functionnal programming</a> by <a href="https://twitter.com/headinthebox">Erik Meijer</a> on <em>edX</em>.</p>
+<p>The first lessons were pretty basic stuff, and I got through them quickly. Lesson 7 is about <em>Functional parsers</em> and M***** (scary). This is where I encountered my first difficulties, and I thought it would be an interesting writing. I already used parser combinators in Haskell before (mainly <a href="https://hackage.haskell.org/package/parsec">Parsec</a> and <a href="http://hackage.haskell.org/package/attoparsec">Attoparsec</a>), but never really understood how they worked, or at least not enough to implement one myself. So here is my take on the subject. Don't expect really advanced stuff! It's just an introduction to the basic concepts, on which we could build more complex and useful tools. In particular, <strong>I won't talk about</strong>:</p>
 <ol>
-<li>I'm leaving for Germany in 2 months, for an undetermined duration.</li>
-<li>I don't speak German.</li>
-<li>I decided to learn it.</li>
+<li>How to report errors.</li>
+<li>How to recover from errors.</li>
+<li>How to write a parser for a concrete grammar.</li>
 </ol>
-<p>In this post, I intend to give a short description of the <em>tools and methodology I use to learn German</em>.
-Keep in mind that this is neither a "definitive guide", nor a "how to", only some notes on what I found on my journey to learning a new language (which just began).
-I would be glad to get some tricks, advices and such from the comments as well.
+<p>Instead <strong>I'll focus on</strong>:</p>
+<ol>
+<li>What a parser <em>is</em>.</li>
+<li>How to make parsers <em>compose</em>.</li>
+<li>How to use <em>do notation</em> to implement more complex parsers.</li>
+</ol>
+<p>One of the interesting facts about writing your own parser combinators library, is that you will learn (or consolidate) other knowledges in the process, like: <em>Functors</em>, <em>Applicatives</em> and, of course, <em>Monads</em>, and more generaly, how to <em>design DSL in Haskell</em>. I already knew about this concepts (at least, that's what I thought...), but knowing what something is from a high level of abstraction, <em>is not the same as knowing how to implement it on a concrete type</em> (like a Parser)!</p>
 
-            <p class="post-meta">Posted by
-                    <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
-                 on Mon 25 January 2016
-<p>There are <a href="https://remusao.github.com/learning-a-new-language-the-tools.html#disqus_thread">comments</a>.</p>            </p>
-        </div>
-        <div class="post-preview">
-            <a href="https://remusao.github.com/a-tour-of-ihaskell-extensions-and-integrations.html" rel="bookmark" title="Permalink to A tour of IHaskell extensions and integrations">
-                <h2 class="post-title">
-                    A tour of IHaskell extensions and integrations
-                </h2>
-            </a>
-                <p>In my previous post, I tried to provide a step-by-step explanation of how to install IHaskell on Ubuntu 14.04 (Should also work on other versions). Now is time to start using it! This post is an overview of various extensions you can use within IHaskell.</p>
-            <p class="post-meta">Posted by
-                    <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
-                 on Mon 11 January 2016
-<p>There are <a href="https://remusao.github.com/a-tour-of-ihaskell-extensions-and-integrations.html#disqus_thread">comments</a>.</p>            </p>
-        </div>
-        <div class="post-preview">
-            <a href="https://remusao.github.com/install-ihaskell-on-ubuntu-1404-with-stack.html" rel="bookmark" title="Permalink to Install IHaskell on Ubuntu 14.04 with Stack">
-                <h2 class="post-title">
-                    Install IHaskell on Ubuntu 14.04 with Stack
-                </h2>
-            </a>
-                <p>In this post, we're going through the installation of IHaskell on GNU/Linux (Ubuntu 14.04 in my case, though it should be pretty similar on other ditributions) step-by-step. We'll see how the use of <em>Stack</em> will simplify the whole process, and how to get all the dependencies right!
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="So-what's-a-parser?">So what's a parser?<a class="anchor-link" href="#So-what's-a-parser?">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can view a <em>Parser</em> as <em>something</em> that consumes some input, and outputs a structured representation of what was consumed. For the sake of simplicity, we'll only consume strings (Haskell type <code>String</code>). So that would be something like:</p>
 
-            <p class="post-meta">Posted by
-                    <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
-                 on Thu 07 January 2016
-<p>There are <a href="https://remusao.github.com/install-ihaskell-on-ubuntu-1404-with-stack.html#disqus_thread">comments</a>.</p>            </p>
-        </div>
-        <div class="post-preview">
-            <a href="https://remusao.github.com/pytest-paramaterize-tests-with-external-data.html" rel="bookmark" title="Permalink to [py.test] Paramaterize tests with external data">
-                <h2 class="post-title">
-                    [py.test] Paramaterize tests with external data
-                </h2>
-            </a>
-                <p>I recently began to make heavy use of <a href="http://pytest.org/latest/">py.test</a>
-in my day-to-day Python development. It's a wonderful tool, but I won't
-explain to you every features it provides and why it's awesome. Instead,
-I'll explain how I managed to cleanly externalize the data used for my
-tests in external files (that can be of any format: yaml, json, python
-files). The idea here is to <em>separate the code that performs the test</em>,
-from the <em>input data used to perform the test</em>.
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="kr">type</span> <span class="kt">Parser</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="n">a</span>
+</pre></div>
 
-            <p class="post-meta">Posted by
-                    <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
-                 on Wed 26 November 2014
-<p>There are <a href="https://remusao.github.com/pytest-paramaterize-tests-with-external-data.html#disqus_thread">comments</a>.</p>            </p>
-        </div>
-        <div class="post-preview">
-            <a href="https://remusao.github.com/decompressing-bzipped-files-with-julia.html" rel="bookmark" title="Permalink to Decompressing BZipped files with Julia">
-                <h2 class="post-title">
-                    Decompressing BZipped files with Julia
-                </h2>
-            </a>
-                <p>I'm currently working with Wikipedia dumps, and to save space, it's a good thing to make scripts that read directly content from (and write results to) BZipped files.
+</div>
+</div>
+</div>
 
-            <p class="post-meta">Posted by
-                    <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
-                 on Tue 22 July 2014
-<p>There are <a href="https://remusao.github.com/decompressing-bzipped-files-with-julia.html#disqus_thread">comments</a>.</p>            </p>
-        </div>
-        <div class="post-preview">
-            <a href="https://remusao.github.com/installation-de-julia.html" rel="bookmark" title="Permalink to Installation de Julia">
-                <h2 class="post-title">
-                    Installation de Julia
-                </h2>
-            </a>
-                <p>Suite au premier article sur le langage Julia, voici un guide rapide de mise en
-route de votre environnement pour utiliser le langage.
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here <code>a</code> represents the type of what is <em>built</em> from the stream of characters (<code>String</code>). This could be a syntactic tree, or a list of numbers, or anything else. For example a parser that is able to recognize a string like <code>"[1, 2, 3, 4]"</code> could have the type: <code>Parser [Int]</code> (expended to <code>String -&gt; [Int]</code>), which means it takes a <code>String</code> and output a <code>list</code> of integers.</p>
+<p>But we're missing two importants properties of a <em>Parser</em>:</p>
+<ol>
+<li>It can <strong>fail to parse</strong> something.</li>
+<li>It can <strong>partially consume</strong> its input.</li>
+</ol>
+<p>To take into account the first point, we could return <code>Maybe a</code> instead of <code>a</code> (resulting in <code>Nothing</code> in case of failure). Note that we could also use a richer type like <code>Either</code> to handle parsing errors. And for the second point, we can return a tuple of a <code>a</code> and a <code>String</code>, which represents the part of the string that wasn't consumed by the parser. The type would then become:</p>
 
-            <p class="post-meta">Posted by
-                    <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
-                 on Fri 14 February 2014
-<p>There are <a href="https://remusao.github.com/installation-de-julia.html#disqus_thread">comments</a>.</p>            </p>
-        </div>
-        <div class="post-preview">
-            <a href="https://remusao.github.com/julia.html" rel="bookmark" title="Permalink to Julia">
-                <h2 class="post-title">
-                    Julia
-                </h2>
-            </a>
-                <p>Aujourd'hui j'aimerais parler d'un langage de programmation que je viens de
-découvrir : <strong>Julia</strong>. Je vais donc vous le présenter succinctement et donner
-mon ressenti après quelques jours d'utilisation.
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="kr">data</span> <span class="kt">Parser</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Parser</span> <span class="p">{</span> <span class="n">runParser</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="kt">String</span><span class="p">)</span> <span class="p">}</span>
+</pre></div>
 
-            <p class="post-meta">Posted by
-                    <a href="https://remusao.github.com/author/pythux.html">Pythux</a>
-                 on Thu 13 February 2014
-<p>There are <a href="https://remusao.github.com/julia.html#disqus_thread">comments</a>.</p>            </p>
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As an example of a parser that would fail, if you take our previous <em>parser</em> that is able to handle a list of integers, if you give it the string <code>"[1 ,2"</code>, it will fail, and return <code>Nothing</code>.</p>
+<p>Similarely, if we feed the <em>parser</em> with <code>"[1, 2, 3, 4]toto"</code>, it will consume the part of the string that represents the list of integers, and leave <code>"toto"</code> as a remaining input. Thus the result would be: <code>Just ([1, 2, 3, 4], "toto")</code>.</p>
+<p>Let's implement some very basic parsers:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="c1">-- This parser always fails</span>
+<span class="nf">failure</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="n">a</span>
+<span class="nf">failure</span> <span class="ow">=</span> <span class="kt">Parser</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="kt">Nothing</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="c1">-- This parser always succeeds and returns the value given as input (leaving the input string intact)</span>
+<span class="nf">return</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="n">a</span>
+<span class="nf">return</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Parser</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="kt">Just</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="c1">-- This parser returns the first char of the input string, and fail on empty input</span>
+<span class="nf">oneChar</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Char</span>
+<span class="nf">oneChar</span> <span class="ow">=</span> <span class="kt">Parser</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="kr">case</span> <span class="n">s</span> <span class="kr">of</span>
+            <span class="kt">[]</span> <span class="ow">-&gt;</span> <span class="kt">Nothing</span>
+            <span class="p">(</span><span class="n">c</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Just</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's test this parsers:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="nf">runParser</span> <span class="n">failure</span> <span class="s">&quot;Hello Parser!&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: red; font-weight: bold;'>Nothing</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="nf">runParser</span> <span class="p">(</span><span class="n">return</span> <span class="mi">42</span><span class="p">)</span> <span class="s">&quot;Hello Parser!&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>(42,"Hello Parser!")</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="nf">runParser</span> <span class="n">oneChar</span> <span class="s">&quot;Hello Parser!&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>('H',"ello Parser!")</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="nf">runParser</span> <span class="n">oneChar</span> <span class="s">&quot;&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: red; font-weight: bold;'>Nothing</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The basic parsers seem to behave as expected. We get <code>Nothing</code> in case of failure, and they are able to partially consume the input. So all is good, but what about more complex parsers? We would like to parse strings, or more complex patterns. Let's try to recognize a string from the input, using our basic parsers:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="nf">string</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="kt">String</span>
+<span class="nf">string</span> <span class="s">&quot;&quot;</span> <span class="ow">=</span> <span class="n">return</span> <span class="s">&quot;&quot;</span>
+<span class="nf">string</span> <span class="p">(</span><span class="n">c1</span><span class="kt">:</span><span class="n">xs1</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Parser</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="kr">case</span> <span class="n">runParser</span> <span class="n">oneChar</span> <span class="n">s</span> <span class="kr">of</span>
+                <span class="kt">Nothing</span> <span class="ow">-&gt;</span> <span class="kt">Nothing</span>
+                <span class="kt">Just</span> <span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="n">rest</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kr">if</span> <span class="n">c1</span> <span class="o">==</span> <span class="n">c2</span>
+                                    <span class="kr">then</span> <span class="kr">case</span> <span class="n">runParser</span> <span class="p">(</span><span class="n">string</span> <span class="n">xs1</span><span class="p">)</span> <span class="n">rest</span> <span class="kr">of</span>
+                                        <span class="kt">Nothing</span> <span class="ow">-&gt;</span> <span class="kt">Nothing</span>
+                                        <span class="kt">Just</span> <span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="n">rest2</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Just</span> <span class="p">(</span><span class="n">c2</span><span class="kt">:</span><span class="n">match</span><span class="p">,</span> <span class="n">rest2</span><span class="p">)</span>
+                                    <span class="kr">else</span> <span class="kt">Nothing</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="nf">runParser</span> <span class="p">(</span><span class="n">string</span> <span class="s">&quot;Hello&quot;</span><span class="p">)</span> <span class="s">&quot;Hello Parser!&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>("Hello"," Parser!")</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="nf">runParser</span> <span class="p">(</span><span class="n">string</span> <span class="s">&quot;Hello&quot;</span><span class="p">)</span> <span class="s">&quot;Foo Bar&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: red; font-weight: bold;'>Nothing</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="nf">runParser</span> <span class="p">(</span><span class="n">string</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="s">&quot;Hello Parser!&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>("","Hello Parser!")</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This isn't very convenient (but it works)... Because we have to write the boilerplate to <em>compose parsers</em> over and over. Hopefully, we know a famous structure that allows composition in Haskell, and this is called <em>Monad</em> (and I won't make yet another tutorial on <em>Monads</em>, so I will assume you already are familiar with this concept). That means we could avoid all the boilerplate, by making our <code>Parser</code> type an instance of <em>Monad</em>. This would allow us to use the <em>do syntax</em> to cleanly compose our parsers! Sweet!</p>
+<p>To do so, we'll have to make our <em>Parser</em> an instance of: <em>Functor</em>, <em>Applicative</em> and <em>Monad</em>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Parser-is-a-Functor">Parser is a Functor<a class="anchor-link" href="#Parser-is-a-Functor">&#182;</a></h4><p>First of all, our Parser is an instance of <a href="https://en.wikibooks.org/wiki/Haskell/The_Functor_class"><em>Functor</em></a>, which means we can <code>map</code> functions over the result of our parsing:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="kr">instance</span> <span class="kt">Functor</span> <span class="kt">Parser</span> <span class="kr">where</span>
+    <span class="c1">-- fmap :: (a -&gt; b) -&gt; Parser a -&gt; Parser b</span>
+    <span class="c1">-- 1. Run parser on input string.</span>
+    <span class="c1">-- 2. Apply function on result of parsing.</span>
+    <span class="n">fmap</span> <span class="n">f</span> <span class="n">p</span> <span class="ow">=</span> <span class="kt">Parser</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="kr">case</span> <span class="n">runParser</span> <span class="n">p</span> <span class="n">s</span> <span class="kr">of</span>
+                    <span class="kt">Nothing</span> <span class="ow">-&gt;</span> <span class="kt">Nothing</span>
+                    <span class="kt">Just</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rest</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Just</span> <span class="p">(</span><span class="n">f</span> <span class="n">a</span><span class="p">,</span> <span class="n">rest</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="c1">-- Parse `String` &quot;42&quot; and then convert it to `Int` using `read`</span>
+<span class="nf">parse42</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Int</span>
+<span class="nf">parse42</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">read</span> <span class="o">$</span> <span class="n">string</span> <span class="s">&quot;42&quot;</span><span class="p">)</span>
+
+<span class="nf">runParser</span> <span class="n">parse42</span> <span class="s">&quot;42 is the answer!&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>(42," is the answer!")</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Parser-is-an-Applicative">Parser is an Applicative<a class="anchor-link" href="#Parser-is-an-Applicative">&#182;</a></h4><p>Secondly, we can make our parser an instance of <a href="https://en.wikibooks.org/wiki/Haskell/Applicative_functors"><em>Applicative</em></a>. This part wasn't obvious for me. All the examples I found were about instances for easy types like <code>Maybe</code>, but I found a <em>Parser</em> to be pretty different. But thanks to the types and some usecases (that you'll find below), I figured the following implementation (which will hopefully be correct...):</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="kr">instance</span> <span class="kt">Applicative</span> <span class="kt">Parser</span> <span class="kr">where</span>
+    <span class="c1">-- pure :: a -&gt; Parser a</span>
+    <span class="c1">-- Wrap a value inside a parser, leaving input unchanged.</span>
+    <span class="n">pure</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Parser</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="kt">Just</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="c1">-- (&lt;*&gt;) :: Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b</span>
+    <span class="c1">-- 1. Run first parser on input (resulting in a function (a -&gt; b).</span>
+    <span class="c1">-- 2. Run second parser on remaining input, left by first parser.</span>
+    <span class="c1">-- 3. Apply function (a -&gt; b) on result of second parser.</span>
+    <span class="n">p1</span> <span class="o">&lt;*&gt;</span> <span class="n">p2</span> <span class="ow">=</span> <span class="kt">Parser</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="kr">case</span> <span class="n">runParser</span> <span class="n">p1</span> <span class="n">s</span> <span class="kr">of</span>
+                            <span class="kt">Nothing</span> <span class="ow">-&gt;</span> <span class="kt">Nothing</span>
+                            <span class="kt">Just</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">rest</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kr">case</span> <span class="n">runParser</span> <span class="n">p2</span> <span class="n">rest</span> <span class="kr">of</span>
+                                <span class="kt">Nothing</span> <span class="ow">-&gt;</span> <span class="kt">Nothing</span>
+                                <span class="kt">Just</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rest2</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Just</span> <span class="p">(</span><span class="n">f</span> <span class="n">a</span><span class="p">,</span> <span class="n">rest2</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The usefulness of the previous instance might not be obvious, but it allows us to <code>lift</code> some function inside the realm of parsers. For example if we want to take the result of several parsers and then group their results into a tuple, we can do it using <em>Applicatives</em>:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="nf">parseTuple</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="p">(</span><span class="kt">Char</span><span class="p">,</span> <span class="kt">Char</span><span class="p">)</span>
+<span class="nf">parseTuple</span> <span class="ow">=</span>  <span class="p">(,)</span> <span class="o">&lt;$&gt;</span> <span class="n">oneChar</span> <span class="o">&lt;*&gt;</span> <span class="n">oneChar</span>
+<span class="nf">runParser</span> <span class="n">parseTuple</span> <span class="s">&quot;ab&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>(('a','b'),"")</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This is the kind of constructs we will use to convert the raw parsed structure into our own types (e.g: an AST).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="kr">data</span> <span class="kt">AST</span> <span class="ow">=</span> <span class="kt">Foo</span> <span class="kt">String</span> <span class="o">|</span> <span class="kt">Bar</span> <span class="kt">String</span> <span class="o">|</span> <span class="kt">Pair</span> <span class="kt">Char</span> <span class="kt">Char</span> <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+
+<span class="nf">parseFoo</span><span class="p">,</span> <span class="n">parseBar</span><span class="p">,</span> <span class="n">parsePair</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">AST</span>
+<span class="nf">parseFoo</span> <span class="ow">=</span> <span class="kt">Foo</span> <span class="o">&lt;$&gt;</span> <span class="n">string</span> <span class="s">&quot;foo&quot;</span>
+<span class="nf">parseBar</span> <span class="ow">=</span> <span class="kt">Bar</span> <span class="o">&lt;$&gt;</span> <span class="n">string</span> <span class="s">&quot;bar&quot;</span>
+<span class="nf">parsePair</span> <span class="ow">=</span> <span class="kt">Pair</span> <span class="o">&lt;$&gt;</span> <span class="n">oneChar</span> <span class="o">&lt;*&gt;</span> <span class="n">oneChar</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="nf">runParser</span> <span class="n">parseFoo</span> <span class="s">&quot;foo bar&quot;</span>
+<span class="nf">runParser</span> <span class="n">parseBar</span> <span class="s">&quot;bar baz&quot;</span>
+<span class="nf">runParser</span> <span class="n">parsePair</span> <span class="s">&quot;xyz&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>(Foo "foo"," bar")</span>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>(Bar "bar"," baz")</span>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>(Pair 'x' 'y',"z")</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Parser-is-a-Monad">Parser is a Monad<a class="anchor-link" href="#Parser-is-a-Monad">&#182;</a></h4><p>Last but not least, our parser is a <a href="https://en.wikibooks.org/wiki/Haskell/Understanding_monads"><em>Monad</em></a>. Which means it must implement: <code>&gt;&gt;=</code>, <code>&gt;&gt;</code>, <code>return</code> and <code>fail</code>:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="kr">instance</span> <span class="kt">Monad</span> <span class="kt">Parser</span> <span class="kr">where</span>
+    <span class="c1">-- (&gt;&gt;=) :: Parser a -&gt; (a -&gt; Parser b) -&gt; Parser b</span>
+    <span class="c1">-- 1. Run first parser on input.</span>
+    <span class="c1">-- 2. Feed result of parsing to `f`.</span>
+    <span class="c1">-- 3. Run second parser (result of `f`) on remaining input (left by first parser)</span>
+    <span class="n">p</span> <span class="o">&gt;&gt;=</span> <span class="n">f</span> <span class="ow">=</span> <span class="kt">Parser</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="kr">case</span> <span class="n">runParser</span> <span class="n">p</span> <span class="n">s</span> <span class="kr">of</span>
+                    <span class="kt">Nothing</span> <span class="ow">-&gt;</span> <span class="kt">Nothing</span>
+                    <span class="kt">Just</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rest</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">runParser</span> <span class="p">(</span><span class="n">f</span> <span class="n">a</span><span class="p">)</span> <span class="n">rest</span>
+    <span class="c1">-- (&gt;&gt;) :: Parser a -&gt; Parser b -&gt; Parser b</span>
+    <span class="c1">-- 1. Run first parser on input.</span>
+    <span class="c1">-- 2. Run second parser on remaining input (left by first parser)</span>
+    <span class="c1">-- We ignore result of first parser.</span>
+    <span class="n">p1</span> <span class="o">&gt;&gt;</span> <span class="n">p2</span> <span class="ow">=</span> <span class="kt">Parser</span> <span class="o">$</span> <span class="nf">\</span><span class="n">s</span> <span class="ow">-&gt;</span> <span class="kr">case</span> <span class="n">runParser</span> <span class="n">p1</span> <span class="n">s</span> <span class="kr">of</span>
+                    <span class="kt">Nothing</span> <span class="ow">-&gt;</span> <span class="kt">Nothing</span>
+                    <span class="kt">Just</span> <span class="p">(</span><span class="kr">_</span><span class="p">,</span> <span class="n">rest</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">runParser</span> <span class="n">p2</span> <span class="n">rest</span>
+    <span class="c1">-- return :: a -&gt; Parser a</span>
+    <span class="n">return</span> <span class="ow">=</span> <span class="n">pure</span>
+    <span class="c1">-- fail :: String -&gt; Parser a</span>
+    <span class="n">fail</span> <span class="kr">_</span> <span class="ow">=</span> <span class="kt">Parser</span> <span class="p">(</span><span class="n">const</span> <span class="kt">Nothing</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Thanks to this definition we can use the <code>do</code> syntactic sugar, which will ease the implementation of more complex parsers. Let's see what we can do.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="c1">-- Parse a specific `Char` from the input</span>
+<span class="nf">char</span> <span class="ow">::</span> <span class="kt">Char</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="kt">Char</span>
+<span class="nf">char</span> <span class="n">c</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="n">c1</span> <span class="ow">&lt;-</span> <span class="n">oneChar</span>
+    <span class="kr">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">c1</span>
+       <span class="kr">then</span> <span class="n">return</span> <span class="n">c1</span>
+       <span class="kr">else</span> <span class="n">failure</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="nf">runParser</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;H&#39;</span><span class="p">)</span> <span class="s">&quot;Hello!&quot;</span>
+<span class="nf">runParser</span> <span class="p">(</span><span class="n">char</span> <span class="sc">&#39;e&#39;</span><span class="p">)</span> <span class="s">&quot;Hello!&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>('H',"ello!")</span>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: red; font-weight: bold;'>Nothing</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can also implement a cleaner version of our <code>string</code> parser (found above):</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="c1">-- Parse a specific pattern from the input</span>
+<span class="nf">string&#39;</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Parser</span> <span class="kt">String</span>
+<span class="nf">string&#39;</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="n">return</span> <span class="kt">[]</span>
+<span class="nf">string&#39;</span> <span class="p">(</span><span class="n">c</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="n">c1</span> <span class="ow">&lt;-</span> <span class="n">char</span> <span class="n">c</span>
+    <span class="n">rest</span> <span class="ow">&lt;-</span> <span class="n">string&#39;</span> <span class="n">xs</span>
+    <span class="n">return</span> <span class="p">(</span><span class="n">c1</span><span class="kt">:</span><span class="n">rest</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span></span><span class="nf">runParser</span> <span class="p">(</span><span class="n">string&#39;</span> <span class="s">&quot;Hello&quot;</span><span class="p">)</span> <span class="s">&quot;Hello&quot;</span>
+<span class="nf">runParser</span> <span class="p">(</span><span class="n">string&#39;</span> <span class="s">&quot;Hello&quot;</span><span class="p">)</span> <span class="s">&quot;Foo&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>("Hello","")</span>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span style='color: red; font-weight: bold;'>Nothing</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>do</code> notation makes it very easy to combine parsers! We now have some basic building blocks that we could use to implement more parsing combinators: <code>choice</code>, <code>many</code>, <code>option</code>, etc. But I'll leave it as an exercice.</p>
+<p>Moreover, it would be interesting to implement an error reporting mechanism, as well as position tracking (to locate errors in the input), but I'll leave it for another blogpost (or as an exercice for the reader!).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="What-I-learned-while-reinventing-the-wheel">What I learned while reinventing the wheel<a class="anchor-link" href="#What-I-learned-while-reinventing-the-wheel">&#182;</a></h2><p>Implementing (very) basic parsing combinators led me to better understand the foundation of libraries like <em>Parsec</em> or <em>Attoparsec</em>, and to implement not so trivial instances of typeclasses like <em>Applicatives</em> and <em>Monads</em>. Althoug basic, I think it's a good way to be more familiar with the <em>DSL</em>-like capabilities of Haskell, and to feel the power that the language offers in term of domain-specific modeling.</p>
+
+</div>
+</div>
+</div></p>
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="https://remusao.github.com/tag/haskell.html">haskell</a>, <a href="https://remusao.github.com/tag/ihaskell.html">ihaskell</a>, <a href="https://remusao.github.com/tag/parser.html">parser</a>, <a href="https://remusao.github.com/tag/combinator.html">combinator</a>, </p>
         </div>
 
     <hr>
-    <!-- Pager -->
-    <ul class="pager">
-        <li class="next">
-        </li>
-    </ul>
-    Page 1 / 1
-    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'pythux';
+                var disqus_identifier = 'whats-in-a-parser-combinator.html';
+                var disqus_url = 'https://remusao.github.com/whats-in-a-parser-combinator.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//pythux.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
             </div>
         </div>
     </div>

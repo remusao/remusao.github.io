@@ -319,13 +319,13 @@ jQuery(document).ready(function($) {
 <p>On a small wikipedia dump of <em>407MB</em>. All timings are in <em>seconds</em>.</p>
 <h2>bzcat alone</h2>
 <p>To have a point of comparison, I decompressed the dump using <em>bzcat</em> alone. The timing is <em>64 seconds</em>.</p>
-<div class="highlight"><pre><span class="nv">$ </span><span class="nb">time </span>1&gt;/dev/null bzcat wikidump.xml.bz2
+<div class="highlight"><pre><span></span>$ <span class="nb">time</span> 1&gt;/dev/null bzcat wikidump.xml.bz2
 </pre></div>
 
 
 <h2>Using Python</h2>
 <p>It's easy enough with <em>Python</em> thanks to the <code>bz2</code> module that allows to transparently manipulate a compressed file as if it were a normal opened file. Before jumping to Julia, let see how it is done in Python:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">bz2</span>
 
@@ -337,7 +337,7 @@ jQuery(document).ready(function($) {
     <span class="n">in_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 
@@ -347,13 +347,13 @@ jQuery(document).ready(function($) {
 <p>Since I really love <em>Julia</em> language, I was tempted to do the same with Julia. Here are the differents solutions that I went through, with their respective timings.</p>
 <h3>Using bz2 Python module through PyCall</h3>
 <p>The first naive option is to use the original module from Python. It's easy enough using the <code>PyCall</code> module. We can install it like so:</p>
-<div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;PyCall&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;PyCall&quot;</span><span class="p">)</span>
 <span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 </pre></div>
 
 
 <p>The script:</p>
-<div class="highlight"><pre><span class="k">using</span> <span class="n">PyCall</span>
+<div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">PyCall</span>
 <span class="p">@</span><span class="n">pyimport</span> <span class="n">bz2</span>
 
 <span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
@@ -369,7 +369,7 @@ jQuery(document).ready(function($) {
 <p>But then we hit the wall... timing is: <em>1352 seconds</em>. This is likely due to the conversion between <em>Python</em> and <em>Julia</em> datatypes. So not the best option for a data-intensive usage.</p>
 <h3>Piping result of bzcat to Julia</h3>
 <p>The second option that came to my mind was: "why not using <em>bzcat</em>?". It's easy enough, we just have to read from <code>STDIN</code>:</p>
-<div class="highlight"><pre><span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">eachline</span><span class="p">(</span><span class="n">STDIN</span><span class="p">)</span>
         <span class="n">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
     <span class="k">end</span>
@@ -378,14 +378,14 @@ jQuery(document).ready(function($) {
 
 
 <p>Here is the invocation:</p>
-<div class="highlight"><pre><span class="nv">$ </span>bzcat wikidump.xml.bz2 <span class="p">|</span> julia bz2_bench.jl
+<div class="highlight"><pre><span></span>$ bzcat wikidump.xml.bz2 <span class="p">|</span> julia bz2_bench.jl
 </pre></div>
 
 
 <p>Timing is now a more reasonable <em>72 seconds</em>. So that is less than the <em>Python</em> version shown above. But this is not satisfactory enough. Why not use the wonderful capabilities of <em>Julia</em> to run external commands an pipe results?</p>
 <h3>Invoking bzcat from Julia</h3>
 <p>It is easy to invoke commands from inside <em>Julia</em> using backquotes: <code>run(`cmd`)</code> and <code>|&gt;</code> to pipe between commands and streams. Let's do it:</p>
-<div class="highlight"><pre><span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
     <span class="n">file</span> <span class="o">=</span> <span class="n">ARGS</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">run</span><span class="p">(</span><span class="sb">`bzcat $(file)`</span> <span class="o">|&gt;</span> <span class="n">STDOUT</span><span class="p">)</span>
 <span class="k">end</span>
@@ -395,7 +395,7 @@ jQuery(document).ready(function($) {
 <p>The script is equivalent to: <code>bzcat wikidump.xml.bz2</code>, but it's quite impressive to see how easy it is to do this inside a Julia script.
 This time is about <em>66 seconds</em>, more or less the same than with the external piping from <code>bzcat</code>.</p>
 <p>But it would be useful to get lines of contents from the stream, like it was in the original <em>Python</em> script. For this task, <em>Julia</em> standard library offers a multitudes of handy functions. The one we will use is <code>readsfrom</code> that returns two things: stdout of the given process, and the process itself. Here it is in action:</p>
-<div class="highlight"><pre><span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><span class="k">function</span><span class="nf"> main</span><span class="p">()</span>
     <span class="n">file</span> <span class="o">=</span> <span class="n">ARGS</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">stdout</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">readsfrom</span><span class="p">(</span><span class="sb">`bzcat $(file)`</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="n">eachline</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span>

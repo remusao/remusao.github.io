@@ -324,8 +324,8 @@ ne désirez pas compiler Julia depuis les sources, il est toujours possible
 d'installer une version pré-compilée depuis la
 <a href="http://julialang.org/downloads/">page téléchargement</a> du site officiel.</p>
 <p>Commençons tout d'abord par récupérer les sources de Julia :</p>
-<div class="highlight"><pre>git clone https://github.com/JuliaLang/julia.git
-<span class="nb">cd </span>julia
+<div class="highlight"><pre><span></span>git clone https://github.com/JuliaLang/julia.git
+<span class="nb">cd</span> julia
 </pre></div>
 
 
@@ -342,7 +342,7 @@ système :
 <p>Si tout est installé, lancez la compilation (notez que <strong>N</strong> est à remplacer
 par le nombre de cœurs dont dispose votre processeur, cela peut grandement
 améliorer le temps de compilation) :</p>
-<div class="highlight"><pre>make -j N
+<div class="highlight"><pre><span></span>make -j N
 </pre></div>
 
 
@@ -356,7 +356,7 @@ Julia. Afin qu'il soit accessible depuis n'importe quel endroit, vous pouvez
 le rajouter à votre <code>PATH</code> (vous pouvez le rajouter dans le fichier de
 configuration de votre Shell favori en remplaçant <code>$(pwd)</code> par le chemin
 absolu vers le dossier julia dans lequel se trouve le lien symbolique) :</p>
-<div class="highlight"><pre><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">:</span>$<span class="s2">PATH&quot;</span>
 </pre></div>
 
 
@@ -364,7 +364,7 @@ absolu vers le dossier julia dans lequel se trouve le lien symbolique) :</p>
 et la création de packages. Ces fonctionnalités sont disponibles depuis un
 prompt Julia. La première fois que vous lancez Julia, il est nécessaire
 d'initialiser les packages :</p>
-<div class="highlight"><pre><span class="nv">$ </span>julia
+<div class="highlight"><pre><span></span>$ julia
 julia&gt; Pkg.update<span class="o">()</span>
 </pre></div>
 
@@ -380,26 +380,26 @@ julia&gt; Pkg.update<span class="o">()</span>
 <a href="http://www.vim.org/">Vim</a>. Voici des explications différentes en
 fonction de la manière dont vous gérez les extensions.</p>
 <h2>Pathogen</h2>
-<div class="highlight"><pre><span class="nb">cd</span> ~/.vim
-mkdir -p bundle <span class="o">&amp;&amp;</span> <span class="nb">cd </span>bundle
+<div class="highlight"><pre><span></span><span class="nb">cd</span> ~/.vim
+mkdir -p bundle <span class="o">&amp;&amp;</span> <span class="nb">cd</span> bundle
 git clone git://github.com/JuliaLang/julia-vim.git
 </pre></div>
 
 
 <h2>Vundle</h2>
 <p>Ajouter un nouveau Bundle à votre <code>.vimrc</code> :</p>
-<div class="highlight"><pre>Bundle <span class="s1">&#39;JuliaLang/julia-vim&#39;</span>
+<div class="highlight"><pre><span></span>Bundle <span class="s1">&#39;JuliaLang/julia-vim&#39;</span>
 </pre></div>
 
 
 <p>Lancer Vim et mettre à jour vos Bundle :</p>
-<div class="highlight"><pre>:BundleInstall!
+<div class="highlight"><pre><span></span>:BundleInstall!
 </pre></div>
 
 
 <h2>Manuel</h2>
-<div class="highlight"><pre>git clone git://github.com/JuliaLang/julia-vim.git
-<span class="nb">cd </span>julia-vim
+<div class="highlight"><pre><span></span>git clone git://github.com/JuliaLang/julia-vim.git
+<span class="nb">cd</span> julia-vim
 cp -R * ~/.vim
 </pre></div>
 
@@ -416,7 +416,7 @@ environnement. Pour l'installer vous aurez besoin d'avoir sur votre système :</
 <li><a href="http://jinja.pocoo.org/docs/">Jinja2</a>, <a href="http://www.tornadoweb.org/en/stable/">Tornado</a>, et <a href="https://github.com/zeromq/pyzmq">pyzmq</a></li>
 </ul>
 <p>Ensuite il faut installer le package IJulia depuis un prompt julia :</p>
-<div class="highlight"><pre><span class="o">$</span> <span class="n">julia</span>
+<div class="highlight"><pre><span></span><span class="o">$</span> <span class="n">julia</span>
 <span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;IJulia&quot;</span><span class="p">)</span>
 <span class="n">julia</span><span class="o">&gt;</span> <span class="n">Pkg</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 </pre></div>
@@ -424,7 +424,7 @@ environnement. Pour l'installer vous aurez besoin d'avoir sur votre système :</
 
 <p>Une fois ceci fait, vous n'avez plus qu'à lancer IPython de la manière
 suivante. Pour le mode notebook :</p>
-<div class="highlight"><pre>ipython notebook --profile julia
+<div class="highlight"><pre><span></span>ipython notebook --profile julia
 </pre></div>
 
 
