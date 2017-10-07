@@ -34,15 +34,14 @@ Some [dependencies](https://github.com/gibiansky/IHaskell#linux) are
 required before building the IHaskell kernel, let's install them:
 
 ```sh
-$ sudo apt-get install -y \
-    python3-pip \
-    git \
-    libtinfo-dev \
-    libzmq3-dev \
-    libcairo2-dev \
-    libpango1.0-dev \
-    libmagic-dev \
-    libblas-dev \
+$ sudo apt-get install -y   \
+    git                     \
+    libtinfo-dev            \
+    libzmq3-dev             \
+    libcairo2-dev           \
+    libpango1.0-dev         \
+    libmagic-dev            \
+    libblas-dev             \
     liblapack-dev
 ```
 
@@ -70,12 +69,18 @@ Then let's install `jupyter` inside of our virtualenv `virtualenv`:
 ```sh
 $ virtualenv venv-ihaskell -p /usr/bin/python3 # Create a virtualenv
 $ source venv-ihaskell/bin/activate # Active it
-$ pip install jupyter # Install jupyter
+$ pip install                                   \
+    jupyter==1.0.0                              \
+    jupyter-contrib-core==0.3.3                 \
+    jupyter-contrib-nbextensions==0.3.1         \
+    jupyter-highlight-selected-word==0.0.11     \
+    jupyter-latex-envs==1.3.8.4                 \
+    jupyter-nbextensions-configurator==0.2.8
 ```
 
 ## Install IHaskell
 
-Since IHaskell is not available in the latest Stackage LTS snapshot, we have two
+Since IHaskell is not available in the latest stackage LTS snapshot, we have two
 options to install it:
 
 * Compile from source
@@ -103,7 +108,7 @@ Then it can be started using:
 $ stack exec jupyter -- notebook
 ```
 
-### From Stack LTS
+### From stackage lts-6.35 
 
 Unfortunately, it is not possible to build IHaskell using the latest snapshot,
 as it does not seem to work with GHC 8.x. The latest supported LTS snapshot is
@@ -115,7 +120,7 @@ $ stack --resolver lts-6.35 install ihaskell
 $ stack --resolver lts-6.35 exec ihaskell -- install --stack
 ```
 
-You may want to install extra packages to enhance *IHaskell*'s capabilities. Here are the ones supported by Stackage:
+You may want to install extra packages to enhance *IHaskell*'s capabilities. Here are the ones supported by stackage:
 
 * `ihaskell-aeson`
 * `ihaskell-basic`
@@ -139,6 +144,6 @@ be installed from source:
 
 The installation of IHaskell on Ubuntu 16.04 is a bit easier than on 14.04
 thanks to more up-to-date dependencies. Unfortunately, the latest IHaskell is
-not available on Stackage LTS, which requires to use an older snapshot (`6.35`).
+not available on stackage LTS, which requires to use an older snapshot (`6.35`).
 It is still possible to build IHaskell from source, which allows you to
 run the latest version of the code! It's up to you to choose the method you prefer.

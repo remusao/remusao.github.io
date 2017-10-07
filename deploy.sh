@@ -24,6 +24,7 @@ rm -fr ./._site
 
 git add ./*
 git commit -am "Deploy"
+git push origin master
 
 # Re-apply stashed changes
 git checkout hakyll
