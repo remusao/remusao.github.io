@@ -2,8 +2,7 @@
 title: Feedback from Hash Code 2016 qualification round
 ---
 
-
-{% img middle images/hashcode2016.jpg %}
+![hashcode](/images/hashcode2016.jpg)
 
 <!-- PELICAN_BEGIN_SUMMARY -->
 Yesterday was the qualification round for [Hash Code 2016](https://hashcode.withgoogle.com/) contest, organized by

@@ -141,7 +141,13 @@ In the following sections we'll see how to use some of the extensions officially
 
 You can install them using stack if you intend to try this out yourself:
 ```
-stack build ihaskell-basic ihaskell-aeson ihaskell-blaze ihaskell-charts ihaskell-diagrams ihaskell-magic
+stack build \
+    ihaskell-basic \
+    ihaskell-aeson \
+    ihaskell-blaze \
+    ihaskell-charts \
+    ihaskell-diagrams \
+    ihaskell-magic
 ```
 
 # ihaskell-basic
@@ -946,7 +952,7 @@ B.readFile "./haskell-logo.png"
 ```
 
 
-![png](output_25_0.png)
+![png](/images/output_25_0.png)
 
 
 
@@ -995,9 +1001,11 @@ import Data.Text.Lazy (toStrict)
 instance IHaskellDisplay (CanvasFree ()) where
   -- display :: CanvasFree () -> IO Display
   display canvas = return $
-      let src = toStrict $ toLazyText $ buildScript width height canvas
-      in Display [DisplayData MimeHtml src]
-      where (height, width) = (200, 600)
+    let src = toStrict
+      $ toLazyText
+      $ buildScript width height canvas
+    in Display [DisplayData MimeHtml src]
+    where (height, width) = (200, 600)
 ```
 
 Now let's try some example:
@@ -1107,10 +1115,23 @@ font-weight: bold;
 
 # Conclusion
 
-This was a short introduction without much new stuff, but it gave me a better understanding on how *IHaskell* (and in a way, *Jupyter*) works. Thanks to the awesome work of some haskellers, we are able to benefit from the great *Jupyter* ecosystem, and I think it can bring a lot to *Haskell* itself. It's easier to share code, easier to write about *Haskell*-related stuff, easier to dig into a new projet.
+This was a short introduction without much new stuff, but it gave me a
+better understanding on how *IHaskell* (and in a way, *Jupyter*) works.
+Thanks to the awesome work of some haskellers, we are able to benefit
+from the great *Jupyter* ecosystem, and I think it can bring a lot to
+*Haskell* itself. It's easier to share code, easier to write about
+*Haskell*-related stuff, easier to dig into a new projet.
 
-*IHaskell* is a solid foundation for more to come: more widgets, more integrations with *Haskell* libraries, etc. I wonder if, for example, we could use *Blaze* to generate *Display* on-the-fly? Could we reuse some code from the *Python* Kernel of *Jupyter*? I'm also looking forward to try the `ihaskell-widgets` extension.
+*IHaskell* is a solid foundation for more to come: more widgets, more
+integrations with *Haskell* libraries, etc. I wonder if, for example, we
+could use *Blaze* to generate *Display* on-the-fly? Could we reuse some
+code from the *Python* Kernel of *Jupyter*? I'm also looking forward to
+try the `ihaskell-widgets` extension.
 
-That's pretty much it, I'd like to say I'm very excited for Haskell, because it becomes much more accessible for newcomers, thanks to (for example) Stack, IHaskell, and lot of effort that is being made by the communauty. I hope I can continue to contribute at my level to this effort!
+That's pretty much it, I'd like to say I'm very excited for Haskell,
+because it becomes much more accessible for newcomers, thanks to (for
+example) Stack, IHaskell, and lot of effort that is being made by the
+communauty. I hope I can continue to contribute at my level to this
+effort!
 
 Thanks for reading!

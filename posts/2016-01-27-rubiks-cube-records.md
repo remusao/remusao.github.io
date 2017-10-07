@@ -121,7 +121,7 @@ len(clean_table)
 
 
 
-Let's see if we can gain some insight from this dataset using Pands:
+Let's see if we can gain some insight from this dataset using Pandas:
 
 
 ```python
@@ -363,7 +363,7 @@ country_count[country_count > 200].dropna().plot(kind="bar")
 
 
 
-![png](output_27_1.png)
+![png](/images/output_27_1.png)
 
 
 We can do the same for players:
@@ -551,7 +551,7 @@ plt.title("World records of Rubik's Cube")
 
 
 
-![png](output_36_1.png)
+![png](/images/output_36_1.png)
 
 
 # Last words
