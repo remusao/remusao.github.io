@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Simplex Sigillum Veri - Julia</title>
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                <a href="../">Simplex Sigillum Veri</a>
+            </div>
+            <nav>
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <h1>Julia</h1>
+            <article>
+    <section class="header">
+        Posted on February 13, 2014
+        
+    </section>
+    <section>
+        <p>Aujourd’hui j’aimerais parler d’un langage de programmation que je viens de découvrir : <strong>Julia</strong>. Je vais donc vous le présenter succinctement et donner mon ressenti après quelques jours d’utilisation.</p>
+<h2 id="quest-ce-que-cest">Qu’est-ce que c’est ?</h2>
+<p>Le Julia est un langage :</p>
+<ul>
+<li><strong>Haut niveau</strong> (<em>garbage collection</em>)</li>
+<li><strong>Dynamique</strong></li>
+<li><strong>Interprété</strong></li>
+<li><strong>Disposant d’un compilateur JIT</strong> (<em>backend LLVM</em>)</li>
+<li><strong>Performant</strong></li>
+</ul>
+<p>Il s’agit d’un subtile mélange entre les langage <strong>Python</strong>, <strong>R</strong> et <strong>Matlab</strong>. Python pour une partie de la syntaxe et les constructions élégantes du langage (<em>list comprehension</em>, boucles <em>for</em>, etc.), Matlab et R pour l’intégration des vecteurs, matrices et opérations associées dans la bibliothèque standard, en faisant un langage particulièrement adapté pour l’analyse numérique, le <em>machine learning</em>, et toute autre application nécessitant des outils d’algèbre linéaire, et des fonctions mathématiques diverses.</p>
+<div class="sourceCode"><pre class="sourceCode julia"><code class="sourceCode julia"><span class="co"># Dynamic type</span>
+a = <span class="fl">42</span>          <span class="co"># Int</span>
+a = <span class="st">&quot;toto&quot;</span>      <span class="co"># String</span>
+a = [<span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>]   <span class="co"># Vector</span>
+a = [<span class="fl">1</span> <span class="fl">2</span> <span class="fl">3</span>]     <span class="co"># 1x3 Matrix</span>
+a = [<span class="fl">1</span>:<span class="fl">3</span>]       <span class="co"># same 1x3 Matrix</span>
+
+<span class="kw">for</span> e <span class="kw">in</span> a
+    println(test)
+<span class="kw">end</span>
+
+<span class="co"># Output</span>
+<span class="co"># 1</span>
+<span class="co"># 2</span>
+<span class="co"># 3</span></code></pre></div>
+<p>Julia dispose également des atouts suivants :</p>
+<ul>
+<li><strong>Multi-méthode</strong> permettant un dispatch dynamique en fonction du type des arguments passés aux fonctions</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode julia"><code class="sourceCode julia"><span class="co"># Method declaration</span>
+<span class="co"># foo is a function taking one argument of any type</span>
+<span class="kw">function</span> foo(bar)
+    println(bar)
+    <span class="kw">end</span>
+
+<span class="co"># Shorter function declaration</span>
+baz(x) = println(x)
+
+<span class="co"># Multimethod</span>
+<span class="co"># Takes an argument of type Int (Haskelish syntax)</span>
+myprint(x::<span class="dt">Int</span>) = println(<span class="st">&quot;Int&quot;</span>)
+<span class="co"># Takes an argument of type Matrix (of any type)</span>
+myprint(x::<span class="dt">Matrix</span>) = println(<span class="st">&quot;Matrix&quot;</span>)
+<span class="co"># Take an argument of type Matrix of Float64</span>
+myprint(x::<span class="dt">Matrix</span>{<span class="dt">Float64</span>}) = println(<span class="st">&quot;Matrix of Float64&quot;</span>)
+
+myprint(<span class="fl">42</span>)         <span class="co"># First one is called</span>
+myprint([<span class="fl">1</span> <span class="fl">2</span> <span class="fl">3</span>])    <span class="co"># Second one is called</span>
+myprint([<span class="fl">0.5</span> <span class="fl">0.42</span>]) <span class="co"># Third one is called</span></code></pre></div>
+<ul>
+<li>Un système de <strong>template</strong> pour créer du code générique</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode julia"><code class="sourceCode julia"><span class="kw">function</span> printtype(m)
+    println(<span class="st">&quot;Any type&quot;</span>)
+<span class="kw">end</span>
+
+<span class="co"># Takes argument of type T, in julia a type</span>
+<span class="co"># is an object, so you can print it</span>
+<span class="kw">function</span> printtype{T}(m::T)
+    println(T)
+<span class="kw">end</span>
+
+<span class="co"># Takes an argument of type T, with the constraint FloatingPoint</span>
+<span class="kw">function</span> printtype{T &lt;: FloatingPoint}(m::T)
+    println(<span class="st">&quot;Floating Point&quot;</span>)
+<span class="kw">end</span>
+
+printtype(<span class="fl">42</span>)
+printtype(<span class="fl">0.42</span>)</code></pre></div>
+<ul>
+<li>Des <strong>expressions rationnelles</strong> compatible Perl</li>
+<li>Des <strong>macros</strong> à la Lisp grâce à l’auto-iconicité du langage</li>
+<li>La possibilité de lancer des <strong>commandes Shell</strong>, de piper, etc.</li>
+<li><strong>Interfaçage avec le C</strong> sans bindings (simple utilisation de ccall comme une fonction)</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode julia"><code class="sourceCode julia"><span class="co"># Simple function that wrap a call to libc clock function</span>
+clock() = <span class="kw">ccall</span>( (:clock, <span class="st">&quot;libc&quot;</span>), <span class="dt">Int32</span>, ())
+
+t = clock()
+
+<span class="co"># Do some stuff</span>
+
+println(clock() - t)</code></pre></div>
+<ul>
+<li><strong>Duck-typing</strong> mais possibilité de spécifier les types</li>
+<li><strong>Parallélisation</strong> du code aisée en multithreading sur une unique machine ou sur un cluster (tasks, parallel for, etc.)</li>
+</ul>
+<p>Cet article n’a pas pour but d’être exhaustif à propos de Julia, pour plus d’exemples je vous redirige vers le documentation officielle du langage : <a href="http://docs.julialang.org/en/latest/manual/">Documentation</a>.</p>
+<h2 id="pourquoi-lutiliser">Pourquoi l’utiliser ?</h2>
+<p>Julia est un langage jeune mais dynamique. Il est pour le moment peu utilisé mais il gagne à être connu. Grâce aux avantages cités ci-dessus, c’est un parfait candidat pour tous les projets nécessitant :</p>
+<ul>
+<li><strong>Performances</strong> (compilation JIT),</li>
+<li><strong>Bibliothèque standard</strong> très riche : <em>algèbre linéaire</em>, <em>fonctions mathématiques</em> diverses, etc.</li>
+<li>Rassemble les qualités de plusieurs langages bien connus (Matlab, R, Python)</li>
+</ul>
+<p>Il est très aisé de convertir du code Matlab ou Python vers du Julia car les différences sont assez peu nombreuses. La manipulation de matrice est très similaire à celle de Matlab.</p>
+<h2 id="défauts-de-jeunesse">Défauts de jeunesse</h2>
+<p>Néanmoins le langage dispose de quelques points faibles, sans doute liés à sa jeunesse et au manque de projets l’utilisant. Mis à part la richesse de sa bibliothèque standard, les packages sont encore relativement peu nombreux et donc selon le projet vous ne trouverez pas forcément les outils nécessaires (par exemple pour du traitement d’image, il n’existe pas de binding ou d’équivalent à OpenCV, des packages existent mais les fonctionnalités sont encore limitées).</p>
+<p>L’interpréteur met du temps à se lancer. Selon les ressources de la machine que vous utilisez cela peut aller de 2-3 secondes à 30 secondes (sur mon ordinateur portable peu puissant). Bien sûr il est possible de lancer une session de l’interpréteur une bonne fois pour toutes et de travailler depuis le prompt, mais cela reste gênant quand vous voulez simplement lancer un script. Néanmoins, cela devrait s’améliorer à l’avenir, espérons-le, le langage est encore en phase de release candidate.</p>
+<p>Voilà pour cette rapide introduction du langage Julia, cet article n’avait pas pour but d’être un tutoriel, mais juste de faire connaitre un projet qui semble avoir de l’avenir. Il est possible que j’utilise ce langage dans mes prochains articles pour les démonstrations de code.</p>
+<p>Quelques ressources supplémentaires :</p>
+<ul>
+<li><a href="https://github.com/JuliaLang/julia">Github</a></li>
+<li><a href="http://docs.julialang.org/en/latest/manual/">Documentation</a></li>
+<li><a href="http://julialang.org/">Site officiel</a></li>
+</ul>
+    </section>
+</article>
+
+        </main>
+
+        <footer>
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </footer>
+    </body>
+</html>
