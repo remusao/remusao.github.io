@@ -4,13 +4,11 @@ title: Feedback from Hash Code 2016 qualification round
 
 ![hashcode](/images/hashcode2016.jpg)
 
-<!-- PELICAN_BEGIN_SUMMARY -->
 Yesterday was the qualification round for [Hash Code 2016](https://hashcode.withgoogle.com/) contest, organized by
 Google. I already had the opportunity to participate next, and made it to the
 final round with my team.  For this new edition, the team and motivation was
 the same but we thought a bit about how we could improve our organization to be
 more efficient. This post is about what I will take away from this competition.
-<!-- PELICAN_END_SUMMARY -->
 
 # The Competition
 
