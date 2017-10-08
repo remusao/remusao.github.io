@@ -23,29 +23,14 @@ main = do
           compile copyFileCompiler
 
       match "css/default.css" $ compile cssTemplateCompiler
-      -- match "css/*" $ do
-      --     route   idRoute
-      --     compile compressCssCompiler
-
-      match (fromList ["about.md", "contact.md"]) $ do
-          route   $ setExtension "html"
-          compile $ pandocCompiler
-              >>= loadAndApplyTemplate "templates/default.html" defaultContext
-              >>= relativizeUrls
 
       match "posts/*" $ do
           route $ setExtension "html"
-          compile $ (pandocCompilerWithTransformM defaultHakyllReaderOptions defaultHakyllWriterOptions
-                  $ (renderFormulae defaultPandocFormulaOptions))
-              >>= loadAndApplyTemplate "templates/post.html"    postCtx
-              >>= loadAndApplyTemplate "templates/default.html" postCtx
-              >>= relativizeUrls
-
-      match "notes/*" $ do
-          route $ setExtension "html"
-          compile $ (pandocCompilerWithTransformM defaultHakyllReaderOptions defaultHakyllWriterOptions
-                  $ (renderFormulae defaultPandocFormulaOptions))
-              >>= loadAndApplyTemplate "templates/note.html"    postCtx
+          compile $
+            pandocCompilerWithTransformM defaultHakyllReaderOptions
+            defaultHakyllWriterOptions
+            (renderFormulae defaultPandocFormulaOptions)
+              >>= loadAndApplyTemplate "templates/post.html" postCtx
               >>= loadAndApplyTemplate "templates/default.html" postCtx
               >>= relativizeUrls
 
