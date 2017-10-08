@@ -1,18 +1,17 @@
 body {
     background: #ffffff;
     color: #2e3436;
- /*   font: 'Verdana', sans-serif; */
-  /*  font-family: "Merriweather", Georgia, serif; */
-    font-family: Verdana,Geneva,sans-serif;
-    margin: 0 auto;
-    max-width: 40em;
-   /* padding: 0 0.5em; */
-    font-weight: 400;
-    line-height: 1.6;
+    font-family: Verdana,sans-serif;
     text-rendering: optimizeLegibility;
 
+    line-height: 1.5;
+    max-width: 40em;
+    margin: 0 auto;
+    padding: 0 0.5em;
+    text-align: justify;
+
     /* Mobile */
-    font-size: 15px;
+    font-size: 14px;
 }
 
 
@@ -30,22 +29,50 @@ body {
     }
 }
 
-a {
+
+header {
+    border-bottom: thin solid #d3d7cf;
+/*    margin-bottom: 30px; */
+/*    padding: 12px 0px 12px 0px; */
+}
+
+header a {
+    color: #5c3566;
+    text-decoration: none;
+    display: block;
+    border: none;
+}
+
+
+header h1 {
+    font: inherit;
+    font-size: 2em;
+    line-height: 3em;
+    text-align: center;
+}
+
+main .header {
+    color: #555;
+    margin-top: -1.5em;
+    font-style: italic;
+    display: block;
+}
+
+main .figure {
+    text-align: center;
+}
+
+
+main a {
   color: #3465a4;
   text-decoration: none;
 }
 
-header a {
-    padding: 0 0 0 1em;
-}
-
-main a {
-  border-bottom: thin solid;
-}
 
 main a:visited {
   color: #75507b;
 }
+
 
 main ul {
     margin: 1.5em 0;
@@ -63,32 +90,6 @@ main blockquote {
     color: #555555;
 }
 
-main .header {
-    margin: 5px;
-}
-
-main .figure {
-    text-align: center
-}
-
-header {
-    border-bottom: thin solid #d3d7cf;
-    margin-bottom: 30px;
-    padding: 12px 0px 12px 0px;
-}
-
-nav {
-    text-align: right;
-}
-
-nav {
-    color: black;
-    font-size: 18px;
-    font-weight: bold;
-    margin-left: 12px;
-    text-decoration: none;
-    text-transform: uppercase;
-}
 
 footer {
     border-top: thin solid #d3d7cf;
@@ -109,26 +110,13 @@ h2 {
     line-height: 1em;
 }
 
-article .header {
-    color: #555;
-    font-size: 14px;
-    font-style: italic;
-}
-
-.logo a {
-    color: black;
-    float: left;
-    font-size: 18px;
-    font-weight: bold;
-    text-decoration: none;
-}
 
 pre {
+    font-family: Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
     display: block;
     padding: 8px;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
     background-color: #f3f4f5;
-    text-align: "justify";
 }
 
 p.caption {
@@ -176,7 +164,7 @@ code {
 .sourceCode .dt { color: #b58900; }                     /* DataType */
 .sourceCode .dv { color: #2aa198; }                     /* Decimal Value */
 .sourceCode .er { color: #dc322f; font-weight: bold; }  /* Error */
-.sourceCode .ex{ color: #cb4b16; }                      /* Extension */
+.sourceCode .ex { color: #cb4b16; }                      /* Extension */
 .sourceCode .fl { color: #2aa198; }                     /* Float */
 .sourceCode .fu { color:  #268bd2; }                    /* Function */
 .sourceCode .im { color: #268bd2; }                     /* Import */

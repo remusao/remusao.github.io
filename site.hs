@@ -55,21 +55,6 @@ main = do
               posts <- recentFirst =<< loadAll "posts/*"
               let indexCtx =
                       listField "posts" postCtx (return posts) `mappend`
-                      constField "title" "Home"                `mappend`
-                      defaultContext
-
-              getResourceBody
-                  >>= applyAsTemplate indexCtx
-                  >>= loadAndApplyTemplate "templates/default.html" indexCtx
-                  >>= relativizeUrls
-
-      match "notes.html" $ do
-          route idRoute
-          compile $ do
-              posts <- recentFirst =<< loadAll "notes/*"
-              let indexCtx =
-                      listField "notes" postCtx (return posts) `mappend`
-                      constField "title" "Notes"               `mappend`
                       defaultContext
 
               getResourceBody
