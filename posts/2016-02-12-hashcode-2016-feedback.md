@@ -1,5 +1,5 @@
 ---
-title: Feedback from Hash Code 2016 qualification round
+title: Feedback from Hash Code 2016 Qualification Round
 ---
 
 ![hashcode](/images/hashcode2016.jpg)

@@ -1,5 +1,5 @@
 ---
-title: What's in a parser combinator?
+title: What's in a Parser Combinator?
 ---
 
 As part of my ongoing effort to make progress in Haskell (that's

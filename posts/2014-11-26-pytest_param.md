@@ -1,8 +1,8 @@
 ---
-title: py.test Paramaterize tests with external data
+title: Pytest Paramaterize Tests With External Data
 ---
 
-I recently began to make heavy use of [py.test](http://pytest.org/latest/)
+I recently began to make heavy use of [pytest](http://pytest.org/latest/)
 in my day-to-day Python development. It's a wonderful tool, but I won't
 explain to you every features it provides and why it's awesome. Instead,
 I'll explain how I managed to cleanly externalize the data used for my

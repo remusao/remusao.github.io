@@ -1,5 +1,5 @@
 ---
-title: Decompressing BZipped files with Julia
+title: Decompressing BZipped Files With Julia
 ---
 
 

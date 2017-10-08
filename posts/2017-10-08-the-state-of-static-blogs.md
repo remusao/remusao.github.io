@@ -1,5 +1,5 @@
 ---
-title: The state of statically generated sites
+title: The State of Statically Generated Blogs
 ---
 
 I woke up one morning and realized that my "static blog" (hosted on
