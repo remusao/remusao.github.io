@@ -22,6 +22,10 @@ main = do
           route   idRoute
           compile copyFileCompiler
 
+      match "images/static/*" $ do
+          route   idRoute
+          compile copyFileCompiler
+
       match "css/default.css" $ compile cssTemplateCompiler
 
       match "posts/*" $ do

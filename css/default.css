@@ -43,14 +43,6 @@ header a {
     border: none;
 }
 
-
-header h1 {
-    font: inherit;
-    font-size: 2em;
-    line-height: 3em;
-    text-align: center;
-}
-
 main .header {
     color: #555;
     margin-top: -0.5em;
@@ -60,6 +52,25 @@ main .header {
 
 main .figure {
     text-align: center;
+}
+
+figcaption {
+    text-align: center;
+    font-style: italic;
+    color: #696f72;
+    line-height: 2em;
+}
+
+main img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+
+main .inline-math {
+    display: inline;
 }
 
 
@@ -101,14 +112,22 @@ footer {
     text-align: right;
 }
 
+header h1 {
+    font: inherit;
+    font-size: 2em;
+    line-height: 3em;
+    text-align: center;
+}
+
 h1 {
-    font-size: 24px;
+    font: inherit;
+    font-size: 1.6em;
+    line-height: 1.5em;
 }
 
 h2 {
-    font: inherit;
-    font-size: 1.5em;
-    line-height: 1em;
+    font-size: 1.3em;
+    line-height: 1.2em;
 }
 
 
@@ -118,10 +137,6 @@ pre {
     padding: 8px;
     margin-bottom: 1em;
     background-color: #f3f4f5;
-}
-
-p.caption {
-    display: none;
 }
 
 
