@@ -82,6 +82,7 @@ Some possible alternatives are:
     new comment. I admit that this does not scale for a popular blog
     with a lot of comments, but most of the times comments are scarce,
     so this solution would work pretty well!
+* [Isso](https://posativ.org/isso/), which requires self-hosting.
 * There is also *Talk*, from the [Mozilla Coral Project](https://coralproject.net/about.html). I'm not sure if it can be used on any static website, but it might be something worth investigating.
 
 
@@ -121,7 +122,6 @@ blog by default.
 Otherwise, there are some nicer alternatives to *Google Analytics* such as:
 
 * [Piwik](https://piwik.org/) -- probably the most serious alternative.
-* [Isso](https://posativ.org/isso/) -- which requires self-hosting.
 * [Green Tracker](https://github.com/cliqz-oss/green-analytics) -- still experimental but demonstrates some very promising capabilities, and it requires self-hosting as well.
 
 And probably more, although none of them will be as convenient/powerful as
