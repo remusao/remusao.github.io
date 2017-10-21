@@ -8,7 +8,7 @@ I've recently made heavy use of `sqlite3` for a project involving a lot of data
 and processing. My first attempt involved no database at all, and all data would
 be kept in memory and queries would consist in a mix of dictionary lookups,
 iteration, conditions, etc. This was nice, but there is only so much you can fit
-in memory, and re-generating/loading the data from disk to memory was a tedious
+in memory, and re-generating/loading the data from disk to memory became a tedious
 and time consuming process.
 
 I decided to give `sqlite3` a try. This allowed an increase in the amount of
@@ -23,7 +23,7 @@ I'd like to share a few learnings and findings about this experience.
 1. Use bulk operations (*a.k.a.* `executemany`).
 2. You don't need `cursors` (most of the time).
 3. Cursors can be iterated upon.
-4. Use context manager.
+4. Use context managers.
 5. Use pragmas (when it makes sense).
 6. Postpone index creation.
 7. Use placeholders to interpolate python values.
@@ -32,8 +32,9 @@ I'd like to share a few learnings and findings about this experience.
 
 ## 1. Use Bulk Operations
 
-If you need to insert a lot of rows at once in your database, you really should
-not use `execute`. The `sqlite3` provides a way to bulk insertions: `executemany`.
+If you need to insert a lot of rows at once in your database, you really
+should not use `execute`. The `sqlite3` module provides a way to bulk
+insertions: `executemany`.
 
 Instead of doing something like:
 ```python
@@ -41,7 +42,7 @@ for row in iter_data():
     connection.execute('INSERT INTO my_table VALUES (?)', row)
 ```
 
-You can leverage the fact the `executemany` accepts as argument a generator of
+You can leverage the fact that `executemany` accepts as argument a generator of
 `tuples`:
 
 ```python
@@ -56,7 +57,7 @@ implements `execute` using `executemany` behind the scene, only it only inserts
 one row instead of many.
 
 I wrote a small benchmark which consists in inserting a million rows into an
-empty table (the database is lives only in memory):
+empty table (the database lives only in memory):
 
 * `executemany`: **1.6** seconds
 * `execute`: 2.7 seconds
@@ -70,6 +71,7 @@ One thing I often found confusing at the beginning, was `cursor` management.
 Examples online and in the documentation often look like:
 
 ```python
+connection = sqlite3.connect(':memory:')
 cursor = connection.cursor()
 # Do something with cursor
 ```
@@ -79,7 +81,7 @@ the `connection` object (it is mentioned at the
 [end of the documentation](https://docs.python.org/3.6/library/sqlite3.html#using-shortcut-methods)).
 
 Operations such as `execute` and `executemany` can be called directly on the
-connection. Here is an example from the official documentation:
+connection. Here is an example to demonstrate that:
 
 ```python
 import sqlite3
@@ -159,10 +161,10 @@ connection.close()
 ...*when it makes sense*
 
 There are a few *pragmas* you can use to tweak the behavior of `sqlite3` in your
-program. In particular, one that could improve the performance was `synchronous`:
+program. In particular, one that could improve the performance is `synchronous`:
 
 ```python
-connection.execute("PRAGMA synchronous = OFF")
+connection.execute('PRAGMA synchronous = OFF')
 ```
 
 You should be aware though that this can be dangerous. If the application
