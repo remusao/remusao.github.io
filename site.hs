@@ -13,6 +13,9 @@ cssTemplateCompiler :: Compiler (Item Template)
 cssTemplateCompiler = cached "Hakyll.Web.Template.cssTemplateCompiler" $
     fmap (readTemplate . compressCss) <$> getResourceString
 
+-- TODO: add reading-time estimation automatically
+-- TODO: implement static comment system
+-- TODO: add table of content
 --
 main :: IO ()
 main = do

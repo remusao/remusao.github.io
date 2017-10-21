@@ -2,6 +2,8 @@
 title: How To Get The Most Out Of Sqlite3
 ---
 
+*Reading time: ~8 minutes*
+
 I've recently made heavy use of `sqlite3` for a project involving a lot of data
 and processing. My first attempt involved no database at all, and all data would
 be kept in memory and queries would consist in a mix of dictionary lookups,
@@ -16,8 +18,19 @@ I could replace a lot of Python logic by SQL queries.
 
 I'd like to share a few learnings and findings about this experience.
 
+**TL;DR**:
 
-## Use Bulk Operations
+1. Use bulk operations (*a.k.a.* `executemany`).
+2. You don't need `cursors` (most of the time).
+3. Cursors can be iterated upon.
+4. Use context manager.
+5. Use pragmas (when it makes sense).
+6. Postpone index creation.
+7. Use placeholders to interpolate python values.
+
+---
+
+## 1. Use Bulk Operations
 
 If you need to insert a lot of rows at once in your database, you really should
 not use `execute`. The `sqlite3` provides a way to bulk insertions: `executemany`.
@@ -49,7 +62,7 @@ empty table (the database is lives only in memory):
 * `execute`: 2.7 seconds
 
 
-## You Don't Need Cursors
+## 2. You Don't Need Cursors
 
 ...*most of the time*.
 
@@ -92,7 +105,7 @@ for row in connnection.execute('SELECT * FROM events'):
 ```
 
 
-## Cursors Can Be Iterated Upon
+## 3. Cursors Can Be Iterated Upon
 
 You might often see examples making use of `fetchone` or `fetchall` on
 the result of a `SELECT` query. But I find that the most natural way to
@@ -109,12 +122,12 @@ use the `LIMIT` SQL statement instead, but Python generator are very handy and
 allow you to nicely decouple data generation from data consumption.
 
 
-## Use Context Managers
+## 4. Use Context Managers
 
 Shit happens, even in the middle of a SQL transaction. To avoid having
 to deal manually with `rollback` or `commit`, you can simply use the
 `connection` object as a context manager. In the following example we
-create a table, and insert *by mistake* a duplicated values:
+create a table, and insert *by mistake* duplicated values:
 
 ```python
 import sqlite3
@@ -142,7 +155,7 @@ for row in connection.execute('SELECT * FROM events'):
 connection.close()
 ```
 
-## Use Pragmas
+## 5. Use Pragmas
 ...*when it makes sense*
 
 There are a few *pragmas* you can use to tweak the behavior of `sqlite3` in your
@@ -157,15 +170,15 @@ crashes unexpectedly in the middle of a transaction, the database will probably
 be left in an inconsistent state. So use with care! But if you want to insert a
 lot of rows faster, that can be an option.
 
-## Postpone Index Creation
+## 6. Postpone Index Creation
 
 Let's say you need a few indices on your database, and you also need to
-insert a lot of rows while creating it. Postponing the creation of the indices
+insert a lot of rows while creating them. Postponing the creation of the indices
 to after all rows have been inserted could result in a substantial performance
 improvement.
 
 
-## Use Placeholders to Interpolate Python Values
+## 7. Use Placeholders to Interpolate Python Values
 
 It is tempting to use Python string operations to include values into
 queries. *Do not*! This is highly insecure, and `sqlite3` gives you a
