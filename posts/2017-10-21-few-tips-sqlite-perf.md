@@ -52,12 +52,12 @@ connection.executemany(
 )
 ```
 
-This is not only nicer, it's also much more efficient. In fact, `sqlite3`
-implements `execute` using `executemany` behind the scene, only it only inserts
-one row instead of many.
+This is not only more concise, it's also much more efficient. In fact, `sqlite3`
+implements `execute` using `executemany` behind the scene, but the former
+inserts a single row instead of many.
 
 I wrote a small benchmark which consists in inserting a million rows into an
-empty table (the database lives only in memory):
+empty table (the database lives in memory):
 
 * `executemany`: **1.6** seconds
 * `execute`: 2.7 seconds
@@ -120,8 +120,8 @@ for row in connection.execute('SELECT * FROM events'):
 
 This way, you can stop as soon as you got enough results and not waste
 resources. Of course, if you know beforehand how many results you want, you can
-use the `LIMIT` SQL statement instead, but Python generator are very handy and
-allow you to nicely decouple data generation from data consumption.
+use the `LIMIT` SQL statement instead, but Python generators are very handy and
+allow you to decouple data generation from data consumption.
 
 
 ## 4. Use Context Managers
@@ -184,7 +184,7 @@ improvement.
 
 It is tempting to use Python string operations to include values into
 queries. *Do not*! This is highly insecure, and `sqlite3` gives you a
-nicer way to do it:
+better way to do it:
 
 ```python
 # Do not do this!
@@ -193,7 +193,7 @@ c.execute("SELECT * FROM events WHERE ts = '%s'" % my_timestamp)
 
 # Do this instead
 my_timestamp = (1,)
-c.execute('SELECT * FROM stocks WHERE symbol=?', my_timestamp)
+c.execute('SELECT * FROM events WHERE ts = ?', my_timestamp)
 ```
 
 Also, string interpolation using Python `%s` (or format, or formatted string
