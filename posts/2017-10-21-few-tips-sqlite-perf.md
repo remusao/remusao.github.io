@@ -1,5 +1,5 @@
 ---
-title: How To Get The Most Out Of Sqlite3
+title: Getting the Most out of Sqlite3 with Python
 ---
 
 *Reading time: ~8 minutes*
