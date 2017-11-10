@@ -1,8 +1,9 @@
+
 ---
 title: Getting the Most out of Sqlite3 with Python
+date: 2017-10-21
+logo: python
 ---
-
-*Reading time: ~8 minutes*
 
 I've recently made heavy use of `sqlite3` for a project involving a lot of data
 and processing. My first attempt involved no database at all, and all data would
@@ -30,7 +31,7 @@ I'd like to share a few learnings and findings about this experience.
 
 ---
 
-## 1. Use Bulk Operations
+## Use Bulk Operations
 
 If you need to insert a lot of rows at once in your database, you really
 should not use `execute`. The `sqlite3` module provides a way to bulk
@@ -63,7 +64,7 @@ empty table (the database lives in memory):
 * `execute`: 2.7 seconds
 
 
-## 2. You Don't Need Cursors
+## You Don't Need Cursors
 
 ...*most of the time*.
 
@@ -107,7 +108,7 @@ for row in connnection.execute('SELECT * FROM events'):
 ```
 
 
-## 3. Cursors Can Be Iterated Upon
+## Cursors Can Be Iterated Upon
 
 You might often see examples making use of `fetchone` or `fetchall` on
 the result of a `SELECT` query. But I find that the most natural way to
@@ -124,7 +125,7 @@ use the `LIMIT` SQL statement instead, but Python generators are very handy and
 allow you to decouple data generation from data consumption.
 
 
-## 4. Use Context Managers
+## Use Context Managers
 
 Shit happens, even in the middle of a SQL transaction. To avoid having
 to deal manually with `rollback` or `commit`, you can simply use the
@@ -157,7 +158,7 @@ for row in connection.execute('SELECT * FROM events'):
 connection.close()
 ```
 
-## 5. Use Pragmas
+## Use Pragmas
 ...*when it makes sense*
 
 There are a few *pragmas* you can use to tweak the behavior of `sqlite3` in your
@@ -172,7 +173,7 @@ crashes unexpectedly in the middle of a transaction, the database will probably
 be left in an inconsistent state. So use with care! But if you want to insert a
 lot of rows faster, that can be an option.
 
-## 6. Postpone Index Creation
+## Postpone Index Creation
 
 Let's say you need a few indices on your database, and you also need to
 insert a lot of rows while creating them. Postponing the creation of the indices
@@ -180,7 +181,7 @@ to after all rows have been inserted could result in a substantial performance
 improvement.
 
 
-## 7. Use Placeholders to Interpolate Python Values
+## Use Placeholders to Interpolate Python Values
 
 It is tempting to use Python string operations to include values into
 queries. *Do not*! This is highly insecure, and `sqlite3` gives you a

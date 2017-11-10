@@ -1,5 +1,7 @@
 ---
 title: Pytest Paramaterize Tests With External Data
+date: 2014-11-26
+logo: python
 ---
 
 I recently began to make heavy use of [pytest](http://pytest.org/latest/)
@@ -10,13 +12,13 @@ tests in external files (that can be of any format: yaml, json, python
 files). The idea here is to *separate the code that performs the test*,
 from the *input data used to perform the test*.
 
-`test_feature.py`
+* *test_feature.py*
 ```python
 def test_my_feature(one_example):
     assert one_example
 ```
 
-`data_feature.yaml`
+* *data_feature.yaml*
 ```yaml
 tests:
     test1:

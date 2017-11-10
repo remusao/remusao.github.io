@@ -1,5 +1,7 @@
 ---
 title: Decompressing BZipped Files With Julia
+date: 2014-07-22
+logo: julia
 ---
 
 
@@ -13,7 +15,7 @@ Tests where executed on my personnal computer:
 * i7
 * 16GB of ram
 
-On a small wikipedia dump of *407MB*. All timings are in *seconds*.
+On a small Wikipedia dump of *407MB*. All timings are in *seconds*.
 
 
 ## bzcat alone
@@ -128,7 +130,12 @@ Timing is now about *74 seconds*, this is *10 seconds* faster than the first *Py
 
 ## Timings
 
+<figure>
+<a href="/images/bz2-julia-bench.png">
 ![Bench](/images/bz2-julia-bench.png)
+</a>
+<figcaption>Timings.</figcaption>
+</figure>
 
 Timings are relatively close since the big work is done in the decompression, that's why there isn't much difference between *Julia* and *Python*.
 

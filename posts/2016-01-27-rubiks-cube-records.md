@@ -1,5 +1,7 @@
 ---
 title: Rubiks Cube Records
+date: 2016-01-27
+logo: python
 ---
 
 
@@ -363,7 +365,7 @@ country_count[country_count > 200].dropna().plot(kind="bar")
 
 
 
-![png](/images/output_27_1.png)
+![png](images/output_27_1.png)
 
 
 We can do the same for players:
@@ -551,7 +553,7 @@ plt.title("World records of Rubik's Cube")
 
 
 
-![png](/images/output_36_1.png)
+![png](images/output_36_1.png)
 
 
 # Last words

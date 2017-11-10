@@ -1,5 +1,7 @@
 ---
 title: Install IHaskell on Ubuntu 14.04 with Stack
+date: 2016-01-07
+logo: haskell
 ---
 
 

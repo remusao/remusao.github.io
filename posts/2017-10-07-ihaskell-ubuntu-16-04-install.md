@@ -1,5 +1,7 @@
 ---
 title: Install IHaskell on Ubuntu 16.04 with Stack
+date: 2017-10-07
+logo: haskell
 ---
 
 Last year I wrote a tutorial to install iHaskell on Ubuntu 14.04. Since it's a

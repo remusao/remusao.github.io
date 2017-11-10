@@ -1,5 +1,7 @@
 ---
 title: What's in a Parser Combinator?
+date: 2016-02-23
+logo: haskell
 ---
 
 As part of my ongoing effort to make progress in Haskell (that's

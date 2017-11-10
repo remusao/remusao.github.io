@@ -1,5 +1,7 @@
 ---
 title: Installation de Julia
+date: 2014-02-14
+logo: julia
 ---
 
 
@@ -14,7 +16,7 @@ Voici le plan :
 
 
 
-# Compilation
+## Compilation
 
 Tout d'abord compiler l'interpréteur Julia depuis les sources. Notez que si
 votre distribution _linux_ dispose d'un paquet Julia dans ses dépôt ou si vous
@@ -82,14 +84,14 @@ Les principales commandes disponibles sont :
 
 
 
-# Coloration syntaxique et indentation
+## Coloration syntaxique et indentation
 
 
 Cette explication n'est valide que pour les utilisateurs de l'éditeur
 [Vim](http://www.vim.org/). Voici des explications différentes en
 fonction de la manière dont vous gérez les extensions.
 
-## Pathogen
+### Pathogen
 
 ```sh
 cd ~/.vim
@@ -98,7 +100,7 @@ git clone git://github.com/JuliaLang/julia-vim.git
 ```
 
 
-## Vundle
+### Vundle
 
 Ajouter un nouveau Bundle à votre `.vimrc` :
 ```sh
@@ -111,7 +113,7 @@ Lancer Vim et mettre à jour vos Bundle :
 ```
 
 
-## Manuel
+### Manuel
 
 ```sh
 git clone git://github.com/JuliaLang/julia-vim.git
@@ -124,7 +126,7 @@ pour les fichier dont l'extension et `.jl`.
 
 
 
-# IJulia
+## IJulia
 
 IJulia permet d'interfacer Julia à l'environnement de développement interactif
 **IPython**. Cela permet notamment d'utiliser le mode **notebook**, qui combine

@@ -1,31 +1,14 @@
 #! /usr/bin/env bash
 
-# Stash any change
-git stash
+# Remove old files
+rm -fr *.html
 
-stack exec site clean
-stack exec site build
+# Generate blog
+stack blog.hs
 
-rm -fr ._site
-mv -f _site ._site
+rm -fr ./deploy/*
+mv -v ./*.html ./deploy/
+cp -frv ./images ./deploy/
 
-stack exec site clean
-
-ls -lsa ./._site
-
-# Clean-up master
-git checkout master
-echo 'DELETE'
-rm -frv ./*
-
-echo 'MOVE CONTENT'
-mv ._site/* .
-rm -fr ./._site
-
-git add ./*
-git commit -am "Deploy"
-git push origin master
-
-# Re-apply stashed changes
-git checkout hakyll
-git stash pop
+# TODO - push to master
+cd ./deploy/ && git add * && git commit -am "Deploy" && git push origin master
