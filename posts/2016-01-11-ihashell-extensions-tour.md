@@ -70,9 +70,9 @@ Answer
 ```
 
 
-```sh
-The answer is 42!
-```
+> ```sh
+> The answer is 42!
+> ```
 
 In the following sections we'll see how to use some of the extensions
 officially provided by *IHaskell* to display types of known libraries.
@@ -88,12 +88,12 @@ The packages we'll need are:
 You can install them using stack if you intend to try this out yourself:
 
 ```sh
-stack build \
-    ihaskell-basic \
-    ihaskell-aeson \
-    ihaskell-blaze \
-    ihaskell-charts \
-    ihaskell-diagrams \
+stack build             \
+    ihaskell-basic      \
+    ihaskell-aeson      \
+    ihaskell-blaze      \
+    ihaskell-charts     \
+    ihaskell-diagrams   \
     ihaskell-magic
 ```
 
@@ -114,17 +114,11 @@ Just (Just "Foo Bar Baz")
 Nothing
 ```
 
-```haskell
-Just 42
-```
-
-```haskell
-Just Just "Foo Bar Baz"
-```
-
-```haskell
-Nothing
-```
+> ```haskell
+> Just 42
+> Just Just "Foo Bar Baz"
+> Nothing
+> ```
 
 
 ## ihaskell-aeson
@@ -177,25 +171,20 @@ A.Bool True
 A.toJSON document
 ```
 
-
-```haskell
-null
-```
-
-```haskell
-true
-```
-
-```json
-{
-    "body": "Lorem Ipsum",
-    "metadata": {
-        "Author": "Jonh Doe",
-        "Encoding": "UTF-8"
-    },
-    "title": "Foo Bar"
-}
-```
+> ```haskell
+> null
+> 
+> true
+> 
+> {
+>     "body": "Lorem Ipsum",
+>     "metadata": {
+>         "Author": "Jonh Doe",
+>         "Encoding": "UTF-8"
+>     },
+>     "title": "Foo Bar"
+> }
+> ```
 
 ## ihaskell-blaze
 

@@ -11,6 +11,29 @@ stack --resolver lts-9.12 --install-ghc runghc
   --package stitch
 -}
 
+{-
+TODO:
+- Check front end checklist: https://github.com/thedaviddias/Front-End-Checklist
+- Add automatic check with https://validator.w3.org/nu/?doc=
+
+- Add fully static search
+  https://github.com/LeaVerou/awesomplete
+  https://github.com/algolia/autocomplete.js
+
+- create 404 and 5xx pages
+- Add green analytics
+- Add RSS feed
+- Add fully static comments
+- Add automatic deploy using Travis
+- Fix math display with KaTeX
+- Add table of content
+- Clean-up posts
+- Improve syntax highlighting
+- Improve styling
+- Improve code
+- Update to latest pandoc (2.x) when available
+-}
+
 {-# LANGUAGE PackageImports #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -55,8 +78,20 @@ import Network.Wai.Handler.Warp (run)
 import Network.Wai.Application.Static
 
 
+blogDomain :: String
+blogDomain = "https://remusao.github.io/"
+
+blogTitle :: String
+blogTitle = "Simplex Sigillum Veri"
+
+
+blogDescription :: String
+blogDescription = blogTitle
+
+-- TODO: Make responsive and test for:
+-- 320px, 768px, 1024px
 css :: Html
-css = H.style $ H.text $ renderCSSWith basic $ -- use compressed
+css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
   -- Style body
   "body" ? do
     -- Text style and general layout
@@ -119,6 +154,7 @@ css = H.style $ H.text $ renderCSSWith basic $ -- use compressed
         "height" .= "1em"
         "display" .= "inline"
         "margin" .= "0px 1em"
+        "opacity" .= "0.6"
 
       "section.header" ? do
         "color" .= "#555"
@@ -130,31 +166,34 @@ css = H.style $ H.text $ renderCSSWith basic $ -- use compressed
         "font-size" .= "1.7em"
         "line-height" .= "1.5em"
 
-      "a" ? do
-        "color" .= "#3465a4"
-        "text-decoration" .= "none"
-
-      "a:visited" ? do
-        "color" .= "#75507b"
-
       "ul" ? do
         "margin" .= "1.0em 0"
         "padding" .= "0 0 0 1em"
         "padding-left" .= "2em"
 
         "li" ? do
-          "margin" .= "4px 0"
+          "margin" .= "5px 0"
 
       "ul.index" ? do
         "list-style" .= "none"
         "padding-left" .= "1em"
 
       ".index" ? do
-        "color" .= "#555"
-        "font-style" .= "italic"
+        "color" .= "#918d8d"
         "display" .= "inline"
 
+        "a" ? do
+          "color" .= "#2e3436"
+          "text-decoration" .= "none"
+
       "article" ? do
+        "a" ? do
+          "color" .= "#3465a4"
+          "text-decoration" .= "none"
+
+        "a:visited" ? do
+          "color" .= "#75507b"
+
         "h2" ? do
           "font-size" .= "1.3em"
           "line-height" .= "1.2em"
@@ -243,13 +282,6 @@ css = H.style $ H.text $ renderCSSWith basic $ -- use compressed
     yellow =  "#b58900"
 
 
-blogDomain :: String
-blogDomain = "https://remusao.github.io/"
-
-blogTitle :: String
-blogTitle = "Simplex Sigillum Veri"
-
-
 data Sharing = Sharing
   { href :: String
   , alt :: String
@@ -292,20 +324,33 @@ sharing url title = H.ul $ mconcat $ map button [
       H.li $ H.a
         ! A.href (H.stringValue $ printf href urlEncoded titleEncoded)
         ! A.title (H.stringValue alt)
-        ! A.target "_blank" $
+        ! A.target "_blank" ! A.rel "noopener noreferrer" $
           H.img
             ! A.alt (H.stringValue alt)
             ! A.src (H.stringValue $ "/images/social_flat_rounded_rects_svg/" ++ img)
 
 
+-- TODO: Change the language of the page depending on the post
+-- TODO: open graph tags (Facebook + Twitter)
 defaultTemplate :: String -> Bool -> Html -> Html
-defaultTemplate title math post = H.docTypeHtml $ do
+defaultTemplate title math post = H.docTypeHtml ! A.lang "en" ! A.dir "ltr" $ do
   H.head $ do
+    -- Set character encoding for the document
     H.meta H.! A.charset "utf-8"
+    -- Instruct Internet Explorer to use its latest rendering engine
     H.meta H.! A.httpEquiv "x-ua-compatible" H.! A.content "ie=edge"
+    -- Viewport for responsive web design
     H.meta H.! A.name "viewport" H.! A.content "width=device-width, initial-scale=1"
-    H.link H.! A.rel "shortcut icon" H.! A.type_ "image/x-icon" H.! A.href "../images/favicon.ico"
+    -- Meta Description
+    H.meta H.! A.name "description" H.! A.content (H.stringValue blogDescription)
+    -- Declare favicon TODO: use png + 32x32px
+    H.link H.! A.rel "icon" H.! A.type_ "image/x-icon" H.! A.href "/images/favicon.ico"
+    -- Apple Touch Icon TODO: use png + 200x200px
+    H.link H.! A.rel "apple-touch-icon" ! A.href "/images/favicon.ico"
+
     H.title $ H.string $ blogTitle ++ " - " ++ title
+
+    -- Inline CSS
     css
     if math
        then do
@@ -320,7 +365,7 @@ defaultTemplate title math post = H.docTypeHtml $ do
 
 
 postTemplate :: Html -> Post -> Html
-postTemplate html Post { title, url, date, math, pandoc, readingTime } = defaultTemplate title math $ do
+postTemplate html Post { title, url, date, math, readingTime } = defaultTemplate title math $ do
   H.section ! A.class_ "header" $ H.div $ do
     H.string date
     H.string " | "
