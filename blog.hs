@@ -9,6 +9,7 @@ stack --resolver lts-9.12 --install-ghc runghc
   --package fsnotify
   --package time
   --package stitch
+  --package neat-interpolation
 -}
 
 {-
@@ -38,6 +39,7 @@ TODO:
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 import Control.Concurrent.Chan (Chan, newChan, getChanContents)
 import Control.Concurrent.MVar (newMVar, withMVar)
@@ -64,8 +66,7 @@ import Text.Pandoc.Walk (query)
 import System.FSNotify
 
 -- HTML Templating
-import Text.Blaze.Html
-import Text.Blaze.Html.Renderer.String
+import qualified Text.Blaze.Html.Renderer.String as B
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
@@ -76,6 +77,8 @@ import Stitch.Render
 -- Static HTTP File Server
 import Network.Wai.Handler.Warp (run)
 import Network.Wai.Application.Static
+
+import NeatInterpolation (text)
 
 
 blogDomain :: String
@@ -90,7 +93,7 @@ blogDescription = blogTitle
 
 -- TODO: Make responsive and test for:
 -- 320px, 768px, 1024px
-css :: Html
+css :: H.Html
 css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
   -- Style body
   "body" ? do
@@ -289,7 +292,7 @@ data Sharing = Sharing
   }
 
 
-sharing :: String -> String -> Html
+sharing :: String -> String -> H.Html
 sharing url title = H.ul $ mconcat $ map button [
     Sharing {
         href = "https://www.facebook.com/sharer/sharer.php?u=%s&t=%s"
@@ -322,18 +325,18 @@ sharing url title = H.ul $ mconcat $ map button [
     titleEncoded = encode title
     button Sharing { href, alt, img } =
       H.li $ H.a
-        ! A.href (H.stringValue $ printf href urlEncoded titleEncoded)
-        ! A.title (H.stringValue alt)
-        ! A.target "_blank" ! A.rel "noopener noreferrer" $
+        H.! A.href (H.stringValue $ printf href urlEncoded titleEncoded)
+        H.! A.title (H.stringValue alt)
+        H.! A.target "_blank" H.! A.rel "noopener noreferrer" $
           H.img
-            ! A.alt (H.stringValue alt)
-            ! A.src (H.stringValue $ "/images/social_flat_rounded_rects_svg/" ++ img)
+            H.! A.alt (H.stringValue alt)
+            H.! A.src (H.stringValue $ "/images/social_flat_rounded_rects_svg/" ++ img)
 
 
 -- TODO: Change the language of the page depending on the post
 -- TODO: open graph tags (Facebook + Twitter)
-defaultTemplate :: String -> Bool -> Html -> Html
-defaultTemplate title math post = H.docTypeHtml ! A.lang "en" ! A.dir "ltr" $ do
+defaultTemplate :: String -> Bool -> H.Html -> H.Html
+defaultTemplate title math post = H.docTypeHtml H.! A.lang "en" H.! A.dir "ltr" $ do
   H.head $ do
     -- Set character encoding for the document
     H.meta H.! A.charset "utf-8"
@@ -346,7 +349,7 @@ defaultTemplate title math post = H.docTypeHtml ! A.lang "en" ! A.dir "ltr" $ do
     -- Declare favicon TODO: use png + 32x32px
     H.link H.! A.rel "icon" H.! A.type_ "image/x-icon" H.! A.href "/images/favicon.ico"
     -- Apple Touch Icon TODO: use png + 200x200px
-    H.link H.! A.rel "apple-touch-icon" ! A.href "/images/favicon.ico"
+    H.link H.! A.rel "apple-touch-icon" H.! A.href "/images/favicon.ico"
 
     H.title $ H.string $ blogTitle ++ " - " ++ title
 
@@ -364,17 +367,47 @@ defaultTemplate title math post = H.docTypeHtml ! A.lang "en" ! A.dir "ltr" $ do
       post
 
 
-postTemplate :: Html -> Post -> Html
+greenAnalytics :: H.Html
+greenAnalytics =
+  H.span $ do
+    H.script $ H.toHtml ([text|
+      var conf = {
+          siteID: ''
+      };
+
+      window.onload = function() {
+          if (navigator.doNotTrack != '1') {
+              var urlDetails = {
+                  origin: document.location.host,
+                  protocol: document.location.protocol,
+                  href: document.location.href,
+                  ref: document.referrer
+              };
+
+              conf.urlDetails = urlDetails;
+              var probeWindow = document.getElementById("green-analytics").contentWindow;
+              probeWindow.postMessage(conf, 'https://vhizszxi.herokuapp.com/collect');
+          }
+      }; |])
+    H.iframe
+      H.! A.id "green-analytics"
+      H.! A.style "display: none"
+      H.! A.src "https://vhizszxi.herokuapp.com/frame" $ ""
+
+postTemplate :: H.Html -> Post -> H.Html
 postTemplate html Post { title, url, date, math, readingTime } = defaultTemplate title math $ do
-  H.section ! A.class_ "header" $ H.div $ do
+  H.section H.! A.class_ "header" $ H.div $ do
     H.string date
     H.string " | "
     H.em $ H.string $ printf "Reading time: ~%i minutes" readingTime
   H.article html
-  H.footer $ H.div ! A.class_ "share" $ sharing (printf "%s%s" blogDomain url) title
+  H.footer $ do
+    H.div H.! A.class_ "share" $ sharing (printf "%s%s" blogDomain url) title
+    -- TODO
+    -- greenAnalytics
 
 
-indexTemplate :: Html -> Html
+indexTemplate :: H.Html -> H.Html
 indexTemplate html = defaultTemplate "Posts" False $ do
   html
   H.footer ""
@@ -446,7 +479,7 @@ generatePost content url =
         title = getDocumentTitle parsed
         author = getDocumentAuthor parsed
         date = getDocumentDate parsed
-        html = renderHtml $ postTemplate (writeHtml writerOpt parsed) post
+        html = B.renderHtml $ postTemplate (writeHtml writerOpt parsed) post
         math = hasMath parsed
         readingTime = getApproxReadingTime parsed
         logo = getDocumentLogo parsed
@@ -484,12 +517,12 @@ serveSite logging = do
   run 8000 (staticApp (defaultFileServerSettings "."))
 
 
-generateIndex :: [Post] -> Html
+generateIndex :: [Post] -> H.Html
 generateIndex posts = indexTemplate $
-  H.ul ! A.class_ "index" $ mconcat [
+  H.ul H.! A.class_ "index" $ mconcat [
     H.li $ do
-      H.img ! A.class_ "logo" ! A.src (H.stringValue logo)
-      H.a ! A.href (H.stringValue url) $ H.string title
+      H.img H.! A.class_ "logo" H.! A.src (H.stringValue logo)
+      H.a H.! A.href (H.stringValue url) $ H.string title
       H.string " - "
       H.string date
       | Post { url, title, date, logo } <- sortBy (flip compare `on` date) posts
@@ -517,7 +550,7 @@ updateSite logging blog newFiles = do
   -- TODO: (then) Sequential fold to update the Map
   updatedBlog <- foldM updateBlog blog newFiles
   let posts = M.elems updatedBlog
-  writeFile "index.html" $ renderHtml $ generateIndex posts
+  writeFile "index.html" $ B.renderHtml $ generateIndex posts
   logging $ printf "Generating index.html for %i posts..." (length posts)
   return updatedBlog
   where
