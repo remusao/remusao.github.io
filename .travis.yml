@@ -17,15 +17,17 @@ before_install:
 - mkdir -p ~/.local/bin
 - export PATH=$HOME/.local/bin:$PATH
 - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-- stack --version
-- stack setup
+- stack --no-terminal upgrade
+- stack --no-terminal update
+- stack --no-terminal --version
+- stack --no-terminal --resolver lts-9.13 setup
 
 branches:
   only:
     - diy
 
 script:
-  - stack blog.hs
+  - stack --no-terminal blog.hs
   - rm -fr _site
   - mkdir _site
   - mv *.html _site

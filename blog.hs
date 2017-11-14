@@ -1,6 +1,6 @@
 #! /usr/bin/env stack
 {-
-stack --resolver lts-9.12 --install-ghc runghc
+stack --resolver lts-9.13 --install-ghc runghc
   --package Glob
   --package async
   --package blaze-html
