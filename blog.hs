@@ -9,6 +9,7 @@ stack --resolver lts-9.13 --install-ghc runghc
   --package fsnotify
   --package stitch
   --package neat-interpolation
+  --package uri-encode
 -}
 
 {-

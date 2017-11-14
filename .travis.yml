@@ -21,14 +21,13 @@ before_install:
 install:
 - stack --no-terminal --resolver lts-9.13 setup
 - stack --no-terminal --version
-- travis_wait 180 stack --no-terminal install pandoc Glob async blaze-html wai-app-static fsnotify stitch neat-interpolation
 
 branches:
   only:
     - diy
 
 script:
-  - stack --no-terminal blog.hs
+  - travis_wait 180 stack --no-terminal blog.hs
   - rm -fr _site
   - mkdir _site
   - mv *.html _site
