@@ -1,9 +1,16 @@
 sudo: false
 
+language: c
+
 # Caching so the next build will be fast too.
 cache:
   directories:
   - $HOME/.stack
+
+addons:
+  apt:
+    packages:
+    - libgmp-dev
 
 before_install:
 # Download and unpack the stack executable
@@ -11,12 +18,22 @@ before_install:
 - export PATH=$HOME/.local/bin:$PATH
 - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
 
-script: stack blog.hs
+branches:
+  only:
+    - diy
+
+script:
+  - stack blog.hs
+  - rm -fr _site
+  - mkdir _site
+  - mv *.html _site
+  - cp -fr images _site/
 
 deploy:
   provider: pages
   skip_cleanup: true
-  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  github_token: $GITHUB_TOKEN
+  local_dir: _site
   target_branch: master
   on:
     branch: diy
