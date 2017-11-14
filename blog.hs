@@ -7,7 +7,6 @@ stack --resolver lts-9.13 --install-ghc runghc
   --package pandoc
   --package wai-app-static
   --package fsnotify
-  --package time
   --package stitch
   --package neat-interpolation
 -}
