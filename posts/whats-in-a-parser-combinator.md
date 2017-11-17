@@ -118,362 +118,43 @@ Let's test these parsers:
 runParser failure "Hello Parser!"
 ```
 
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: red; font-weight: bold;'>Nothing</span>
-
+> ```haskell
+> Nothing
+> ```
 
 
 ```haskell
 runParser (return 42) "Hello Parser!"
 ```
 
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>(42,"Hello Parser!")</span>
-
+> ```haskell
+> Just (42, "Hello Parser!")
+> ```
 
 
 ```haskell
 runParser oneChar "Hello Parser!"
 ```
 
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>('H',"ello Parser!")</span>
-
+> ```haskell
+> Just ('H',"ello Parser!")
+> ```
 
 
 ```haskell
 runParser oneChar ""
 ```
 
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: red; font-weight: bold;'>Nothing</span>
+> ```haskell
+> Nothing
+> ```
 
 
-The basic parsers seem to behave as expected. We get `Nothing` in case of failure, and they are able to partially consume the input. So all is good, but what about more complex parsers? We would like to parse strings, or more complex patterns. Let's try to recognize a string from the input, using our basic parsers:
+The basic parsers seem to behave as expected. We get `Nothing` in case
+of failure, and they are able to partially consume the input. So all
+is good, but what about more complex parsers? We would like to parse
+strings, or more complex patterns. Let's try to recognize a string from
+the input, using our basic parsers:
 
 
 ```haskell
@@ -495,269 +176,27 @@ string (c1:xs1) = Parser $ \s ->
 runParser (string "Hello") "Hello Parser!"
 ```
 
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>("Hello"," Parser!")</span>
-
+> ```haskell
+> Just ("Hello", " Parser!")
+> ```
 
 
 ```haskell
 runParser (string "Hello") "Foo Bar"
 ```
 
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: red; font-weight: bold;'>Nothing</span>
-
+> ```haskell
+> Nothing
+> ```
 
 
 ```haskell
 runParser (string "") "Hello Parser!"
 ```
 
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>("","Hello Parser!")</span>
+> ```haskell
+> Just ("","Hello Parser!")
+> ```
 
 
 This isn't very convenient (but it works)... Because we have to write
@@ -774,7 +213,8 @@ To do so, we'll have to make our *Parser* an instance of: *Functor*,
 
 #### Parser is a Functor
 
-First of all, our Parser is an instance of [*Functor*](https://en.wikibooks.org/wiki/Haskell/The_Functor_class), which means we can `map` functions over the result of our parsing:
+First of all, our Parser is an instance of [*Functor*](https://en.wikibooks.org/wiki/Haskell/The_Functor_class),
+which means we can `map` functions over the result of our parsing:
 
 
 ```haskell
@@ -797,89 +237,9 @@ parse42 = (fmap read $ string "42")
 runParser parse42 "42 is the answer!"
 ```
 
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>(42," is the answer!")</span>
+> ```haskell
+> Just (42, " is the answer!")
+> ```
 
 
 #### Parser is an Applicative
@@ -922,89 +282,9 @@ parseTuple =  (,) <$> oneChar <*> oneChar
 runParser parseTuple "ab"
 ```
 
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>(('a','b'),"")</span>
+> ```haskell
+> Just (('a', 'b'), "")
+> ```
 
 
 This is the kind of constructs we will use to convert the raw parsed
@@ -1012,7 +292,11 @@ structure into our own types (e.g: an AST).
 
 
 ```haskell
-data AST = Foo String | Bar String | Pair Char Char deriving (Show)
+data AST =
+    Foo String
+  | Bar String
+  | Pair Char Char
+  deriving (Show)
 
 parseFoo, parseBar, parsePair :: Parser AST
 parseFoo = Foo <$> string "foo"
@@ -1027,259 +311,17 @@ runParser parseBar "bar baz"
 runParser parsePair "xyz"
 ```
 
+> ```haskell
+> Just (Foo "foo", " bar")
+> ```
 
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>(Foo "foo"," bar")</span>
+> ```haskell
+> Just(Bar "bar", " baz")
+> ```
 
-
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>(Bar "bar"," baz")</span>
-
-
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>(Pair 'x' 'y',"z")</span>
+> ```haskell
+> Just (Pair 'x' 'y', "z")
+> ```
 
 
 #### Parser is a Monad
@@ -1292,7 +334,8 @@ instance Monad Parser where
     -- (>>=) :: Parser a -> (a -> Parser b) -> Parser b
     -- 1. Run first parser on input.
     -- 2. Feed result of parsing to `f`.
-    -- 3. Run second parser (result of `f`) on remaining input (left by first parser)
+    -- 3. Run second parser (result of `f`) on remaining
+    --    input (left by first parser)
     p >>= f = Parser $ \s -> case runParser p s of
                     Nothing -> Nothing
                     Just (a, rest) -> runParser (f a) rest
@@ -1331,174 +374,13 @@ runParser (char 'e') "Hello!"
 ```
 
 
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>('H',"ello!")</span>
+> ```haskell
+> Just(‘H’,“ello!”)
+> ```
 
-
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: red; font-weight: bold;'>Nothing</span>
-
+> ```haskell
+> Nothing
+> ```
 
 We can also implement a cleaner version of our `string` parser (found above):
 
@@ -1517,177 +399,15 @@ string' (c:xs) = do
 ```haskell
 runParser (string' "Hello") "Hello"
 runParser (string' "Hello") "Foo"
-
 ```
 
+> ```haskell
+> Just("Hello", "")
+> ```
 
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: green; font-weight: bold;'>Just</span><span style='font-family: monospace;'>("Hello","")</span>
-
-
-
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span style='color: red; font-weight: bold;'>Nothing</span>
+> ```haskell
+> Nothing
+> ```
 
 
 The `do` notation makes it very easy to combine parsers! We now have
