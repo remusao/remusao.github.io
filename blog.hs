@@ -26,7 +26,6 @@ TODO:
 - Add green analytics
 - Add RSS feed
 - Add fully static comments
-- Add automatic deploy using Travis
 - Fix math display with KaTeX
 - Add table of content
 - Clean-up posts
@@ -102,15 +101,15 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
     "background" .= "#ffffff"
     "color" .= "#2e3436"
 
-    "font-family" .= "Verdana,sans-serif"
+    "font-family" .= "georgia,Arial,'Helvetica Neue','Helvetica',sans-serif"
     "font-size" .= "18px"
     "text-rendering" .= "optimizeLegibility"
 
-    "line-height" .= "1.3"
+    "line-height" .= "1.625rem"
     "margin" .= "0 auto"
-    "max-width" .= "40em"
+    "max-width" .= "37em"
     "padding" .= "0 0.5em"
-    "text-align" .= "justify"
+    -- "text-align" .= "justify"
 
     -- Style Blog Header
     "header" ? do
@@ -147,7 +146,7 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
           "text-align" .= "right"
 
           "img" ? do
-            "width" .= "42px"
+            "width" .= "2.5em"
 
           "li" ? do
             "display" .= "inline"
@@ -230,8 +229,9 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
 
       -- Style source code
         "code" ? do
-          "font-family" .= "Menlo,Monaco,Consolas,\"Liberation Mono\",\"Courier New\",monospace"
+          "font-family" .= "Consolas,Menlo,Monaco,'Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','Courier New',monospace,sans-serif"
           "background-color" .= "#f3f4f5"
+          "font-size" .= "16px"
 
         "code.sourceCode" ? do
           "overflow-x" .= "auto" -- Make code block scrollable
@@ -560,7 +560,7 @@ updateSite logging blog newFiles = do
       | isFileAltered event = do
         let f = getFilePath event
         let name = takeBaseName f
-        let output = name ++ ".html"
+        let output = "posts/" ++ name ++ ".html"
         logging $ printf "Generating %s..." output
         content <- readFile f
         case generatePost content output of

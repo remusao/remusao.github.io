@@ -2,6 +2,7 @@
 title: Pypy, « Make Python faster ! »
 date: 2011-11-10
 logo: python
+lang: fr
 ---
 
 J’inaugure ce blog avec un article sur Pypy, une implémentation de

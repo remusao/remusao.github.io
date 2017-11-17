@@ -2,9 +2,10 @@
 title: Feedback from Hash Code 2016 Qualification Round
 date: 2016-02-12
 logo: hashcode
+lang: en
 ---
 
-![hashcode](images/hashcode2016.jpg)
+![hashcode](/images/hashcode2016.jpg)
 
 Yesterday was the qualification round for [Hash Code 2016](https://hashcode.withgoogle.com/) contest, organized by
 Google. I already had the opportunity to participate next, and made it to the

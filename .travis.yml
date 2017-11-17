@@ -29,8 +29,9 @@ branches:
 script:
   - travis_wait 180 stack --no-terminal blog.hs
   - rm -fr _site
-  - mkdir _site
-  - mv *.html _site
+  - mkdir -p _site/posts/
+  - mv index.html _site/
+  - mv *.html _site/posts/
   - cp -fr images _site/
 
 deploy:
