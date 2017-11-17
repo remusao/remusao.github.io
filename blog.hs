@@ -4,12 +4,13 @@ stack --resolver lts-9.13 --install-ghc runghc
   --package Glob
   --package async
   --package blaze-html
-  --package pandoc
-  --package wai-app-static
   --package fsnotify
-  --package stitch
+  --package github-0.18
   --package neat-interpolation
+  --package pandoc
+  --package stitch
   --package uri-encode
+  --package wai-app-static
 -}
 
 {-

@@ -31,7 +31,7 @@ script:
   - rm -fr _site
   - mkdir -p _site/posts/
   - mv index.html _site/
-  - mv *.html _site/posts/
+  - mv posts/*.html _site/posts/
   - cp -fr images _site/
 
 deploy:
