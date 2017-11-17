@@ -40,12 +40,12 @@ from collections import defaultdict
 trackers_by_category = defaultdict(list)
 
 # Load trackers and group them by category
+sql_query = """
+  SELECT categories.name, domain FROM tracker_domains
+  INNER JOIN trackers ON trackers.id = tracker_domains.tracker
+  INNER JOIN categories ON categories.id = trackers.category_id;
+"""
 with load_tracker_db() as connection:
-    sql_query = """
-        SELECT categories.name, domain FROM tracker_domains
-        INNER JOIN trackers ON trackers.id = tracker_domains.tracker
-        INNER JOIN categories ON categories.id = trackers.category_id;
-    """
     for (category, domain) in connection.execute(sql_query):
         trackers_by_category[category].append(domain)
 ```

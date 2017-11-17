@@ -79,6 +79,12 @@ import Stitch.Render
 import Network.Wai.Handler.Warp (run)
 import Network.Wai.Application.Static
 
+-- Comments
+import qualified GitHub.Endpoints.Issues.Comments as Github
+import GitHub.Data.Issues
+import GitHub.Data.Id
+import GHC.Exts (toList)
+
 import NeatInterpolation (text)
 
 
@@ -111,6 +117,13 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
     "max-width" .= "37em"
     "padding" .= "0 0.5em"
     -- "text-align" .= "justify"
+
+    "h1" ? "font-family" .= "Bitter, Georgia, serif"
+    "h2" ? "font-family" .= "Bitter, Georgia, serif"
+    "h3" ? "font-family" .= "Bitter, Georgia, serif"
+    "h4" ? "font-family" .= "Bitter, Georgia, serif"
+    "h5" ? "font-family" .= "Bitter, Georgia, serif"
+    "h6" ? "font-family" .= "Bitter, Georgia, serif"
 
     -- Style Blog Header
     "header" ? do
@@ -431,17 +444,27 @@ getDocumentLogo (Pandoc meta _) =
   where
     defaultIcon = getIcon ""
 
-    getIcon "python" = "/images/python.svg"
-    getIcon "haskell" = "/images/haskell.svg"
-    getIcon "c++" = "/images/cpp.svg"
+    getIcon "c++"       = "/images/cpp.svg"
+    getIcon "hashcode"  = "/images/hashcode.png"
+    getIcon "haskell"   = "/images/haskell.svg"
+    getIcon "html5"     = "/images/html5.svg"
+    getIcon "julia"     = "/images/julia.svg"
+    getIcon "ocaml"     = "/images/ocaml.svg"
+    getIcon "pi"        = "/images/pi.svg"
+    getIcon "python"    = "/images/python.svg"
     getIcon "raspberry" = "/images/raspberry-pi.svg"
-    getIcon "ocaml" = "/images/ocaml.svg"
-    getIcon "html5" = "/images/html5.svg"
-    getIcon "julia" = "/images/julia.svg"
-    getIcon "hashcode" = "/images/hashcode.png"
-    getIcon "xmonad" = "/images/xmonad.svg"
-    getIcon "pi" = "/images/pi.svg"
-    getIcon _ = "/images/haskell.svg"
+    getIcon "xmonad"    = "/images/xmonad.svg"
+    getIcon _           = "/images/haskell.svg"
+
+
+fetchComments :: Int -> IO [IssueComment]
+fetchComments issue = do
+  result <- Github.comments "remusao" "remusao.github.io" (Id issue)
+  case result of
+    Left err -> do
+      print err
+      return []
+    Right issues -> return (toList issues)
 
 
 getApproxReadingTime :: Pandoc -> Int
