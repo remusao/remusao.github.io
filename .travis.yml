@@ -32,7 +32,8 @@ script:
   - mkdir -p _site/posts/
   - mv index.html _site/
   - mv posts/*.html _site/posts/
-  - cp -fr images _site/
+  - cp -fr images/ _site/
+  - cp -fr fonts/ _site/
 
 deploy:
   provider: pages

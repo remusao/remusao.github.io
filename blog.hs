@@ -98,6 +98,49 @@ blogTitle = "Simplex Sigillum Veri"
 blogDescription :: String
 blogDescription = blogTitle
 
+cssFont :: H.Html
+cssFont = H.style $ H.text $ [text|
+@font-face {
+  font-family: 'Inconsolata';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Inconsolata Regular'), local('Inconsolata-Regular'), url(/fonts/Inconsolata.woff2) format('truetype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(/fonts/OpenSans_italic_400.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Open Sans Bold Italic'), local('OpenSans-BoldItalic'), url(/fonts/OpenSans_italic_700.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans Regular'), local('OpenSans-Regular'), url(/fonts/OpenSans_normal_400.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(/fonts/OpenSans_normal_700.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+|]
+
+
 -- TODO: Make responsive and test for:
 -- 320px, 768px, 1024px
 css :: H.Html
@@ -108,22 +151,18 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
     "background" .= "#ffffff"
     "color" .= "#2e3436"
 
-    "font-family" .= "georgia,Arial,'Helvetica Neue','Helvetica',sans-serif"
-    "font-size" .= "18px"
+    -- "font-family" .= "georgia,Arial,'Helvetica Neue','Helvetica',sans-serif"
+    "font-family" .= "'Open Sans', sans-serif"
+    "font-size" .= "17px"
+    "line-height" .= "1.6em"
     "text-rendering" .= "optimizeLegibility"
 
-    "line-height" .= "1.625rem"
-    "margin" .= "0 auto"
-    "max-width" .= "37em"
-    "padding" .= "0 0.5em"
-    -- "text-align" .= "justify"
+    -- TODO - how to use that properly?
+    "hyphens" .= "auto"
 
-    "h1" ? "font-family" .= "Bitter, Georgia, serif"
-    "h2" ? "font-family" .= "Bitter, Georgia, serif"
-    "h3" ? "font-family" .= "Bitter, Georgia, serif"
-    "h4" ? "font-family" .= "Bitter, Georgia, serif"
-    "h5" ? "font-family" .= "Bitter, Georgia, serif"
-    "h6" ? "font-family" .= "Bitter, Georgia, serif"
+    "margin" .= "0 auto"
+    "max-width" .= "40em"
+    "padding" .= "0 0.5em"
 
     -- Style Blog Header
     "header" ? do
@@ -243,9 +282,11 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
 
       -- Style source code
         "code" ? do
-          "font-family" .= "Consolas,Menlo,Monaco,'Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','Courier New',monospace,sans-serif"
+          -- "font-family" .= "Consolas,Menlo,Monaco,'Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','Courier New',monospace,sans-serif"
+          "font-family" .= "Inconsolata"
           "background-color" .= "#f3f4f5"
-          "font-size" .= "16px"
+          "font-size" .= "1em"
+          "line-height" .= "1.2em"
 
         "code.sourceCode" ? do
           "overflow-x" .= "auto" -- Make code block scrollable
@@ -369,6 +410,7 @@ defaultTemplate title math post = H.docTypeHtml H.! A.lang "en" H.! A.dir "ltr" 
     H.title $ H.string $ blogTitle ++ " - " ++ title
 
     -- Inline CSS
+    cssFont
     css
     if math
        then do
