@@ -16,7 +16,6 @@ stack --resolver lts-9.13 --install-ghc runghc
 {-
 TODO:
 - Check front end checklist: https://github.com/thedaviddias/Front-End-Checklist
-- Rename blog to remove date from filename
 - Add automatic check with https://validator.w3.org/nu/?doc=
 
 - Add fully static search
@@ -26,10 +25,8 @@ TODO:
 - create 404 and 5xx pages
 - Add green analytics
 - Add RSS feed
-- Add fully static comments
 - Fix math display with KaTeX
 - Add table of content
-- Clean-up posts
 - Improve syntax highlighting
 - Improve styling
 - Improve code
