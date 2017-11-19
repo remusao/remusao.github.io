@@ -343,14 +343,9 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
           "margin" .= "10px"
           "padding" .= "0 0 0 1em"
           "color" .= "#555555"
---
--- main .inline-math {
---     display: inline;
--- }
 
       -- Style source code
         "code" ? do
-          -- "font-family" .= "Consolas,Menlo,Monaco,'Lucida Console','Liberation Mono','DejaVu Sans Mono','Bitstream Vera Sans Mono','Courier New',monospace,sans-serif"
           "font-family" .= "Inconsolata"
           "background-color" .= "#f3f4f5"
           "font-size" .= "1em"
@@ -603,10 +598,8 @@ commentsTemplate issue comments =
       H.button H.! A.id "showCommentsButton" H.! A.class_ "showComments" $ H.string showIssueText
       H.script $ H.toHtml ([text|
         var button = document.getElementById('showCommentsButton');
-        console.error("BUTTON", button);
         button.onclick = function() {
             var div = document.getElementById('commentsList');
-            console.error("DIV", div)
             if (div.style.display !== 'none') {
                 div.style.display = 'none';
             }
@@ -645,7 +638,6 @@ fetchComments :: Maybe Github.Auth -> Maybe Int -> IO [Comment]
 fetchComments _ Nothing = return []
 fetchComments oauth (Just issue) = do
   result <- Github.comments' oauth "remusao" "remusao.github.io" (Id issue)
-  print result
   case result of
     Left err -> do
       print err
