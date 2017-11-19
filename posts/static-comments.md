@@ -52,7 +52,7 @@ Obviously it's not perfect because:
 ## How it Looks
 
 This post is already equipped with the static comments. I created a few of them
-to demonstrate the look and feel of them. You can expend the comments by
+to demonstrate the look and feel. You can expend the comments by
 clicking the first link on the left `N comments`, or post a new one by clicking
 on `Leave a comment on Github` (you will be redirected on the correct `issue`).
 
