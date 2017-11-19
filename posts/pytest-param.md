@@ -2,6 +2,7 @@
 title: Pytest Paramaterize Tests With External Data
 date: 2014-11-26
 logo: python
+lang: en
 ---
 
 I recently began to make heavy use of [pytest](http://pytest.org/latest/)

@@ -2,6 +2,8 @@
 title: Generating ADB filters from whotracks.me data
 date: 2017-11-16
 logo: python
+lang: en
+issue: 2
 ---
 
 In this post I'd like to demonstrate how we can make use of the

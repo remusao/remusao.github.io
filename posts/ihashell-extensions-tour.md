@@ -2,6 +2,7 @@
 title: IHaskell Extensions
 date: 2016-01-11
 logo: haskell
+lang: en
 ---
 
 

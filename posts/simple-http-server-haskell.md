@@ -2,6 +2,7 @@
 title: A Simple HTTP Server in Haskell
 date: 2017-11-12
 logo: haskell
+lang: en
 ---
 
 I was recently looking for a way to create a very simple `HTTP` Server to serve

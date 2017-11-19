@@ -2,6 +2,7 @@
 title: 10 bonnes raisons de coder en Python
 date: 2012-02-05
 logo: python
+lang: fr
 ---
 
 Dans la continuité des articles ayant pour objet le langage Python, je

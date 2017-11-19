@@ -3,6 +3,7 @@
 title: Getting the Most out of Sqlite3 with Python
 date: 2017-10-21
 logo: python
+lang: en
 ---
 
 I've recently made heavy use of `sqlite3` for a project involving a lot of data

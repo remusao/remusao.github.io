@@ -2,6 +2,7 @@
 title: State of Privacy in Statically Generated Blogs
 date: 2017-10-08
 logo: html5
+lang: en
 ---
 
 I woke up one morning and realized that my "static blog" (hosted on

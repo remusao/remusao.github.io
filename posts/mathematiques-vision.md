@@ -2,6 +2,7 @@
 title: Ma vision des mathématiques
 date: 2012-07-31
 logo: pi
+lang: fr
 ---
 
 ## Socle axiomatique

@@ -1,6 +1,8 @@
 ---
 title: Ascii, astuces
 date: 2012-12-25
+logo: c++
+lang: fr
 ---
 
 Voici quelques petites astuces afin de manipuler plus simplement des

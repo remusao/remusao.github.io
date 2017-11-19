@@ -2,6 +2,7 @@
 title: Compiler Mediatomb sur archlinux ARM
 date: 2012-07-31
 logo: raspberry
+lang: fr
 ---
 
 En voulant installer le logiciel mediatomb sur le Raspberry Pi que

@@ -2,6 +2,7 @@
 title: Crible d'Ératosthène, Un algo pour les trouver tous
 date: 2011-11-15
 logo: c++
+lang: fr
 ---
  	
 Il y a quelques temps je me suis intéressé au crible
@@ -90,20 +91,20 @@ i (y compris lui-même). Ceci va grandement améliorer notre algorithme.
 
 Une autre remarque que l’on peut faire est que pour tester la
 primalité d’un nombre n, il n’est pas nécessaire de tester la
-division par tous les nombres de 2 a n, il suffit d’aller jusqu’à
+division par tous les nombres de `2` a `n`, il suffit d’aller jusqu’à
 la racine carrée de n (au delà on ne peut pas trouver de diviseur
 entier).
 
 Enfin, une petite amélioration liée à l’implémentation en C de
 l’algorithme, puisqu’on va devoir initialiser notre tableau avec
 toutes les cases à 1, autant éliminer tous les nombres pairs (qui ne
-sont pas premier puisque divisibles par 2). On peut donc initialiser
+sont pas premier puisque divisibles par `2`). On peut donc initialiser
 notre tableau avec deux boucles distinctes, une qui part de 3 et
 qui va jusqu’à n de deux en deux en initialisant à 1 les cases
 visitées et une autre qui part de 4 et qui va jusqu’à n de deux
 en deux en initialisant à 0 les cases parcourues. Voici ce que donne
 l’algorithme implémenté en C avec les optimisations précédentes
-(sources : www.pythux.com/exemples/erato/crible_1.c). Pour compiler le
+(sources : <http://www.pythux.com/exemples/erato/crible_1.c>). Pour compiler le
 fichier source, vous pouvez utiliser soit clang soit gcc (ou un autre
 compilateur C) comme ceci :
 
@@ -123,7 +124,7 @@ donc dans un premier temps l’espace mémoire occupé par deux. Pour
 un crible jusqu’à n = 30, nous aurions à stocker les éléments
 suivants :
 
-```
+```sh
 Les nombres -> [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
 Les index   -> [0, 1, 2, 3, 4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14]
 ```
@@ -131,14 +132,14 @@ Les index   -> [0, 1, 2, 3, 4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14]
 Hors, nous ne pouvons plus simplement utiliser les index dans le tableau
 pour connaitre les nombres associés. En fait, on peut remarquer que
 pour retrouver le nombre associé a chaque case du tableau, il nous
-suffit de calculer : « index * 2 + 1« . Deuxièmement, pour retrouver
+suffit de calculer : `index * 2 + 1` . Deuxièmement, pour retrouver
 les multiples d’un nombre N dans le tableau, il nous suffit d’aller
-de N en N dans le tableau en partant de la case (N / 2). Enfin, on
+de N en N dans le tableau en partant de la case `N / 2`. Enfin, on
 remarque qu’avec cette technique, l’algorithme est plus compact
 et nous pouvons nous contenter d’initialiser toutes les cases du
-tableau à 1 (avec la fonction memset de la bibliothèque <string> du
+tableau à 1 (avec la fonction memset de la bibliothèque `<string>` du
 langage C). Voici le code source de cette implémentation (sources :
-www.pythux.com/exemples/erato/crible.c) :
+<http://www.pythux.com/exemples/erato/crible.c>) :
 
 ```c
 char *erato_opti(int n)
@@ -160,8 +161,8 @@ char *erato_opti(int n)
 ```
 
 Si nous voulons afficher les nombres premiers produits par la fonction
-erato_opti il nous suffit d’utiliser l’astuce du « nombre = index *
-2 + 1 » et de ne pas oublier d’afficher le nombre 2 (qui n’est pas
+erato_opti il nous suffit d’utiliser l’astuce du `nombre = index *
+2 + 1` et de ne pas oublier d’afficher le nombre 2 (qui n’est pas
 contenu dans le tableau) :
 
 ```c
@@ -189,13 +190,13 @@ gcc -lm -O3 crible.c
 Voici un récapitulatif des performances obtenues avec les différentes
 implémentations :
 
-```
-Valeur de N               1000   10.000   1.000.000   1.000.000.000
-Version Python (Pypy)     30ms    370ms       /             /
-Version Python (CPython)  42ms    710ms       /             /
-Version C intermédiaire    1ms      1ms      7ms           40s
-Version C opti             1ms      1ms      6ms           32s
-```
+
+Valeur de N              | 1000  | 10.000     | 1.000.000  | 1.000.000.000
+---                      | :---:   | :---:        | :---:        | :---:
+Version Python (Pypy)    | 30ms  |  370ms     |  /         |  /
+Version Python (CPython) | 42ms  |  710ms     |  /         |  /
+Version C intermédiaire  |  1ms  |    1ms     | 7ms        | 40s
+Version C opti           |  1ms  |    1ms     | 6ms        | 32s
 
 ## Conclusion
 

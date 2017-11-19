@@ -2,10 +2,13 @@
 title: Decompressing BZipped Files With Julia
 date: 2014-07-22
 logo: julia
+lang: en
 ---
 
 
-I'm currently working with Wikipedia dumps, and to save space, it's a good thing to make scripts that read directly content from (and write results to) BZipped files.
+I'm currently working with Wikipedia dumps, and to save space, it's a
+good thing to make scripts that read directly content from (and write
+results to) BZipped files.
 
 
 ## Setup

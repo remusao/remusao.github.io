@@ -42,6 +42,8 @@ TODO:
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE QuasiQuotes #-}
 
+import Debug.Trace
+
 import Control.Concurrent.Chan (Chan, newChan, getChanContents)
 import Control.Concurrent.MVar (newMVar, withMVar)
 import Control.Monad (foldM_, foldM)
@@ -49,7 +51,7 @@ import System.FilePath (takeExtension, takeBaseName)
 import Text.Printf (printf)
 import Data.List (sortBy)
 import Data.Function (on)
-import System.Environment (getArgs)
+import System.Environment (getArgs, lookupEnv)
 import qualified Data.Map as M
 
 import "filemanip" System.FilePath.Glob (namesMatching)
@@ -83,6 +85,11 @@ import Network.Wai.Application.Static
 import qualified GitHub.Endpoints.Issues.Comments as Github
 import GitHub.Data.Issues
 import GitHub.Data.Id
+import Data.ByteString.Char8 (pack)
+import Data.Text (unpack)
+import GitHub.Data.Definitions
+import GitHub.Data.Name
+import GitHub.Data.URL (getUrl)
 import GHC.Exts (toList)
 
 import NeatInterpolation (text)
@@ -233,6 +240,67 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
       "ul.index" ? do
         "list-style" .= "none"
         "padding-left" .= "1em"
+
+      "div.comments" ? do
+        "margin-top" .= "2rem"
+        "padding" .= "16px 16px 16px 14px"
+        "line-height" .= "1.2rem"
+        "font-size" .= "15px"
+
+        ".showComments" ? do
+          "background-color" .= "Transparent"
+          "background-repeat" .= "no-repeat"
+          "border" .= "none"
+          "outline" .= "none"
+          "overflow" .= "hidden"
+          "color" .= "#516AE8"
+          "font-weight" .= "bold"
+          "cursor" .= "pointer"
+          "height" .= "32px"
+          "margin-right" .= "2em"
+
+        ".leaveComment" ? do
+          "a" ? do
+            "-webkit-appearance" .= "button"
+            "-moz-appearance" .= "button"
+            "appearance" .= "button"
+
+            "background-color" .= "#8f4e8b"
+            "box-shadow" .= "0 1px 3px rgba(0,0,0,0.24)"
+            "padding" .= "2px 18px"
+            "background-color" .= "#8f4e8b"
+            "outline" .= "none"
+            "border" .= "none"
+            "color" .= "#fff !important"
+            "font-weight" .= "bold"
+            "cursor" .= "pointer"
+            "height" .= "32px"
+
+          "a:hover" ? do
+            "box-shadow" .= "0 1px 20px rgba(0,0,0,0.24)"
+
+        "ul" ? do
+          "list-style" .= "none"
+
+        "li.comment" ? do
+          "border-radius" .= "2px"
+          "box-shadow" .= "0 1px 5px rgba(0,0,0,0.16)"
+          "display" .= "block"
+          "background-color" .= "#fafbfd"
+          "margin" .= "1em 0"
+          "padding" .= "5px 5px 5px 5px"
+
+          ".author" ? do
+            "font-weight" .= "bold"
+
+          ".meta" ? do
+            "line-height" .= "2em"
+            "padding-bottom" .= "5px"
+            "border-bottom" .= "thin solid #d3d7cf"
+
+          ".content" ? do
+            "padding-left" .= "20px"
+            "padding-right" .= "10px"
 
       ".index" ? do
         "color" .= "#918d8d"
@@ -452,12 +520,17 @@ greenAnalytics =
       H.! A.src "https://vhizszxi.herokuapp.com/frame" $ ""
 
 postTemplate :: H.Html -> Post -> H.Html
-postTemplate html Post { title, url, date, math, readingTime } = defaultTemplate title math $ do
+postTemplate html Post { title, url, date, math, readingTime, comments, issue } = defaultTemplate title math $ do
   H.section H.! A.class_ "header" $ H.div $ do
     H.string date
     H.string " | "
     H.em $ H.string $ printf "Reading time: ~%i minutes" readingTime
-  H.article html
+  H.article $ do
+    html
+    case issue of
+      Nothing -> H.string ""
+      Just number ->
+        commentsTemplate number comments
   H.footer $ do
     H.div H.! A.class_ "share" $ sharing (printf "%s%s" blogDomain url) title
     -- TODO
@@ -474,6 +547,11 @@ collectStr :: Inline -> [String]
 collectStr (Str s) = [s]
 collectStr _ = []
 
+getDocumentIssue :: Pandoc -> Maybe Int
+getDocumentIssue (Pandoc meta _) =
+  case lookupMeta "issue" meta of
+    Just (MetaString s) -> Just . read $ s
+    _ -> Nothing
 
 getDocumentTitle, getDocumentAuthor, getDocumentDate, getDocumentLogo :: Pandoc -> String
 getDocumentTitle (Pandoc meta _) = unwords $ query collectStr (docTitle meta)
@@ -491,6 +569,7 @@ getDocumentLogo (Pandoc meta _) =
     getIcon "haskell"   = "/images/haskell.svg"
     getIcon "html5"     = "/images/html5.svg"
     getIcon "julia"     = "/images/julia.svg"
+    getIcon "learning"  = "/images/learning.svg"
     getIcon "ocaml"     = "/images/ocaml.svg"
     getIcon "pi"        = "/images/pi.svg"
     getIcon "python"    = "/images/python.svg"
@@ -499,14 +578,88 @@ getDocumentLogo (Pandoc meta _) =
     getIcon _           = "/images/haskell.svg"
 
 
-fetchComments :: Int -> IO [IssueComment]
-fetchComments issue = do
-  result <- Github.comments "remusao" "remusao.github.io" (Id issue)
+data Comment = Comment
+  { content :: String
+  , commentAuthor :: String
+  , commentUrl :: String
+  , commentDate :: String
+  }
+  deriving (Show)
+
+
+commentsTemplate :: Int -> [Comment] -> H.Html
+commentsTemplate issue comments =
+  H.div H.! A.class_ "comments" $ do
+    H.span H.! A.class_ "commentHeader" $ do
+      if not (null comments) then showIssueButton else H.string ""
+      H.span H.! A.class_ "leaveComment" $
+        H.a
+          H.! A.href (H.stringValue issueLink)
+          H.! A.title (H.stringValue issueLink)
+          H.! A.target "_blank" H.! A.rel "noopener noreferrer" $ "Leave a comment on Github"
+    H.ul H.! A.style "display: none;" H.! A.id "commentsList" $ mconcat $ map commentTemplate comments
+  where
+    showIssueButton = do
+      H.button H.! A.id "showCommentsButton" H.! A.class_ "showComments" $ H.string showIssueText
+      H.script $ H.toHtml ([text|
+        var button = document.getElementById('showCommentsButton');
+        console.error("BUTTON", button);
+        button.onclick = function() {
+            var div = document.getElementById('commentsList');
+            console.error("DIV", div)
+            if (div.style.display !== 'none') {
+                div.style.display = 'none';
+            }
+            else {
+                div.style.display = 'block';
+            }
+        }; |])
+
+    showIssueText =
+      case length comments of
+        1 -> "1 comment"
+        n -> show n ++ " comments"
+    issueLink = "https://github.com/remusao/remusao.github.io/issues/" ++ show issue
+    commentTemplate Comment{ content, commentAuthor, commentUrl, commentDate } =
+      H.li H.! A.class_ "comment" $ H.div $ do
+        H.span H.! A.class_ "meta" $ do
+          H.span H.! A.class_ "author" $ H.string commentAuthor
+          H.string " - "
+          H.a
+            H.! A.href (H.stringValue commentUrl)
+            H.! A.title (H.stringValue commentUrl)
+            H.! A.target "_blank" H.! A.rel "noopener noreferrer" $ H.string commentDate
+        H.div H.! A.class_ "content"$
+          case markdownToHtml content of
+            Nothing -> H.string "PARSING ERROR" -- content
+            Just html -> html
+
+
+stripCR :: String -> String
+stripCR [] = []
+stripCR ('\r':xs) = stripCR xs
+stripCR (x:xs) = x : stripCR xs
+
+
+fetchComments :: Maybe Github.Auth -> Maybe Int -> IO [Comment]
+fetchComments _ Nothing = return []
+fetchComments oauth (Just issue) = do
+  result <- Github.comments' oauth "remusao" "remusao.github.io" (Id issue)
+  print result
   case result of
     Left err -> do
       print err
       return []
-    Right issues -> return (toList issues)
+    Right issues -> return . map toComment . toList $ issues
+  where
+    toComment IssueComment { issueCommentUser, issueCommentHtmlUrl, issueCommentCreatedAt, issueCommentBody } =
+      let N user = simpleUserLogin issueCommentUser
+      in Comment {
+        content = stripCR . unpack $ issueCommentBody,
+        commentAuthor = unpack user,
+        commentUrl = unpack . getUrl $ issueCommentHtmlUrl,
+        commentDate = show issueCommentCreatedAt
+      }
 
 
 getApproxReadingTime :: Pandoc -> Int
@@ -517,16 +670,18 @@ getApproxReadingTime pandoc = max (textLength `div` 150) 1
     collectText (Code _ s) = [s]
     collectText _ = []
 
+
 data Post = Post
-  { html :: String
-  , title :: String
-  , author :: String
+  { author :: String
+  , comments :: [Comment]
   , date :: String
-  , url :: String
+  , issue :: Maybe Int
+  , logo :: String
   , math :: Bool
   , pandoc :: Pandoc
-  , logo :: String
   , readingTime :: Int
+  , title :: String
+  , url :: String
   } deriving Show
 
 
@@ -537,45 +692,67 @@ hasMath = not . null . query collectMath
     collectMath _ = []
 
 
-generatePost :: String -> String -> Maybe Post
-generatePost content url =
+readerOpt :: ReaderOptions
+readerOpt = def
+  { readerSmart = True
+  }
+
+
+writerOpt :: WriterOptions
+writerOpt = def
+  { writerTableOfContents = True
+  , writerHTMLMathMethod = KaTeX "./katex/katex.css" "./katex/katex.js"
+  , writerNumberSections = True
+  , writerNumberOffset = [1]
+  , writerEmailObfuscation = JavascriptObfuscation
+  , writerCiteMethod = Citeproc
+  , writerHtml5 = True
+  , writerHighlight = True
+  , writerTOCDepth = 1
+  }
+
+
+parseMarkdownToHtml :: String -> Maybe Pandoc
+parseMarkdownToHtml content =
   case readMarkdown readerOpt content of
     Left _ -> Nothing
-    Right parsed ->
-      let
-        title = getDocumentTitle parsed
-        author = getDocumentAuthor parsed
-        date = getDocumentDate parsed
-        html = B.renderHtml $ postTemplate (writeHtml writerOpt parsed) post
-        math = hasMath parsed
-        readingTime = getApproxReadingTime parsed
-        logo = getDocumentLogo parsed
-        post = Post {
-            author = author
-          , html = html
-          , date = date
-          , math = math
-          , pandoc = parsed
-          , title = title
-          , readingTime = readingTime
-          , logo = logo
-          , url = url }
-       in Just post
-  where
-    readerOpt = def
-      { readerSmart = True
-      }
-    writerOpt = def
-      { writerTableOfContents = True
-      , writerHTMLMathMethod = KaTeX "./katex/katex.css" "./katex/katex.js"
-      , writerNumberSections = True
-      , writerNumberOffset = [1]
-      , writerEmailObfuscation = JavascriptObfuscation
-      , writerCiteMethod = Citeproc
-      , writerHtml5 = True
-      , writerHighlight = True
-      , writerTOCDepth = 1
-      }
+    Right pandoc -> Just pandoc
+
+
+compileHtml :: Pandoc -> H.Html
+compileHtml p = trace (show p) $  writeHtml writerOpt p
+
+
+markdownToHtml :: String -> Maybe H.Html
+markdownToHtml content = fmap compileHtml (parseMarkdownToHtml content)
+
+
+generatePost :: Context -> String -> String -> IO (Maybe Post)
+generatePost Context { token } content url =
+  case parseMarkdownToHtml content of
+    Nothing -> return Nothing
+    Just parsed -> do
+      let author = getDocumentAuthor parsed
+      let date = getDocumentDate parsed
+      let logo = getDocumentLogo parsed
+      let math = hasMath parsed
+      let readingTime = getApproxReadingTime parsed
+      let title = getDocumentTitle parsed
+      let issue = getDocumentIssue parsed
+      comments <- fetchComments token issue
+      print comments
+
+      return $ Just Post {
+         author = author
+       , comments = comments
+       , issue = issue
+       , date = date
+       , math = math
+       , pandoc = parsed
+       , title = title
+       , readingTime = readingTime
+       , logo = logo
+       , url = url }
 
 
 serveSite :: (String -> IO ()) -> IO ()
@@ -611,15 +788,15 @@ isFileAltered (Modified _ _) = True
 isFileAltered _ = False
 
 
-updateSite :: (String -> IO ()) -> Blog -> [Event] -> IO Blog
-updateSite logging blog newFiles = do
+updateSite :: (String -> IO ()) -> Context -> [Event] -> IO Context
+updateSite logging context@Context{ blog, token } newFiles = do
   -- TODO: Parallel for to produce [Post]
   -- TODO: (then) Sequential fold to update the Map
   updatedBlog <- foldM updateBlog blog newFiles
   let posts = M.elems updatedBlog
   writeFile "index.html" $ B.renderHtml $ generateIndex posts
   logging $ printf "Generating index.html for %i posts..." (length posts)
-  return updatedBlog
+  return Context { blog = updatedBlog, token = token }
   where
     updateBlog :: Blog -> Event -> IO Blog
     updateBlog b event
@@ -629,10 +806,11 @@ updateSite logging blog newFiles = do
         let output = "posts/" ++ name ++ ".html"
         logging $ printf "Generating %s..." output
         content <- readFile f
-        case generatePost content output of
+        result <- generatePost context content output
+        case result of
           Nothing -> return b
           Just post -> do
-            writeFile output $ html post
+            writeFile output $ B.renderHtml $ postTemplate (writeHtml writerOpt $ pandoc post) post
             return $ M.alter (
               \case
                 Nothing -> Just post
@@ -645,10 +823,16 @@ updateSite logging blog newFiles = do
               Just _ -> Nothing) name b
 
 
-generateSite :: (String -> IO ()) -> Blog -> Chan Event -> IO ()
-generateSite logging blog fileModifiedEvents = do
+generateSite :: (String -> IO ()) -> Context -> Chan Event -> IO ()
+generateSite logging context fileModifiedEvents = do
     events <- getChanContents fileModifiedEvents
-    foldM_ (\b e -> updateSite logging b [e]) blog events
+    foldM_ (\c e -> updateSite logging c [e]) context events
+
+
+data Context = Context
+  { blog :: Blog
+  , token :: Maybe Github.Auth
+  }
 
 
 main :: IO ()
@@ -661,8 +845,12 @@ main = do
   now <- getCurrentTime
   files <- namesMatching "./posts/*.md"
 
+  -- Get Github Token from env
+  token <- lookupEnv "GITHUB_TOKEN"
+  let auth = fmap (Github.OAuth . pack) token
+
   -- Init blog with all posts
-  blog <- updateSite logging M.empty $ fmap (`Added` now) files
+  context <- updateSite logging Context { token = auth, blog = M.empty } $ fmap (`Added` now) files
 
   programArgs <- getArgs
 
@@ -671,7 +859,7 @@ main = do
       fileModifiedEvents <- newChan
 
       -- Watch tree directory
-      concurrently_ (generateSite logging blog fileModifiedEvents) $
+      concurrently_ (generateSite logging context fileModifiedEvents) $
         withManager $ \mgr -> do
           -- start a watching job (in the background)
           _ <- watchTreeChan

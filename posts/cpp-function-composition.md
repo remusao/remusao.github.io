@@ -2,6 +2,7 @@
 title: C++, composition de fonctions
 date: 2013-05-30
 logo: c++
+lang: fr
 ---
 
 Lorsque l’on a gouté aux joies des langages fonctionnels, ou que

@@ -2,10 +2,11 @@
 title: The Sieve, Even faster!
 date: 2011-12-27
 logo: c++
+lang: en
 ---
 
-*Disclaimer*: This is an old article and information may be out-dated. You can
-find one of the (if not *the*) fastest implementation there: http://primesieve.org/
+**Disclaimer**: This is an old article and information may be out-dated. You can
+find one of the (if not *the*) fastest implementation there: <http://primesieve.org/>
 
 It has been a while since I posted my last article on the blog, my
 studies didn’t leave me enough time for writing. But during Christmas

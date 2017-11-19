@@ -2,6 +2,7 @@
 title: Arithmetic lexer
 date: 2011-12-27
 logo: c++
+lang: en
 ---
 
 As part of a project dealing with implementing algorithm to do some

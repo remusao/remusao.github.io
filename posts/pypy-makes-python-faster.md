@@ -136,7 +136,7 @@ gourmande en ressources (mémoire vive et CPU), si vous n’avez pas
 4 Go de RAM sur votre PC, il faudra passer par les dépôts de votre
 distribution, sans quoi vous risquez de partir en Swap infini ..
 
-*Liste des dépendances* : http://pypy.readthedocs.org/en/latest/getting-started-python.html#translating-the-pypy-python-interpreter
+*Liste des dépendances* : <http://pypy.readthedocs.org/en/latest/getting-started-python.html#translating-the-pypy-python-interpreter>
 
 Une fois toutes les dépendances installées, récupérez les sources de
 Pypy en lançant la commande suivant :
@@ -176,16 +176,16 @@ $ ./pypy mon_script.py # votre script python
 
 Pour terminer, voici un bref aperçu des performances de Pypy
 comparativement à d’autres implémentations/langages disponible sur
-la page Performance officielle du site de Pypy : http://speed.pypy.org/
+la page Performance officielle du site de Pypy : <http://speed.pypy.org/>
 
 ## Bibliographie
 
-* http://pypy.org/index.html
-* http://fr.wikipedia.org/wiki/PyPy
-* http://en.wikipedia.org/wiki/PyPy
-* http://en.wikipedia.org/wiki/Just-in-time_compilation
-* http://www.python.org/
-* http://fr.wikibooks.org/wiki/Python
+* <http://pypy.org/index.html>
+* <http://fr.wikipedia.org/wiki/PyPy>
+* <http://en.wikipedia.org/wiki/PyPy>
+* <http://en.wikipedia.org/wiki/Just-in-time_compilation>
+* <http://www.python.org/>
+* <http://fr.wikibooks.org/wiki/Python>
 
 Le mot de la fin – Toutes les propositions et remarques sont bien
 évidemment les bienvenues :)

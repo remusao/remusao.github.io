@@ -2,6 +2,7 @@
 title: Visualiser la structure d’un projet python
 date: 2012-07-31
 logo: python
+lang: fr
 ---
 
 Lors d’une de mes dernières contributions à un projet écrit en

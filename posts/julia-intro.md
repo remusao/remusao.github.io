@@ -2,6 +2,7 @@
 title: Julia
 date: 2014-02-13
 logo: julia
+lang: fr
 ---
 
 Aujourd'hui j'aimerais parler d'un langage de programmation que je viens de

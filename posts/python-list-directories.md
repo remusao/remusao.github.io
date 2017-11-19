@@ -2,9 +2,10 @@
 title: Python, lister le contenu des répertoires
 date: 2012-02-02
 logo: python
+lang: fr
 ---
 
-*Disclaimer* : Il est probablement plus simple d'utiliser la fonction
+**Disclaimer** : Il est probablement plus simple d'utiliser la fonction
 [os.walk](https://docs.python.org/2/library/os.html#os.walk) pour lister
 récursivement le contenu d'un dossier.
 

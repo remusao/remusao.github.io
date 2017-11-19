@@ -2,11 +2,16 @@
 title: Install IHaskell on Ubuntu 14.04 with Stack
 date: 2016-01-07
 logo: haskell
+lang: en
 ---
 
 
 
-In this post, we're going through the installation of IHaskell on GNU/Linux (Ubuntu 14.04 in my case, though it should be pretty similar on other ditributions) step-by-step. We'll see how the use of *Stack* will simplify the whole process, and how to get all the dependencies right!
+In this post, we're going through the installation of IHaskell on
+GNU/Linux (Ubuntu 14.04 in my case, though it should be pretty similar
+on other ditributions) step-by-step. We'll see how the use of *Stack*
+will simplify the whole process, and how to get all the dependencies
+right!
 
 
 ## Install Stack

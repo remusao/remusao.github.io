@@ -2,6 +2,7 @@
 title: Raspberry Pi
 date: 2012-07-31
 logo: raspberry
+lang: fr
 ---
 
 J’ai reçu il y a quelques jours le Raspberry Pi que j’avais

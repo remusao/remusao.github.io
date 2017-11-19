@@ -1,6 +1,8 @@
 ---
 title: Learning a New Language
 date: 2016-01-25
+logo: learning
+lang: en
 ---
 
 ![](/images/learning.png){width=80%}

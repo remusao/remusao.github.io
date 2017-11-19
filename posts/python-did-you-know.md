@@ -2,6 +2,7 @@
 title: Python, Le saviez-vous ?
 date: 2012-02-05
 logo: python
+lang: fr
 ---
 
 J’en apprend tous les jours sur le Python, et tous les jours je

@@ -2,6 +2,7 @@
 title: C++, taille d’un tableau static en temps constant
 date: 2012-12-25
 logo: c++
+lang: fr
 ---
 
 J’ai découvert cette semaine une petite astuce que je trouve assez

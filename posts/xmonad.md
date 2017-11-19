@@ -2,6 +2,7 @@
 title: XMonad
 date: 2013-02-14
 logo: xmonad
+lang: fr
 ---
 
 Étant utilisateur de GNU/Linux depuis quelques années maintenant,

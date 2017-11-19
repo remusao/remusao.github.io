@@ -2,6 +2,7 @@
 title: Installation de Julia
 date: 2014-02-14
 logo: julia
+lang: fr
 ---
 
 

@@ -2,9 +2,10 @@
 title: Python, construction des listes
 date: 2012-02-02
 logo: python
+lang: fr
 ---
 
-Le type liste du langage python est une des structures les plus utilises
+Le type liste du langage python est une des structures les plus utiles
 (et utilisées). Elles sont polyvalentes et efficaces. En effet, on
 peut aussi bien s’en servir comme tableau, file, pile, listes, etc..
 L’outil à tout faire en quelques sorte. Mais leur utilité et leur «
@@ -13,7 +14,7 @@ méthodes utiles, le programmeur a la possibilité de construire des
 listes de manière très élégante. Voyons voir de plus près de quoi
 il s’agit !
 
-Les listes étant représentées entre crochet ‘[' et ']‘, c’est
+Les listes étant représentées entre crochet `[` et `]`, c’est
 tout naturellement avec ce formalisme que nous allons les créer, en
 plaçant entre les crochets des « motifs » décrivant les éléments
 contenus dans la liste. Voyons sans plus tarder un exemple :
@@ -24,8 +25,8 @@ l = [x for x in range(1, 10)]
 ```
 
 Nous pouvons bien sûr imaginer des exemples plus complexes comme la
-génération de tous les couples de nombres (x,y) avec x et y compris
-entre 1 et 9 :
+génération de tous les couples de nombres `(x, y)` avec `x` et `y` compris
+entre `1` et `9` :
 
 ```python
 l = [(x, y) for x in range(1, 10) for y in range(1, 10)]
