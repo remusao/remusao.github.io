@@ -848,6 +848,7 @@ main = do
   -- Get Github Token from env
   token <- lookupEnv "GITHUB_TOKEN"
   let auth = fmap (Github.OAuth . pack) token
+  print auth
 
   -- Init blog with all posts
   context <- updateSite logging Context { token = auth, blog = M.empty } $ fmap (`Added` now) files
