@@ -24,15 +24,15 @@ in the spirit of the different *easylists* already in existence:
 They could also be dispatched in the already existing lists such as
 `advertising`, `privacy`, etc. Another option could be to use this as
 a tool to assist maintainers to keep an eye on the ecosystem; learning
-about new trackers in real time comes to mind as something useful.
+about new trackers in real time certainly seems useful.
 
 Let's get started!
 
 ## Loading the data
 
-We start by loading the tracker-related data, found in `db/trackerdb.sql`. We
-use the script `trackerdb.py` which allows to load the database into memory
-using `sqlite3`:
+We start by loading the tracker-related data from `trackerdb.sql`, using the
+helper function found in `trackerdb.py`. Both files can be found in the `db`
+folder at the root of the repository.
 
 ```python
 from trackerdb import load_tracker_db
@@ -54,7 +54,7 @@ with load_tracker_db() as connection:
 
 Here is a sample of what we get in `trackers_by_category`. Note that if
 you run the same script, you might get slightly different results as the
-data is updated constantly:
+data is being constantly updated:
 
 ```python
 defaultdict(list, {
