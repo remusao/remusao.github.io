@@ -345,7 +345,7 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
         "code" ? do
           "font-family" .= "Inconsolata"
           "background-color" .= "#f3f4f5"
-          "font-size" .= "1em"
+          "font-size" .= "16px"
           "line-height" .= "1.2em"
 
         "code.sourceCode" ? do
