@@ -153,11 +153,11 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
   "body" ? do
     -- Text style and general layout
     "background" .= "#ffffff"
-    "color" .= "#2e3436"
+    "color" .= "rgba(0,0,0,.84)"
 
     -- "font-family" .= "georgia,Arial,'Helvetica Neue','Helvetica',sans-serif"
     "font-family" .= "'Open Sans', sans-serif"
-    "font-size" .= "17px"
+    "font-size" .= "16px"
     "line-height" .= "1.6em"
     "text-rendering" .= "optimizeLegibility"
 
