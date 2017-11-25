@@ -46,7 +46,7 @@ import Control.Concurrent.MVar (newMVar, withMVar)
 import Control.Monad (foldM_, foldM)
 import System.FilePath (takeExtension, takeBaseName)
 import Text.Printf (printf)
-import Data.List (sortBy)
+import Data.List (sortBy, groupBy, head)
 import Data.Function (on)
 import System.Environment (getArgs, lookupEnv)
 import qualified Data.Map as M
@@ -148,7 +148,11 @@ cssFont = H.style $ H.text $ [text|
 -- TODO: Make responsive and test for:
 -- 320px, 768px, 1024px
 css :: H.Html
-css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
+css = H.style $ H.text $ renderCSSWith compressed $
+  -- "div.blogIndex" ? do
+  --   "padding" .= "0"
+  --   "margin" .= "0"
+
   -- Style body
   "body" ? do
     -- Text style and general layout
@@ -157,12 +161,9 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
 
     -- "font-family" .= "georgia,Arial,'Helvetica Neue','Helvetica',sans-serif"
     "font-family" .= "'Open Sans', sans-serif"
-    "font-size" .= "16px"
+    "font-size" .= "17px"
     "line-height" .= "1.6em"
     "text-rendering" .= "optimizeLegibility"
-
-    -- TODO - how to use that properly?
-    "hyphens" .= "auto"
 
     "margin" .= "0 auto"
     "max-width" .= "40em"
@@ -171,13 +172,17 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
     -- Style Blog Header
     "header" ? do
       "border-bottom" .= "thin solid #d3d7cf"
+      "margin-bottom" .= "15px"
+      "padding-bottom" .= "30px"
+      "padding-top" .= "25px"
+
       -- margin-bottom: 30px;
       -- padding: 12px 0px 12px 0px;
 
       "h1" ? do
         "font" .= "inherit"
         "font-size" .= "2.5em"
-        "line-height" .= "3em"
+        "line-height" .= "2.5em"
         "text-align" .= "center"
 
       "a" ? do
@@ -236,7 +241,11 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
 
       "ul.index" ? do
         "list-style" .= "none"
-        "padding-left" .= "1em"
+        "margin-top" .= "1em"
+        "margin-bottom" .= "1em"
+        "margin-left" .= "0"
+        "margin-right" .= "0"
+        "padding-left" .= "0"
 
       "div.comments" ? do
         "margin-top" .= "2rem"
@@ -308,6 +317,9 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
           "text-decoration" .= "none"
 
       "article" ? do
+        "p" ? do
+          "hyphens" .= "auto"
+
         "a" ? do
           "color" .= "#3465a4"
           "text-decoration" .= "none"
@@ -318,7 +330,7 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
         "h2" ? do
           "font-size" .= "1.3em"
           "line-height" .= "1.2em"
-          "margin" .= "1.5em 0px 0px 0px"
+          "margin" .= "1em 0px 0px 0px"
 
         ".figure" ? do
           "text-align" .= "center"
@@ -345,7 +357,7 @@ css = H.style $ H.text $ renderCSSWith compressed $ -- use compressed
         "code" ? do
           "font-family" .= "Inconsolata"
           "background-color" .= "#f3f4f5"
-          "font-size" .= "16px"
+          "font-size" .= "17px"
           "line-height" .= "1.2em"
 
         "code.sourceCode" ? do
@@ -480,7 +492,6 @@ defaultTemplate title math post = H.docTypeHtml H.! A.lang "en" H.! A.dir "ltr" 
   H.body $ do
     H.header $ H.h1 $ H.a H.! A.href "../" $ H.span "Simplex Sigillum Veri"
     H.main $ do
-      H.h1 $ H.string title
       post
 
 
@@ -513,6 +524,7 @@ greenAnalytics =
 
 postTemplate :: H.Html -> Post -> H.Html
 postTemplate html Post { title, url, date, math, readingTime, comments, issue } = defaultTemplate title math $ do
+  H.h1 $ H.string title
   H.section H.! A.class_ "header" $ H.div $ do
     H.string date
     H.string " | "
@@ -752,14 +764,23 @@ serveSite logging = do
 
 generateIndex :: [Post] -> H.Html
 generateIndex posts = indexTemplate $
-  H.ul H.! A.class_ "index" $ mconcat [
-    H.li $ do
-      H.img H.! A.class_ "logo" H.! A.src (H.stringValue logo)
-      H.a H.! A.href (H.stringValue url) $ H.string title
-      H.string " - "
-      H.string date
-      | Post { url, title, date, logo } <- sortBy (flip compare `on` date) posts
+  H.div H.! A.class_ "blogIndex" $ mconcat [
+    indexYear ps | ps <- groupBy sameYear $ sortBy (flip compare `on` date) posts
   ]
+  where
+    sameYear p1 p2
+      | take 4 (date p1) == take 4 (date p2) = True
+      | otherwise = False
+    indexYear posts =
+      H.div $ do
+        H.h2 $ H.string $ take 4 $ date $ head posts
+        H.ul H.! A.class_ "index" $ mconcat . map indexEntry $ posts
+    indexEntry Post { url, title, date, logo } =
+      H.li $ do
+        H.img H.! A.class_ "logo" H.! A.src (H.stringValue logo)
+        H.a H.! A.href (H.stringValue url) $ H.string title
+        H.string " - "
+        H.string date
 
 -- Keep track of the current posts in the blog
 type Blog = M.Map FilePath Post

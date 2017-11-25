@@ -100,3 +100,11 @@ Concat all the things!!
 > '42'.concat([], {}, 'foo', 42, null, undefined)
 '42[object Object]foo42nullundefined'
 ```
+
+`replace` only replaces the first occurrence:
+```javascript
+> 'foo+bar+baz'.replace('+', ' ')
+'foo bar+baz'
+```
+
+WAT.
