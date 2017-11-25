@@ -3,6 +3,7 @@ title: The wrong way of benchmarking integer comparison functions
 date: 2017-11-25
 logo: v8
 lang: en
+issue: 4
 ---
 
 I recently stumbled upon [an article](https://blogs.msdn.microsoft.com/oldnewthing/20171117-00/?p=97416),
