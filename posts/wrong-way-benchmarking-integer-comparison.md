@@ -143,3 +143,6 @@ And...
 It happens that the naive `compare1` is a bit faster than `compare2`.
 It's not day and night, but the *naive*, more readable code is more
 efficient on V8 than the clever one.
+
+The complete version of the code used in this [available
+there]('/snippets/compare-benchmark.js')

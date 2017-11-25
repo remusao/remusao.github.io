@@ -30,6 +30,7 @@ script:
   - mv posts/*.html _site/posts/
   - cp -fr images/ _site/
   - cp -fr fonts/ _site/
+  - cp -fr snippets/ _site/
 
 deploy:
   provider: pages
