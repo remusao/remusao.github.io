@@ -578,6 +578,7 @@ getDocumentLogo (Pandoc meta _) =
     getIcon "pi"        = "/images/pi.svg"
     getIcon "python"    = "/images/python.svg"
     getIcon "raspberry" = "/images/raspberry-pi.svg"
+    getIcon "v8"        = "/images/v8.svg"
     getIcon "xmonad"    = "/images/xmonad.svg"
     getIcon _           = "/images/haskell.svg"
 
