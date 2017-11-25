@@ -6,6 +6,11 @@ lang: en
 issue: 4
 ---
 
+*TL;DR*: Naive code can sometimes run faster than "clever" code. Compilers are
+usually designed to optimize for the most common code, and common code is not
+clever. Lessons learned; if you try to write clever code, benchmark it to make
+sure there is a benefit.
+
 I recently stumbled upon [an article](https://blogs.msdn.microsoft.com/oldnewthing/20171117-00/?p=97416),
 describing how trying to out-smart the compiler can result in bad
 performances compared to more naive code. The benchmark is about finding
