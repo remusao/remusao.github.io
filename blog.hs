@@ -1,17 +1,4 @@
 #! /usr/bin/env stack
-{-
-stack --resolver lts-9.14 --install-ghc runghc
-  --package Glob
-  --package async
-  --package blaze-html
-  --package fsnotify
-  --package github-0.18
-  --package neat-interpolation
-  --package pandoc
-  --package stitch
-  --package uri-encode
-  --package wai-app-static
--}
 
 {-
 TODO:
@@ -39,7 +26,7 @@ TODO:
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-import Debug.Trace
+import qualified Debug.Trace as D
 
 import Control.Concurrent.Chan (Chan, newChan, getChanContents)
 import Control.Concurrent.MVar (newMVar, withMVar)
@@ -48,11 +35,11 @@ import System.FilePath (takeExtension, takeBaseName)
 import Text.Printf (printf)
 import Data.List (sortBy, groupBy, head)
 import Data.Function (on)
-import System.Environment (getArgs, lookupEnv)
+import qualified System.Environment as E
 import qualified Data.Map as M
 
 import "filemanip" System.FilePath.Glob (namesMatching)
-import Data.Time.Clock (getCurrentTime)
+import qualified Data.Time.Clock as T
 
 import Network.URI.Encode (encode)
 
@@ -83,7 +70,8 @@ import qualified GitHub.Endpoints.Issues.Comments as Github
 import GitHub.Data.Issues
 import GitHub.Data.Id
 import Data.ByteString.Char8 (pack)
-import Data.Text (unpack)
+import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
 import GitHub.Data.Definitions
 import GitHub.Data.Name
 import GitHub.Data.URL (getUrl)
@@ -92,14 +80,14 @@ import GHC.Exts (toList)
 import NeatInterpolation (text)
 
 
-blogDomain :: String
+blogDomain :: T.Text
 blogDomain = "https://remusao.github.io/"
 
-blogTitle :: String
+blogTitle :: T.Text
 blogTitle = "Simplex Sigillum Veri"
 
 
-blogDescription :: String
+blogDescription :: T.Text
 blogDescription = blogTitle
 
 cssFont :: H.Html
@@ -414,13 +402,13 @@ css = H.style $ H.text $ renderCSSWith compressed $
 
 
 data Sharing = Sharing
-  { href :: String
-  , alt :: String
-  , img :: String
+  { href :: T.Text
+  , alt :: T.Text
+  , img :: T.Text
   }
 
 
-sharing :: String -> String -> H.Html
+sharing :: T.Text -> T.Text -> H.Html
 sharing url title = H.ul $ mconcat $ map button [
     Sharing {
         href = "https://www.facebook.com/sharer/sharer.php?u=%s&t=%s"
@@ -449,21 +437,21 @@ sharing url title = H.ul $ mconcat $ map button [
     }
   ]
   where
-    urlEncoded = encode url
-    titleEncoded = encode title
+    urlEncoded = encode $ T.unpack url
+    titleEncoded = encode $ T.unpack title
     button Sharing { href, alt, img } =
       H.li $ H.a
-        H.! A.href (H.stringValue $ printf href urlEncoded titleEncoded)
-        H.! A.title (H.stringValue alt)
+        H.! A.href (H.stringValue $ printf (T.unpack href) urlEncoded titleEncoded)
+        H.! A.title (H.textValue alt)
         H.! A.target "_blank" H.! A.rel "noopener noreferrer" $
           H.img
-            H.! A.alt (H.stringValue alt)
-            H.! A.src (H.stringValue $ "/images/social_flat_rounded_rects_svg/" ++ img)
+            H.! A.alt (H.textValue alt)
+            H.! A.src (H.textValue $ T.concat ["/images/social_flat_rounded_rects_svg/", img])
 
 
 -- TODO: Change the language of the page depending on the post
 -- TODO: open graph tags (Facebook + Twitter)
-defaultTemplate :: String -> Bool -> H.Html -> H.Html
+defaultTemplate :: T.Text -> Bool -> H.Html -> H.Html
 defaultTemplate title math post = H.docTypeHtml H.! A.lang "en" H.! A.dir "ltr" $ do
   H.head $ do
     -- Set character encoding for the document
@@ -473,13 +461,13 @@ defaultTemplate title math post = H.docTypeHtml H.! A.lang "en" H.! A.dir "ltr" 
     -- Viewport for responsive web design
     H.meta H.! A.name "viewport" H.! A.content "width=device-width, initial-scale=1"
     -- Meta Description
-    H.meta H.! A.name "description" H.! A.content (H.stringValue blogDescription)
+    H.meta H.! A.name "description" H.! A.content (H.textValue blogDescription)
     -- Declare favicon TODO: use png + 32x32px
     H.link H.! A.rel "icon" H.! A.type_ "image/x-icon" H.! A.href "/images/favicon.ico"
     -- Apple Touch Icon TODO: use png + 200x200px
     H.link H.! A.rel "apple-touch-icon" H.! A.href "/images/favicon.ico"
 
-    H.title $ H.string $ blogTitle ++ " - " ++ title
+    H.title $ H.text $ T.concat [blogTitle, " - ", title]
 
     -- Inline CSS
     cssFont
@@ -524,7 +512,7 @@ greenAnalytics =
 
 postTemplate :: H.Html -> Post -> H.Html
 postTemplate html Post { title, url, date, math, readingTime, comments, issue } = defaultTemplate title math $ do
-  H.h1 $ H.string title
+  H.h1 $ H.text title
   H.section H.! A.class_ "header" $ H.div $ do
     H.string date
     H.string " | "
@@ -536,7 +524,7 @@ postTemplate html Post { title, url, date, math, readingTime, comments, issue } 
       Just number ->
         commentsTemplate number comments
   H.footer $ do
-    H.div H.! A.class_ "share" $ sharing (printf "%s%s" blogDomain url) title
+    H.div H.! A.class_ "share" $ sharing (T.concat [blogDomain, T.pack url]) title
     -- TODO
     -- greenAnalytics
 
@@ -584,10 +572,10 @@ getDocumentLogo (Pandoc meta _) =
 
 
 data Comment = Comment
-  { content :: String
-  , commentAuthor :: String
-  , commentUrl :: String
-  , commentDate :: String
+  { content :: T.Text
+  , commentAuthor :: T.Text
+  , commentUrl :: T.Text
+  , commentDate :: T.Text
   }
   deriving (Show)
 
@@ -626,23 +614,19 @@ commentsTemplate issue comments =
     commentTemplate Comment{ content, commentAuthor, commentUrl, commentDate } =
       H.li H.! A.class_ "comment" $ H.div $ do
         H.span H.! A.class_ "meta" $ do
-          H.span H.! A.class_ "author" $ H.string commentAuthor
+          H.span H.! A.class_ "author" $ H.text commentAuthor
           H.string " - "
           H.a
-            H.! A.href (H.stringValue commentUrl)
-            H.! A.title (H.stringValue commentUrl)
-            H.! A.target "_blank" H.! A.rel "noopener noreferrer" $ H.string commentDate
+            H.! A.href (H.textValue commentUrl)
+            H.! A.title (H.textValue commentUrl)
+            H.! A.target "_blank" H.! A.rel "noopener noreferrer" $ H.text commentDate
         H.div H.! A.class_ "content"$
           case markdownToHtml content of
             Nothing -> H.string "PARSING ERROR" -- content
             Just html -> html
 
-
-stripCR :: String -> String
-stripCR [] = []
-stripCR ('\r':xs) = stripCR xs
-stripCR (x:xs) = x : stripCR xs
-
+stripCR :: T.Text -> T.Text
+stripCR = T.concat . T.splitOn "\r"
 
 fetchComments :: Maybe Github.Auth -> Maybe Int -> IO [Comment]
 fetchComments _ Nothing = return []
@@ -657,10 +641,10 @@ fetchComments oauth (Just issue) = do
     toComment IssueComment { issueCommentUser, issueCommentHtmlUrl, issueCommentCreatedAt, issueCommentBody } =
       let N user = simpleUserLogin issueCommentUser
       in Comment {
-        content = stripCR . unpack $ issueCommentBody,
-        commentAuthor = unpack user,
-        commentUrl = unpack . getUrl $ issueCommentHtmlUrl,
-        commentDate = show issueCommentCreatedAt
+        content = stripCR issueCommentBody,
+        commentAuthor = user,
+        commentUrl = getUrl issueCommentHtmlUrl,
+        commentDate = T.pack $ show issueCommentCreatedAt
       }
 
 
@@ -682,7 +666,7 @@ data Post = Post
   , math :: Bool
   , pandoc :: Pandoc
   , readingTime :: Int
-  , title :: String
+  , title :: T.Text
   , url :: String
   } deriving Show
 
@@ -696,40 +680,42 @@ hasMath = not . null . query collectMath
 
 readerOpt :: ReaderOptions
 readerOpt = def
-  { readerSmart = True
-  }
+  -- { readerSmart = True
+  -- }
 
 
 writerOpt :: WriterOptions
 writerOpt = def
   { writerTableOfContents = True
-  , writerHTMLMathMethod = KaTeX "./katex/katex.css" "./katex/katex.js"
+  , writerHTMLMathMethod = KaTeX "./katex/"
   , writerNumberSections = True
   , writerNumberOffset = [1]
   , writerEmailObfuscation = JavascriptObfuscation
   , writerCiteMethod = Citeproc
-  , writerHtml5 = True
-  , writerHighlight = True
   , writerTOCDepth = 1
   }
 
 
-parseMarkdownToHtml :: String -> Maybe Pandoc
+parseMarkdownToHtml :: T.Text -> Maybe Pandoc
 parseMarkdownToHtml content =
-  case readMarkdown readerOpt content of
-    Left _ -> Nothing
+  -- TODO: readCommonMark?
+  case runPure (readMarkdown readerOpt content) of
+    Left e -> D.traceShow e Nothing
     Right pandoc -> Just pandoc
 
 
 compileHtml :: Pandoc -> H.Html
-compileHtml p = trace (show p) $  writeHtml writerOpt p
+compileHtml p =
+  case runPure (writeHtml5 writerOpt p) of
+    Left e -> D.traceShow e ""
+    Right h -> h
 
 
-markdownToHtml :: String -> Maybe H.Html
+markdownToHtml :: T.Text -> Maybe H.Html
 markdownToHtml content = fmap compileHtml (parseMarkdownToHtml content)
 
 
-generatePost :: Context -> String -> String -> IO (Maybe Post)
+generatePost :: Context -> T.Text -> String -> IO (Maybe Post)
 generatePost Context { token } content url =
   case parseMarkdownToHtml content of
     Nothing -> return Nothing
@@ -739,7 +725,7 @@ generatePost Context { token } content url =
       let logo = getDocumentLogo parsed
       let math = hasMath parsed
       let readingTime = getApproxReadingTime parsed
-      let title = getDocumentTitle parsed
+      let title = T.pack $ getDocumentTitle parsed
       let issue = getDocumentIssue parsed
       comments <- fetchComments token issue
       print comments
@@ -779,7 +765,7 @@ generateIndex posts = indexTemplate $
     indexEntry Post { url, title, date, logo } =
       H.li $ do
         H.img H.! A.class_ "logo" H.! A.src (H.stringValue logo)
-        H.a H.! A.href (H.stringValue url) $ H.string title
+        H.a H.! A.href (H.stringValue url) $ H.text title
         H.string " - "
         H.string date
 
@@ -816,12 +802,12 @@ updateSite logging context@Context{ blog, token } newFiles = do
         let name = takeBaseName f
         let output = "posts/" ++ name ++ ".html"
         logging $ printf "Generating %s..." output
-        content <- readFile f
+        content <- TIO.readFile f
         result <- generatePost context content output
         case result of
           Nothing -> return b
           Just post -> do
-            writeFile output $ B.renderHtml $ postTemplate (writeHtml writerOpt $ pandoc post) post
+            writeFile output $ B.renderHtml $ postTemplate (compileHtml $ pandoc post) post
             return $ M.alter (
               \case
                 Nothing -> Just post
@@ -853,18 +839,18 @@ main = do
   let logging str = withMVar lock (\_ -> putStrLn str)
 
   -- Create list of posts
-  now <- getCurrentTime
+  now <- T.getCurrentTime
   files <- namesMatching "./posts/*.md"
 
   -- Get Github Token from env
-  token <- lookupEnv "GITHUB_TOKEN"
+  token <- E.lookupEnv "GITHUB_TOKEN"
   let auth = fmap (Github.OAuth . pack) token
   print auth
 
   -- Init blog with all posts
   context <- updateSite logging Context { token = auth, blog = M.empty } $ fmap (`Added` now) files
 
-  programArgs <- getArgs
+  programArgs <- E.getArgs
 
   case programArgs of
     ["serve"] -> do
