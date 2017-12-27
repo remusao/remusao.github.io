@@ -569,6 +569,7 @@ getDocumentLogo (Pandoc meta _) =
     defaultIcon = getIcon ""
 
     getIcon "c++"       = "/images/cpp.svg"
+    getIcon "ccc"       = "/images/ccc.svg"
     getIcon "hashcode"  = "/images/hashcode.png"
     getIcon "haskell"   = "/images/haskell.svg"
     getIcon "html5"     = "/images/html5.svg"
