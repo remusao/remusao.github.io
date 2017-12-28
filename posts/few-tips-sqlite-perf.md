@@ -4,6 +4,7 @@ title: Getting the Most out of Sqlite3 with Python
 date: 2017-10-21
 logo: python
 lang: en
+issue: 8
 ---
 
 I've recently made heavy use of `sqlite3` for a project involving a lot of data
@@ -104,7 +105,7 @@ connection.executemany(
 )
 
 # Print inserted rows
-for row in connnection.execute('SELECT * FROM events'):
+for row in connection.execute('SELECT * FROM events'):
     print(row)
 ```
 
