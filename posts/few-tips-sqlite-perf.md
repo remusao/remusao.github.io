@@ -84,7 +84,7 @@ the `connection` object (it is mentioned at the
 [end of the documentation](https://docs.python.org/3.6/library/sqlite3.html#using-shortcut-methods)).
 
 Operations such as `execute` and `executemany` can be called directly on the
-connection. Here is an example to demonstrate that:
+connection and *will return a cursor*. Here is an example to demonstrate that:
 
 ```python
 import sqlite3
@@ -170,10 +170,12 @@ program. In particular, one that could improve the performance is `synchronous`:
 connection.execute('PRAGMA synchronous = OFF')
 ```
 
-You should be aware though that this can be dangerous. If the application
+You should be aware though that this can *be dangerous*. If the application
 crashes unexpectedly in the middle of a transaction, the database will probably
 be left in an inconsistent state. So use with care! But if you want to insert a
-lot of rows faster, that can be an option.
+lot of rows faster, that can be an option. A safer option is to use the
+[`WAL`](https://www.sqlite.org/draft/wal.html) option instead of disabling
+`synchronous` completely.
 
 ## Postpone Index Creation
 
@@ -210,3 +212,18 @@ Keep in mind though that these tips might or might not give you a benefit,
 depending on your specific use-case. You should always try for yourself and
 decide if it's worth it or not.
 
+*Edit 28-12-2017*: Thanks for all the great feedback from [Reddit](https://www.reddit.com/r/Python/comments/781q18/getting_the_most_out_of_sqlite3_with_python/)
+and [Hacker News](https://news.ycombinator.com/item?id=15525715).
+I took the liberty to amend the original article with a few of the suggestions.
+
+There are a few topics that were not mentioned in this article but are
+definitely worth reading:
+
+* [Using transactions](https://docs.python.org/3.6/library/sqlite3.html#controlling-transactions)
+  can dramatically improve the speed of your code if you need to run several
+  SQL statements in a row (it should not be needed if you use `executemany`).
+* If you don't need to re-use your database across sessions, you can use an
+  [*in-memory*](https://sqlite.org/inmemorydb.html) database by specifying
+  `:memory:` as a location, which should give you a nice speed-up.
+* You can [customize `row_factory`](https://docs.python.org/3.6/library/sqlite3.html#sqlite3.Connection.row_factory)
+  to get something more useful than `tuple`s as results from `SELECT` queries.
