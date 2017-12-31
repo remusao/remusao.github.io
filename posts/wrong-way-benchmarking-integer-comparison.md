@@ -1,5 +1,5 @@
 ---
-title: The wrong way of benchmarking integer comparison functions
+title: The Wrong Way of Benchmarking Integer Comparison Functions
 date: 2017-11-25
 logo: v8
 lang: en
@@ -145,4 +145,4 @@ It's not day and night, but the *naive*, more readable code is more
 efficient on V8 than the clever one.
 
 The complete version of the code used in this [available
-there]('/snippets/compare-benchmark.js')
+there](/snippets/compare-benchmark.js)
