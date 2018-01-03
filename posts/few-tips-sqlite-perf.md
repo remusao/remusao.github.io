@@ -177,6 +177,10 @@ lot of rows faster, that can be an option. A safer option is to use the
 [`WAL`](https://www.sqlite.org/draft/wal.html) option instead of disabling
 `synchronous` completely.
 
+```python
+connection.execute('PRAGMA journal_mode = WAL')
+```
+
 ## Postpone Index Creation
 
 Let's say you need a few indices on your database, and you also need to
@@ -227,3 +231,4 @@ definitely worth reading:
   `:memory:` as a location, which should give you a nice speed-up.
 * You can [customize `row_factory`](https://docs.python.org/3.6/library/sqlite3.html#sqlite3.Connection.row_factory)
   to get something more useful than `tuple`s as results from `SELECT` queries.
+* Consider changing `isolation_level` to `DEFERRED` or `IMMEDIATE`.
