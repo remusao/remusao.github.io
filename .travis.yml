@@ -23,7 +23,7 @@ branches:
     - diy
 
 script:
-  - travis_wait 180 stack --no-terminal blog.hs
+  - travis_wait 600 stack --no-terminal blog.hs
   - rm -fr _site
   - mkdir -p _site/posts/
   - mv index.html _site/
