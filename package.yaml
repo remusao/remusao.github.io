@@ -1,0 +1,76 @@
+name:                blogio
+version:             0.1.0.0
+github:              "remusao/remusao.github.io"
+license:             BSD3
+author:              "Rémi B."
+maintainer:          "remi@cliqz.com"
+copyright:           "2018 Rémi B."
+
+synopsis:            My custom static blog generator
+category:            Web
+
+description:         Please see the README on Github at <https://github.com/remusao/remusao.github.io#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+ghc-options:
+  - -O2
+  - -Wcompat
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wredundant-constraints
+  - -Werror
+  - -fwarn-unused-binds
+  - -fwarn-unused-imports
+
+default-extensions:
+  - LambdaCase
+  - NamedFieldPuns
+  - OverloadedStrings
+  - PackageImports
+  - QuasiQuotes
+  - DuplicateRecordFields
+
+executable:
+  main: Main.hs
+  ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+  dependencies:
+    - blogio
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Blog
+  other-modules:
+    - Blog.Comments
+    - Blog.Config
+    - Blog.Css
+    - Blog.Index
+    - Blog.Markdown
+    - Blog.Post
+    - Blog.Serve
+    - Blog.Sharing
+    - Blog.Template
+    - Blog.Types
+  dependencies:
+    - async
+    - blaze-html
+    - bytestring
+    - containers
+    - filemanip
+    - filepath
+    - fsnotify
+    - github
+    - neat-interpolation
+    - pandoc
+    - pandoc-types
+    - stitch
+    - text
+    - time
+    - uri-encode
+    - wai-app-static
+    - warp

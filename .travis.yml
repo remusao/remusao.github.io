@@ -4,6 +4,7 @@ language: generic
 
 # Caching so the next build will be fast too.
 cache:
+  timeout: 3600
   directories:
   - $HOME/.stack
 
@@ -23,7 +24,10 @@ branches:
     - diy
 
 script:
-  - travis_wait 600 stack --no-terminal blog.hs
+  - travis_wait 3600 stack build
+  - curl -sL https://raw.github.com/ndmitchell/weeder/master/misc/travis.sh | sh -s .
+  - curl -sL https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh | sh -s .
+  - stack exec -- blogio
   - rm -fr _site
   - mkdir -p _site/posts/
   - mv index.html _site/
