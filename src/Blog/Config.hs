@@ -11,5 +11,3 @@ blogTitle = "Simplex Sigillum Veri"
 
 blogDescription :: Text.Text
 blogDescription = blogTitle
-
-

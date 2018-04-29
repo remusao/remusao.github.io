@@ -1,7 +1,6 @@
 module Blog.Post (new, toHtml, Post(..)) where
 
 import Data.Monoid ((<>))
-import qualified Debug.Trace as Debug
 
 import Text.Pandoc
 import Text.Pandoc.Walk (query)
@@ -119,8 +118,6 @@ new content url = do
   let readingTime = getApproxReadingTime pandoc
   let title = getDocumentTitle pandoc
   let issue = getDocumentIssue pandoc
-
-  Debug.traceIO $ show issue
 
   comments <- Comments.new issue
 

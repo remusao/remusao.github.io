@@ -85,7 +85,6 @@ fetchComments issue = do
   -- Get Github Token from env if available
   token <- Environment.lookupEnv "GITHUB_TOKEN"
   let oauth = fmap (Github.OAuth . pack) token
-  print oauth
 
   result <- Github.comments' oauth "remusao" "remusao.github.io" (Id issue)
   case result of
