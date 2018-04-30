@@ -7,6 +7,7 @@ cache:
   timeout: 3600
   directories:
   - $HOME/.stack
+  - .stack-work
 
 addons:
   apt:
@@ -34,6 +35,7 @@ script:
   - cp -fr fonts/ _site/
   - cp -fr snippets/ _site/
   - cp -fr experiments/ _site/
+  - cp -fr katex/ _site/
 
 deploy:
   provider: pages
