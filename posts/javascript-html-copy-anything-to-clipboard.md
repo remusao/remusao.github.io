@@ -14,31 +14,32 @@ here.
 The way this will work is as follows: when clicking an element on the page, its
 `innerText` will be copied to Clipboard. To achieve this we will need to:
 
-1. Attach an `onclick` event listener to our element (or to several elements)
-2. When a `click` event is received, emit a fake `copy` event
-3. Listen to this `copy` event and copy the content of the latest element
-   clicked to clipboard.
+* Attach an `onclick` event listener to our element (or to several elements)
+* When a `click` event is received, emit a fake `copy` event
 
-
-Here is the resulting Javascript code:
 ```javascript
   // This variable will be used to store a reference to the
   // latest element clicked.
   let selected = null;
 
-  // Attach our custom copy-to-clipboard-on-click trick
-  function attachCopyToClipboard(element) {
-    elt.onclick = () => {
-      // Store reference to this element in the global `selected`
-      selected = elt;
-      // Emit fake `copy` event
-      document.execCommand('copy');
-      // Remove reference from `selected` to allow normal copies
-      // to be performed on the page.
-      setTimeout(() => { selected = null; }, 1000);
-    };
-  }
+  // Attach our custom copy-to-clipboard-on-click trick to `elt`
+  const elt = document.querySelector('...');
+  elt.onclick = () => {
+    // Store reference to this element in the global `selected`
+    selected = elt;
+    // Emit fake `copy` event
+    document.execCommand('copy');
+    // Remove reference from `selected` to allow normal copies
+    // to be performed on the page.
+    setTimeout(() => { selected = null; }, 1000);
+  };
+```
 
+* Listen to this `copy` event and copy the content of the latest element
+   clicked to clipboard.
+
+
+```javascript
   // Intercept copy events
   document.addEventListener('copy', (e) => {
     if (selected === null) {
@@ -57,6 +58,4 @@ Here is the resulting Javascript code:
     e.preventDefault();
   });
 
-
-  attachCopyToClipboard(document.querySelector('...'));
 ```
