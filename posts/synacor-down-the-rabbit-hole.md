@@ -1,15 +1,17 @@
 ---
 title: Synacor - Down the Rabbit Hole
 date: 2018-06-10
-logo: haskell
+logo: synacor 
+issue: 14
 lang: en
 ---
 
-This year I had the chance to participate in the 2017 edition of Advent
-of Code. That was the first time and I *really* enjoyed it. Having to
-solve an interesting problem, every day, made me learn a lot! It's also
-a good occasion to practice some skills that might not be otherwise
-useful in your daily job (and more importantly: have fun!).
+Last year I had the chance to participate in the 2017 edition of [Advent
+of Code](https://adventofcode.com/). That was the first time and I
+*really* enjoyed it. Having to solve an interesting problem, every
+day, made me learn a lot! It's also a good occasion to practice some
+skills that might not be otherwise useful in your daily job (and more
+importantly: have fun!).
 
 While skimming through the discussions on Reddit about possible
 solutions to one of the AoC's problems, someone mentioned "Synacor"... I
@@ -17,12 +19,14 @@ never heard of it before, but from what I understood it was some kind of
 programming challenge. I did not need more to have a look:
 [challenge.synacor.com](https://challenge.synacor.com).
 
+# The Challenge
+
 The challenge is briefly introduced, the competition took place during
 two conferences in the past and is now over. But you can still download
 the material of the challenge and try to solve it.
 
-After registering an email address and a password, I could download an :
-archive `synacor-challenge.tgz`. Uncompressed, it contains two files   :
+After registering an email address and a password, I could download an
+archive `synacor-challenge.tgz`. Uncompressed, it contains two files :
 
 1. `arch-spec`
 2. `challenge.bin`
@@ -57,6 +61,8 @@ data Synacor = Synacor
   }
 ```
 
+# First Results
+
 After implementing most of the instructions, I tried to run the program:
 
 > Welcome to the Synacor Challenge! Please record your progress by
@@ -76,12 +82,14 @@ trial, error, fix, I completed my implementation until...
 Youpi! All good... but, wait, something else was displayed on the terminal:
 
 
-**DISCLAIMER**: The following of this post contains spoilers and parts
-of solutions for the Synacor challenge. Please only proceed if you
+**DISCLAIMER**: The next section of this post contains spoilers and
+parts of solutions for the Synacor challenge. Please only proceed if you
 already solved the challenge, or do not intend to do so.
 
 ...
 
+
+# Riddles in the Dark
 
 > == Foothills ==
 > You find yourself standing at the base of an enormous mountain. At its
@@ -97,7 +105,7 @@ already solved the challenge, or do not intend to do so.
 >
 > What do you do?
 
-Mind blown. The program you are running is actually a terminal-based
+*Mind blown*. The program you are running is actually a terminal-based
 RPG! How cool is that? Well, very cool, and very smart. I clearly did
 not expect that from the challenge. It's a bit like trying to open a
 chess (the chess is a program and the virtual machine is the key) and
@@ -130,7 +138,7 @@ anyways, but we never know.
 The second approach was the most promising and allowed me to discover a few more
 codes. Here is how it worked:
 
-1. I modified the virtual machine implementation so that it is 100%
+**First step** -- I modified the virtual machine implementation so that it's 100%
 pure code with no side-effect. The execution now consists in a function
 `execNextOpCode` which takes as input the state of the program, runs the
 next opcode of the program, then returns a "continuation" which can be
@@ -145,10 +153,27 @@ one of:
 
 The nice thing with this model, is that running an opcode does not alter
 the state of the virtual machine, but instead returns a new virtual
-machine (copy of the initial state). This might sound crazy, but it's not as
+machine (copy of the initial state). This might seem crazy, but it's not as
 inefficient as it sounds (and pretty common in an immutable language like
 Haskell). This allows us to parallelize the execution of different branches of a
 program without having to care about controlling side-effects.
 
-2. Step two
+**Second step** -- write a depth-first search for the game by changing the VM
+execution model in two ways:
 
+1. Each output `PutChar` from the program is stored in an accumulator so that we
+can inspect it later.
+2. Each time a user input is required by the `GetChar` continuation code, we
+   *fork* our execution of the program and perform all possible user actions
+   concurrently: *picking up objects*, *using objects*, *visit available
+   places*.
+3. We need to detect loops to not explore forever (e.g.: when we come back to an
+   already visited location). This is done by comparing the output (accumulated
+   `PutChar` from the program) of a given branch to all previously explored
+   branches. If we already generated the same output once, no need to do it
+   again.
+
+This approach allowed me to discover a few more codes, *but not all*!
+This can mean two things: either not all codes can be discovered through
+the game (likely), or my exploration method is not working as well as it
+should! In both cases, it means I'm not done exploring the rabbit hole...
