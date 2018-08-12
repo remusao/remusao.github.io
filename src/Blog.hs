@@ -22,17 +22,18 @@ import qualified Blog.Index as Index
 import qualified Blog.Post as Post
 import qualified Blog.Serve as Serve
 
+
 -- Keep track of the current posts in the blog
 type Blog = M.Map FilePath Post.Post
 
 getFilePath :: Event -> FilePath
-getFilePath (Added f _) = f
-getFilePath (Modified f _) = f
-getFilePath (Removed f _) = f
+getFilePath (Added f _ _) = f
+getFilePath (Modified f _ _) = f
+getFilePath (Removed f _ _) = f
 
 isFileAltered :: Event -> Bool
-isFileAltered (Added _ _) = True
-isFileAltered (Modified _ _) = True
+isFileAltered Added{} = True
+isFileAltered Modified{} = True
 isFileAltered _ = False
 
 updateSite :: (String -> IO ()) -> Blog -> [Event] -> IO Blog
@@ -92,7 +93,7 @@ initialBuild logging
   now <- Time.getCurrentTime
   files <- namesMatching "./posts/*.md"
   -- Init blog with all posts
-  updateSite logging M.empty $ fmap (`Added` now) files
+  updateSite logging M.empty $ fmap (\f -> Added f now False) files
 
 build :: IO ()
 build = do

@@ -1,4 +1,8 @@
-resolver: lts-11.17
+resolver: lts-12.5
 
 packages:
-- .
+  - .
+
+extra-deps:
+  - github: intolerable/stitch
+    commit: f40b0aa8b9419759f63ef92f4155be29d4647279
