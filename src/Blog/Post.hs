@@ -71,6 +71,7 @@ getDocumentLogo (Pandoc meta _) =
     getIcon "v8"        = "/images/v8.svg"
     getIcon "xmonad"    = "/images/xmonad.svg"
     getIcon "synacor"   = "/images/synacor.ico"
+    getIcon "linux"     = "/images/tux-logo.svg"
     getIcon _           = "/images/haskell.svg"
 
 
