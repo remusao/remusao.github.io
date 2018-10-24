@@ -1,6 +1,5 @@
 module Blog.Sharing (new) where
 
-import Network.URI.Encode (encodeText)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 import Data.Monoid ((<>))
@@ -19,7 +18,7 @@ template :: [Button] -> H.Html
 template sharing = H.ul $ mconcat $ map buttonTemplate $ sharing
   where
     buttonTemplate Button { href, alt, img } = H.li $ H.a
-      H.! A.href (H.textValue $ encodeText href)
+      H.! A.href (H.textValue $ href)
       H.! A.title (H.textValue alt)
       H.! A.target "_blank" H.! A.rel "noopener noreferrer" $
         H.img
