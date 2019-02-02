@@ -26,7 +26,7 @@ What puts [**tldts**](https://github.com/remusao/tldts/) appart from other libra
 
 Most of the features are made possible by the [public suffix
 list](https://publicsuffix.org/) project. But
-[**tldts**](https://github.com/remusao/tldts/) offers some bells and whistle on
+[**tldts**](https://github.com/remusao/tldts/) offers some bells and whistles on
 top. One of the goals is to be *conveniant* to use and as fast as it gets. Some
 libraries require you to provide already-valid hostnames, but
 [**tldts**](https://github.com/remusao/tldts/) has no such constraints and will
