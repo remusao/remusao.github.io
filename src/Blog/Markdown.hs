@@ -13,7 +13,7 @@ extensions = extensionsFromList
   , Ext_emoji
   , Ext_fancy_lists
   , Ext_gfm_auto_identifiers
-  , Ext_grid_tables
+  , Ext_pipe_tables
   , Ext_implicit_figures
   , Ext_inline_notes
   , Ext_latex_macros

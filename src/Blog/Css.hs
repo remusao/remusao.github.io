@@ -129,6 +129,22 @@ cssBase = style $ text $ renderCSSWith compressed $
         "font-style" .= "italic"
         "display" .= "block"
 
+      "table" ? do
+        "border" .= "1px solid #ddd"
+        "border-collapse" .= "collapse"
+        "width" .= "100%"
+
+      "th" ? do
+        "padding" .= "10px"
+        "border" .= "1px solid #ddd"
+
+      "td" ? do
+        "padding" .= "10px"
+        "border" .= "1px solid #ddd"
+
+      "tr:hover" ? do
+         "background-color" .= "#f5f5f5"
+
       "h1" ? do
         "font" .= "inherit"
         "font-size" .= "1.7em"
