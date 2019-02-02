@@ -6,22 +6,32 @@ lang: en
 ---
 
 For quite some time now I've been working on
-[tldts](https://github.com/remusao/tldts/), a *feature-full*, *battle-tested*
-and *extremely fast* JavaScript library for domain parsing. It allows to answer
-questions such has:
-- What's the hostname of an URL
-- What's the registrable domain of an URL or a hostname
-- What's the domain of an email address
-- What's the sub-domain of a domain
+[**tldts**](https://github.com/remusao/tldts/) ([**npm**](https://www.npmjs.com/package/tldts)), an *extemely fast*,
+*feature-full*, *battle-tested* JavaScript library for domain parsing. It
+allows to answer questions such has:
+- What's the hostname of an URL?
+- What's the registrable domain of an URL, a hostname or an email address?
+- What's the sub-domain of a domain?
 - etc.
 
+What puts [**tldts**](https://github.com/remusao/tldts/) appart from other libraries is:
+
+* It is **much faster** than alternatives, allowing to parse between
+  **1 and 2 million** domains per second (that's **up to 1000 times** fastest
+  than other popular libraries).
+* It is more feature-full, supporting *IPs detection*, *domain validation* and *complex URLs parsing*.
+* It offers the smallest bundles, in both `cjs`, `esm` and `umd` formats; it runs *anywhere*.
+* It is written in *TypeScript* and benefits from 100% test coverage.
+
+
 Most of the features are made possible by the [public suffix
-list](https://publicsuffix.org/) project. But `tldts` offers some bells and
-whistle on top. One of the goals is to be *conveniant* to use and as fast as it
-gets. Some libraries require you to provide already-valid hostnames, but
-`tldts` has no such constraints and will happily parse complex URLs, as well as
-already-extracted hostnames. The best part is that this does not come with any
-over-head!
+list](https://publicsuffix.org/) project. But
+[**tldts**](https://github.com/remusao/tldts/) offers some bells and whistle on
+top. One of the goals is to be *conveniant* to use and as fast as it gets. Some
+libraries require you to provide already-valid hostnames, but
+[**tldts**](https://github.com/remusao/tldts/) has no such constraints and will
+happily parse complex URLs, as well as already-extracted hostnames. The best
+part is that this does not come with any over-head!
 
 ```javascript
 const tldts = require('tldts');
@@ -40,8 +50,8 @@ tldts.parse('https://remusao.github.io/posts/tldts-benchmarks.html');
 In this post I'd like to share some results of a performance comparison against
 other available JavaScript libraries offering the same kind of features. We
 will see that they vary greatly in terms of performance, ease of use or
-features. In fact, we observed up to **3 orders of magnitude** differences in
-terms of performance between some of the available libraries and **tldts**!
+features. In fact, we observed that `tldts` is up to **1000 times** faster than
+some of the other libraries!
 
 Before presenting the results, a few words about the instrumentation and what
 was measured. We aim at comparing the libraries in the following aspects:
@@ -84,14 +94,14 @@ The following features are considered:
 
 | Library                 | IDNA | URLs | IPs | getDomain | getPublicSuffix | ICANN/Private | Ships lists |
 |:----------------------- | ----:| ----:| ---:| ---------:| ---------------:| -------------:| -----------:|
-| **tldt**                |    X |    X |   X |         X |               X |             X |           X |
+| **tldts**               |    X |    X |   X |         X |               X |             X |           X |
 | tld.js                  |    X |    X |   X |         X |               X |             X |           X |
 | psl                     |    X |      |     |         X |               X |               |           X |
 | parse-domain            |    X |    X |     |         X |               X |             X |           X |
 | haraka-tld              |    X |    X |     |         X |               X |               |           X |
 | uBlock publicsuffixlist |    ? |      |     |         X |               X |               |             |
 
-# Performance Matrix
+# Performance
 
 Here we measure the performance of three common operations offered by domain
 parsing library: *getting the public suffix* of a hostname, *getting the
@@ -184,7 +194,7 @@ Note that some libraries like `ublock` or `haraka-tld` perform some form of pars
 of the rules at loading-time, which incurs an initial cost when importing the
 library.
 
-# Bundles Matrix
+# Bundles
 
 Comparison of bundle sizes, when applicable (not all libraries provide bundles):
 
@@ -198,7 +208,7 @@ Comparison of bundle sizes, when applicable (not all libraries provide bundles):
 | ublock                 |      ?    |        ?  |       ? |
 | haraka-tld             |      ?    |        ?  |       ? |
 
-# Dependencies Matrix
+# Dependencies
 
 Here is a comparison of dependencies for each library:
 
@@ -214,20 +224,13 @@ Here is a comparison of dependencies for each library:
 
 # Conclusion
 
-We saw that multiple JavaScript libraries exist when it comes to parsing
-domains. From the benchmarks, we observe that `tldts` is consistently
-positionned in the best libraries available. The `tldts-experimental` bundle
-pushes `tldts`'s capabilities even beyond if you are comfortable with a
-probabilistic data-structure (some future work involves studying the
-probability of false-positives).
+=> [**Tldts GitHub repository**](https://github.com/remusao/tldts)
 
-To put it in a nutshell:
+=> [**Tldts on NPM**](https://www.npmjs.com/package/tldts)
 
-* `tldts` is much **faster** than alternative libraries, allowing to parse between **1 and 2 million** domains per second.
-* Is more feature-full, supporting *IPs detection*, *domain validation* and *complex URLs parsing*.
-* Offers the smallest bundles, in both `cjs`, `esm` and `umd` formats.
-* Is written in *TypeScript* and benefits from 100% test coverage.
+```sh
+npm install tldts
+```
 
 If that sounds appealing to you, give it a shot and do not hesite to open
-issues in the [GitHub repository](https://github.com/remusao/tldts) for any
-feedback you might have!
+issues for any feedback you might have!
