@@ -17,7 +17,7 @@ allows to answer questions such has:
 What puts [**tldts**](https://github.com/remusao/tldts/) appart from other libraries is:
 
 * It is **much faster** than alternatives, allowing to parse between
-  **1 and 2 million** domains per second (that's **up to 1000 times** fastest
+  **1 and 2 million** domains per second (that's **up to 1000 times** faster
   than other popular libraries).
 * It is more feature-full, supporting *IPs detection*, *domain validation* and *complex URLs parsing*.
 * It offers the smallest bundles, in both `cjs`, `esm` and `umd` formats; it runs *anywhere*.
