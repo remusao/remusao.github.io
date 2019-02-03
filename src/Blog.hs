@@ -52,11 +52,16 @@ updateSite logging blog newFiles
       | isFileAltered event = do
         let f = getFilePath event
         let name = takeBaseName f
-        let output = "posts/" <> Text.pack name <> ".html"
-        logging $ printf "Generating %s..." output
+        logging $ printf "Generating %s..." f
         content <- TIO.readFile f
+
+        let output = "posts/" <> Text.pack name <> ".html"
         post <- Post.new content output
         writeFile (Text.unpack output) $ B.renderHtml $ Post.toHtml post
+
+        let outputLegacy = "posts/" <> Post.getDate post <> "-" <> Text.pack name <> ".html"
+        writeFile (Text.unpack outputLegacy) $ B.renderHtml $ Post.toHtml post
+
         return $
           M.alter
             (\case
