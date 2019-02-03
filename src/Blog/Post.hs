@@ -36,7 +36,7 @@ collectStr _ = []
 getDocumentIssue :: Pandoc -> Issue
 getDocumentIssue (Pandoc meta _) =
   case lookupMeta "issue" meta of
-    Just (MetaString s) -> Issue . read $ s
+    Just m -> Issue . read $ concat $ query collectStr m
     _ -> None
 
 
