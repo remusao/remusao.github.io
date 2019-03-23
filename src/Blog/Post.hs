@@ -67,6 +67,7 @@ getDocumentLogo (Pandoc meta _) =
     getIcon "ocaml"     = "/images/ocaml.svg"
     getIcon "pi"        = "/images/pi.svg"
     getIcon "python"    = "/images/python.svg"
+    getIcon "cliqz"     = "/images/cliqz.png"
     getIcon "adblock"   = "/images/adblocking.png"
     getIcon "raspberry" = "/images/raspberry-pi.svg"
     getIcon "v8"        = "/images/v8.svg"
