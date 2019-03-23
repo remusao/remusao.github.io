@@ -23,16 +23,16 @@ retention policies.
   this case, we now use a *third-party VPN provider to also hide any
   network-level identifiers like IPs*. We were already providing this
   protection before but we were operating the network of proxies ourselves.
-  What I'm especially excited about this is that now, there is *no way Cliqz
-  can learn anything about who you are using you IP* (because of the
-  third-party VPN relaying the messages); and there is also no way the
-  third-party VPN provider can learn anything about you, because all messages
-  are encrypted client-side!
+  What I'm especially excited about is that now, there is *no way Cliqz can
+  learn anything about who you are using your IP* (because of the third-party
+  VPN relaying the messages); and there is also no way the third-party VPN
+  provider can learn anything about you, because all messages are encrypted
+  client-side!
 
 * **Adblocker**. We wrote about it recently in our [performance study](https://whotracks.me/blog/adblockers_performance_study.html)
   in the context of Manifest v3; *Cliqz has the fastest and most memory
   efficient adblocker around* and we are very proud of it. In this release we
-  made sure that the latest improvements are included in browser: blocking ads
+  made sure that the latest improvements are included in the browser: blocking ads
   was never faster!
 
 <figure>
@@ -67,7 +67,7 @@ well.
   you browser the web, Cliqz needs to analyze and filter *a lot* of URLs (to
   load a single page, it can go up to hundreds of network requests). Because
   this represents a lot of work, it was a good candidate for optimization. My
-  co-worker [@sammacbeth](https://twitter.com/sammacbeth) did a fantastic job
+  co-worker [sammacbeth](https://twitter.com/sammacbeth) did a fantastic job
   and was able to replicate the API of the native URL parser provided by the
   browser: except it's now *4-5x faster*. This means users get the same great
   privacy protection, but the browser sweats less for it!
@@ -109,9 +109,9 @@ trackers.
 I am also super excited with the changes coming to mobile. We've been doing *a
 lot* of performance work to ensure that our mobile browser can run at full
 speed while enabling all privacy protections, even on very slow devices (in
-fact, we're even more aggressive when blocking ads on trackers!).
+fact, we're even more aggressive when blocking ads and trackers!).
 
-In the next release, we have even more coming: the infrastructure distributing
+In the next release, we have more coming: the infrastructure distributing
 adblocker rules has been revamped and allows most of the heavy lifting of
 parsing the rules and initializing the engine to be performed on the backend,
 which means much faster updates for clients as well as drastically reduced data
