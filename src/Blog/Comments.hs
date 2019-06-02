@@ -6,7 +6,6 @@ import qualified System.Environment as Environment
 
 -- Github APIs
 import GitHub.Data.Definitions
-import GitHub.Data.Id
 import GitHub.Data.Issues
 import GitHub.Data.Name
 import GitHub.Data.URL (getUrl)
@@ -86,7 +85,7 @@ fetchComments issue = do
   token <- Environment.lookupEnv "GITHUB_TOKEN"
   let oauth = fmap (Github.OAuth . pack) token
 
-  result <- Github.comments' oauth "remusao" "remusao.github.io" (Id issue)
+  result <- Github.comments' oauth "remusao" "remusao.github.io" (IssueNumber issue)
   case result of
     Left err -> do
       print err

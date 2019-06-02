@@ -1,4 +1,4 @@
-resolver: lts-13.24
+resolver: nightly-2019-06-01
 
 packages:
   - .
@@ -7,4 +7,5 @@ extra-deps:
   - github: intolerable/stitch
     commit: 94b8b708743ac45c1b7d3c9e495143af848ec98f
   - github: phadej/github
-    commit: e8dda550b6de8b16c2a09e46680b9d212c515142
+    commit: 6ab81aabbe9efd259308909656a6c53887333523
+  - binary-instances-1@sha256:e7768b92f34bc40cc5cabecc5c143dee6ab4bcb5eb441d58e15a0b000d64940b
