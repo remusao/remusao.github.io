@@ -25,7 +25,7 @@ branches:
     - diy
 
 script:
-  - travis_wait 20000 stack build --fast
+  - travis_wait 20000 stack build --fast --ghc-options=-O0
   - stack exec -- blogio
   - rm -fr _site
   - mkdir -p _site/posts/
