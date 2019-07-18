@@ -92,6 +92,7 @@ const LOGOS: {
   python: '/images/python.png',
   raspberry: '/images/raspberry-pi.png',
   synacor: '/images/synacor.png',
+  typescript: '/images/typescript.png',
   v8: '/images/v8.png',
   xmonad: '/images/xmonad.png',
 };
@@ -456,13 +457,15 @@ const generator = new Generator();
 
 // Start generating
 chokidar.watch('./posts/*.md', { persistent: ci === false }).on('all', (event, path) => {
-  if (event === 'add') {
+  if (event === 'add' || event === 'change') {
     generator.generate(path);
+  } else {
+    console.log(event, path);
   }
 });
 
 // Serve current folder
-if (process.env.SERVE) {
+if (ci === false) {
   const app = express();
   app.use(compression());
   app.use(serveStatic('.'));

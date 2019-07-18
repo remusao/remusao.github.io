@@ -1,7 +1,7 @@
 ---
 title: TypeScript Performance Tip - Escaping Partial
 date: 2018-09-25
-logo: v8
+logo: typescript
 lang: en
 ---
 

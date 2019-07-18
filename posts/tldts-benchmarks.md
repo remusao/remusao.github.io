@@ -1,7 +1,7 @@
 ---
 title: Fast Domains and URLs Parsing With Tldts
 date: 2019-02-02
-logo: v8
+logo: typescript
 lang: en
 issue: 17
 ---
