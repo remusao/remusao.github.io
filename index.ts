@@ -120,7 +120,7 @@ function getFileName(path: string): string {
 
 function getBaseName(path: string): string {
   const filename = getFileName(path);
-  const lastDotIndex = filename.indexOf('.');
+  const lastDotIndex = filename.lastIndexOf('.');
   if (lastDotIndex === -1) {
     return filename;
   }
