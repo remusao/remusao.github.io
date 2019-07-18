@@ -23,8 +23,8 @@ page you visit (my content blocker extension even blocked a few advertising
 requests).
 
 <figure>
-<a href="/images/static-site-ghostery-trackers.png">
-![Network Monitor](/images/static-site-ghostery-trackers.png){width=60%}
+<a href="../images/static-site-ghostery-trackers.png">
+<img src="../images/static-site-ghostery-trackers.png" alt="Ghostery Trackers" style="width:60.0%">
 </a>
 <figcaption>Advertisers joined the party...</figcaption>
 </figure>
@@ -39,8 +39,8 @@ the *Network Monitor* while loading the page. You will see all the resources
 fetched (which can be scary...).
 
 <figure>
-<a href="/images/network-monitor-tracking.png">
-![Network Monitor](/images/network-monitor-tracking.png){width=70%}
+<a href="../images/network-monitor-tracking.png">
+<img src="../images/network-monitor-tracking.png" alt="Network Monitor" style="width:70.0%">
 </a>
 <figcaption>74 requests seems like a lot for a static page.</figcaption>
 </figure>
@@ -158,7 +158,7 @@ It looks something like that:
 <div style="width:70px; height:55px; background-color:#5BC2F0;display:inline-block;margin:5px;text-align:center;box-sizing:border-box">
 <a target="_blang" href="https://twitter.com/intent/tweet?text=State%20of%20Privacy%20in%20Statically%20Generated%20Blogs&url=https%3A%2F%2Fremusao.github.io%2Fposts%2F2017-10-08-the-state-of-static-blogs.html">
 <p>
-<img class="icon" src="/images/static/social-twitter.svg" style="height:25px">
+<img class="icon" src="../images/social_flat_rounded_rects_svg/Twitter.svg" style="height:25px">
 </p>
 </a>
 </div>

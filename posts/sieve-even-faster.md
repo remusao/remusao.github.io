@@ -1,7 +1,7 @@
 ---
 title: The Sieve, Even faster!
 date: 2011-12-27
-logo: c++
+logo: cpp
 lang: en
 ---
 

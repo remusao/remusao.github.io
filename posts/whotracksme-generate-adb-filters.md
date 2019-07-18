@@ -295,7 +295,7 @@ And here is what we get for example in the `advertising` category:
 print(adb_filters['advertising'])
 ```
 
-> ```
+> ```sh
 > ||doubleclick.com$third-party
 > ||criteo.com$third-party
 > ...
@@ -308,7 +308,7 @@ And the same domains but as `hostname` filters:
 print(hostname_filters['advertising'])
 ```
 
-> ```
+> ```sh
 > 127.0.0.1 doubleclick.com
 > 127.0.0.1 criteo.com
 > ...

@@ -1,4 +1,3 @@
-
 ---
 title: Getting the Most out of Sqlite3 with Python
 date: 2017-10-21

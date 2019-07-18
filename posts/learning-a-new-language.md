@@ -5,8 +5,11 @@ logo: learning
 lang: en
 ---
 
-![](/images/learning.png){width=80%}
-
+<figure>
+<a href="../images/learning.png">
+<img src="../images/learning.png" alt="learning" style="width:80.0%">
+</a>
+</figure>
 
 **Facts**:
 
@@ -51,7 +54,7 @@ Right now, I'm only exploring the potential ways of using the tools, and I expec
 
 ## Anki
 
-![anki](/images/anki.jpg)
+![anki](../images/anki.jpg)
 
 [Anki](https://en.wikipedia.org/wiki/Anki_%28software%29) is an application that helps you create cards, and then make you review them at the right time.
 This is based on a [spaced repetition method](https://en.wikipedia.org/wiki/Spaced_repetition), that helps you review stuff just when you're about to forget it!
@@ -79,7 +82,7 @@ If you create an account, it's possible to synchronize your cards between device
 
 ## Memrise
 
-![memrise](/images/memrise.png)
+![memrise](../images/memrise.png)
 
 [Memrise](https://www.memrise.com/) is a collaborative platform that provides the tools to make you learn almost any kind of content — although it's used a lot for languages.
 People can follow "classes" on the topics they like. It's a bit like Anki, but more social, you don't have to create your own card (I know you can download decks for Anki too),
@@ -117,7 +120,7 @@ The third "fact" is one of the selling points of the app (according to me). **I 
 
 ## Duolingo
 
-![duolingo](/images/duolingo.png)
+![duolingo](../images/duolingo.png)
 
 [Duolingo](https://www.duolingo.com) is an application that helps you learn various languages.
 It's a bit more structured than Memrise (as it's specifically designed to teach languages), and group knowledge by "lessons" that form a kind of *"learning unit"*.
@@ -155,7 +158,7 @@ And I think this is part of their business model (Duolingo is free and doesn't m
 3. You can export your flashcards from the web interface and import it in Anki right away, which is very nice.
 
 
-![readlang](/images/readlang.png)
+![readlang](../images/readlang.png)
 
 
 [ReadLang](https://readlang.com/) is a bit different from the other tools... at first. It doesn't seem like it will help you remember stuff, instead,
@@ -218,7 +221,7 @@ For example, if I were to remember the word *"Todesstern"* which means *"Death S
 
 ### Front
 
-![deathstar](/images/deathstar.jpg)
+![deathstar](../images/deathstar.jpg)
 
 *"Wie wir sehen, umkreist der <?> den Waldmond Endor."*
 

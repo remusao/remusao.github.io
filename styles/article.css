@@ -1,0 +1,43 @@
+article p {
+  hyphens: auto;
+}
+
+article a {
+  color: #3465a4;
+  text-decoration: none;
+}
+
+article a:visited {
+  color: #75507b;
+}
+
+article h2 {
+  font-size: 1.3em;
+  line-height: 1.2em;
+  margin: 1em 0 0 0;
+}
+
+article .figure {
+  text-align: center;
+}
+
+article figcaption {
+  color: #696f72;
+  font-style: italic;
+  line-height: 2em;
+  text-align: center;
+}
+
+article img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+article blockquote {
+  border-left: thin solid #d3d7cf;
+  color: #555555;
+  margin: 10px;
+  padding: 0 0 0 1em;
+}

@@ -5,7 +5,6 @@ logo: haskell
 lang: en
 ---
 
-
 ## Introduction
 
 In my previous [post](https://remusao.github.io/install-ihaskell-on-ubuntu-1404-with-stack.html),
@@ -174,9 +173,9 @@ A.toJSON document
 
 > ```haskell
 > null
-> 
+>
 > true
-> 
+>
 > {
 >     "body": "Lorem Ipsum",
 >     "metadata": {
@@ -208,11 +207,11 @@ forM [1..5] $ \size -> do
 ```
 
 
-<img src="images/google-logo.png" width="70">
-<img src="images/google-logo.png" width="140">
-<img src="images/google-logo.png" width="210">
-<img src="images/google-logo.png" width="280">
-<img src="images/google-logo.png" width="350">
+<img src="../images/google-logo.png" width="70">
+<img src="../images/google-logo.png" width="140">
+<img src="../images/google-logo.png" width="210">
+<img src="../images/google-logo.png" width="280">
+<img src="../images/google-logo.png" width="350">
 
 
 ## ihaskell-charts
@@ -236,14 +235,14 @@ pitem (s, v, o) = E.pitem_value E..~ v
               $ E.pitem_offset E..~ (if o then 25 else 0)
               $ E.def
 
-E.toRenderable 
+E.toRenderable
   $ E.pie_title E..~ "Relative Population"
   $ E.pie_plot . E.pie_data E..~ map pitem values
   $ E.def
 ```
 
 
-![pie chart](/images/ihaskell-chart.svg)
+![pie chart](../images/ihaskell-chart.svg)
 
 
 ```haskell
@@ -261,7 +260,7 @@ bf (x, y) = bfield 1 (x - 20) y `add` bfield (-1) (x + 20) y
 grid = square 30 3
 
 vectorField title f grid = fmap E.plotVectorField $ E.liftEC $ do
-    c <- E.takeColor  
+    c <- E.takeColor
     E.plot_vectors_mapf E..= f
     E.plot_vectors_grid E..= grid
     E.plot_vectors_style . E.vector_line_style . E.line_color E..= c
@@ -277,7 +276,7 @@ main = E.toRenderable $ do
 main
 ```
 
-![field](/images/ihaskell-field.svg)
+![field](../images/ihaskell-field.svg)
 
 
 ## ihaskell-diagrams
@@ -298,11 +297,11 @@ aTree = unfoldTree (\n -> (0, replicate n (n - 1))) 6
 diagram $ S.sunburst aTree D.# D.centerXY D.# D.pad 1.1
 ```
 
-![field](/images/ihaskell-diagram1.svg)
+![field](../images/ihaskell-diagram1.svg)
 
 
 ```haskell
--- import Diagrams.Backend.SVG.CmdLine as 
+-- import Diagrams.Backend.SVG.CmdLine as
 import qualified Diagrams.Prelude as D
 import qualified Diagrams.TwoD.Factorization as F
 
@@ -310,7 +309,7 @@ diagram $ F.fdGridList 6 D.# D.center D.# D.pad 1.05
 ```
 
 
-![field](/images/ihaskell-diagram2.svg)
+![field](../images/ihaskell-diagram2.svg)
 
 
 ## ihaskell-magic
@@ -336,7 +335,7 @@ B.readFile "./haskell-logo.png"
 ```
 
 
-![Haskell logo](/images/output_25_0.png)
+![Haskell logo](../images/output_25_0.png)
 
 
 
@@ -347,7 +346,9 @@ import qualified Data.ByteString as B
 ```
 
 
-    This is a string of type ByteString
+```sh
+This is a string of type ByteString
+```
 
 
 
@@ -358,7 +359,9 @@ import qualified Data.Text as T
 ```
 
 
-    This is a string of type Text
+```sh
+This is a string of type Text
+```
 
 
 ## ihaskell-static-canvas
@@ -414,13 +417,13 @@ text = do
   strokeStyle blue
   fillStyle goldenrod
   textBaseline TextBaselineMiddle
-  strokeText "Haskell" 150 100 
+  strokeText "Haskell" 150 100
   fillText "Haskell!" 150 100
 
 text
 ```
 
-![](/images/ihaskell-canvas.png)
+![](../images/ihaskell-canvas.png)
 
 
 ## Conclusion

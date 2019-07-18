@@ -134,8 +134,8 @@ Timing is now about *74 seconds*, this is *10 seconds* faster than the first *Py
 ## Timings
 
 <figure>
-<a href="/images/bz2-julia-bench.png">
-![Bench](/images/bz2-julia-bench.png)
+<a href="../images/bz2-julia-bench.png">
+![Bench](../images/bz2-julia-bench.png)
 </a>
 <figcaption>Timings.</figcaption>
 </figure>

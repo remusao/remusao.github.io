@@ -1,7 +1,7 @@
 ---
 title: Ascii, astuces
 date: 2012-12-25
-logo: c++
+logo: cpp
 lang: fr
 ---
 

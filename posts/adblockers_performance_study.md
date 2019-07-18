@@ -126,8 +126,8 @@ the process of deciding whether a request should be blocked or not:
 (average across all content-blockers).
 
 <figure>
-<a href="/images/adblockers_performance_study/requests-composition.svg">
-![Proportion of requests blocked](/images/adblockers_performance_study/requests-composition.svg)
+<a href="../images/adblockers_performance_study/requests-composition.svg">
+![Proportion of requests blocked](../images/adblockers_performance_study/requests-composition.svg)
 </a>
 </figure>
 
@@ -165,8 +165,8 @@ content-blocker:
 Below you can find the cumulative distribution plots of these timings:
 
 <figure>
-<a href="/images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-all.svg">
-![Time to match all requests](/images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-all.svg)
+<a href="../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-all.svg">
+![Time to match all requests](../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-all.svg)
 </a>
 </figure>
 
@@ -184,8 +184,8 @@ blocked:
 | DuckDuckGo    | 11.190ms (**230.5x slower**) | 6.781ms (**1060.5x slower**) |
 
 <figure>
-<a href="/images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-not-blocked.svg">
-![Time to match requests which are not blocked](/images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-not-blocked.svg)
+<a href="../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-not-blocked.svg">
+![Time to match requests which are not blocked](../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-not-blocked.svg)
 </a>
 </figure>
 
@@ -202,8 +202,8 @@ The following table details 99th percentile and median timings for requests bloc
 | DuckDuckGo    | 13.025ms (**248.5x slower**) | 8.31ms (**1130.6x slower**) |
 
 <figure>
-<a href="/images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-blocked.svg">
-![Time to match requests which are blocked](/images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-blocked.svg)
+<a href="../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-blocked.svg">
+![Time to match requests which are blocked](../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-blocked.svg)
 </a>
 </figure>
 
@@ -257,8 +257,8 @@ We performed 100 serializations for each content-blocker and display the
 results below:
 
 <figure>
-<a href="/images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-serializationtimings.svg">
-![Serialization timings](/images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-serializationtimings.svg)
+<a href="../images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-serializationtimings.svg">
+![Serialization timings](../images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-serializationtimings.svg)
 </a>
 </figure>
 
@@ -266,8 +266,8 @@ This bar plot contains the median time taken to serialize the engine for each
 content-blocker:
 
 <figure>
-<a href="/images/adblockers_performance_study/serializationtimings.svg">
-![Serialization timings](/images/adblockers_performance_study/serializationtimings.svg)
+<a href="../images/adblockers_performance_study/serializationtimings.svg">
+![Serialization timings](../images/adblockers_performance_study/serializationtimings.svg)
 </a>
 </figure>
 
@@ -275,16 +275,16 @@ Similarly, we measure the time it takes to restore the content-blocker from its
 serialized form:
 
 <figure>
-<a href="/images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-deserializationtimings.svg">
-![Deserialization timings](/images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-deserializationtimings.svg)
+<a href="../images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-deserializationtimings.svg">
+![Deserialization timings](../images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-deserializationtimings.svg)
 </a>
 </figure>
 
 And here is the median time:
 
 <figure>
-<a href="/images/adblockers_performance_study/deserializationtimings.svg">
-![Deserialization timings](/images/adblockers_performance_study/deserializationtimings.svg)
+<a href="../images/adblockers_performance_study/deserializationtimings.svg">
+![Deserialization timings](../images/adblockers_performance_study/deserializationtimings.svg)
 </a>
 </figure>
 
@@ -292,8 +292,8 @@ Last but not least, we measured the size of the serialized buffer for each
 content-blocker:
 
 <figure>
-<a href="/images/adblockers_performance_study/cache-size.svg">
-![Cache size](/images/adblockers_performance_study/cache-size.svg)
+<a href="../images/adblockers_performance_study/cache-size.svg">
+![Cache size](../images/adblockers_performance_study/cache-size.svg)
 </a>
 </figure>
 
@@ -322,8 +322,8 @@ this memory usage can vary at run-time as content-blockers might cache
 frequently used resources, etc.
 
 <figure>
-<a href="/images/adblockers_performance_study/memory-usage-at-startup.svg">
-![Memory usage at start-up](/images/adblockers_performance_study/memory-usage-at-startup.svg)
+<a href="../images/adblockers_performance_study/memory-usage-at-startup.svg">
+![Memory usage at start-up](../images/adblockers_performance_study/memory-usage-at-startup.svg)
 </a>
 </figure>
 
@@ -343,8 +343,8 @@ that only Brave seems to be significantly slower and that *uBlock Origin*,
 *Ghostery*, *Adblock Plus* and *DuckDuckGo* all perform well.
 
 <figure>
-<a href="/images/adblockers_performance_study/time-to-parse-easylist-all.svg">
-![Time to parse Easylist](/images/adblockers_performance_study/time-to-parse-easylist-all.svg)
+<a href="../images/adblockers_performance_study/time-to-parse-easylist-all.svg">
+![Time to parse Easylist](../images/adblockers_performance_study/time-to-parse-easylist-all.svg)
 </a>
 </figure>
 
@@ -363,8 +363,8 @@ can even perform the parsing backend-side and just ship the serialized
 version of the blocker, which removes this step completely).
 
 <figure>
-<a href="/images/adblockers_performance_study/time-to-parse-easylist-without-brave.svg">
-![Time to parse Easylist without Brave](/images/adblockers_performance_study/time-to-parse-easylist-without-brave.svg)
+<a href="../images/adblockers_performance_study/time-to-parse-easylist-without-brave.svg">
+![Time to parse Easylist without Brave](../images/adblockers_performance_study/time-to-parse-easylist-without-brave.svg)
 </a>
 </figure>
 

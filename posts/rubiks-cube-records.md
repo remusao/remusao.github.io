@@ -260,7 +260,7 @@ Let's visualize the countries with more than 200 players using a barplot:
 country_count[country_count > 200].dropna().plot(kind="bar")
 ```
 
-![Players per country](/images/output_27_1.png)
+![Players per country](../images/output_27_1.png)
 
 
 We can do the same for players:
@@ -350,7 +350,7 @@ df[df["Single"].notnull()].plot(x="Year", y="Single", legend="Test")
 plt.title("World records of Rubik's Cube")
 ```
 
-![World records of Rubik's Cube](/images/output_36_1.png)
+![World records of Rubik's Cube](../images/output_36_1.png)
 
 
 # Last words

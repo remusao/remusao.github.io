@@ -1,0 +1,13 @@
+{
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "linterOptions": {
+    "exclude": ["node_modules/**"]
+  },
+  "rules": {
+    "arrow-parens": [2, "as-needed", { "requireForBlockBody": true }],
+    "interface-name": false,
+    "max-classes-per-file": false,
+    "no-console": false,
+    "quotemark": [true, "single", "avoid-escape", "avoid-template"]
+  }
+}

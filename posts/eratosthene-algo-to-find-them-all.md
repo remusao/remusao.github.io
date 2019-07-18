@@ -1,7 +1,7 @@
 ---
 title: Crible d'Ératosthène, Un algo pour les trouver tous
 date: 2011-11-15
-logo: c++
+logo: cpp
 lang: fr
 ---
  	

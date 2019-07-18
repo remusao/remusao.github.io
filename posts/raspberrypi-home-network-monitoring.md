@@ -24,7 +24,7 @@ like:
   onload="resizeIframe(this)"
   scrolling="no"
   style="width:100%;height:100%;overflow:hidden;display:block"
-  src='/images/bandwidth.html'>
+  src='../images/bandwidth.html'>
 </iframe>
 
 ## Setup

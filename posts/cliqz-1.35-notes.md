@@ -36,8 +36,8 @@ retention policies.
   was never faster!
 
 <figure>
-<a href="/images/cliqz_1.35/adblockerSpeed.png">
-![Adblock Speed](/images/cliqz_1.35/adblockerSpeed.png){width=100%}
+<a href="../images/cliqz_1.35/adblockerSpeed.png">
+<img src="../images/cliqz_1.35/adblockerSpeed.png" alt="Adblock Speed" style="width:100.0%">
 </a>
 <figcaption>Adblocker Speed</figcaption>
 </figure>
@@ -48,8 +48,8 @@ retention policies.
   depending on if they are needed for a service/website you are using or not.
 
 <figure>
-<a href="/images/cliqz_1.35/cookies.jpg">
-![Cookies Retention](/images/cliqz_1.35/cookies.jpg){width=70%}
+<a href="../images/cliqz_1.35/cookies.jpg">
+<img src="../images/cliqz_1.35/cookies.jpg" alt="Cookies Retention" style="width:70.0%">
 </a>
 <figcaption>Cookies Retention</figcaption>
 </figure>
@@ -86,8 +86,8 @@ example: the weather smart Cliqz is now... much smarter and will display very
 detailed information about the forcasts (temperatures, wind, etc.)!
 
 <figure>
-<a href="/images/cliqz_1.35/weather.png">
-![Weather Smart Cliqz](/images/cliqz_1.35/weather.png){width=100%}
+<a href="../images/cliqz_1.35/weather.png">
+<img src="../images/cliqz_1.35/weather.png" alt="Weather Smart Cliqz" style="width:100.0%">
 </a>
 <figcaption>Advanced Weather Smart Cliqz</figcaption>
 </figure>
@@ -98,8 +98,8 @@ result page. This comes as an addition to the time saved by blocking ads or
 trackers.
 
 <figure>
-<a href="/images/cliqz_1.35/timeSaved.png">
-![Weather Smart Cliqz](/images/cliqz_1.35/timeSaved.png){width=100%}
+<a href="../images/cliqz_1.35/timeSaved.png">
+<img src="../images/cliqz_1.35/timeSaved.png" alt="Time Saved by Cliqz" style="width:100.0%">
 </a>
 <figcaption>Updated Time Saved on Freshtab</figcaption>
 </figure>

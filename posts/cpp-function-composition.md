@@ -1,7 +1,7 @@
 ---
 title: C++, composition de fonctions
 date: 2013-05-30
-logo: c++
+logo: cpp
 lang: fr
 ---
 

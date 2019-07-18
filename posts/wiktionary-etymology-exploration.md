@@ -6,7 +6,7 @@ lang: en
 issue: 13
 ---
 
-Etymology is a fascinating topic. Looking closer at the origin of words often 
+Etymology is a fascinating topic. Looking closer at the origin of words often
 yields surprising and interesting connections between languages and countries,
 forgotten stories or fun anecdotes. There are multiple sources for etymological
 data, and most of the time, using specialized books is a safe bet. The issue is
@@ -75,7 +75,7 @@ $ parse enwiki-articles/enwiktionary-latest-pages-articles.xml
 This will produce a file named `graph.tsv` containing one word per line,
 alongside its references. The first few lines look like:
 
-```
+```sh
 lire  lira|etyl|  lira|borrowed|it  *lekʷs-|mention|ine-pro  lies|cognate|nl ...
 encyclopédie  encyclique|lien|  encyclopaedia|etyl|  encyclopaedia|mention|la ...
 manga  漫|mention|ltc  manga|mention|pt  漫画|borrowed|ja  man + -ga|suffix|zza ...
@@ -101,8 +101,8 @@ Graph written into: wgraph_Buch
 ```
 
 <figure>
-<a href="/images/wgraph_Buch_1.svg">
-![Etymological neighborhood of *Buch*](/images/wgraph_Buch_1.svg){width=100%}
+<a href="../images/wgraph_Buch_1.svg">
+<img src="../images/wgraph_Buch_1.svg" alt="Etymological neighborhood of 'Buch'" style="width:100.0%">
 </a>
 <figcaption>Etymological neighborhood of *Buch*</figcaption>
 </figure>
@@ -114,8 +114,8 @@ Graph written into: wgraph_Buch
 ```
 
 <figure>
-<a href="/images/wgraph_candidate.svg">
-![Etymological neighborhood of *candidate*](/images/wgraph_candidate.svg){width=100%}
+<a href="../images/wgraph_candidate.svg">
+<img src="../images/wgraph_candidate.svg" alt="Etymological neighborhood of 'candidate'" style="width:100.0%">
 </a>
 <figcaption>Etymological neighborhood of *candidate*</figcaption>
 </figure>
@@ -138,8 +138,8 @@ Graph written into: wgraph_Buch
 ```
 
 <figure>
-<a href="/images/wgraph_petrol_2_groupped.svg">
-![Etymological neighborhood of *petrol*](/images/wgraph_petrol_2_groupped.svg){width=100%}
+<a href="../images/wgraph_petrol_2_groupped.svg">
+<img src="../images/wgraph_petrol_2_groupped.svg" alt="Etymological neighborhood of 'petrol'" style="width:100.0%">
 </a>
 <figcaption>Etymological neighborhood of *petrol*</figcaption>
 </figure>
@@ -157,8 +157,8 @@ Graph written into: wgraph_Buch
 ```
 
 <figure>
-<a href="/images/wgraph_truie.svg">
-![Etymological neighborhood of *truie*](/images/wgraph_truie.svg){width=100%}
+<a href="../images/wgraph_truie.svg">
+<img src="../images/wgraph_truie.svg" alt="Etymological neighborhood of 'truie'" style="width:100.0%">
 </a>
 <figcaption>Etymological neighborhood of *truie*</figcaption>
 </figure>
@@ -176,11 +176,11 @@ Another simple application of the graph is to compute the size of
 the shortest path between two words. This can be achieved using the
 `distance` command provided by `wgraph`:
 
- 
+
 
 <figure>
-<a href="/images/wgraph_distance_Buch_beech.svg">
-![Etymological distance between *Buch* and *beech*](/images/wgraph_distance_Buch_beech.svg){width=20%}
+<a href="../images/wgraph_distance_Buch_beech.svg">
+<img src="../images/wgraph_distance_Buch_beech.svg" alt="Etymological distance between 'Buch' and 'beech'" style="width:20.0%">
 </a>
 <figcaption>Etymological distance between *Buch* and *beech*</figcaption>
 </figure>

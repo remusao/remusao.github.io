@@ -1,7 +1,7 @@
 ---
 title: Arithmetic lexer
 date: 2011-12-27
-logo: c++
+logo: cpp
 lang: en
 ---
 
@@ -34,7 +34,7 @@ will consist of:
 
 A correct input could be:
 
-```
+```sh
 1 5 abcde 10 bc+bca+dec
 ```
 
@@ -183,7 +183,7 @@ numbers by changing the symbols which they are composed of by a set of
 contiguous numbers starting from 0 and up to (base_size – 1). For
 example:
 
-```
+```sh
 Old base : abcde
 New base : 01234
 ```

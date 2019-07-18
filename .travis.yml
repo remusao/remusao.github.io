@@ -1,32 +1,12 @@
-sudo: false
 dist: xenial
-language: generic
+language: node_js
+node_js:
+  - node
 
-# Caching so the next build will be fast too.
-cache:
-  timeout: 3600
-  directories:
-  - $HOME/.stack
-  - .stack-work
-
-addons:
-  apt:
-    packages:
-    - libgmp-dev
-
-before_install:
-# Download and unpack the stack executable
-- mkdir -p ~/.local/bin
-- export PATH=$HOME/.local/bin:$PATH
-- travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-
-branches:
-  only:
-    - diy
+cache: npm
 
 script:
-  - travis_wait 20000 stack build --fast --ghc-options=-O0
-  - stack exec -- blogio
+  - npm run serve -- --ci
   - rm -fr _site
   - mkdir -p _site/posts/
   - mv index.html _site/
@@ -37,6 +17,10 @@ script:
   - cp -fr experiments/ _site/
   - cp -fr katex/ _site/
 
+branches:
+  only:
+    - diy-ts
+
 deploy:
   provider: pages
   skip_cleanup: true
@@ -44,4 +28,4 @@ deploy:
   local_dir: _site
   target_branch: master
   on:
-    branch: diy
+    branch: diy-ts
