@@ -3,6 +3,7 @@ title: Static Blog Generator in TypeScript
 date: 2019-07-19
 logo: typescript
 lang: en
+issue: 18
 ---
 
 > Oups, I did it again...
