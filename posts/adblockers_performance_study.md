@@ -127,7 +127,7 @@ the process of deciding whether a request should be blocked or not:
 
 <figure>
 <a href="../images/adblockers_performance_study/requests-composition.svg">
-![Proportion of requests blocked](../images/adblockers_performance_study/requests-composition.svg)
+<img src="../images/adblockers_performance_study/requests-composition.svg" alt="Proportion of requests blocked">
 </a>
 </figure>
 
@@ -166,7 +166,7 @@ Below you can find the cumulative distribution plots of these timings:
 
 <figure>
 <a href="../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-all.svg">
-![Time to match all requests](../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-all.svg)
+<img src="../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-all.svg" alt="Time to match all requests">
 </a>
 </figure>
 
@@ -185,7 +185,7 @@ blocked:
 
 <figure>
 <a href="../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-not-blocked.svg">
-![Time to match requests which are not blocked](../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-not-blocked.svg)
+<img src="../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-not-blocked.svg" alt="Time to match requests which are not blocked">
 </a>
 </figure>
 
@@ -203,7 +203,7 @@ The following table details 99th percentile and median timings for requests bloc
 
 <figure>
 <a href="../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-blocked.svg">
-![Time to match requests which are blocked](../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-blocked.svg)
+<img src="../images/adblockers_performance_study/ghostery-ublock-origin-brave-duckduckgo-adblock-plus-blocked.svg" alt="Time to match requests which are blocked">
 </a>
 </figure>
 
@@ -258,7 +258,7 @@ results below:
 
 <figure>
 <a href="../images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-serializationtimings.svg">
-![Serialization timings](../images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-serializationtimings.svg)
+<img src="../images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-serializationtimings.svg" alt="Serialization timings">
 </a>
 </figure>
 
@@ -267,7 +267,7 @@ content-blocker:
 
 <figure>
 <a href="../images/adblockers_performance_study/serializationtimings.svg">
-![Serialization timings](../images/adblockers_performance_study/serializationtimings.svg)
+<img src="../images/adblockers_performance_study/serializationtimings.svg" alt="Serialization timings">
 </a>
 </figure>
 
@@ -276,7 +276,7 @@ serialized form:
 
 <figure>
 <a href="../images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-deserializationtimings.svg">
-![Deserialization timings](../images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-deserializationtimings.svg)
+<img src="../images/adblockers_performance_study/ghostery-ublock-origin-brave-adblock-plus-deserializationtimings.svg" alt="Deserialization timings">
 </a>
 </figure>
 
@@ -284,7 +284,7 @@ And here is the median time:
 
 <figure>
 <a href="../images/adblockers_performance_study/deserializationtimings.svg">
-![Deserialization timings](../images/adblockers_performance_study/deserializationtimings.svg)
+<img src="../images/adblockers_performance_study/deserializationtimings.svg" alt="Deserialization timings">
 </a>
 </figure>
 
@@ -293,7 +293,7 @@ content-blocker:
 
 <figure>
 <a href="../images/adblockers_performance_study/cache-size.svg">
-![Cache size](../images/adblockers_performance_study/cache-size.svg)
+<img src="../images/adblockers_performance_study/cache-size.svg" alt="Cache size">
 </a>
 </figure>
 
@@ -323,7 +323,7 @@ frequently used resources, etc.
 
 <figure>
 <a href="../images/adblockers_performance_study/memory-usage-at-startup.svg">
-![Memory usage at start-up](../images/adblockers_performance_study/memory-usage-at-startup.svg)
+<img src="../images/adblockers_performance_study/memory-usage-at-startup.svg" alt="Memory usage at start-up">
 </a>
 </figure>
 
@@ -344,7 +344,7 @@ that only Brave seems to be significantly slower and that *uBlock Origin*,
 
 <figure>
 <a href="../images/adblockers_performance_study/time-to-parse-easylist-all.svg">
-![Time to parse Easylist](../images/adblockers_performance_study/time-to-parse-easylist-all.svg)
+<img src="../images/adblockers_performance_study/time-to-parse-easylist-all.svg" alt="Time to parse Easylist">
 </a>
 </figure>
 
@@ -364,7 +364,7 @@ version of the blocker, which removes this step completely).
 
 <figure>
 <a href="../images/adblockers_performance_study/time-to-parse-easylist-without-brave.svg">
-![Time to parse Easylist without Brave](../images/adblockers_performance_study/time-to-parse-easylist-without-brave.svg)
+<img src="../images/adblockers_performance_study/time-to-parse-easylist-without-brave.svg" alt="Time to parse Easylist without Brave">
 </a>
 </figure>
 
