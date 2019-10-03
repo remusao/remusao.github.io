@@ -147,6 +147,7 @@ interface Post {
   date: Date;
   html: string; // html
   logo: string;
+  logoAlt: string;
   name: string;
   readingTime: number;
   title: string;
@@ -229,7 +230,7 @@ class Generator {
 
     const indexEntry = (post: Post): string => `
     <li>
-    <img class="logo" src="${post.logo}"></img>
+    <img class="logo" alt="${post.logoAlt}" src="${post.logo}"></img>
     <a href="${post.url}">${post.title}</a>
     <span> - ${formatDate(post.date)}</span>
     </li>
@@ -307,7 +308,7 @@ class Generator {
         removeRedundantAttributes: true,
         removeScriptTypeAttributes: false,
         removeTagWhitespace: true,
-        useShortDoctype: true,
+        useShortDoctype: false,
       },
     );
   }
@@ -375,6 +376,7 @@ class Generator {
       date,
       html,
       logo: getLogo(metadata.get('logo')),
+      logoAlt: metadata.get('logo') || 'post logo',
       name,
       readingTime: getApproxReadingTime(content),
       title: metadata.get('title') || '',
