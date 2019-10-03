@@ -1,4 +1,5 @@
 @font-face {
+  font-display: auto;
   font-family: 'Inconsolata';
   font-style: normal;
   font-weight: 400;
@@ -6,6 +7,7 @@
 }
 
 @font-face {
+  font-display: auto;
   font-family: 'Open Sans';
   font-style: italic;
   font-weight: 400;
@@ -14,6 +16,7 @@
 }
 
 @font-face {
+  font-display: auto;
   font-family: 'Open Sans';
   font-style: italic;
   font-weight: 700;
@@ -22,6 +25,7 @@
 }
 
 @font-face {
+  font-display: auto;
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
@@ -30,6 +34,7 @@
 }
 
 @font-face {
+  font-display: auto;
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 700;
