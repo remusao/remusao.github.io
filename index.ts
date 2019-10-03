@@ -3,6 +3,7 @@ import { join } from 'path';
 
 import Octokit from '@octokit/rest';
 import chokidar from 'chokidar';
+import CleanCSS from 'clean-css';
 import compression from 'compression';
 import createDOMPurify from 'dompurify';
 import express from 'express';
@@ -11,7 +12,9 @@ import hljs from 'highlight.js';
 import { minify } from 'html-minifier';
 import { JSDOM } from 'jsdom';
 import marked from 'marked';
+import rimraf from 'rimraf';
 import serveStatic from 'serve-static';
+import TreeSync from 'tree-sync';
 
 const ci = process.argv[process.argv.length - 1] === '--ci';
 
@@ -76,25 +79,25 @@ function createButtons(title: string, url: string): string {
 const LOGOS: {
   [name: string]: string;
 } = {
-  adblock: '/images/adblocking.png',
-  aws: '/images/aws.png',
-  ccc: '/images/ccc.png',
-  cliqz: '/images/cliqz.png',
-  cpp: '/images/cpp.png',
-  hashcode: '/images/hashcode.png',
-  haskell: '/images/haskell.png',
-  html5: '/images/html5.png',
-  julia: '/images/julia.png',
-  learning: '/images/learning.png',
-  linux: '/images/tux-logo.png',
-  ocaml: '/images/ocaml.png',
-  pi: '/images/pi.png',
-  python: '/images/python.png',
-  raspberry: '/images/raspberry-pi.png',
-  synacor: '/images/synacor.png',
-  typescript: '/images/typescript.png',
-  v8: '/images/v8.png',
-  xmonad: '/images/xmonad.png',
+  adblock: '/images/logos/cliqz.svg',
+  aws: '/images/logos/aws.svg',
+  ccc: '/images/logos/ccc.svg',
+  cliqz: '/images/logos/cliqz.svg',
+  cpp: '/images/logos/c++.svg',
+  hashcode: '/images/logos/bash.svg',
+  haskell: '/images/logos/haskell.svg',
+  html5: '/images/logos/html-5.svg',
+  julia: '/images/logos/julia.svg',
+  learning: '/images/logos/learning.svg',
+  linux: '/images/logos/linux-tux.svg',
+  ocaml: '/images/logos/apache-camel.svg',
+  pi: '/images/logos/pi.svg',
+  python: '/images/logos/python.svg',
+  raspberry: '/images/logos/raspberry-pi.svg',
+  synacor: '/images/logos/synacor.svg',
+  typescript: '/images/logos/typescript-icon.svg',
+  v8: '/images/logos/v8.svg',
+  xmonad: '/images/logos/xmonad.svg',
 };
 
 function getLogo(name: string | undefined): string {
@@ -152,11 +155,8 @@ interface Post {
 
 class Generator {
   private readonly purifyDOM: (_: string) => string;
-  private readonly styles: string;
   private readonly octokit: Octokit;
   private readonly posts: Map<string, Post>;
-
-  private indexGenerationTimer: NodeJS.Timeout = setTimeout(() => 0, 0);
 
   constructor() {
     // Initialize posts
@@ -178,13 +178,23 @@ class Generator {
     this.purifyDOM = (html) => DOMPurify.sanitize(html);
 
     // Initialize stylesheets
-    this.styles = [
-      // TODO - replace use of `glob` by static list?
-      ...glob.sync('./styles/*.css').map((path) => fs.readFileSync(path, { encoding: 'utf-8' })),
-      fs.readFileSync(join(__dirname, 'node_modules/highlight.js/styles/github.css'), {
-        encoding: 'utf-8',
-      }),
-    ].join('\n\n');
+    const t0 = Date.now();
+    const css = new CleanCSS({ level: 2 }).minify(
+      [
+        'styles/article.css',
+        'styles/code.css',
+        'styles/comments.css',
+        'styles/fonts.css',
+        'styles/sharing.css',
+        'styles/style.css',
+        'node_modules/highlight.js/styles/github.css',
+      ]
+        .map((path) => fs.readFileSync(join(__dirname, path), 'utf8'))
+        .join('\n'),
+    );
+    const t1 = Date.now();
+    console.log('bundle css', t1 - t0);
+    fs.writeFileSync('./_site/main.css', css.styles, 'utf8');
 
     // Initialize octokit for GitHub APIs
     const token = process.env.GITHUB_TOKEN;
@@ -203,23 +213,19 @@ class Generator {
       this.posts.set(name, post);
 
       const html = this.renderPost(post);
-      const outputFilePath = `posts/${name}.html`;
-      const outputFilePathLegacy = `posts/${post.date}-${name}.html`;
+      const outputFilePath = `./_site/posts/${name}.html`;
+      const outputFilePathLegacy = `./_site/posts/${post.date}-${name}.html`;
 
       await Promise.all([
         fs.promises.writeFile(outputFilePath, html, { encoding: 'utf-8' }),
         fs.promises.writeFile(outputFilePathLegacy, html, { encoding: 'utf-8' }),
       ]);
-
-      // Make sure we throttle calls to `generateIndex(...)`
-      clearTimeout(this.indexGenerationTimer);
-      this.indexGenerationTimer = setTimeout(() => this.generateIndex(), 500);
     } catch (ex) {
       console.log('could not generate', path, ex);
     }
   }
 
-  private async generateIndex(): Promise<void> {
+  public async generateIndex(): Promise<void> {
     console.log('generating index.html');
 
     const indexEntry = (post: Post): string => `
@@ -266,7 +272,7 @@ class Generator {
         `,
     );
 
-    await fs.promises.writeFile('index.html', index, { encoding: 'utf-8' });
+    await fs.promises.writeFile('./_site/index.html', index, { encoding: 'utf-8' });
   }
 
   private wrapHtml(title: string, html: string): string {
@@ -279,11 +285,10 @@ class Generator {
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta httpEquiv="x-ua-compatible" content="ie=edge">
 
-  <link rel="apple-touch-icon" href="/images/favicon.ico"></link>
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico"></link>
 
   <title>${title}</title>
-  <style>${this.styles}</style>
+  <link rel="stylesheet" type="text/css" href="/main.css">
   </head>
   <body>
     <header>
@@ -296,7 +301,7 @@ class Generator {
 </html>`,
       {
         collapseWhitespace: true,
-        minifyCSS: true,
+        minifyCSS: false,
         minifyJS: true,
         removeComments: true,
         removeOptionalTags: false,
@@ -453,22 +458,36 @@ class Generator {
   }
 }
 
-const generator = new Generator();
+(async () => {
+  // Clean-up
+  rimraf.sync('./_site');
+  fs.mkdirSync('./_site');
+  fs.mkdirSync('./_site/posts');
 
-// Start generating
-chokidar.watch('./posts/*.md', { persistent: ci === false }).on('all', (event, path) => {
-  if (event === 'add' || event === 'change') {
-    generator.generate(path);
-  } else {
-    console.log(event, path);
+  // Copy assets to output folder
+  new TreeSync('images', '_site/images').sync();
+  new TreeSync('fonts', '_site/fonts').sync();
+  new TreeSync('snippets', '_site/snippets').sync();
+  new TreeSync('experiments', '_site/experiments').sync();
+
+  const generator = new Generator();
+
+  // Generate all posts + index.html
+  await Promise.all(glob.sync('./posts/*.md').map((path) => generator.generate(path)));
+  await generator.generateIndex();
+
+  if (ci === false) {
+    // Start watching for changes generating
+    chokidar.watch('./posts/*.md', { persistent: ci === false }).on('change', async (path) => {
+      await generator.generate(path);
+      await generator.generateIndex();
+    });
+
+    // Start serving site locally
+    const app = express();
+    app.use(compression());
+    app.use(serveStatic('./_site'));
+    console.log('serving http://localhost:8080');
+    app.listen(8080);
   }
-});
-
-// Serve current folder
-if (ci === false) {
-  const app = express();
-  app.use(compression());
-  app.use(serveStatic('.'));
-  console.log('serving http://localhost:8080');
-  app.listen(8080);
-}
+})();

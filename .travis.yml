@@ -7,15 +7,6 @@ cache: npm
 
 script:
   - npm run serve -- --ci
-  - rm -fr _site
-  - mkdir -p _site/posts/
-  - mv index.html _site/
-  - mv posts/*.html _site/posts/
-  - cp -fr images/ _site/
-  - cp -fr fonts/ _site/
-  - cp -fr snippets/ _site/
-  - cp -fr experiments/ _site/
-  - cp -fr katex/ _site/
 
 branches:
   only:

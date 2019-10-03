@@ -1,16 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="481.8897pt" height="340.1574pt" viewBox="0 0 481.8897 340.1574" version="1.1">
-<defs>
-<clipPath id="clip1">
-  <path d="M 0 340.15625 L 481.890625 340.15625 L 481.890625 0 L 0 0 L 0 340.15625 Z M 0 340.15625 "/>
-</clipPath>
-</defs>
-<g id="surface0">
-<g clip-path="url(#clip1)" clip-rule="nonzero">
-<path style=" stroke:none;fill-rule: nonzero; fill: rgb(40%,40%,40%); fill-opacity: 1;" d="M 0 340.15625 L 113.386719 170.078125 L 0 0 L 85.039062 0 L 198.425781 170.078125 L 85.039062 340.15625 L 0 340.15625 Z M 0 340.15625 "/>
-<path style=" stroke:none;fill-rule: nonzero; fill: rgb(60%,60%,60%); fill-opacity: 1;" d="M 113.386719 340.15625 L 226.773438 170.078125 L 113.386719 0 L 198.425781 0 L 425.195312 340.15625 L 340.15625 340.15625 L 269.292969 233.859375 L 198.425781 340.15625 L 113.386719 340.15625 Z M 113.386719 340.15625 "/>
-<path style=" stroke:none;fill-rule: nonzero; fill: rgb(40%,40%,40%); fill-opacity: 1;" d="M 387.402344 240.945312 L 349.609375 184.253906 L 481.890625 184.25 L 481.890625 240.945312 L 387.402344 240.945312 Z M 387.402344 240.945312 "/>
-<path style=" stroke:none;fill-rule: nonzero; fill: rgb(40%,40%,40%); fill-opacity: 1;" d="M 330.710938 155.90625 L 292.914062 99.214844 L 481.890625 99.210938 L 481.890625 155.90625 L 330.710938 155.90625 Z M 330.710938 155.90625 "/>
-</g>
-</g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="642.52" height="453.543" viewBox="0 0 481.89 340.157"><defs><clipPath id="a"><path d="M0 340.156h481.89V0H0v340.156zm0 0"/></clipPath></defs><g clip-path="url(#a)"><path d="M0 340.156l113.387-170.078L0 0h85.04l113.386 170.078L85.039 340.156H0zm0 0" fill="#666"/><path d="M113.387 340.156l113.386-170.078L113.387 0h85.039l226.77 340.156h-85.04L269.293 233.86l-70.867 106.297h-85.04zm0 0" fill="#999"/><path d="M387.402 240.945l-37.793-56.691 132.282-.004v56.695h-94.489zm-56.692-85.039l-37.796-56.691 188.977-.004v56.695H330.71zm0 0" fill="#666"/></g></svg>

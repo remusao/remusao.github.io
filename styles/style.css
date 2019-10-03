@@ -105,9 +105,10 @@ ul.index {
 }
 
 .logo {
-  display: inline;
+  display: inline-block;
   height: 1em;
   margin: 0 1em;
   opacity: 0.6;
+  overflow: hidden;
   width: 1em;
 }
