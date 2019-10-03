@@ -1,4 +1,4 @@
-import fs from 'fs';
+import { promises as fs } from 'fs';
 import { join } from 'path';
 
 import Octokit from '@octokit/rest';
@@ -177,25 +177,6 @@ class Generator {
     const DOMPurify = createDOMPurify(new JSDOM('').window);
     this.purifyDOM = (html) => DOMPurify.sanitize(html);
 
-    // Initialize stylesheets
-    const t0 = Date.now();
-    const css = new CleanCSS({ level: 2 }).minify(
-      [
-        'styles/article.css',
-        'styles/code.css',
-        'styles/comments.css',
-        'styles/fonts.css',
-        'styles/sharing.css',
-        'styles/style.css',
-        'node_modules/highlight.js/styles/github.css',
-      ]
-        .map((path) => fs.readFileSync(join(__dirname, path), 'utf8'))
-        .join('\n'),
-    );
-    const t1 = Date.now();
-    console.log('bundle css', t1 - t0);
-    fs.writeFileSync('./_site/main.css', css.styles, 'utf8');
-
     // Initialize octokit for GitHub APIs
     const token = process.env.GITHUB_TOKEN;
     this.octokit = new Octokit({
@@ -203,12 +184,30 @@ class Generator {
     });
   }
 
+  public async generateCSS(): Promise<void> {
+    // Initialize stylesheets
+    const { styles } = new CleanCSS({ level: 2 }).minify(
+      (await Promise.all(
+        [
+          'styles/article.css',
+          'styles/code.css',
+          'styles/comments.css',
+          'styles/fonts.css',
+          'styles/sharing.css',
+          'styles/style.css',
+          'node_modules/highlight.js/styles/github.css',
+        ].map((path) => fs.readFile(join(__dirname, path), 'utf8')),
+      )).join('\n'),
+    );
+    await fs.writeFile('./_site/main.css', styles, 'utf8');
+  }
+
   public async generate(path: string): Promise<void> {
     const name = getBaseName(path);
     console.log(`Generating ${name}...`);
 
     try {
-      const content = await fs.promises.readFile(path, { encoding: 'utf-8' });
+      const content = await fs.readFile(path, { encoding: 'utf-8' });
       const post = await this.parsePost(name, content);
       this.posts.set(name, post);
 
@@ -217,8 +216,8 @@ class Generator {
       const outputFilePathLegacy = `./_site/posts/${post.date}-${name}.html`;
 
       await Promise.all([
-        fs.promises.writeFile(outputFilePath, html, { encoding: 'utf-8' }),
-        fs.promises.writeFile(outputFilePathLegacy, html, { encoding: 'utf-8' }),
+        fs.writeFile(outputFilePath, html, { encoding: 'utf-8' }),
+        fs.writeFile(outputFilePathLegacy, html, { encoding: 'utf-8' }),
       ]);
     } catch (ex) {
       console.log('could not generate', path, ex);
@@ -272,7 +271,7 @@ class Generator {
         `,
     );
 
-    await fs.promises.writeFile('./_site/index.html', index, { encoding: 'utf-8' });
+    await fs.writeFile('./_site/index.html', index, { encoding: 'utf-8' });
   }
 
   private wrapHtml(title: string, html: string): string {
@@ -459,10 +458,12 @@ class Generator {
 }
 
 (async () => {
+  const generator = new Generator();
+
   // Clean-up
   rimraf.sync('./_site');
-  fs.mkdirSync('./_site');
-  fs.mkdirSync('./_site/posts');
+  await fs.mkdir('./_site');
+  await fs.mkdir('./_site/posts');
 
   // Copy assets to output folder
   new TreeSync('images', '_site/images').sync();
@@ -470,11 +471,13 @@ class Generator {
   new TreeSync('snippets', '_site/snippets').sync();
   new TreeSync('experiments', '_site/experiments').sync();
 
-  const generator = new Generator();
-
   // Generate all posts + index.html
-  await Promise.all(glob.sync('./posts/*.md').map((path) => generator.generate(path)));
-  await generator.generateIndex();
+  await Promise.all([
+    Promise.all(glob.sync('./posts/*.md').map((path) => generator.generate(path))).then(() =>
+      generator.generateIndex(),
+    ),
+    generator.generateCSS(),
+  ]);
 
   if (ci === false) {
     // Start watching for changes generating
