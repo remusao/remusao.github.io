@@ -18,32 +18,31 @@
 }
 
 summary {
-  cursor: pointer;
   color: #516ae8;
+  cursor: pointer;
   font-size: 15px;
   font-weight: 600;
   line-height: 1.2rem;
   margin-top: 2rem;
 }
 
-.comments ul {
+.comments-list {
   list-style: none;
 }
 
 .comment {
+  background-color: #fff;
+  border-radius: 3px;
+  border: 1px solid #d1d5da;
+  color: #24292e;
   font-size: 15px;
   margin: 1em 0;
-
-  color: #24292e;
-  border: 1px solid #d1d5da;
-  border-radius: 3px;
-  background-color: #fff;
 }
 
 .meta {
-  color: #586069;
   background-color: #f6f8fa;
   border-bottom: 1px solid #d1d5da;
+  color: #586069;
 }
 
 .author {
@@ -70,4 +69,10 @@ summary {
   display: inline-block;
   margin-right: 5px;
   vertical-align: middle;
+}
+
+.emoji {
+  vertical-align: middle;
+  width: 1.1em;
+  height: 1.1em;
 }

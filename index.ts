@@ -17,6 +17,8 @@ import rimraf from 'rimraf';
 import serveStatic from 'serve-static';
 import TreeSync from 'tree-sync';
 
+import emojis from './emojis';
+
 const ci = process.argv[process.argv.length - 1] === '--ci';
 
 const blogDomain = 'https://remusao.github.io/';
@@ -27,6 +29,25 @@ const blogDescription = blogTitle;
 // TODO - re-architecture source code
 // TODO - support KaTex?
 // TODO - consider using JSX for HTML
+
+function escape(s: string): string {
+  return `(?:${s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')})`;
+}
+
+function addEmojis(body: string): string {
+  for (const [gh, hex] of emojis) {
+    const tag = `${gh}:`;
+    if (body.includes(tag)) {
+      console.log('>>', tag, hex);
+      body = body.replace(
+        new RegExp(escape(tag), 'g'),
+        `<img class="emoji" alt="${tag}" src="https://github.githubassets.com/images/icons/emoji/unicode/${hex.toLowerCase()}.png"/>`,
+      );
+    }
+  }
+
+  return body;
+}
 
 interface Comment {
   author: string;
@@ -432,7 +453,7 @@ ${
     : `
 <details>
   <summary>${comments.length === 1 ? '1 comment' : `${comments.length} comments`}</summary>
-  <ul>${comments
+  <ul class="comments-list">${comments
     .map(
       ({ author, body, profile, avatar, url, humanized }) => `
       <li>
@@ -444,7 +465,7 @@ ${
             <a class="date" href="${url}" title="${url}" target="_blank" rel="noopener noreferrer">${humanized}</a>
           </div>
 
-          <div class="content">${this.purifyDOM(marked(body))}</div>
+          <div class="content">${addEmojis(this.purifyDOM(marked(body)))}</div>
         </div>
       </li>
     `,
