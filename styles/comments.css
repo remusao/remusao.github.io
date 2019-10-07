@@ -13,7 +13,12 @@
   text-decoration: none;
 }
 
+.leave-comment-btn:hover {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.24);
+}
+
 summary {
+  cursor: pointer;
   color: #516ae8;
   font-size: 15px;
   font-weight: 600;

@@ -421,7 +421,10 @@ class Generator {
 <span>
   <a class="leave-comment-btn" href="${issueLink}" title="${issueLink}" target="_blank" rel="noopener noreferrer">Leave a comment on GitHub</a>
 </span>
-
+${
+  comments.length === 0
+    ? ''
+    : `
 <details>
   <summary>${comments.length === 1 ? '1 comment' : `${comments.length} comments`}</summary>
   <ul>${comments
@@ -442,6 +445,7 @@ class Generator {
     )
     .join('\n')}</ul>
 </details>
+  `}
 `;
   }
 }
