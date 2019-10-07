@@ -1,5 +1,12 @@
+
 article p {
   hyphens: auto;
+}
+
+h2 {
+  font-size: 1.3em;
+  line-height: 1.2em;
+  margin: 1em 0 0 0;
 }
 
 .main a {
@@ -11,31 +18,25 @@ article p {
   color: #75507b;
 }
 
-article h2 {
-  font-size: 1.3em;
-  line-height: 1.2em;
-  margin: 1em 0 0 0;
-}
-
-article .figure {
+.main .figure {
   text-align: center;
 }
 
-article figcaption {
+.main figcaption {
   color: #696f72;
   font-style: italic;
   line-height: 2em;
   text-align: center;
 }
 
-article img {
+.main img {
   display: block;
   margin-left: auto;
   margin-right: auto;
   text-align: center;
 }
 
-article blockquote {
+.main blockquote {
   border-left: thin solid #d3d7cf;
   color: #555555;
   margin: 10px;
