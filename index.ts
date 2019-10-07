@@ -12,6 +12,7 @@ import hljs from 'highlight.js';
 import { minify } from 'html-minifier';
 import { JSDOM } from 'jsdom';
 import marked from 'marked';
+import moment from 'moment';
 import rimraf from 'rimraf';
 import serveStatic from 'serve-static';
 import TreeSync from 'tree-sync';
@@ -29,8 +30,11 @@ const blogDescription = blogTitle;
 
 interface Comment {
   author: string;
+  avatar: string;
   body: string; // raw markdown
   date: string;
+  humanized: string;
+  profile: string;
   url: string;
 }
 
@@ -408,14 +412,15 @@ class Generator {
       throw new Error(`could not fetch comments from issue ${issue}: ${status}`);
     }
 
-    const comments: Comment[] = data.map(({ body, created_at, url, user }) => {
-      return {
-        author: user.login,
-        body,
-        date: created_at,
-        url,
-      };
-    });
+    const comments: Comment[] = data.map(({ body, created_at, html_url, user }) => ({
+      author: user.login,
+      avatar: user.avatar_url,
+      body,
+      date: created_at,
+      humanized: moment(created_at).from(moment()),
+      profile: user.html_url,
+      url: html_url,
+    }));
 
     return `
 <span>
@@ -429,14 +434,15 @@ ${
   <summary>${comments.length === 1 ? '1 comment' : `${comments.length} comments`}</summary>
   <ul>${comments
     .map(
-      ({ author, body, date, url }) => `
+      ({ author, body, profile, avatar, url, humanized }) => `
       <li>
         <div class="comment">
-          <span class="meta">
-            <span class="author">${author}</span>
-            <span> - </span>
-            <a href="${url}" title="${url}" target="_blank" rel="noopener noreferrer">${date}</a>
-          </span>
+          <div class="meta">
+            <img class="avatar" src="${avatar}" width="40" height="40"/>
+            <a class="author" href="${profile}" title="${author}" target="_blank" rel="noopener noreferrer">${author}</a>
+            <span> commented </span>
+            <a class="date" href="${url}" title="${url}" target="_blank" rel="noopener noreferrer">${humanized}</a>
+          </div>
 
           <div class="content">${this.purifyDOM(marked(body))}</div>
         </div>
@@ -445,7 +451,8 @@ ${
     )
     .join('\n')}</ul>
 </details>
-  `}
+  `
+}
 `;
   }
 }
