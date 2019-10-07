@@ -302,7 +302,7 @@ class Generator {
       {
         collapseWhitespace: true,
         minifyCSS: false,
-        minifyJS: true,
+        minifyJS: false,
         removeComments: true,
         removeOptionalTags: false,
         removeRedundantAttributes: true,
@@ -322,8 +322,12 @@ class Generator {
   <div>${formatDate(post.date)} | <em>Reading time: ~${post.readingTime} minutes</em></div>
 </section>
 <article>
-  ${post.html}
-  ${post.comments}
+  <div class="main">
+    ${post.html}
+  </div>
+  <div class="comments">
+    ${post.comments}
+  </div>
 </article>
 <footer>
   <div class="share">
@@ -414,48 +418,31 @@ class Generator {
     });
 
     return `
-  <div class="comments">
-    <span class="commentHeader">
-      <button id="showCommentsButton" class="showComments">${
-        comments.length === 1 ? '1 comment' : `${comments.length} comments`
-      }</button>
-      <script>
-        var button = document.getElementById('showCommentsButton');
-        button.onclick = function() {
-          var div = document.getElementById('commentsList');
-          if (div.style.display !== 'none') {
-            div.style.display = 'none';
-          }
-          else {
-            div.style.display = 'block';
-          }
-        };
-      </script>
-    </span>
+<span>
+  <a class="leave-comment-btn" href="${issueLink}" title="${issueLink}" target="_blank" rel="noopener noreferrer">Leave a comment on GitHub</a>
+</span>
 
-    <span class="leaveComment">
-      <a href="${issueLink}" title="${issueLink}" target="_blank" rel="noopener noreferrer">Leave a comment on Github</a>
-    </span>
+<details>
+  <summary>${comments.length === 1 ? '1 comment' : `${comments.length} comments`}</summary>
+  <ul>${comments
+    .map(
+      ({ author, body, date, url }) => `
+      <li>
+        <div class="comment">
+          <span class="meta">
+            <span class="author">${author}</span>
+            <span> - </span>
+            <a href="${url}" title="${url}" target="_blank" rel="noopener noreferrer">${date}</a>
+          </span>
 
-    <ul id="commentsList" style="display: none;">${comments
-      .map(
-        ({ author, body, date, url }) => `
-        <li class="comment">
-          <div>
-            <span class="meta">
-              <span class="author">${author}</span>
-              <span> - </span>
-              <a href="${url}" title="${url}" target="_blank" rel="noopener noreferrer">${date}</a>
-            </span>
-
-            <div class="content">${this.purifyDOM(marked(body))}</div>
-          </div>
-        </li>
-      `,
-      )
-      .join('\n')}</ul>
-  </div>
-  `;
+          <div class="content">${this.purifyDOM(marked(body))}</div>
+        </div>
+      </li>
+    `,
+    )
+    .join('\n')}</ul>
+</details>
+`;
   }
 }
 
