@@ -183,6 +183,7 @@ class Generator {
   private readonly purifyDOM: (_: string) => string;
   private readonly octokit: Octokit;
   private readonly posts: Map<string, Post>;
+  private criticalCSS!: string;
 
   constructor() {
     // Initialize posts
@@ -210,6 +211,10 @@ class Generator {
     });
   }
 
+  public async init(): Promise<void> {
+    this.criticalCSS = await this.generateCriticalCSS();
+  }
+
   public async generateCSS(): Promise<void> {
     // Initialize stylesheets
     const { styles } = new CleanCSS({ level: 2 }).minify(
@@ -218,7 +223,6 @@ class Generator {
           'styles/article.css',
           'styles/code.css',
           'styles/comments.css',
-          'styles/fonts.css',
           'styles/sharing.css',
           'styles/style.css',
           'node_modules/highlight.js/styles/github.css',
@@ -300,6 +304,19 @@ class Generator {
     await fs.writeFile('./_site/index.html', index, { encoding: 'utf-8' });
   }
 
+  private async generateCriticalCSS(): Promise<string> {
+    // Initialize stylesheets
+    const { styles } = new CleanCSS({ level: 2 }).minify(
+      (await Promise.all(
+        [
+          'styles/fonts.css',
+        ].map((path) => fs.readFile(join(__dirname, path), 'utf8')),
+      )).join('\n'),
+    );
+
+    return styles;
+  }
+
   private wrapHtml(title: string, html: string): string {
     return minify(
       `
@@ -314,6 +331,7 @@ class Generator {
 
   <title>${title}</title>
   <link rel="stylesheet" type="text/css" href="/main.css">
+  <style type="text/css">${this.criticalCSS}</style>
   </head>
   <body>
     <header>
@@ -480,6 +498,7 @@ ${
 
 (async () => {
   const generator = new Generator();
+  await generator.init();
 
   // Clean-up
   rimraf.sync('./_site');
