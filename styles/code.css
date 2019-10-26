@@ -1,17 +1,11 @@
-a .sourceLine {
-  color: rgba(0, 0, 0, 0.84);
-}
-
 code {
   background-color: #f3f4f5;
   font-family: 'Inconsolata';
-  font-size: 17px;
   line-height: 1.2em;
 }
 
 pre code {
   display: block;
-  margin-bottom: 1em;
   overflow-x: auto; /* Make code block scrollable */
   padding: 8px;
 }

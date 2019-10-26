@@ -14,7 +14,7 @@ frustration come from? How could it be done differently? And ultimately, what
 makes a good test? This post is a collection of thoughts about testing, not an
 exhaustive guide.
 
-# Unit vs. Integration?
+## Unit vs. Integration?
 
 > It does not matter which one you pick first, you might need both eventually...
 
@@ -39,7 +39,7 @@ versions of each), while interacting with other libraries. This means that you
 will most likely gain more confidence that the code works in production
 environment, at the cost of a more complex setup.
 
-# Non-regression Tests
+## Non-regression Tests
 
 > Non-regression is not the same as *non-evolution*.
 
@@ -62,7 +62,7 @@ Tests are tightly related to the code being tested and, if you are not careful,
 rigid tests might make changing the source code much more painful than it
 should be.
 
-# Your Tests are Code
+## Your Tests are Code
 
 > Tests are not the destination, they are the starting point and the path.
 
@@ -84,7 +84,7 @@ Whenever one of the expectations holds for your code, try replacing `code` with
 to ensure it behaves in a correct way will have to evolve side-by-side in the
 future. You do not want your tests to become a *liability*.
 
-# Future-Proof Tests?
+## Future-Proof Tests?
 
 > No developer ever reads the same code twice. --- Heraclitus
 
@@ -126,7 +126,7 @@ same assertions over and over again to tests similar components, it might be
 worth abstracting these away. You will thank yourself in the future when you
 need to amend the tests!
 
-# By Way of Conclusion
+## By Way of Conclusion
 
 > Always pick the right hammer for your nails...
 

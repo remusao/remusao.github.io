@@ -94,7 +94,7 @@ The following features are considered:
 
 
 | Library                 | IDNA | URLs | IPs | getDomain | getPublicSuffix | ICANN/Private | Ships lists |
-|:----------------------- | ----:| ----:| ---:| ---------:| ---------------:| -------------:| -----------:|
+|:-----------------------: | :----:| :----:| :---:| :---------:| :---------------:| :-------------:| :-----------:|
 | **tldts**               |    X |    X |   X |         X |               X |             X |           X |
 | tld.js                  |    X |    X |   X |         X |               X |             X |           X |
 | psl                     |    X |      |     |         X |               X |               |           X |

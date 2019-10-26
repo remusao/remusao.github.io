@@ -3,8 +3,8 @@ import { join } from 'path';
 
 import Octokit from '@octokit/rest';
 import chokidar from 'chokidar';
-import CleanCSS from 'clean-css';
 import compression from 'compression';
+import csso from 'csso';
 import createDOMPurify from 'dompurify';
 import express from 'express';
 import glob from 'glob';
@@ -25,7 +25,6 @@ const blogDomain = 'https://remusao.github.io/';
 const blogTitle = 'Simplex Sigillum Veri';
 const blogDescription = blogTitle;
 
-// TODO - fix + cleanup css
 // TODO - re-architecture source code
 // TODO - support KaTex?
 // TODO - consider using JSX for HTML
@@ -41,7 +40,7 @@ function addEmojis(body: string): string {
       console.log('>>', tag, hex);
       body = body.replace(
         new RegExp(escape(tag), 'g'),
-        `<img class="emoji" alt="${tag}" src="https://github.githubassets.com/images/icons/emoji/unicode/${hex.toLowerCase()}.png"/>`,
+        `<img loading="lazy" class="emoji" alt="${tag}" src="https://github.githubassets.com/images/icons/emoji/unicode/${hex.toLowerCase()}.png"/>`,
       );
     }
   }
@@ -92,7 +91,7 @@ function createButtons(title: string, url: string): string {
       return `
         <li>
           <a href="${href}" title="${alt}" target="_blang" rel="noopener noreferrer">
-            <img alt="${alt}" src="/images/social_flat_rounded_rects_svg/${img}"></img>
+            <img loading="lazy" alt="${alt}" src="/images/social_flat_rounded_rects_svg/${img}"></img>
           <a/>
         </li>
       `;
@@ -183,7 +182,9 @@ class Generator {
   private readonly purifyDOM: (_: string) => string;
   private readonly octokit: Octokit;
   private readonly posts: Map<string, Post>;
-  private criticalCSS!: string;
+
+  private indexCSS!: string;
+  private articleCSS!: string;
 
   constructor() {
     // Initialize posts
@@ -212,25 +213,15 @@ class Generator {
   }
 
   public async init(): Promise<void> {
-    this.criticalCSS = await this.generateCriticalCSS();
+    const [index, article] = await Promise.all([
+      this.generateIndexCSS(),
+      this.generateArticleCSS(),
+    ]);
+
+    this.indexCSS = index;
+    this.articleCSS = article;
   }
 
-  public async generateCSS(): Promise<void> {
-    // Initialize stylesheets
-    const { styles } = new CleanCSS({ level: 2 }).minify(
-      (await Promise.all(
-        [
-          'styles/article.css',
-          'styles/code.css',
-          'styles/comments.css',
-          'styles/sharing.css',
-          'styles/style.css',
-          'node_modules/highlight.js/styles/github.css',
-        ].map((path) => fs.readFile(join(__dirname, path), 'utf8')),
-      )).join('\n'),
-    );
-    await fs.writeFile('./_site/main.css', styles, 'utf8');
-  }
 
   public async generate(path: string): Promise<void> {
     const name = getBaseName(path);
@@ -259,9 +250,9 @@ class Generator {
 
     const indexEntry = (post: Post): string => `
     <li>
-    <img class="logo" alt="${post.logoAlt}" src="${post.logo}"></img>
+    <img loading="auto" class="logo" alt="${post.logoAlt}" src="${post.logo}"></img>
     <a href="${post.url}">${post.title}</a>
-    <span> - ${formatDate(post.date)}</span>
+    <span class="date"> - ${formatDate(post.date)}</span>
     </li>
     `;
 
@@ -295,29 +286,49 @@ class Generator {
     const index = this.wrapHtml(
       'Posts',
       `
-        <div class="blogIndex">
+        <div>
         ${postsSortedByYear.map((group) => indexYear(group[0], group[1])).join('\n')}
         </div>
         `,
+        this.indexCSS,
     );
 
     await fs.writeFile('./_site/index.html', index, { encoding: 'utf-8' });
   }
 
-  private async generateCriticalCSS(): Promise<string> {
-    // Initialize stylesheets
-    const { styles } = new CleanCSS({ level: 2 }).minify(
+  private async generateIndexCSS(): Promise<string> {
+    return csso.minify(
       (await Promise.all(
         [
           'styles/fonts.css',
+          'styles/style.css',
+          'styles/index.css',
+          'node_modules/highlight.js/styles/github.css',
         ].map((path) => fs.readFile(join(__dirname, path), 'utf8')),
       )).join('\n'),
-    );
-
-    return styles;
+    ).css;
   }
 
-  private wrapHtml(title: string, html: string): string {
+  private async generateArticleCSS(): Promise<string> {
+    return csso.minify(
+      (await Promise.all(
+        [
+          'styles/fonts.css',
+          'styles/style.css',
+          'styles/article.css',
+          'styles/code.css',
+          'styles/comments.css',
+          'styles/table.css',
+          'styles/footer.css',
+          'styles/sharing.css',
+          'styles/header.css',
+          'node_modules/highlight.js/styles/github.css',
+        ].map((path) => fs.readFile(join(__dirname, path), 'utf8')),
+      )).join('\n'),
+    ).css;
+  }
+
+  private wrapHtml(title: string, html: string, css: string): string {
     return minify(
       `
 <!DOCTYPE html lang="en" dir="ltr">
@@ -330,15 +341,9 @@ class Generator {
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico"></link>
 
   <title>${title}</title>
-  <link rel="stylesheet" type="text/css" href="/main.css">
-  <style type="text/css">${this.criticalCSS}</style>
+  <style type="text/css">${css}</style>
   </head>
   <body>
-    <header>
-      <h1>
-        <a href="../"><span>Simplex Sigillum Veri</span></a>
-      </h1>
-    </header>
     <main>${html}</main>
   </body>
 </html>`,
@@ -360,6 +365,12 @@ class Generator {
     return this.wrapHtml(
       post.title,
       `
+<header>
+  <h1>
+    <a href="../"><span>../</span></a>
+  </h1>
+</header>
+
 <h1>${post.title}</h1>
 <section class="header">
   <div>${formatDate(post.date)} | <em>Reading time: ~${post.readingTime} minutes</em></div>
@@ -378,6 +389,7 @@ class Generator {
   </div>
 </footer>
 `,
+    this.articleCSS,
     );
   }
 
@@ -477,7 +489,7 @@ ${
       <li>
         <div class="comment">
           <div class="meta">
-            <img class="avatar" src="${avatar}" width="40" height="40"/>
+            <img loading="lazy" class="avatar" src="${avatar}" width="40" height="40"/>
             <a class="author" href="${profile}" title="${author}" target="_blank" rel="noopener noreferrer">${author}</a>
             <span> commented </span>
             <a class="date" href="${url}" title="${url}" target="_blank" rel="noopener noreferrer">${humanized}</a>
@@ -512,12 +524,7 @@ ${
   new TreeSync('experiments', '_site/experiments').sync();
 
   // Generate all posts + index.html
-  await Promise.all([
-    Promise.all(glob.sync('./posts/*.md').map((path) => generator.generate(path))).then(() =>
-      generator.generateIndex(),
-    ),
-    generator.generateCSS(),
-  ]);
+  await Promise.all(glob.sync('./posts/*.md').map((path) => generator.generate(path))).then(() => generator.generateIndex());
 
   if (ci === false) {
     // Start watching for changes generating

@@ -1,15 +1,12 @@
-/* Style sharing buttons */
 .share ul {
-  padding: 0 0 0 1em;
-  padding-left: 0;
   text-align: right;
-}
-
-.share img {
-  width: 2.5em;
 }
 
 .share li {
   display: inline;
-  margin: 0 5px;
+  padding: 0 5px;
+}
+
+.share img {
+  width: 2em;
 }

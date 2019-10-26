@@ -1,9 +1,8 @@
-
 .leave-comment-btn {
   background-color: #28a745;
   background-image: linear-gradient(-180deg,#34d058,#28a745 90%);
-  border-radius: .25em;
   border: 1px solid rgba(27,31,35,.2);
+  border-radius: .25em;
   color: #fff;
   display: inline-block;
   font-size: 15px;
@@ -28,12 +27,13 @@ summary {
 
 .comments-list {
   list-style: none;
+  padding: 0;
 }
 
 .comment {
   background-color: #fff;
-  border-radius: 3px;
   border: 1px solid #d1d5da;
+  border-radius: 3px;
   color: #24292e;
   font-size: 15px;
   margin: 1em 0;
@@ -62,7 +62,6 @@ summary {
 
 .content {
   padding-left: 20px;
-  padding-right: 10px;
 }
 
 .avatar {
@@ -72,7 +71,7 @@ summary {
 }
 
 .emoji {
+  height: 1.1em;
   vertical-align: middle;
   width: 1.1em;
-  height: 1.1em;
 }

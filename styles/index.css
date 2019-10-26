@@ -1,0 +1,25 @@
+main {
+  padding-top: 1em;
+}
+
+.index {
+  line-height: 1.8em;
+  list-style: none;
+  padding-left: 0;
+}
+
+.date {
+  color: #918d8d;
+}
+
+.index a {
+  color: #2e3436;
+  text-decoration: none;
+}
+
+.logo {
+  height: 1em;
+  margin: 0 1em;
+  opacity: 0.7;
+  width: 1em; /* how to not force width but keep alignement? */
+}
