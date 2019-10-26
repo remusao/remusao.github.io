@@ -131,7 +131,7 @@ function getLogo(name: string | undefined): string {
     return defaultLogo;
   }
 
-  return LOGOS[name] || defaultLogo;
+  return LOGOS[name] || `/images/logos/${name}.svg`;
 }
 
 function getApproxReadingTime(content: string): number {
