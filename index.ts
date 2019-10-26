@@ -243,7 +243,7 @@ class Generator {
 
       const html = this.renderPost(post);
       const outputFilePath = `./_site/posts/${name}.html`;
-      const outputFilePathLegacy = `./_site/posts/${post.date}-${name}.html`;
+      const outputFilePathLegacy = `./_site/posts/${post.date.toISOString().slice(0, 10)}-${name}.html`;
 
       await Promise.all([
         fs.writeFile(outputFilePath, html, { encoding: 'utf-8' }),
