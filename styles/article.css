@@ -21,7 +21,11 @@
 
 .main img {
   display: block;
+  height: auto;
   margin: auto;
+  padding-bottom: 1em;
+  padding-top: 1em;
+  width: 90%;
 }
 
 .main blockquote {

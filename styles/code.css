@@ -1,3 +1,11 @@
+@font-face {
+  font-display: block;
+  font-family: 'Inconsolata';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Inconsolata Regular'), local('Inconsolata-Regular'), url(/fonts/Inconsolata.woff2) format('truetype');
+}
+
 code {
   background-color: #f3f4f5;
   font-family: 'Inconsolata';

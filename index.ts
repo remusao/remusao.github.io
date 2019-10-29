@@ -176,6 +176,7 @@ interface Post {
   readingTime: number;
   title: string;
   url: string;
+  lang: string;
 }
 
 class Generator {
@@ -284,6 +285,8 @@ class Generator {
     );
 
     const index = this.wrapHtml(
+      'en',
+      'index.html',
       'Posts',
       `
         <div>
@@ -328,19 +331,24 @@ class Generator {
     ).css;
   }
 
-  private wrapHtml(title: string, html: string, css: string): string {
+  private wrapHtml(lang: string, path: string, title: string, html: string, css: string): string {
     return minify(
       `
-<!DOCTYPE html lang="en" dir="ltr">
+<!doctype html lang="${lang}" dir="rtl"> <!-- HTML5 -->
 <head>
-  <meta name="Description" content="${blogDescription}">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta httpEquiv="x-ua-compatible" content="ie=edge">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>${title}</title>
+  <meta name="description" content="${blogDescription}">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <link rel="canonical" href="https://remusao.github.io/${path}">
 
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico"></link>
 
-  <title>${title}</title>
   <style type="text/css">${css}</style>
   </head>
   <body>
@@ -363,6 +371,8 @@ class Generator {
 
   private renderPost(post: Post): string {
     return this.wrapHtml(
+      post.lang,
+      `posts/${post.name}.html`,
       post.title,
       `
 <header>
@@ -434,6 +444,7 @@ class Generator {
       content,
       date,
       html,
+      lang: metadata.get('lang') || 'en',
       logo: getLogo(metadata.get('logo')),
       logoAlt: metadata.get('logo') || 'post logo',
       name,
