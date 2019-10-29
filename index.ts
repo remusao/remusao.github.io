@@ -306,7 +306,6 @@ class Generator {
           'styles/fonts.css',
           'styles/style.css',
           'styles/index.css',
-          'node_modules/highlight.js/styles/github.css',
         ].map((path) => fs.readFile(join(__dirname, path), 'utf8')),
       )).join('\n'),
     ).css;
@@ -363,7 +362,7 @@ class Generator {
         removeOptionalTags: false,
         removeRedundantAttributes: true,
         removeScriptTypeAttributes: false,
-        removeTagWhitespace: true,
+        removeTagWhitespace: false,
         useShortDoctype: false,
       },
     );
