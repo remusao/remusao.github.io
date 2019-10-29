@@ -9,11 +9,11 @@ body {
   padding: 0 1em;
 }
 
-@media (min-width: 750px) {
+@media (min-width: 760px) {
   body { font-size: 100%; }
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1024px) {
   body { font-size: 105%; }
 }
 
