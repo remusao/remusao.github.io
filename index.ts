@@ -108,6 +108,7 @@ const LOGOS: {
   ccc: '/images/logos/ccc.svg',
   cliqz: '/images/logos/cliqz.svg',
   cpp: '/images/logos/c++.svg',
+  diablo2: '/images/logos/diablo2.png',
   hashcode: '/images/logos/bash.svg',
   haskell: '/images/logos/haskell.svg',
   html5: '/images/logos/html-5.svg',
@@ -333,7 +334,8 @@ class Generator {
   private wrapHtml(lang: string, path: string, title: string, html: string, css: string): string {
     return minify(
       `
-<!doctype html lang="${lang}" dir="rtl"> <!-- HTML5 -->
+<!DOCTYPE html>
+<html lang="${lang}" dir="ltr"> <!-- HTML5 -->
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
