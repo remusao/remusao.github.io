@@ -1,5 +1,5 @@
 @font-face {
-  font-display: block;
+  font-display: swap;
   font-family: 'Open Sans';
   font-style: italic;
   font-weight: 400;
@@ -7,7 +7,7 @@
 }
 
 @font-face {
-  font-display: block;
+  font-display: swap;
   font-family: 'Open Sans';
   font-style: italic;
   font-weight: 700;
@@ -15,7 +15,7 @@
 }
 
 @font-face {
-  font-display: block;
+  font-display: swap;
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
@@ -23,7 +23,7 @@
 }
 
 @font-face {
-  font-display: block;
+  font-display: swap;
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 700;
