@@ -3,6 +3,7 @@ title: Parsing Thunderbird Message Filters
 date: 2019-11-24
 logo: thunderbird
 lang: en
+issue: 73
 ---
 
 > [Thunderbird](https://www.thunderbird.net/) is a free email application that's
