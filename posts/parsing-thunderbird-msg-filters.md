@@ -128,3 +128,5 @@ language (TypeScript) which will give me more confidence about their validity.
 It is also much easier to manipulate them from a single file, in a familiar
 developer environment (i.e.: your editor of choice) than through the
 Thunderbird interface.
+
+GitHub repository: https://github.com/remusao/thunderbird-msg-filters/
