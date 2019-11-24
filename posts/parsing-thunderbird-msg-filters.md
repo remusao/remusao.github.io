@@ -90,10 +90,12 @@ condition="ALL"
 `);
 ```
 
-You can also pretty-print rules to the same original format:
+You can also format rules to the same original format:
 
 ```typescript
-const rules = pprint({
+import { format } from 'thunderbird-msg-filters';
+
+const rules = format({
   version: '9',
   logging: 'no',
   rules: [
