@@ -204,6 +204,7 @@ class Generator {
     });
 
     // Initialize DOM sanitizer
+    // @ts-ignore
     const DOMPurify = createDOMPurify(new JSDOM('').window);
     this.purifyDOM = (html) => DOMPurify.sanitize(html);
 
