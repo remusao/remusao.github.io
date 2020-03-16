@@ -1,0 +1,214 @@
+<!DOCTYPE html><html lang="fr" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>XMonad</title><meta name="description" content="Simplex Sigillum Veri"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="canonical" href="https://remusao.github.io/posts/xmonad.html"><link rel="icon" type="image/x-icon" href="/images/favicon.ico"><style type="text/css">@font-face{font-display:swap;font-family:'Open Sans';font-style:italic;font-weight:400;src:url(/fonts/OpenSans_italic_400.woff2) format('woff2')}@font-face{font-display:swap;font-family:'Open Sans';font-style:italic;font-weight:700;src:url(/fonts/OpenSans_italic_700.woff2) format('woff2')}@font-face{font-display:swap;font-family:'Open Sans';font-style:normal;font-weight:400;src:url(/fonts/OpenSans_normal_400.woff2) format('woff2')}@font-face{font-display:swap;font-family:'Open Sans';font-style:normal;font-weight:700;src:url(/fonts/OpenSans_normal_700.woff2) format('woff2')}body{color:#2f2f2f;font-family:'Open Sans',sans-serif;font-size:95%;line-height:1.6em;margin:20px auto;max-width:42em;padding:0 1em}@media (min-width:760px){body{font-size:100%}}@media (min-width:1024px){body{font-size:105%}}h1,h2,h3{font-size:1.7em;font-weight:400;padding-top:.7em}h2,h3{font-size:1.5em}h3{font-size:1.2em}.header,.main figcaption{color:#555;font-style:italic}.main a{color:#3465a4}.main a:visited{color:#75507b}.main figcaption{color:#696f72;line-height:2em;text-align:center}.main img{display:block;height:auto;margin:auto;padding-bottom:1em;padding-top:1em;width:90%}.main blockquote{border-left:thin solid #d3d7cf;color:#555;margin:10px;padding:0 0 0 1em}@font-face{font-display:swap;font-family:'Inconsolata';font-style:normal;font-weight:400;src:url(/fonts/Inconsolata.woff2) format('truetype')}code{background-color:#f3f4f5;font-family:'Inconsolata';line-height:1.2em}pre code{display:block;overflow-x:auto;padding:8px}.leave-comment-btn,summary{font-size:15px;font-weight:600}.leave-comment-btn{background-color:#28a745;background-image:linear-gradient(-180deg,#34d058,#28a745 90%);border:1px solid rgba(27,31,35,.2);border-radius:.25em;color:#fff;display:inline-block;margin-top:1.5em;padding:3px 10px;text-decoration:none}.leave-comment-btn:hover{box-shadow:0 1px 3px rgba(0,0,0,.24)}summary{color:#516ae8;cursor:pointer;line-height:1.2rem;margin-top:2rem}.comments-list{list-style:none;padding:0}.comment{background-color:#fff;border:1px solid #d1d5da;border-radius:3px;color:#24292e;font-size:15px;margin:1em 0}.meta{background-color:#f6f8fa;border-bottom:1px solid #d1d5da;color:#586069}.author,.date{text-decoration:none}.author{color:#24292e!important;font-weight:700}.date{color:#586069}.date:hover{color:#0366d6}.content{padding-left:20px}.avatar,.emoji{vertical-align:middle}.avatar{display:inline-block;margin-right:5px}.emoji{height:1.1em;width:1.1em}table{border-collapse:collapse;margin:auto}td,th{border:1px solid #ddd;padding:10px}tr:hover{background-color:#f5f5f5}footer{border-top:thin solid #d3d7cf;margin:1.5em 0}.share ul{text-align:right}.share li{display:inline;padding:0 5px}.share img{width:2em}.main a,header a{text-decoration:none}.hljs{display:block;overflow-x:auto;padding:.5em;color:#333;background:#f8f8f8}.hljs-comment,.hljs-quote{color:#998;font-style:italic}.hljs-keyword,.hljs-selector-tag{color:#333;font-weight:700}.hljs-subst{color:#333}.hljs-literal,.hljs-number,.hljs-tag .hljs-attr,.hljs-template-variable,.hljs-variable{color:teal}.hljs-doctag,.hljs-string{color:#d14}.hljs-section,.hljs-selector-id,.hljs-title{color:#900;font-weight:700}.hljs-subst{font-weight:400}.hljs-class .hljs-title,.hljs-type{color:#458;font-weight:700}.hljs-attribute,.hljs-name,.hljs-tag{color:navy;font-weight:400}.hljs-link,.hljs-regexp{color:#009926}.hljs-bullet,.hljs-symbol{color:#990073}.hljs-built_in,.hljs-builtin-name{color:#0086b3}.hljs-meta{color:#999;font-weight:700}.hljs-deletion{background:#fdd}.hljs-addition{background:#dfd}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}</style></head><body><main><header><h1><a href="../"><span>../</span></a></h1></header><h1>XMonad</h1><section class="header"><div>2013-02-14 | <em>Reading time: ~13 minutes</em></div></section><article><div class="main"><p>Étant utilisateur de GNU/Linux depuis quelques années maintenant, j’ai eu l’occasion de tester quelques distributions et quelques environnements de bureau. Parmi les distributions je suis passé par Ubuntu, Debian, Fedora pour enfin essayer Archlinux, que je n’ai plus quitté depuis. En terme d’environnement c’est un peu la même chose, gnome, xfce, lxde, openbox puis Awesome que j’ai utilisé pendant une année. Je n’ai jamais trop cherché à modifier la configuration par défaut, qui me convenait plutôt bien. Puis je me suis mis au Haskell, et avec lui des envies de refaire le monde, des envies de pureté, des envies de paresse (enfin pas tant que ça !), et j’ai ouï dire qu’il existait un gestionnaire de fenêtre écrit avec ce fabuleux langage : XMonad !</p><h2 id="présentation-de-xmonad">Présentation de XMonad</h2><p>XMonad est un gestionnaire de fenêtre de style « tiling » (c’est à dire qu’il est capable de gérer tout seul la disposition des fenêtres afin d’optimiser l’espace). Il est léger, épuré, très minimaliste. En fait la première fois qu’on le lance il n’y a rien, à part un curseur de souri ! C’est un bon début. A la différence d’Awesome qui propose tout de même un minimum syndical (une barre de tâches, une vue des différents tags, l’heure…). Sur XMonad rien de tout ça. J’ai vraiment eu l’impression qu’on me fournissait des briques de base, et qu’ensuite c’était à moi de jouer pour me construire mon propre gestionnaire de fenêtre, et c’est en quelque sorte ce que j’ai fait. Heureusement les ressources se trouvent assez facilement sur internet, à partir de la documentation, d’articles et d’exemples, on parvient à créer un petit environnement douillet en quelques heures (à condition de connaitre quelques bribes de Haskell, car oui, XMonad se configure en Haskell !). Au final, il n’y a pas à dire, c’est un gestionnaire de fenêtre fonctionnel.</p><h2 id="installation">Installation</h2><p>Pour les utilisateur de Archlinux il suffit d’exécuter la commande suivante ! Pour les autres, un petit tour par la documentation de votre distribution favorite devrait vous éguiller.</p><pre><code class="language-sh">$ pacman -S xmonad xmonad-contrib</code></pre><h2 id="configuration">Configuration</h2><p>Venons-en aux sujets qui fâchent, à savoir, la configuration. Comme dit un peu plus haut, ça se fait en utilisant le langage Haskell et on place tout ça dans un fichier nommé xmonad.hs dans un dossier ~/.xmonad. Puisque c’est du Haskell, vous l’aurez deviné, ça se compile. Heureusement cela se fait à chaud, sans avoir besoin de quitter XMonad, ce qui est très appréciable. Grâce au raccourci Mod</p><ul><li>q le fichier de configuration est recompilé, si il est correct il est appliqué à chaud, sinon une fenêtre s’ouvre vous indiquant les éventuelles erreurs, et l’ancienne configuration est conservée. Comme ça, pas de risque de casser votre environnement en le modifiant en cours d’utilisation.</li></ul><p>Je vais vous présenter ma configuration actuelle, qui est assez basique, mais comble amplement mes attentes. Ensuite je vais détailler quelques points importants.</p><pre><code class="language-haskell"><span class="hljs-comment">{- Config of berson_r -}</span>
+
+<span class="hljs-keyword">import</span> System.Exit
+<span class="hljs-keyword">import</span> System.IO
+<span class="hljs-keyword">import</span> XMonad
+<span class="hljs-keyword">import</span> XMonad.Actions.CycleWS
+<span class="hljs-keyword">import</span> XMonad.Actions.GridSelect
+<span class="hljs-keyword">import</span> XMonad.Hooks.DynamicLog
+<span class="hljs-keyword">import</span> XMonad.Hooks.ManageDocks
+<span class="hljs-keyword">import</span> XMonad.Layout.Fullscreen
+<span class="hljs-keyword">import</span> XMonad.Layout.NoBorders
+<span class="hljs-keyword">import</span> XMonad.Layout.Spiral
+<span class="hljs-keyword">import</span> XMonad.Layout.Tabbed
+<span class="hljs-keyword">import</span> XMonad.Util.EZConfig(<span class="hljs-title">additionalKeys</span>)
+<span class="hljs-keyword">import</span> XMonad.Util.Run(<span class="hljs-title">spawnPipe</span>)
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Map        <span class="hljs-keyword">as</span> M
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> XMonad.StackSet <span class="hljs-keyword">as</span> W
+
+
+<span class="hljs-comment">-- Main</span>
+<span class="hljs-title">main</span> = <span class="hljs-keyword">do</span>
+    xmproc &lt;- spawnPipe <span class="hljs-string">"xmobar /home/berson_r/.xmobarrc"</span> <span class="hljs-comment">-- lance xmobar avec le bon fichier de config</span>
+    spawn <span class="hljs-string">"nitrogen --restore"</span> <span class="hljs-comment">-- affiche le fond d'écran</span>
+    xmonad $ defaultConfig { <span class="hljs-comment">-- redéfinition de certaines options de XMonad</span>
+    <span class="hljs-comment">-- simple stuff</span>
+    terminal           = myTerminal,
+    modMask            = myModMask,
+    workspaces         = myWorkspaces,
+    normalBorderColor  = myNormalBorderColor,
+    focusedBorderColor = myFocusedBorderColor,
+
+    <span class="hljs-comment">-- key bindings</span>
+    keys               = myKeys,
+    <span class="hljs-comment">-- mouseBindings      = myMouseBindings,</span>
+
+    <span class="hljs-comment">-- hooks, layouts</span>
+    layoutHook         = smartBorders $ myLayout,
+    manageHook         = myManageHook,
+    logHook            = myLogHook xmproc,
+    startupHook        = myStartupHook
+    }
+
+
+<span class="hljs-comment">-- Binding for the mod key</span>
+<span class="hljs-title">myModMask</span> :: <span class="hljs-type">KeyMask</span>
+<span class="hljs-title">myModMask</span> = mod4Mask
+
+<span class="hljs-comment">-- Default terminal to use</span>
+<span class="hljs-title">myTerminal</span> :: <span class="hljs-type">String</span>
+<span class="hljs-title">myTerminal</span> = <span class="hljs-string">"urxvt"</span>
+
+<span class="hljs-comment">-- Names of the workspaces</span>
+<span class="hljs-title">myWorkspaces</span> :: [<span class="hljs-type">String</span>]
+<span class="hljs-title">myWorkspaces</span> = [<span class="hljs-string">"term"</span>, <span class="hljs-string">"web"</span>, <span class="hljs-string">"mail"</span>, <span class="hljs-string">"music"</span>] ++ (map show [<span class="hljs-number">5.</span><span class="hljs-number">.9</span>])
+
+<span class="hljs-comment">-- Color of normal borders</span>
+<span class="hljs-title">myNormalBorderColor</span> :: <span class="hljs-type">String</span>
+<span class="hljs-title">myNormalBorderColor</span>  = <span class="hljs-string">"#7c7c7c"</span>
+
+<span class="hljs-comment">-- Color of the selected window's borders</span>
+<span class="hljs-title">myFocusedBorderColor</span> :: <span class="hljs-type">String</span>
+<span class="hljs-title">myFocusedBorderColor</span> = <span class="hljs-string">"#ffb6b0"</span>
+
+<span class="hljs-comment">-- Color of current window title in xmobar.</span>
+<span class="hljs-title">xmobarTitleColor</span> :: <span class="hljs-type">String</span>
+<span class="hljs-title">xmobarTitleColor</span> = <span class="hljs-string">"#FFB6B0"</span>
+
+<span class="hljs-comment">-- -- Color of current workspace in xmobar.</span>
+<span class="hljs-title">xmobarCurrentWorkspaceColor</span> :: <span class="hljs-type">String</span>
+<span class="hljs-title">xmobarCurrentWorkspaceColor</span> = <span class="hljs-string">"#CEFFAC"</span>
+
+<span class="hljs-comment">-- Custom layout</span>
+<span class="hljs-title">myLayout</span> = avoidStruts (
+    <span class="hljs-type">Tall</span> <span class="hljs-number">1</span> (<span class="hljs-number">3</span>/<span class="hljs-number">100</span>) (<span class="hljs-number">1</span>/<span class="hljs-number">2</span>) |||
+    <span class="hljs-type">Mirror</span> (<span class="hljs-type">Tall</span> <span class="hljs-number">1</span> (<span class="hljs-number">3</span>/<span class="hljs-number">100</span>) (<span class="hljs-number">1</span>/<span class="hljs-number">2</span>)) |||
+    tabbed shrinkText tabConfig |||
+    <span class="hljs-type">Full</span> |||
+    spiral (<span class="hljs-number">6</span>/<span class="hljs-number">7</span>)) |||
+    noBorders (fullscreenFull <span class="hljs-type">Full</span>)
+
+<span class="hljs-comment">-- Colors for text and backgrounds of each tab when in "Tabbed" layout.</span>
+<span class="hljs-title">tabConfig</span> = defaultTheme {
+    activeBorderColor = <span class="hljs-string">"#7C7C7C"</span>,
+    activeTextColor = <span class="hljs-string">"#CEFFAC"</span>,
+    activeColor = <span class="hljs-string">"#000000"</span>,
+    inactiveBorderColor = <span class="hljs-string">"#7C7C7C"</span>,
+    inactiveTextColor = <span class="hljs-string">"#EEEEEE"</span>,
+    inactiveColor = <span class="hljs-string">"#000000"</span>
+}
+
+
+<span class="hljs-title">myStartupHook</span> = return ()
+
+<span class="hljs-comment">-- Custom rules</span>
+<span class="hljs-title">myManageHook</span> :: <span class="hljs-type">ManageHook</span>
+<span class="hljs-title">myManageHook</span> = composeAll
+    [ className =? <span class="hljs-string">"Chromium"</span>       <span class="hljs-comment">--&gt; doShift "web"</span>
+    , className =? <span class="hljs-string">"Firefox"</span>        <span class="hljs-comment">--&gt; doShift "web"</span>
+    , className =? <span class="hljs-string">"Uzbl-core"</span>      <span class="hljs-comment">--&gt; doShift "web"</span>
+    , className =? <span class="hljs-string">"Thunderbird"</span>    <span class="hljs-comment">--&gt; doShift "mail"</span>
+    , className =? <span class="hljs-string">"Spotify"</span>        <span class="hljs-comment">--&gt; doShift "music"</span>
+    , className =? <span class="hljs-string">"Vlc"</span>            <span class="hljs-comment">--&gt; doFloat</span>
+    , className =? <span class="hljs-string">"Steam"</span>          <span class="hljs-comment">--&gt; doFloat</span>
+    , className =? <span class="hljs-string">"Gimp"</span>           <span class="hljs-comment">--&gt; doFloat</span>
+    , manageDocks]
+<span class="hljs-comment">--    , isFullscreen --&gt; (doF W.focusDown &lt;+&gt; doFullFloat)]</span>
+
+<span class="hljs-title">myLogHook</span> :: <span class="hljs-type">Handle</span> -&gt; <span class="hljs-type">X</span> ()
+<span class="hljs-title">myLogHook</span> xmproc = dynamicLogWithPP xmobarPP {
+    ppOutput = hPutStrLn xmproc,
+    ppTitle = xmobarColor <span class="hljs-string">"green"</span> <span class="hljs-string">""</span> . shorten <span class="hljs-number">50</span>
+}
+
+
+<span class="hljs-comment">-- Key bindings --</span>
+<span class="hljs-title">myKeys</span> conf@(<span class="hljs-type">XConfig</span> {<span class="hljs-type">XMonad</span>.modMask = modMask}) = <span class="hljs-type">M</span>.fromList $
+
+  <span class="hljs-comment">-- Custom key bindings</span>
+
+  [ ((modMask .|. shiftMask, xK_Return), spawn $ <span class="hljs-type">XMonad</span>.terminal conf) <span class="hljs-comment">-- start term</span>
+  , ((modMask, xK_r), spawn <span class="hljs-string">"exe=`dmenu_path_c | yeganesh` &amp;&amp; eval \"exec $exe\""</span>) <span class="hljs-comment">-- dmenu</span>
+  , ((modMask .|. controlMask, xK_m), spawn <span class="hljs-string">"amixer -q set Master toggle"</span>) <span class="hljs-comment">-- mute volume</span>
+  , ((modMask .|. controlMask, xK_j), spawn <span class="hljs-string">"amixer -q set Master 10%-"</span>) <span class="hljs-comment">-- dec volume</span>
+  , ((modMask .|. controlMask, xK_k), spawn <span class="hljs-string">"amixer -q set Master 10%+"</span>) <span class="hljs-comment">-- inc volume</span>
+  , ((modMask, xK_g), goToSelected defaultGSConfig) <span class="hljs-comment">-- display selection grid</span>
+  <span class="hljs-comment">-- workspaces</span>
+  , ((modMask, xK_Right), nextWS)
+  , ((modMask .|. shiftMask, xK_Right), shiftToNext)
+  , ((modMask, xK_Left), prevWS)
+  , ((modMask .|. shiftMask, xK_Left), shiftToPrev)
+
+  <span class="hljs-comment">-- "Standard" xmonad key bindings</span>
+
+  , ((modMask .|. shiftMask, xK_c), kill) <span class="hljs-comment">-- close selected window</span>
+  , ((modMask, xK_space), sendMessage <span class="hljs-type">NextLayout</span>) <span class="hljs-comment">-- change layout</span>
+  , ((modMask .|. shiftMask, xK_space), setLayout $ <span class="hljs-type">XMonad</span>.layoutHook conf) <span class="hljs-comment">-- reset layout</span>
+  , ((modMask, xK_n), refresh) <span class="hljs-comment">-- resize windows to the correct size</span>
+  , ((modMask, xK_Tab), windows <span class="hljs-type">W</span>.focusDown) <span class="hljs-comment">-- move focus to next window</span>
+  , ((modMask, xK_j),   windows <span class="hljs-type">W</span>.focusDown) <span class="hljs-comment">-- move focus to next window</span>
+  , ((modMask, xK_k),   windows <span class="hljs-type">W</span>.focusUp)   <span class="hljs-comment">-- move focus to previous window</span>
+  , ((modMask, xK_m),   windows <span class="hljs-type">W</span>.focusMaster) <span class="hljs-comment">-- move focus to master window</span>
+  , ((modMask, xK_Return), windows <span class="hljs-type">W</span>.swapMaster) <span class="hljs-comment">-- swap focused and master window</span>
+  , ((modMask .|. shiftMask, xK_j), windows <span class="hljs-type">W</span>.swapDown) <span class="hljs-comment">-- swap focused and next window</span>
+  , ((modMask .|. shiftMask, xK_k), windows <span class="hljs-type">W</span>.swapUp) <span class="hljs-comment">-- swap focused and previous window</span>
+
+  <span class="hljs-comment">-- Shrink the master area.</span>
+  , ((modMask, xK_h),
+     sendMessage <span class="hljs-type">Shrink</span>)
+
+  <span class="hljs-comment">-- Expand the master area.</span>
+  , ((modMask, xK_l),
+     sendMessage <span class="hljs-type">Expand</span>)
+
+  <span class="hljs-comment">-- Push window back into tiling.</span>
+  , ((modMask, xK_t),
+     withFocused $ windows . <span class="hljs-type">W</span>.sink)
+
+  <span class="hljs-comment">-- Increment the number of windows in the master area.</span>
+  , ((modMask, xK_comma),
+     sendMessage (<span class="hljs-type">IncMasterN</span> <span class="hljs-number">1</span>))
+
+  <span class="hljs-comment">-- Decrement the number of windows in the master area.</span>
+  , ((modMask, xK_period),
+     sendMessage (<span class="hljs-type">IncMasterN</span> (<span class="hljs-number">-1</span>)))
+
+  <span class="hljs-comment">-- Toggle the status bar gap.</span>
+  <span class="hljs-comment">-- <span class="hljs-doctag">TODO:</span> update this binding with avoidStruts, ((modMask, xK_b),</span>
+
+  <span class="hljs-comment">-- Quit xmonad.</span>
+  , ((modMask .|. shiftMask, xK_q),
+     io (exitWith <span class="hljs-type">ExitSuccess</span>))
+
+  <span class="hljs-comment">-- Restart xmonad.</span>
+  , ((modMask, xK_q),
+     restart <span class="hljs-string">"xmonad"</span> <span class="hljs-type">True</span>)
+  ]
+  ++
+
+  <span class="hljs-comment">-- mod-[1..9], Switch to workspace N</span>
+  <span class="hljs-comment">-- mod-shift-[1..9], Move client to workspace N</span>
+  [((m .|. modMask, k), windows $ f i)
+      | (i, k) &lt;- zip (<span class="hljs-type">XMonad</span>.workspaces conf) [xK_1 .. xK_9]
+      , (f, m) &lt;- [(<span class="hljs-type">W</span>.greedyView, <span class="hljs-number">0</span>), (<span class="hljs-type">W</span>.shift, shiftMask)]]
+  ++
+
+  <span class="hljs-comment">-- mod-{w,e,r}, Switch to physical/Xinerama screens 1, 2, or 3</span>
+  <span class="hljs-comment">-- mod-shift-{w,e,r}, Move client to screen 1, 2, or 3</span>
+  [((m .|. modMask, key), screenWorkspace sc &gt;&gt;= flip whenJust (windows . f))
+      | (key, sc) &lt;- zip [xK_w, xK_e, xK_p] [<span class="hljs-number">0.</span>.]
+      , (f, m) &lt;- [(<span class="hljs-type">W</span>.view, <span class="hljs-number">0</span>), (<span class="hljs-type">W</span>.shift, shiftMask)]]</code></pre><p>Globalement, on peut résumer l’organisation du fichier de configuration comme ceci :</p><ol><li>Les imports permettant de faire appel à des fonctionnalités de XMonad, ou toute autre bibliothèque Haskell (car vous pouvez vraiment mettre n’importe quoi dans votre fichier de configuration, si vous le vouliez vous pourriez coder factorielle, Fibonacci et un crible d’Ératosthène pour les afficher dans votre barre des tâches, aucun problème !).</li><li>Des redéfinitions d’options ou de comportements sous forme de constantes.</li><li>Une fonction Main qui regroupe tout ceci et spécifie à XMonad toutes les options, et les comportements que vous désirez. Globalement vous pourrez quasiment tout modifier via un type enregistrement. Les champs non spécifiés auront leur valeur par défaut, on se contente donc de spécifier ce qui nous intéresse.</li></ol><h2 id="barre-détat">Barre d’état</h2><p>Par défaut, XMonad ne dispose pas d’une barre des tâches. Il en existe une qui est également en Haskell et qui s’intègre très simplement avec XMonad, il s’agit de XMobar. Elle est très légère et permettra de répondre à la plupart des besoins. Il suffit pour la mettre en place de :</p><ol><li>Disposer d’un fichier de configuration situé ici : <code>~/.xmobarrc</code> (vous trouverez le mien un peu plus bas)</li><li>Rajouter la ligne : <code>xmproc &lt;- spawnPipe &quot;xmobar /home/berson_r/.xmobarrc</code> en haut de votre fonction main (cf mon fichier de configuration ci-dessus).</li><li>Indiquer quelles informations XMonad doit transmettre à XMobar lors de l’exécution (les workspaces par exemple). Pour ceci il faut redéfinir le myLogHook dans le main, je vous invite encore une fois à regarder mon exemple donné un peu plus haut.</li></ol><pre><code class="language-haskell"><span class="hljs-type">Config</span> { font = <span class="hljs-string">"-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"</span>
+, bgColor = <span class="hljs-string">"black"</span>
+, fgColor = <span class="hljs-string">"grey"</span>
+, position = <span class="hljs-type">TopW</span> <span class="hljs-type">L</span> <span class="hljs-number">90</span>
+, lowerOnStart = <span class="hljs-type">True</span>
+, commands = [ <span class="hljs-type">Run</span> <span class="hljs-type">Date</span> <span class="hljs-string">"%a %b %_d %H:%M"</span> <span class="hljs-string">"date"</span> <span class="hljs-number">10</span>
+, <span class="hljs-type">Run</span> <span class="hljs-type">StdinReader</span>
+]
+, sepChar = <span class="hljs-string">"%"</span>
+, alignSep = <span class="hljs-string">"}{"</span>
+, template = <span class="hljs-string">"%StdinReader% }{ &lt;fc=#ee9a00&gt;%date%&lt;/fc&gt; =&lt;&lt;"</span>
+}</code></pre><p>Attention, contrairement aux apparences, ce n’est pas du Haskell, donc ne mettez pas de commentaires dans ce fichier. Une fois les deux étapes décrites plus hauts effectuées, xmobar devrait s’afficher au lancement de XMonad. Vous remarquerez qu’il affiche les workspaces, l’application qui a le focus, l’heure, la date et … c’est tout. En plus il y a un espace de 10% de la taille de l’écran sur la droite. Il servira à mettre un trayer. C’est justement l’objet de la section suivante.</p><h2 id="system-tray">System Tray</h2><p>Par défaut, ni XMonad ni xmobar ne proposent un « trayer », où vous pourriez voir les icônes des applications en cours d’exécution. Pour cela j’utilise trayer, qui est très léger et facile à mettre en place. En fait, une fois qu’on lui a réservé une petite place (ce qui est notre cas), il suffit de le lancer avec les bonnes options depuis notre .xinitrc (ou .Xsessions). Voici la commande telle que je l’utilise :</p><pre><code class="language-sh">trayer --SetDockType <span class="hljs-literal">true</span>       \
+       --SetPartialStrut <span class="hljs-literal">true</span>   \
+       --align right            \
+       --alpha 0                \
+       --edge top               \
+       --expand <span class="hljs-literal">true</span>            \
+       --height 12              \
+       --heighttype pixel       \
+       --tint 0x000000          \
+       --transparent <span class="hljs-literal">true</span>       \
+       --width 10 &amp;</code></pre><h2 id="fond-décran">Fond d’écran</h2><p>Vous l’aurez compris, XMonad ne propose pas non plus par défaut d’utilitaire pour changer l’image ou la couleur du fond d’écran. Mais il est relativement simple d’en mettre un en place. J’ai personnellement utilisé nitrogen. Il est très simple à utiliser, la première fois il suffit de le lancer à la main et d’aller chercher le fond d’écran désiré. Ensuite, il suffira de le relancer à chaque démmarage avec la commande :</p><pre><code class="language-sh">nitrogen --restore &amp;</code></pre><p>Et c’est exactement le rôle de la ligne 23 dans la fonction main du fichier <code>xmonad.hs</code> :</p><pre><code class="language-haskell"><span class="hljs-title">spawn</span> <span class="hljs-string">"nitrogen --restore"</span></code></pre><h2 id="raccourcies-clavier-utiles">Raccourcies clavier utiles</h2><p>Le seul raccourci qu’il me manquait afin que ce soit parfait, était le <code>« mod + flèche »</code> afin de se déplacer sur le workspace de droite ou de gauche. Pour ce faire, il suffit de rajouter les lignes suivantes dans le tableau des raccourcis personnalisés :</p><pre><code class="language-haskell">, ((modMask, xK_Right), nextWS)
+, ((modMask .|. shiftMask, xK_Right), shiftToNext)
+, ((modMask, xK_Left), prevWS)
+, ((modMask .|. shiftMask, xK_Left), shiftToPrev)</code></pre><p>Il y a d’autres options que je n’ai pas détaillées dans cet article, mais j’ai laissé quelques commentaires dans le fichier de configuration afin de guider la compréhension. Si jamais ils ne sont pas suffisents, n’hésitez pas à laisser un commentaire pour poser une question, ou faire une remarque.</p></div><div class="comments"></div></article><footer><div class="share"><ul><li><a href="https://www.facebook.com/sharer/sharer.php?u=https://remusao.github.io//posts/xmonad.html&t=XMonad" title="Share on Facebook" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Share on Facebook" src="/images/social_flat_rounded_rects_svg/Facebook.svg"><a></a></li><li><a href="https://twitter.com/share?url=https://remusao.github.io//posts/xmonad.html&text=XMonad&via=Pythux" title="Tweet" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Tweet" src="/images/social_flat_rounded_rects_svg/Twitter.svg"><a></a></li><li><a href="https://getpocket.com/save?url=https://remusao.github.io//posts/xmonad.html&title=XMonad" title="Add to Pocket" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Add to Pocket" src="/images/social_flat_rounded_rects_svg/Pocket.svg"><a></a></li><li><a href="https://news.ycombinator.com/submitlink?u=https://remusao.github.io//posts/xmonad.html&t=XMonad" title="Submit to Hacker News" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Submit to Hacker News" src="/images/social_flat_rounded_rects_svg/HackerNews.svg"><a></a></li><li><a href="https://www.reddit.com/submit?url=https://remusao.github.io//posts/xmonad.html&title=XMonad" title="Submit to Reddit" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Submit to Reddit" src="/images/social_flat_rounded_rects_svg/Reddit.svg"><a></a></li></ul></div></footer></main></body></html>

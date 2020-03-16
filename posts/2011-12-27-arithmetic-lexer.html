@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Arithmetic lexer</title><meta name="description" content="Simplex Sigillum Veri"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="canonical" href="https://remusao.github.io/posts/arithmetic-lexer.html"><link rel="icon" type="image/x-icon" href="/images/favicon.ico"><style type="text/css">@font-face{font-display:swap;font-family:'Open Sans';font-style:italic;font-weight:400;src:url(/fonts/OpenSans_italic_400.woff2) format('woff2')}@font-face{font-display:swap;font-family:'Open Sans';font-style:italic;font-weight:700;src:url(/fonts/OpenSans_italic_700.woff2) format('woff2')}@font-face{font-display:swap;font-family:'Open Sans';font-style:normal;font-weight:400;src:url(/fonts/OpenSans_normal_400.woff2) format('woff2')}@font-face{font-display:swap;font-family:'Open Sans';font-style:normal;font-weight:700;src:url(/fonts/OpenSans_normal_700.woff2) format('woff2')}body{color:#2f2f2f;font-family:'Open Sans',sans-serif;font-size:95%;line-height:1.6em;margin:20px auto;max-width:42em;padding:0 1em}@media (min-width:760px){body{font-size:100%}}@media (min-width:1024px){body{font-size:105%}}h1,h2,h3{font-size:1.7em;font-weight:400;padding-top:.7em}h2,h3{font-size:1.5em}h3{font-size:1.2em}.header,.main figcaption{color:#555;font-style:italic}.main a{color:#3465a4}.main a:visited{color:#75507b}.main figcaption{color:#696f72;line-height:2em;text-align:center}.main img{display:block;height:auto;margin:auto;padding-bottom:1em;padding-top:1em;width:90%}.main blockquote{border-left:thin solid #d3d7cf;color:#555;margin:10px;padding:0 0 0 1em}@font-face{font-display:swap;font-family:'Inconsolata';font-style:normal;font-weight:400;src:url(/fonts/Inconsolata.woff2) format('truetype')}code{background-color:#f3f4f5;font-family:'Inconsolata';line-height:1.2em}pre code{display:block;overflow-x:auto;padding:8px}.leave-comment-btn,summary{font-size:15px;font-weight:600}.leave-comment-btn{background-color:#28a745;background-image:linear-gradient(-180deg,#34d058,#28a745 90%);border:1px solid rgba(27,31,35,.2);border-radius:.25em;color:#fff;display:inline-block;margin-top:1.5em;padding:3px 10px;text-decoration:none}.leave-comment-btn:hover{box-shadow:0 1px 3px rgba(0,0,0,.24)}summary{color:#516ae8;cursor:pointer;line-height:1.2rem;margin-top:2rem}.comments-list{list-style:none;padding:0}.comment{background-color:#fff;border:1px solid #d1d5da;border-radius:3px;color:#24292e;font-size:15px;margin:1em 0}.meta{background-color:#f6f8fa;border-bottom:1px solid #d1d5da;color:#586069}.author,.date{text-decoration:none}.author{color:#24292e!important;font-weight:700}.date{color:#586069}.date:hover{color:#0366d6}.content{padding-left:20px}.avatar,.emoji{vertical-align:middle}.avatar{display:inline-block;margin-right:5px}.emoji{height:1.1em;width:1.1em}table{border-collapse:collapse;margin:auto}td,th{border:1px solid #ddd;padding:10px}tr:hover{background-color:#f5f5f5}footer{border-top:thin solid #d3d7cf;margin:1.5em 0}.share ul{text-align:right}.share li{display:inline;padding:0 5px}.share img{width:2em}.main a,header a{text-decoration:none}.hljs{display:block;overflow-x:auto;padding:.5em;color:#333;background:#f8f8f8}.hljs-comment,.hljs-quote{color:#998;font-style:italic}.hljs-keyword,.hljs-selector-tag{color:#333;font-weight:700}.hljs-subst{color:#333}.hljs-literal,.hljs-number,.hljs-tag .hljs-attr,.hljs-template-variable,.hljs-variable{color:teal}.hljs-doctag,.hljs-string{color:#d14}.hljs-section,.hljs-selector-id,.hljs-title{color:#900;font-weight:700}.hljs-subst{font-weight:400}.hljs-class .hljs-title,.hljs-type{color:#458;font-weight:700}.hljs-attribute,.hljs-name,.hljs-tag{color:navy;font-weight:400}.hljs-link,.hljs-regexp{color:#009926}.hljs-bullet,.hljs-symbol{color:#990073}.hljs-built_in,.hljs-builtin-name{color:#0086b3}.hljs-meta{color:#999;font-weight:700}.hljs-deletion{background:#fdd}.hljs-addition{background:#dfd}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}</style></head><body><main><header><h1><a href="../"><span>../</span></a></h1></header><h1>Arithmetic lexer</h1><section class="header"><div>2011-12-27 | <em>Reading time: ~8 minutes</em></div></section><article><div class="main"><p>As part of a project dealing with implementing algorithm to do some arithmetic on numbers of arbitrary size, arbitrary base and arbitrary symbols, I had to think about how to write a flexible lexer, capable of cutting very quickly stream of characters (an arithmetic expression) in tokens understandable by a parser. So I will write some various articles on the lexer, parser and evaluation of an arithmetic expression by making it a point to highlight the various optimizations that I made in the algorithms to make them as fast as possible. The language used is C++, but since our priority is to reach the best performances possible, we will avoid too costly features such as inheritance, virtual class, etc. .. This article will details the following points:</p><ol><li>Input and number representation.</li><li>Memory management.</li><li>The Lexer.</li></ol><h2 id="input-and-number-representation">Input and number representation</h2><p>In order not to lose precious seconds in unnecessary operations such as resizing of string, repeated IO operations, etc… An expression input will consist of:</p><ol><li>Length of the base.</li><li>Symbols of the base.</li><li>Length of the arithmetic expression.</li><li>The arithmetic expression, without blank characters..</li></ol><p>A correct input could be:</p><pre><code class="language-sh">1 5 abcde 10 bc+bca+dec</code></pre><p>So we can easily read the input data with the following code:</p><pre><code class="language-c"><span class="hljs-keyword">char</span> newline;
+
+<span class="hljs-comment">// Read the base size</span>
+<span class="hljs-keyword">unsigned</span> base_size;
+<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span> &gt;&gt; base_size;
+<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span>.<span class="hljs-built_in">get</span>(newline);
+
+<span class="hljs-comment">// Read the base's symbols</span>
+<span class="hljs-keyword">char</span>* base = <span class="hljs-keyword">new</span> <span class="hljs-keyword">char</span>[base_size + <span class="hljs-number">1</span>];
+<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span>.<span class="hljs-built_in">read</span> (base, base_size + <span class="hljs-number">1</span>);
+base[base_size] = <span class="hljs-string">'\0'</span>;
+
+<span class="hljs-comment">// Read the expression's size</span>
+<span class="hljs-keyword">unsigned</span> expr_size;
+<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span> &gt;&gt; expr_size;
+<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span>.<span class="hljs-built_in">get</span>(newline);
+
+<span class="hljs-comment">// Read the expression</span>
+<span class="hljs-keyword">char</span>* expr = <span class="hljs-keyword">new</span> <span class="hljs-keyword">char</span>[expr_size + <span class="hljs-number">1</span>];
+<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span>.<span class="hljs-built_in">read</span> (expr, expr_size + <span class="hljs-number">1</span>);
+expr[expr_size] = <span class="hljs-string">'\0'</span>;</code></pre><p>The variable named newline will only be used to « absorb » the \n at the end of each line. Our expression is represented as a simple array of characters (we could have done the same thing in C). If you want to compile the code above, do not forget to add a #include<iostream>at the top of your file.</iostream></p><p>Since the role of the lexer is to « cut » our expression into tokens (numbers, operators, parentheses), we must ask ourself in what form we will store our numbers, which tokens we will use, etc… It would be tempting to create a string and to copy the number value there, it would be the most intuitive. But since we are looking for maximum performances, we will avoid as possible to use dynamic memory allocation. Instead we will represent our number as a pair of integers (offset, size) representing the beginning of the number in the expression (i.e. the index of its first digit in the array representing the expression) and its length. So we can work directly on the string containing the arithmetic expression.</p><p>Concerning tokens, we can use a simple enumeration containing an entry for each symbol:</p><pre><code class="language-c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span>
+{</span>
+  <span class="hljs-keyword">unsigned</span>  offset;
+  <span class="hljs-keyword">unsigned</span>  <span class="hljs-built_in">size</span>;
+} s_number;
+
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">enum</span>
+{
+  PLUS    = <span class="hljs-number">3</span>,
+  MINUS   = <span class="hljs-number">4</span>,
+  MULT    = <span class="hljs-number">5</span>,
+  DIV     = <span class="hljs-number">6</span>,
+  MOD     = <span class="hljs-number">7</span>,
+  LPAR    = <span class="hljs-number">2</span>,
+  RPAR    = <span class="hljs-number">8</span>,
+  NUMBER  = <span class="hljs-number">1</span>
+} e_token;</code></pre><p>We will see later why each field of the list is associated with a number.</p><h2 id="memory-management">Memory management</h2><p>We will try as much as possible to do it without dynamic memory allocation. Our couples (offset, size) and our tokens are then stored on the stack, using the static allocation, avoiding calls to new/delete and malloc/free. As we are using the string containing the expression to store our intermediate results, our memory consumption will be optimized. We must therefore adapt our algorithms for arithmetic in order to store the results directly in the string representing the expression.</p><h2 id="the-lexer">The Lexer</h2><p>We will create a <code>Lexer class</code>, containing methods for lexing and some private variables such as the string containing the expression, the current offset, etc. ..</p><p>The use of an object has several advantages in our case:</p><ol><li>This prevents parsing functions to take a lot of arguments (with the object of type <code>Lexer</code>, we can afford to give a single argument to functions).</li><li>To determine the next token, the lexer needs some informations, including the expression, the offset, the variable used to return the possible pair (offset, size) representing a number, etc. .. All variables can be stored in the object.</li><li>This makes the code more readable, without reducing the performances of the program.</li></ol><p>Our <code>Lexer</code> will be defined as follows:</p><pre><code class="language-c++"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Lexer</span>
+{</span>
+  <span class="hljs-keyword">public</span>:
+    Lexer (<span class="hljs-keyword">char</span>* expr, <span class="hljs-keyword">char</span>* table,
+           <span class="hljs-keyword">unsigned</span> expr_size, <span class="hljs-keyword">char</span>* op)
+      : num_ (s_number ()),
+        expr_ (expr),
+        offset_ (<span class="hljs-number">0</span>),
+        table_ (table),
+        expr_size_ (expr_size),
+        op_ (op) {}
+    ~Lexer () {}
+
+    <span class="hljs-function"><span class="hljs-keyword">unsigned</span> <span class="hljs-title">get_token</span> <span class="hljs-params">()</span></span>;
+
+    s_number num_;
+
+  <span class="hljs-keyword">private</span>:
+
+    <span class="hljs-function"><span class="hljs-keyword">int</span>
+    <span class="hljs-title">get_op_</span> <span class="hljs-params">(<span class="hljs-keyword">char</span> c)</span>
+    </span>{
+      <span class="hljs-keyword">return</span> (<span class="hljs-keyword">int</span>)op_[(<span class="hljs-keyword">int</span>)c];
+    }
+
+    <span class="hljs-keyword">char</span>* expr_;
+    <span class="hljs-keyword">unsigned</span> offset_;
+    <span class="hljs-keyword">char</span>* table_;
+    <span class="hljs-keyword">unsigned</span> expr_size_;
+    <span class="hljs-keyword">char</span>* op_;
+};</code></pre><p>You have probably noticed that the constructor of our object <code>Lexer</code> takes two string parameters named respectively, « table » and « op ». Why are they useful ?</p><p><strong>Table</strong> - Since our program must be able to handle numbers represented in an arbitrary base with a set of arbitrary symbols, it would be very difficult to evaluate expressions without modification to make them easier to compute. So we’re going (during lexing) to transform numbers by changing the symbols which they are composed of by a set of contiguous numbers starting from 0 and up to (base_size – 1). For example:</p><pre><code class="language-sh">Old base : abcde
+New base : 01234</code></pre><p>It does not change the size of the base, but just the symbols, by this wait it becomes easier to perform arithmetic operations on numbers.</p><p><strong>Op</strong> – The purpose of the variable op is different. During lexing, we want to determine, for each symbol read, if it’s an operator or not. We can imagine that for expressions of million of characters, it makes us millions of tests just for the lexing. We will therefore greatly reduce the number of tests by creating an array of 256 characters which associate, for each operator (using the ASCII code as an index in the table) the number that corresponds (the one present in the enumeration given above) and setting the value 0 to all other characters. This allows us, first to test if a character is an operator, and at the same time to know the value associated (to determine which operator it is).</p><p>Finally, the public variable <code>num_</code> will allow the parser, when the lexer will return a token of type NUMBER, to get the value of the number that will be presented in this variable.</p><p>We code, we optimize a bit and here is the result:</p><pre><code class="language-c++"><span class="hljs-function"><span class="hljs-keyword">unsigned</span>
+<span class="hljs-title">Lexer::get_token</span> <span class="hljs-params">()</span>
+</span>{
+  <span class="hljs-keyword">if</span> (offset_ &gt;= expr_size_)
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+
+  <span class="hljs-keyword">int</span> tok = get_op_ (expr_[offset_++]);
+
+  <span class="hljs-keyword">if</span> (tok)
+    <span class="hljs-keyword">return</span> tok;
+
+  expr_[offset_ - <span class="hljs-number">1</span>] = table_[(<span class="hljs-keyword">int</span>)expr_[offset_ - <span class="hljs-number">1</span>]];
+
+  num_.offset = offset_ - <span class="hljs-number">1</span>;
+  <span class="hljs-keyword">unsigned</span> length = <span class="hljs-number">1</span>;
+
+  <span class="hljs-keyword">while</span> (!op_[(<span class="hljs-keyword">int</span>)expr_[offset_]])
+  {
+    expr_[offset_] = table_[(<span class="hljs-keyword">int</span>)expr_[offset_++]];
+    length++;
+  }
+
+  num_.<span class="hljs-built_in">size</span> = length;
+
+  <span class="hljs-keyword">return</span> NUMBER;
+}</code></pre><p>This code is not the most optimized but in this version of the program we will use it like this. Later, during the profiling phase, if it turns out that this is part of the program is the slowest, we could optimize it.</p></div><div class="comments"></div></article><footer><div class="share"><ul><li><a href="https://www.facebook.com/sharer/sharer.php?u=https://remusao.github.io//posts/arithmetic-lexer.html&t=Arithmetic lexer" title="Share on Facebook" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Share on Facebook" src="/images/social_flat_rounded_rects_svg/Facebook.svg"><a></a></li><li><a href="https://twitter.com/share?url=https://remusao.github.io//posts/arithmetic-lexer.html&text=Arithmetic lexer&via=Pythux" title="Tweet" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Tweet" src="/images/social_flat_rounded_rects_svg/Twitter.svg"><a></a></li><li><a href="https://getpocket.com/save?url=https://remusao.github.io//posts/arithmetic-lexer.html&title=Arithmetic lexer" title="Add to Pocket" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Add to Pocket" src="/images/social_flat_rounded_rects_svg/Pocket.svg"><a></a></li><li><a href="https://news.ycombinator.com/submitlink?u=https://remusao.github.io//posts/arithmetic-lexer.html&t=Arithmetic lexer" title="Submit to Hacker News" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Submit to Hacker News" src="/images/social_flat_rounded_rects_svg/HackerNews.svg"><a></a></li><li><a href="https://www.reddit.com/submit?url=https://remusao.github.io//posts/arithmetic-lexer.html&title=Arithmetic lexer" title="Submit to Reddit" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Submit to Reddit" src="/images/social_flat_rounded_rects_svg/Reddit.svg"><a></a></li></ul></div></footer></main></body></html>

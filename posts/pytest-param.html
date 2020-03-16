@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Pytest Paramaterize Tests With External Data</title><meta name="description" content="Simplex Sigillum Veri"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="canonical" href="https://remusao.github.io/posts/pytest-param.html"><link rel="icon" type="image/x-icon" href="/images/favicon.ico"><style type="text/css">@font-face{font-display:swap;font-family:'Open Sans';font-style:italic;font-weight:400;src:url(/fonts/OpenSans_italic_400.woff2) format('woff2')}@font-face{font-display:swap;font-family:'Open Sans';font-style:italic;font-weight:700;src:url(/fonts/OpenSans_italic_700.woff2) format('woff2')}@font-face{font-display:swap;font-family:'Open Sans';font-style:normal;font-weight:400;src:url(/fonts/OpenSans_normal_400.woff2) format('woff2')}@font-face{font-display:swap;font-family:'Open Sans';font-style:normal;font-weight:700;src:url(/fonts/OpenSans_normal_700.woff2) format('woff2')}body{color:#2f2f2f;font-family:'Open Sans',sans-serif;font-size:95%;line-height:1.6em;margin:20px auto;max-width:42em;padding:0 1em}@media (min-width:760px){body{font-size:100%}}@media (min-width:1024px){body{font-size:105%}}h1,h2,h3{font-size:1.7em;font-weight:400;padding-top:.7em}h2,h3{font-size:1.5em}h3{font-size:1.2em}.header,.main figcaption{color:#555;font-style:italic}.main a{color:#3465a4}.main a:visited{color:#75507b}.main figcaption{color:#696f72;line-height:2em;text-align:center}.main img{display:block;height:auto;margin:auto;padding-bottom:1em;padding-top:1em;width:90%}.main blockquote{border-left:thin solid #d3d7cf;color:#555;margin:10px;padding:0 0 0 1em}@font-face{font-display:swap;font-family:'Inconsolata';font-style:normal;font-weight:400;src:url(/fonts/Inconsolata.woff2) format('truetype')}code{background-color:#f3f4f5;font-family:'Inconsolata';line-height:1.2em}pre code{display:block;overflow-x:auto;padding:8px}.leave-comment-btn,summary{font-size:15px;font-weight:600}.leave-comment-btn{background-color:#28a745;background-image:linear-gradient(-180deg,#34d058,#28a745 90%);border:1px solid rgba(27,31,35,.2);border-radius:.25em;color:#fff;display:inline-block;margin-top:1.5em;padding:3px 10px;text-decoration:none}.leave-comment-btn:hover{box-shadow:0 1px 3px rgba(0,0,0,.24)}summary{color:#516ae8;cursor:pointer;line-height:1.2rem;margin-top:2rem}.comments-list{list-style:none;padding:0}.comment{background-color:#fff;border:1px solid #d1d5da;border-radius:3px;color:#24292e;font-size:15px;margin:1em 0}.meta{background-color:#f6f8fa;border-bottom:1px solid #d1d5da;color:#586069}.author,.date{text-decoration:none}.author{color:#24292e!important;font-weight:700}.date{color:#586069}.date:hover{color:#0366d6}.content{padding-left:20px}.avatar,.emoji{vertical-align:middle}.avatar{display:inline-block;margin-right:5px}.emoji{height:1.1em;width:1.1em}table{border-collapse:collapse;margin:auto}td,th{border:1px solid #ddd;padding:10px}tr:hover{background-color:#f5f5f5}footer{border-top:thin solid #d3d7cf;margin:1.5em 0}.share ul{text-align:right}.share li{display:inline;padding:0 5px}.share img{width:2em}.main a,header a{text-decoration:none}.hljs{display:block;overflow-x:auto;padding:.5em;color:#333;background:#f8f8f8}.hljs-comment,.hljs-quote{color:#998;font-style:italic}.hljs-keyword,.hljs-selector-tag{color:#333;font-weight:700}.hljs-subst{color:#333}.hljs-literal,.hljs-number,.hljs-tag .hljs-attr,.hljs-template-variable,.hljs-variable{color:teal}.hljs-doctag,.hljs-string{color:#d14}.hljs-section,.hljs-selector-id,.hljs-title{color:#900;font-weight:700}.hljs-subst{font-weight:400}.hljs-class .hljs-title,.hljs-type{color:#458;font-weight:700}.hljs-attribute,.hljs-name,.hljs-tag{color:navy;font-weight:400}.hljs-link,.hljs-regexp{color:#009926}.hljs-bullet,.hljs-symbol{color:#990073}.hljs-built_in,.hljs-builtin-name{color:#0086b3}.hljs-meta{color:#999;font-weight:700}.hljs-deletion{background:#fdd}.hljs-addition{background:#dfd}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}</style></head><body><main><header><h1><a href="../"><span>../</span></a></h1></header><h1>Pytest Paramaterize Tests With External Data</h1><section class="header"><div>2014-11-26 | <em>Reading time: ~6 minutes</em></div></section><article><div class="main"><p>I recently began to make heavy use of <a href="http://pytest.org/latest/">pytest</a> in my day-to-day Python development. It’s a wonderful tool, but I won’t explain to you every features it provides and why it’s awesome. Instead, I’ll explain how I managed to cleanly externalize the data used for my tests in external files (that can be of any format: yaml, json, python files). The idea here is to <em>separate the code that performs the test</em>, from the <em>input data used to perform the test</em>.</p><ul><li><p><em>test_feature.py</em></p><pre><code class="language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_my_feature</span><span class="hljs-params">(one_example)</span>:</span>
+  <span class="hljs-keyword">assert</span> one_example</code></pre></li><li><p><em>data_feature.yaml</em></p><pre><code class="language-yaml"><span class="hljs-attr">tests:</span>
+  <span class="hljs-attr">test1:</span>
+      <span class="hljs-string">...</span>
+  <span class="hljs-attr">test2:</span>
+      <span class="hljs-string">...</span></code></pre></li></ul><h2 id="first-solution-yield">First solution: yield</h2><p>The first solution would be to use <code>yield</code> to generate tests, as it’s supported by <code>py.test</code> (as long as you don’t want to use fixtures in your test function…).</p><pre><code class="language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">check</span><span class="hljs-params">(example)</span>:</span>
+    <span class="hljs-comment"># perform your test</span>
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_feature</span><span class="hljs-params">()</span>:</span>
+    <span class="hljs-keyword">for</span> test <span class="hljs-keyword">in</span> generate_tests():
+        <span class="hljs-keyword">yield</span> check, test</code></pre><p>Here, <code>py.test</code> will understand that <code>test_feature</code> will yield several tests and that the <code>check</code> function must be used to perform the test, so it is almost equivalent to do:</p><pre><code class="language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_feature</span><span class="hljs-params">()</span>:</span>
+    <span class="hljs-keyword">for</span> test <span class="hljs-keyword">in</span> generate_tests():
+        check(test)</code></pre><p>Except that in this last snippet of code, the tests will stop as soon as one fails. With the <code>yield</code>-version, every tests will be ran even if some fail. This is useful if you have lot of tests, and you want to know which ones fail (not just the first one).</p><p><strong>Problem</strong>: if you want to use fixtures with your <code>test_feature</code> functions, it breaks:</p><pre><code class="language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">check</span><span class="hljs-params">(example)</span>:</span>
+    <span class="hljs-comment"># perform your test</span>
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_feature</span><span class="hljs-params">(my_fixture)</span>:</span>
+    <span class="hljs-keyword">for</span> test <span class="hljs-keyword">in</span> generate_tests():
+        <span class="hljs-keyword">yield</span> check, test</code></pre><p>This will tell you that <code>test_feature</code> expects one argument but that none are provided.</p><p>End of the story… Wait, no, <code>py.test</code> is awesome remember? So there must be a solution!</p><h2 id="parametrization">Parametrization</h2><p>One of the cool features of <code>py.test</code> is the ability to add parameters on our tests or fixtures, so that a test is ran once for each parameter (from <a href="http://pytest.org/latest/parametrize.html">py.test doc</a>):</p><pre><code class="language-python"><span class="hljs-comment"># content of test_expectation.py</span>
+<span class="hljs-keyword">import</span> pytest
+<span class="hljs-meta">@pytest.mark.parametrize("input,expected", [</span>
+    (<span class="hljs-string">"3+5"</span>, <span class="hljs-number">8</span>),
+    (<span class="hljs-string">"2+4"</span>, <span class="hljs-number">6</span>),
+    (<span class="hljs-string">"6*9"</span>, <span class="hljs-number">42</span>),
+])
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_eval</span><span class="hljs-params">(input, expected)</span>:</span>
+    <span class="hljs-keyword">assert</span> eval(input) == expected</code></pre><pre><code class="language-python">$ py.test
+=========================== test session starts ============================
+platform linux -- Python <span class="hljs-number">3.4</span><span class="hljs-number">.0</span> -- py<span class="hljs-number">-1.4</span><span class="hljs-number">.26</span> -- pytest<span class="hljs-number">-2.6</span><span class="hljs-number">.4</span>
+collected <span class="hljs-number">3</span> items
+
+test_expectation.py ..F
+
+================================= FAILURES =================================
+____________________________ test_eval[<span class="hljs-number">6</span>*<span class="hljs-number">9</span><span class="hljs-number">-42</span>] _____________________________
+
+input = <span class="hljs-string">'6*9'</span>, expected = <span class="hljs-number">42</span>
+
+<span class="hljs-meta">    @pytest.mark.parametrize("input,expected", [</span>
+        (<span class="hljs-string">"3+5"</span>, <span class="hljs-number">8</span>),
+        (<span class="hljs-string">"2+4"</span>, <span class="hljs-number">6</span>),
+        (<span class="hljs-string">"6*9"</span>, <span class="hljs-number">42</span>),
+    ])
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_eval</span><span class="hljs-params">(input, expected)</span>:</span>
+&gt;       <span class="hljs-keyword">assert</span> eval(input) == expected
+E       <span class="hljs-keyword">assert</span> <span class="hljs-number">54</span> == <span class="hljs-number">42</span>
+E        +  where <span class="hljs-number">54</span> = eval(<span class="hljs-string">'6*9'</span>)
+
+test_expectation.py:<span class="hljs-number">8</span>: AssertionError
+==================== <span class="hljs-number">1</span> failed, <span class="hljs-number">2</span> passed <span class="hljs-keyword">in</span> <span class="hljs-number">0.01</span> seconds ====================</code></pre><p>So here our <code>test_eval</code> function has been called <em>three times</em>. Once for each parameter. Great! But what if you want your parameters to come from another file, or from a function. In other words, what if you want to <em>dynamically parametrize</em> your function?</p><h2 id="hooks-at-the-rescue">Hooks at the rescue</h2><p><a href="http://pytest.org/latest/plugins.html#well-specified-hooks">Hooks</a> allow you to plug code into <code>py.test</code> at diffent stages of the test run. The hook that can be useful for us is <code>pytest_generate_tests</code> that will allow to generate several calls to the same test function, but with different arguments (from <a href="http://pytest.org/latest/funcargs.html#basic-generated-test-example">py.test doc</a>):</p><pre><code class="language-python"><span class="hljs-comment"># content of test_example.py</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">pytest_generate_tests</span><span class="hljs-params">(metafunc)</span>:</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-string">"numiter"</span> <span class="hljs-keyword">in</span> metafunc.funcargnames:
+        metafunc.parametrize(<span class="hljs-string">"numiter"</span>, range(<span class="hljs-number">10</span>))
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_func</span><span class="hljs-params">(numiter)</span>:</span>
+    <span class="hljs-keyword">assert</span> numiter &lt; <span class="hljs-number">9</span></code></pre><pre><code class="language-python">$ py.test test_example.py
+=========================== test session starts ============================
+platform linux2 -- Python <span class="hljs-number">2.7</span><span class="hljs-number">.1</span> -- pytest<span class="hljs-number">-2.2</span><span class="hljs-number">.4</span>
+collecting ... collected <span class="hljs-number">10</span> items
+
+test_example.py .........F
+
+================================= FAILURES =================================
+_______________________________ test_func[<span class="hljs-number">9</span>] _______________________________
+
+numiter = <span class="hljs-number">9</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_func</span><span class="hljs-params">(numiter)</span>:</span>
+&gt;       <span class="hljs-keyword">assert</span> numiter &lt; <span class="hljs-number">9</span>
+E       <span class="hljs-keyword">assert</span> <span class="hljs-number">9</span> &lt; <span class="hljs-number">9</span>
+
+test_example.py:<span class="hljs-number">6</span>: AssertionError
+==================== <span class="hljs-number">1</span> failed, <span class="hljs-number">9</span> passed <span class="hljs-keyword">in</span> <span class="hljs-number">0.02</span> seconds ====================</code></pre><p>Great, so the last things to do is:</p><ol><li>Detect functions that make use of a fixture whose name starts with <code>data_</code></li><li>Load the corresponding file or resource for the test source</li><li>Parametrize the function with each of the data</li></ol><p>For example, here is what you can do:</p><pre><code class="language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">pytest_generate_tests</span><span class="hljs-params">(metafunc)</span>:</span>
+    <span class="hljs-string">""" This allows us to load tests from external files by
+    parametrizing tests with each test case found in a data_X
+    file """</span>
+    <span class="hljs-keyword">for</span> fixture <span class="hljs-keyword">in</span> metafunc.fixturenames:
+        <span class="hljs-keyword">if</span> fixture.startswith(<span class="hljs-string">'data_'</span>):
+            <span class="hljs-comment"># Load associated test data</span>
+            tests = load_tests(fixture)
+            metafunc.parametrize(fixture, tests)</code></pre><p>Here, the <code>load_tests</code> function takes as argument the name of the fixture <code>data_X</code> and will:</p><ol><li>Load the corresponding file</li><li>Extract the different test-cases</li><li>Return a list of all the cases</li></ol><p>For example, if your tests are stored in a Python file:</p><pre><code class="language-python"><span class="hljs-keyword">import</span> importlib
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">load_tests</span><span class="hljs-params">(name)</span>:</span>
+    <span class="hljs-comment"># Load module which contains test data</span>
+    tests_module = importlib.import_module(name)
+    <span class="hljs-comment"># Tests are to be found in the variable `tests` of the module</span>
+    <span class="hljs-keyword">for</span> test <span class="hljs-keyword">in</span> tests_module.tests.iteritems():
+        <span class="hljs-keyword">yield</span> test</code></pre><p>The data file (<code>data_my_feature.py</code>) could look something like:</p><pre><code class="language-python">tests = [
+    <span class="hljs-number">1</span>,
+    <span class="hljs-number">2</span>,
+    <span class="hljs-number">3</span>,
+    <span class="hljs-number">4</span>,
+    <span class="hljs-number">5</span>,
+    <span class="hljs-number">6</span>,
+    <span class="hljs-number">7</span>,
+    <span class="hljs-number">8</span>,
+    <span class="hljs-number">9</span>
+]</code></pre><p>The test function will then be invoked for each case.</p><pre><code class="language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_feature</span><span class="hljs-params">(data_my_feature)</span>:</span>
+    <span class="hljs-keyword">assert</span> data_my_feature &lt; <span class="hljs-number">5</span></code></pre><h2 id="conclusion">Conclusion</h2><p>Here it’s not really interesting, but the benefits are numerous:</p><ol><li>storing your data in a database, or in yaml/json formatted files, or whatever</li><li>other people can add tests to your project, without having to dig into the code</li><li>provide a common format to define tests in external files</li><li>reuse the same data for several tests</li><li>the data is not hard-coded in Python source-code</li></ol><p>TL;DR: <code>py.test</code> is awesome. Make tests. Get data for your tests from external sources.</p></div><div class="comments"></div></article><footer><div class="share"><ul><li><a href="https://www.facebook.com/sharer/sharer.php?u=https://remusao.github.io//posts/pytest-param.html&t=Pytest Paramaterize Tests With External Data" title="Share on Facebook" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Share on Facebook" src="/images/social_flat_rounded_rects_svg/Facebook.svg"><a></a></li><li><a href="https://twitter.com/share?url=https://remusao.github.io//posts/pytest-param.html&text=Pytest Paramaterize Tests With External Data&via=Pythux" title="Tweet" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Tweet" src="/images/social_flat_rounded_rects_svg/Twitter.svg"><a></a></li><li><a href="https://getpocket.com/save?url=https://remusao.github.io//posts/pytest-param.html&title=Pytest Paramaterize Tests With External Data" title="Add to Pocket" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Add to Pocket" src="/images/social_flat_rounded_rects_svg/Pocket.svg"><a></a></li><li><a href="https://news.ycombinator.com/submitlink?u=https://remusao.github.io//posts/pytest-param.html&t=Pytest Paramaterize Tests With External Data" title="Submit to Hacker News" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Submit to Hacker News" src="/images/social_flat_rounded_rects_svg/HackerNews.svg"><a></a></li><li><a href="https://www.reddit.com/submit?url=https://remusao.github.io//posts/pytest-param.html&title=Pytest Paramaterize Tests With External Data" title="Submit to Reddit" target="_blang" rel="noopener noreferrer"><img loading="lazy" alt="Submit to Reddit" src="/images/social_flat_rounded_rects_svg/Reddit.svg"><a></a></li></ul></div></footer></main></body></html>
