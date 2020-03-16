@@ -4,6 +4,7 @@
   "description": "custom static blog generator for remusao.github.io",
   "main": "index.js",
   "scripts": {
+    "build": "ts-node index.ts --ci",
     "serve": "ts-node index.ts"
   },
   "repository": {
