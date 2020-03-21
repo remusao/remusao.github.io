@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
 
-import Octokit from '@octokit/rest';
+import { Octokit } from '@octokit/rest';
 import chokidar from 'chokidar';
 import compression from 'compression';
 import csso from 'csso';

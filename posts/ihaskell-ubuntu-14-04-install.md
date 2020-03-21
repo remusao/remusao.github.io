@@ -67,16 +67,16 @@ sudo ldconfig
 
 That will do the trick! If you don't like to install packages in global scope, feel free to install it in a user folder (Add the `--prefix=LOCATION` directive to `./configure`, and change `LD_LIBRARY_PATH` and `PATH` in your shell configuration accordingly).
 
-## Install <s>IPython</s> Jupyter
+## Install Jupyter
 
 **EDIT**: Following Florian's comment, it appears that *IPython* is now officialy named *Jupyter*, so we might as well install it in our virtualenv. The only change in the instructions is to replace `pip install ipython` by `pip install jupyter` (Note that *IPython* is a dependency of *Jupyter*).
 
-IHaskell requires a <s>version of *IPython > 3.0.0 or up*</s> recent version of *Jupyter*, so we need to install it ourselves. There are several options:
+IHaskell requires a recent version of *Jupyter*, so we need to install it ourselves. There are several options:
 
-1. Use pip and install it globaly (<s>*pip install ipython*</s>`pip install jupyter`)
+1. Use pip and install it globaly (`pip install jupyter`)
 2. Use pip and install it in a virtualenv (**This is what we will do here**)
 3. Use [nix](https://nixos.org/nix/) *(You're on your own)*
-4. Use [conda](https://www.continuum.io/downloads) (<s>*conda update ipython*</s>`conda update jupyter`)
+4. Use [conda](https://www.continuum.io/downloads) (`conda update jupyter`)
 
 If you're on a fresh install: `sudo apt-get install python-virtualenv python-dev ncurses-base`
 
@@ -92,7 +92,7 @@ mkvirtualenv ihaskell
 workon ihaskell
 ```
 
-Now we install <s>*ipython*</s> *Jupyter*:
+Now we install *Jupyter*:
 ```sh
 pip install jupyter
 ```
