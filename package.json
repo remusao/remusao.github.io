@@ -43,7 +43,7 @@
     "@octokit/rest": "^17.1.1",
     "chokidar": "^3.2.1",
     "compression": "^1.7.4",
-    "csso": "^4.0.1",
+    "csso": "^4.0.3",
     "dompurify": "^2.0.3",
     "express": "^4.17.1",
     "finalhandler": "^1.1.2",
