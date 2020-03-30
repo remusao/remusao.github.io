@@ -50,7 +50,7 @@
     "glob": "^7.1.4",
     "highlight.js": "^9.15.10",
     "html-minifier": "^4.0.0",
-    "jsdom": "^16.0.0",
+    "jsdom": "^16.2.2",
     "marked": "^0.8.2",
     "moment": "^2.24.0",
     "rimraf": "^3.0.0",
