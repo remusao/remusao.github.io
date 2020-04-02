@@ -28,7 +28,7 @@
     "@types/html-minifier": "^3.5.3",
     "@types/jsdom": "^16.2.0",
     "@types/marked": "^0.7.0",
-    "@types/node": "^13.9.8",
+    "@types/node": "^13.11.0",
     "@types/rimraf": "^3.0.0",
     "@types/serve-static": "^1.13.3",
     "prettier": "^2.0.2",
