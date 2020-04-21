@@ -3,25 +3,25 @@
 <span class="hljs-comment">// Read the base size</span>
 <span class="hljs-keyword">unsigned</span> base_size;
 <span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span> &gt;&gt; base_size;
-<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span>.<span class="hljs-built_in">get</span>(newline);
+<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span>.get(newline);
 
 <span class="hljs-comment">// Read the base's symbols</span>
 <span class="hljs-keyword">char</span>* base = <span class="hljs-keyword">new</span> <span class="hljs-keyword">char</span>[base_size + <span class="hljs-number">1</span>];
-<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span>.<span class="hljs-built_in">read</span> (base, base_size + <span class="hljs-number">1</span>);
+<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span>.read (base, base_size + <span class="hljs-number">1</span>);
 base[base_size] = <span class="hljs-string">'\0'</span>;
 
 <span class="hljs-comment">// Read the expression's size</span>
 <span class="hljs-keyword">unsigned</span> expr_size;
 <span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span> &gt;&gt; expr_size;
-<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span>.<span class="hljs-built_in">get</span>(newline);
+<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span>.get(newline);
 
 <span class="hljs-comment">// Read the expression</span>
 <span class="hljs-keyword">char</span>* expr = <span class="hljs-keyword">new</span> <span class="hljs-keyword">char</span>[expr_size + <span class="hljs-number">1</span>];
-<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span>.<span class="hljs-built_in">read</span> (expr, expr_size + <span class="hljs-number">1</span>);
+<span class="hljs-built_in">std</span>::<span class="hljs-built_in">cin</span>.read (expr, expr_size + <span class="hljs-number">1</span>);
 expr[expr_size] = <span class="hljs-string">'\0'</span>;</code></pre><p>The variable named newline will only be used to « absorb » the \n at the end of each line. Our expression is represented as a simple array of characters (we could have done the same thing in C). If you want to compile the code above, do not forget to add a #include<iostream>at the top of your file.</iostream></p><p>Since the role of the lexer is to « cut » our expression into tokens (numbers, operators, parentheses), we must ask ourself in what form we will store our numbers, which tokens we will use, etc… It would be tempting to create a string and to copy the number value there, it would be the most intuitive. But since we are looking for maximum performances, we will avoid as possible to use dynamic memory allocation. Instead we will represent our number as a pair of integers (offset, size) representing the beginning of the number in the expression (i.e. the index of its first digit in the array representing the expression) and its length. So we can work directly on the string containing the arithmetic expression.</p><p>Concerning tokens, we can use a simple enumeration containing an entry for each symbol:</p><pre><code class="language-c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span>
 {</span>
   <span class="hljs-keyword">unsigned</span>  offset;
-  <span class="hljs-keyword">unsigned</span>  <span class="hljs-built_in">size</span>;
+  <span class="hljs-keyword">unsigned</span>  size;
 } s_number;
 
 <span class="hljs-keyword">typedef</span> <span class="hljs-keyword">enum</span>

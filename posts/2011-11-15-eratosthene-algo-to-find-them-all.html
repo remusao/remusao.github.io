@@ -2,18 +2,18 @@
   Tableau = entiers de <span class="hljs-number">2</span> a n
   Pour chaque i dans Tableau
     supprimer_multiples de i dans Tableau
-  Fin Pour Fin Crible</code></pre><p>Le pseudo-code suivant peut aisément être implémenté en Python :</p><pre><code class="language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Supprimer_multiples</span><span class="hljs-params">(i, tableau)</span>:</span>
+  Fin Pour Fin Crible</code></pre><p>Le pseudo-code suivant peut aisément être implémenté en Python :</p><pre><code class="language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Supprimer_multiples</span>(<span class="hljs-params">i, tableau</span>):</span>
   <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> tableau:
     <span class="hljs-keyword">if</span> x &gt; i <span class="hljs-keyword">and</span> x % i == <span class="hljs-number">0</span>:
       tableau.remove(x)
 
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Crible</span><span class="hljs-params">(n)</span>:</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Crible</span>(<span class="hljs-params">n</span>):</span>
   tableau = [i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">2</span>, n)]
   <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> tableau:
     Supprimer_multiples(i, tableau)
   <span class="hljs-keyword">return</span> tableau
 
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span>():</span>
   tableau = Crible(<span class="hljs-number">100</span>)
   <span class="hljs-keyword">print</span> tableau
 
@@ -22,14 +22,14 @@ gcc -lm -o3 crible_1.c</code></pre><p>Nous pourrions nous arrêter là, puisque 
 Les index   -&gt; [0, 1, 2, 3, 4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14]</code></pre><p>Hors, nous ne pouvons plus simplement utiliser les index dans le tableau pour connaitre les nombres associés. En fait, on peut remarquer que pour retrouver le nombre associé a chaque case du tableau, il nous suffit de calculer : <code>index * 2 + 1</code> . Deuxièmement, pour retrouver les multiples d’un nombre N dans le tableau, il nous suffit d’aller de N en N dans le tableau en partant de la case <code>N / 2</code>. Enfin, on remarque qu’avec cette technique, l’algorithme est plus compact et nous pouvons nous contenter d’initialiser toutes les cases du tableau à 1 (avec la fonction memset de la bibliothèque <code>&lt;string&gt;</code> du langage C). Voici le code source de cette implémentation (sources : <a href="http://www.pythux.com/exemples/erato/crible.c">http://www.pythux.com/exemples/erato/crible.c</a>) :</p><pre><code class="language-c"><span class="hljs-function"><span class="hljs-keyword">char</span> *<span class="hljs-title">erato_opti</span><span class="hljs-params">(<span class="hljs-keyword">int</span> n)</span>
 </span>{
   <span class="hljs-keyword">char</span>  *tab = <span class="hljs-built_in">malloc</span>(n / <span class="hljs-number">2</span>);
-  <span class="hljs-keyword">int</span>   i = <span class="hljs-number">1</span>, j, borne = <span class="hljs-built_in">sqrt</span>(n / <span class="hljs-number">2</span>), <span class="hljs-built_in">step</span>;
+  <span class="hljs-keyword">int</span>   i = <span class="hljs-number">1</span>, j, borne = <span class="hljs-built_in">sqrt</span>(n / <span class="hljs-number">2</span>), step;
 
   tab = <span class="hljs-built_in">memset</span>(tab, <span class="hljs-number">1</span>, n / <span class="hljs-number">2</span>);
 
   <span class="hljs-keyword">for</span> (; i &lt;= borne; i++)
   {
-    <span class="hljs-built_in">step</span> = <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span>;
-    <span class="hljs-keyword">for</span> (j = i + <span class="hljs-built_in">step</span>; j &lt; n / <span class="hljs-number">2</span>; j += <span class="hljs-built_in">step</span>)
+    step = <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (j = i + step; j &lt; n / <span class="hljs-number">2</span>; j += step)
       tab[j] = <span class="hljs-number">0</span>;
   }
 

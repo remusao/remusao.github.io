@@ -11,7 +11,7 @@
     <span class="hljs-built_in">document</span>.execCommand(<span class="hljs-string">'copy'</span>);
     <span class="hljs-comment">// Remove reference from `selected` to allow normal copies</span>
     <span class="hljs-comment">// to be performed on the page.</span>
-    setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> { selected = <span class="hljs-literal">null</span>; }, <span class="hljs-number">1000</span>);
+    <span class="hljs-keyword">set</span><span class="hljs-title">Timeout</span>(<span class="hljs-params">(</span>) =&gt; { selected = <span class="hljs-literal">null</span>; }, <span class="hljs-number">1000</span>);
   };</code></pre><ul><li>Listen to this <code>copy</code> event and copy the content of the latest element clicked to clipboard.</li></ul><pre><code class="language-javascript">  <span class="hljs-comment">// Intercept copy events</span>
   <span class="hljs-built_in">document</span>.addEventListener(<span class="hljs-string">'copy'</span>, (e) =&gt; {
     <span class="hljs-keyword">if</span> (selected === <span class="hljs-literal">null</span>) {
