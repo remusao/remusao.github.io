@@ -90,7 +90,7 @@ function createButtons(title: string, url: string): string {
     .map(({ href, alt, img }) => {
       return `
         <li>
-          <a href="${href}" title="${alt}" target="_blang" rel="noopener noreferrer">
+          <a href="${href}" title="${alt}" target="_blank" rel="noopener noreferrer">
             <img loading="lazy" alt="${alt}" src="/images/social_flat_rounded_rects_svg/${img}"></img>
           <a/>
         </li>
@@ -108,7 +108,7 @@ const LOGOS: {
   ccc: '/images/logos/ccc.svg',
   cliqz: '/images/logos/cliqz.svg',
   cpp: '/images/logos/c++.svg',
-  diablo2: '/images/logos/diablo2.png',
+  diablo2: '/images/logos/diablo2.svg',
   hashcode: '/images/logos/bash.svg',
   haskell: '/images/logos/haskell.svg',
   html5: '/images/logos/html-5.svg',
@@ -253,9 +253,9 @@ class Generator {
 
     const indexEntry = (post: Post): string => `
     <li>
-    <img loading="auto" class="logo" alt="${post.logoAlt}" src="${post.logo}"></img>
+    <img loading="lazy" class="logo" alt="${post.logoAlt}" src="${post.logo}"></img>
     <a href="${post.url}">${post.title}</a>
-    <span class="date"> - ${formatDate(post.date)}</span>
+    <span class="date">— ${formatDate(post.date)}</span>
     </li>
     `;
 
@@ -305,7 +305,6 @@ class Generator {
     return csso.minify(
       (await Promise.all(
         [
-          'styles/fonts.css',
           'styles/style.css',
           'styles/index.css',
         ].map((path) => fs.readFile(join(__dirname, path), 'utf8')),
@@ -317,7 +316,6 @@ class Generator {
     return csso.minify(
       (await Promise.all(
         [
-          'styles/fonts.css',
           'styles/style.css',
           'styles/article.css',
           'styles/code.css',
@@ -532,7 +530,6 @@ ${
 
   // Copy assets to output folder
   new TreeSync('images', '_site/images').sync();
-  new TreeSync('fonts', '_site/fonts').sync();
   new TreeSync('snippets', '_site/snippets').sync();
   new TreeSync('experiments', '_site/experiments').sync();
 

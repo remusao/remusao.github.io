@@ -1,36 +1,25 @@
-
 body {
   color: #2f2f2f;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 95%;
+  font-family: 'Palatino Linotype', Palatino, Palladio, 'URW Palladio L', 'Book Antiqua',
+    Baskerville, 'Bookman Old Style', 'Bitstream Charter', 'Nimbus Roman No9 L', Garamond,
+    'Apple Garamond', 'ITC Garamond Narrow', 'New Century Schoolbook', 'Century Schoolbook',
+    'Century Schoolbook L', Georgia, serif;
+  font-size: 18px;
   line-height: 1.6em;
   margin: 20px auto;
-  max-width: 42em;
-  padding: 0 1em;
-}
-
-@media (min-width: 760px) {
-  body { font-size: 100%; }
-}
-
-@media (min-width: 1024px) {
-  body { font-size: 105%; }
+  max-width: 40rem;
+  padding: 0 1.5em;
+  text-rendering: optimizeLegibility;
 }
 
 h1 {
-  font-size: 1.7em;
-  font-weight: normal;
   padding-top: 0.7em;
 }
 
 h2 {
-  font-size: 1.5em;
-  font-weight: normal;
   padding-top: 0.7em;
 }
 
 h3 {
-  font-size: 1.2em;
-  font-weight: normal;
   padding-top: 0.7em;
 }
