@@ -25,7 +25,6 @@ main {
 .logo {
   display: inline-block;
   height: 24px;
-  margin: 0 1em;
-  margin-bottom: -6px;
+  margin-right: 1em;
   width: 24px;
 }
