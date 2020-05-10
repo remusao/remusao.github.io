@@ -8,6 +8,10 @@ main {
   padding-left: 0;
 }
 
+.year {
+  color: #5d5757;
+}
+
 .date {
   color: #5d5757;
 }

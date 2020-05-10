@@ -246,7 +246,7 @@ class Generator {
 
     const indexYear = (year: number, sameYearPosts: Post[]): string => `
     <div>
-    <h2>${year}</h2>
+    <h2 class="year">${year}</h2>
     <ul class="index">
     ${sameYearPosts.map(indexEntry).join('\n')}
     </ul>
