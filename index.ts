@@ -260,16 +260,11 @@ class Generator {
   public async generateIndex(): Promise<void> {
     console.log('generating index.html');
 
-// ! . hostname: securite.01net.com
-// ! ├─ CNAME: ww13.smartadserver.com
-
-    // <img class="logo" alt="${post.logoAlt}" src="${post.logo}"></img>
     const indexEntry = (post: Post): string => `
     <li>
     <img class="logo" alt="${post.logoAlt}" src="${post.logo}"></img>
     <a href="${post.url}">${post.title}</a>
-    </br>
-    <span class="date">└─ ${formatDate(post.date)}</span>
+    <span class="date">─ ${formatDate(post.date)}</span>
     </li>
     `;
 
