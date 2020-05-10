@@ -23,6 +23,7 @@ main {
 }
 
 .logo {
+  display: inline-block;
   height: 24px;
   margin: 0 1em;
   margin-bottom: -6px;

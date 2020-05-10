@@ -2,7 +2,7 @@
 title: Adblockers Performance Study
 date: 2019-02-15
 lang: en
-logo: adblock
+logo: cliqz
 ---
 
 **Disclaimer**: This study was originally posted on [WhoTracks.me](https://whotracks.me/blog/adblockers_performance_study.html).

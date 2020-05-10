@@ -1,7 +1,7 @@
 ---
 title: Thoughts About Unit and Integration Tests
 date: 2019-10-26
-logo: chai
+logo: jest
 lang: en
 issue: 44
 ---

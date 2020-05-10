@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync, readdirSync } from 'fs';
+import { join, parse } from 'path';
 
 import { Octokit } from '@octokit/rest';
 import chokidar from 'chokidar';
@@ -101,46 +101,22 @@ function createButtons(title: string, url: string): string {
   </ul>`;
 }
 
-const LOGOS: {
-  [name: string]: string;
-} = {
-  adblock: 'images/logos/cliqz.svg',
-  aws: 'images/logos/aws.svg',
-  ccc: 'images/logos/ccc.svg',
-  cliqz: 'images/logos/cliqz.svg',
-  cpp: 'images/logos/c++.svg',
-  diablo2: 'images/logos/diablo2.svg',
-  hashcode: 'images/logos/bash.svg',
-  haskell: 'images/logos/haskell.svg',
-  html5: 'images/logos/html-5.svg',
-  julia: 'images/logos/julia.svg',
-  learning: 'images/logos/learning.svg',
-  linux: 'images/logos/linux-tux.svg',
-  ocaml: 'images/logos/apache-camel.svg',
-  pi: 'images/logos/pi.svg',
-  python: 'images/logos/python.svg',
-  raspberry: 'images/logos/raspberry-pi.svg',
-  synacor: 'images/logos/synacor.svg',
-  typescript: 'images/logos/typescript-icon.svg',
-  v8: 'images/logos/v8.svg',
-  xmonad: 'images/logos/xmonad.svg',
-};
+const LOGOS = (() => {
+  const logos: { [name: string]: string } = {};
+  const logoDirectory = './images/logos/';
+  for (const file of readdirSync(logoDirectory)) {
+    const { name } = parse(file);
+    logos[name] = join(logoDirectory, file);
+  }
+  return logos;
+})();
 
 function getSvgAsDataUrl(path: string): string {
   if (path.endsWith('.svg') === false) {
     throw new Error(`Logo should be svg, got: ${path}`);
   }
 
-  return `data:image/svg+xml;base64,${readFileSync(path).toString('base64')}`;
-}
-
-function getLogo(name: string | undefined): string {
-  const defaultLogo = 'images/favicon.ico';
-  if (name === undefined) {
-    return defaultLogo;
-  }
-
-  return LOGOS[name] || `images/logos/${name}.svg`;
+  return `data:image/svg+xml;utf-8,${encodeURIComponent(readFileSync(path, 'utf-8'))}`;
 }
 
 function getApproxReadingTime(content: string): number {
@@ -181,7 +157,6 @@ interface Post {
   date: Date;
   html: string; // html
   logo: string;
-  logoAlt: string;
   name: string;
   readingTime: number;
   title: string;
@@ -234,7 +209,6 @@ class Generator {
     this.articleCSS = article;
   }
 
-
   public async generate(path: string): Promise<void> {
     const name = getBaseName(path);
     console.log(`Generating ${name}...`);
@@ -246,7 +220,9 @@ class Generator {
 
       const html = this.renderPost(post);
       const outputFilePath = `./_site/posts/${name}.html`;
-      const outputFilePathLegacy = `./_site/posts/${post.date.toISOString().slice(0, 10)}-${name}.html`;
+      const outputFilePathLegacy = `./_site/posts/${post.date
+        .toISOString()
+        .slice(0, 10)}-${name}.html`;
 
       await Promise.all([
         fs.writeFile(outputFilePath, html, { encoding: 'utf-8' }),
@@ -262,7 +238,7 @@ class Generator {
 
     const indexEntry = (post: Post): string => `
     <li>
-    <img class="logo" alt="${post.logoAlt}" src="${post.logo}"></img>
+    <div class="logo logo-${post.logo}"></div>
     <a href="${post.url}">${post.title}</a>
     <span class="date">─ ${formatDate(post.date)}</span>
     </li>
@@ -304,38 +280,50 @@ class Generator {
         ${postsSortedByYear.map((group) => indexYear(group[0], group[1])).join('\n')}
         </div>
         `,
-        this.indexCSS,
+      this.indexCSS,
     );
 
     await fs.writeFile('./_site/index.html', index, { encoding: 'utf-8' });
   }
 
   private async generateIndexCSS(): Promise<string> {
-    return csso.minify(
-      (await Promise.all(
+    const logos = [];
+    for (const [name, path] of Object.entries(LOGOS)) {
+      logos.push(
         [
-          'styles/style.css',
-          'styles/index.css',
-        ].map((path) => fs.readFile(join(__dirname, path), 'utf8')),
-      )).join('\n'),
-    ).css;
+          `.logo-${name} {`,
+          `  background-image: url('${getSvgAsDataUrl(path)}');`,
+          '  background-repeat: no-repeat;',
+          '}'
+        ].join('\n'),
+      );
+    }
+
+    const stylesheets = [
+      logos.join('\n'),
+      ...['./styles/style.css', './styles/index.css'].map((path) => readFileSync(path, 'utf8')),
+    ];
+
+    return csso.minify(stylesheets.join('\n')).css;
   }
 
   private async generateArticleCSS(): Promise<string> {
     return csso.minify(
-      (await Promise.all(
-        [
-          'styles/style.css',
-          'styles/article.css',
-          'styles/code.css',
-          'styles/comments.css',
-          'styles/table.css',
-          'styles/footer.css',
-          'styles/sharing.css',
-          'styles/header.css',
-          'styles/github.css',
-        ].map((path) => fs.readFile(join(__dirname, path), 'utf8')),
-      )).join('\n'),
+      (
+        await Promise.all(
+          [
+            'styles/style.css',
+            'styles/article.css',
+            'styles/code.css',
+            'styles/comments.css',
+            'styles/table.css',
+            'styles/footer.css',
+            'styles/sharing.css',
+            'styles/header.css',
+            'styles/github.css',
+          ].map((path) => fs.readFile(join(__dirname, path), 'utf8')),
+        )
+      ).join('\n'),
     ).css;
   }
 
@@ -408,7 +396,7 @@ class Generator {
   </div>
 </footer>
 `,
-    this.articleCSS,
+      this.articleCSS,
     );
   }
 
@@ -448,14 +436,22 @@ class Generator {
     const rawDate = metadata.get('date');
     const date = rawDate === undefined ? new Date() : new Date(rawDate);
 
+    const logo = metadata.get('logo');
+    if (logo === undefined) {
+      throw new Error('Logo is missing');
+    }
+
+    if (LOGOS[logo] === undefined) {
+      throw new Error(`Unknown logo: ${logo}`);
+    }
+
     return {
       comments,
       content,
       date,
       html,
       lang: metadata.get('lang') || 'en',
-      logo: getSvgAsDataUrl(getLogo(metadata.get('logo'))),
-      logoAlt: metadata.get('logo') || 'post logo',
+      logo,
       name,
       readingTime: getApproxReadingTime(content),
       title: metadata.get('title') || '',
@@ -543,7 +539,9 @@ ${
   new TreeSync('experiments', '_site/experiments').sync();
 
   // Generate all posts + index.html
-  await Promise.all(glob.sync('./posts/*.md').map((path) => generator.generate(path))).then(() => generator.generateIndex());
+  await Promise.all(glob.sync('./posts/*.md').map((path) => generator.generate(path))).then(() =>
+    generator.generateIndex(),
+  );
 
   if (ci === false) {
     // Start watching for changes generating
