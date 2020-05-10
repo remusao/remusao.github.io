@@ -1,10 +1,7 @@
 body {
   color: #2f2f2f;
-  font-family: 'Palatino Linotype', Palatino, Palladio, 'URW Palladio L', 'Book Antiqua',
-    Baskerville, 'Bookman Old Style', 'Bitstream Charter', 'Nimbus Roman No9 L', Garamond,
-    'Apple Garamond', 'ITC Garamond Narrow', 'New Century Schoolbook', 'Century Schoolbook',
-    'Century Schoolbook L', Georgia, serif;
-  font-size: 18px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu,
+    Cantarell, 'Helvetica Neue', sans-serif;
   line-height: 1.6em;
   margin: 20px auto;
   max-width: 40rem;
@@ -17,6 +14,8 @@ h1 {
 }
 
 h2 {
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: .5em;
   padding-top: 0.7em;
 }
 

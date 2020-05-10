@@ -30,8 +30,6 @@ I'd like to share a few learnings and findings about this experience.
 6. Postpone index creation.
 7. Use placeholders to interpolate python values.
 
----
-
 ## Use Bulk Operations
 
 If you need to insert a lot of rows at once in your database, you really
@@ -151,11 +149,11 @@ try:
         ])
 except (sqlite3.OperationalError, sqlite3.IntegrityError) as e:
     print('Could not complete operation:', e)
-    
+
 # No row was inserted because transaction failed
 for row in connection.execute('SELECT * FROM events'):
     print(row)
-    
+
 connection.close()
 ```
 

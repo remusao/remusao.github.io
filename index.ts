@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import { readFileSync } from 'fs';
 import { join } from 'path';
 
 import { Octokit } from '@octokit/rest';
@@ -103,35 +104,43 @@ function createButtons(title: string, url: string): string {
 const LOGOS: {
   [name: string]: string;
 } = {
-  adblock: '/images/logos/cliqz.svg',
-  aws: '/images/logos/aws.svg',
-  ccc: '/images/logos/ccc.svg',
-  cliqz: '/images/logos/cliqz.svg',
-  cpp: '/images/logos/c++.svg',
-  diablo2: '/images/logos/diablo2.svg',
-  hashcode: '/images/logos/bash.svg',
-  haskell: '/images/logos/haskell.svg',
-  html5: '/images/logos/html-5.svg',
-  julia: '/images/logos/julia.svg',
-  learning: '/images/logos/learning.svg',
-  linux: '/images/logos/linux-tux.svg',
-  ocaml: '/images/logos/apache-camel.svg',
-  pi: '/images/logos/pi.svg',
-  python: '/images/logos/python.svg',
-  raspberry: '/images/logos/raspberry-pi.svg',
-  synacor: '/images/logos/synacor.svg',
-  typescript: '/images/logos/typescript-icon.svg',
-  v8: '/images/logos/v8.svg',
-  xmonad: '/images/logos/xmonad.svg',
+  adblock: 'images/logos/cliqz.svg',
+  aws: 'images/logos/aws.svg',
+  ccc: 'images/logos/ccc.svg',
+  cliqz: 'images/logos/cliqz.svg',
+  cpp: 'images/logos/c++.svg',
+  diablo2: 'images/logos/diablo2.svg',
+  hashcode: 'images/logos/bash.svg',
+  haskell: 'images/logos/haskell.svg',
+  html5: 'images/logos/html-5.svg',
+  julia: 'images/logos/julia.svg',
+  learning: 'images/logos/learning.svg',
+  linux: 'images/logos/linux-tux.svg',
+  ocaml: 'images/logos/apache-camel.svg',
+  pi: 'images/logos/pi.svg',
+  python: 'images/logos/python.svg',
+  raspberry: 'images/logos/raspberry-pi.svg',
+  synacor: 'images/logos/synacor.svg',
+  typescript: 'images/logos/typescript-icon.svg',
+  v8: 'images/logos/v8.svg',
+  xmonad: 'images/logos/xmonad.svg',
 };
 
+function getSvgAsDataUrl(path: string): string {
+  if (path.endsWith('.svg') === false) {
+    throw new Error(`Logo should be svg, got: ${path}`);
+  }
+
+  return `data:image/svg+xml;base64,${readFileSync(path).toString('base64')}`;
+}
+
 function getLogo(name: string | undefined): string {
-  const defaultLogo = '/images/favicon.ico';
+  const defaultLogo = 'images/favicon.ico';
   if (name === undefined) {
     return defaultLogo;
   }
 
-  return LOGOS[name] || `/images/logos/${name}.svg`;
+  return LOGOS[name] || `images/logos/${name}.svg`;
 }
 
 function getApproxReadingTime(content: string): number {
@@ -251,11 +260,16 @@ class Generator {
   public async generateIndex(): Promise<void> {
     console.log('generating index.html');
 
+// ! . hostname: securite.01net.com
+// ! ├─ CNAME: ww13.smartadserver.com
+
+    // <img class="logo" alt="${post.logoAlt}" src="${post.logo}"></img>
     const indexEntry = (post: Post): string => `
     <li>
-    <img loading="lazy" class="logo" alt="${post.logoAlt}" src="${post.logo}"></img>
+    <img class="logo" alt="${post.logoAlt}" src="${post.logo}"></img>
     <a href="${post.url}">${post.title}</a>
-    <span class="date">— ${formatDate(post.date)}</span>
+    </br>
+    <span class="date">└─ ${formatDate(post.date)}</span>
     </li>
     `;
 
@@ -324,7 +338,7 @@ class Generator {
           'styles/footer.css',
           'styles/sharing.css',
           'styles/header.css',
-          'node_modules/highlight.js/styles/github.css',
+          'styles/github.css',
         ].map((path) => fs.readFile(join(__dirname, path), 'utf8')),
       )).join('\n'),
     ).css;
@@ -445,7 +459,7 @@ class Generator {
       date,
       html,
       lang: metadata.get('lang') || 'en',
-      logo: getLogo(metadata.get('logo')),
+      logo: getSvgAsDataUrl(getLogo(metadata.get('logo'))),
       logoAlt: metadata.get('logo') || 'post logo',
       name,
       readingTime: getApproxReadingTime(content),
