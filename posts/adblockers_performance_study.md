@@ -1,5 +1,5 @@
 ---
-title: Adblockers Performance Study
+title: Adblockers performance study
 date: 2019-02-15
 lang: en
 logo: cliqz

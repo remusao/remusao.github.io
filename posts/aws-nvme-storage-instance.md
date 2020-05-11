@@ -1,5 +1,5 @@
 ---
-title: AWS NVMe Storage Optimized Instances
+title: AWS NVMe storage optimized instances
 date: 2017-12-27
 logo: aws
 lang: en
@@ -12,7 +12,7 @@ format and mount it manually.
 
 Formatting the drive found at `/dev/nvme0n1`:
 ```sh
-$ sudo mkfs -t ext4 /dev/nvme0n1 
+$ sudo mkfs -t ext4 /dev/nvme0n1
 ```
 
 Mounting to `/ebs/`:

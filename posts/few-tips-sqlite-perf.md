@@ -1,5 +1,5 @@
 ---
-title: Getting the Most out of Sqlite3 with Python
+title: Getting the most out of SQLite3 with Python
 date: 2017-10-21
 logo: python
 lang: en

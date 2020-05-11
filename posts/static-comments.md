@@ -1,5 +1,5 @@
 ---
-title: Fully Static Comments
+title: Fully static comments
 date: 2017-11-19
 lang: en
 logo: html5

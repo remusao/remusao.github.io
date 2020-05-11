@@ -1,5 +1,5 @@
 ---
-title: Thoughts About Unit and Integration Tests
+title: Thoughts about unit and integration tests
 date: 2019-10-26
 logo: jest
 lang: en

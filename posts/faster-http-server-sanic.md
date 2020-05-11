@@ -1,5 +1,5 @@
 ---
-title: simple-sanic, a Blazing Fast http.server using Sanic
+title: simple-sanic—A blazing fast HTTP server using Sanic
 date: 2017-11-26
 lang: en
 logo: python

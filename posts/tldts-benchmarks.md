@@ -1,5 +1,5 @@
 ---
-title: Fast Domains and URLs Parsing With Tldts
+title: Fast domains and URLs parsing with tldts
 date: 2019-02-02
 logo: typescript
 lang: en

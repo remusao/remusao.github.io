@@ -1,5 +1,5 @@
 ---
-title: IHaskell Extensions
+title: A tour of IHaskell extensions
 date: 2016-01-11
 logo: haskell
 lang: en

@@ -1,5 +1,5 @@
 ---
-title: Rubik's Cube Records
+title: Rubik's Cube records
 date: 2016-01-27
 logo: python
 lang: en
@@ -158,7 +158,7 @@ import pandas as pd
 import numpy as np
 
 df = pd.DataFrame(
-    data=clean_table, 
+    data=clean_table,
     columns=(
         'Rank',
         'Person',
@@ -328,7 +328,7 @@ clean_table[:5]
 
 ```python
 df = pd.DataFrame(
-    data=clean_table, 
+    data=clean_table,
     columns=('Person', 'Single', 'Avg', 'Country', 'Competition', 'Year'))
 
 df.head()

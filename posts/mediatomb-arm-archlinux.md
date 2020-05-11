@@ -1,5 +1,5 @@
 ---
-title: Compiler Mediatomb sur archlinux ARM
+title: Compiler Mediatomb sur Arch Linux ARM
 date: 2012-07-31
 logo: raspberry
 lang: fr

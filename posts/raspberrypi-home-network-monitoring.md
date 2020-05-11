@@ -1,5 +1,5 @@
 ---
-title: Monitoring your Internet Bandwidth with a Raspberry Pi
+title: Monitoring your Internet bandwidth with a Raspberry Pi
 date: 2018-01-13
 logo: raspberry
 lang: en

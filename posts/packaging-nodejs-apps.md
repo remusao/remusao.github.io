@@ -1,5 +1,5 @@
 ---
-title: Packaging Node.js Apps the Easy Way
+title: Packaging Node.js apps the easy way
 date: 2018-03-04
 logo: v8
 lang: en
@@ -35,7 +35,7 @@ browser. The output looks like the following:
 ```js
 $ node index.js
 Starting bandwidth test...
-~ Speed 0 
+~ Speed 0
 ~ Speed 7.9 Mbps
 ~ Speed 35 Mbps
 ~ Speed 60 Mbps
@@ -125,7 +125,7 @@ $ docker build -t app .
 The resulting image should weigh around 44MB. And here is how to run the
 application:
 ```sh
-$ docker run app ./app 
+$ docker run app ./app
 Starting bandwidth test...
 ...
 

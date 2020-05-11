@@ -1,5 +1,5 @@
 ---
-title: Install IHaskell on Ubuntu 16.04 with Stack
+title: Installing IHaskell on Ubuntu 16.04 with Stack
 date: 2017-10-07
 logo: haskell
 lang: en
@@ -111,7 +111,7 @@ Then it can be started using:
 $ stack exec jupyter -- notebook
 ```
 
-### From stackage lts-6.35 
+### From stackage lts-6.35
 
 Unfortunately, it is not possible to build IHaskell using the latest snapshot,
 as it does not seem to work with GHC 8.x. The latest supported LTS snapshot is

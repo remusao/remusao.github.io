@@ -1,5 +1,5 @@
 ---
-title: Python, construction des listes
+title: Python—Construction des listes
 date: 2012-02-02
 logo: python
 lang: fr

@@ -1,5 +1,5 @@
 ---
-title: Decompressing BZipped Files With Julia
+title: Decompressing bzipped files with Julia
 date: 2014-07-22
 logo: julia
 lang: en
@@ -13,7 +13,7 @@ results to) BZipped files.
 
 ## Setup
 
-Tests where executed on my personnal computer:
+Tests where executed on my personal computer:
 
 * i7
 * 16GB of ram

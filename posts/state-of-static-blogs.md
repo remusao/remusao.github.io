@@ -1,5 +1,5 @@
 ---
-title: State of Privacy in Statically Generated Blogs
+title: State of privacy in statically generated blogs
 date: 2017-10-08
 logo: html5
 lang: en

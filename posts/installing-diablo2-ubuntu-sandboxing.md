@@ -1,7 +1,7 @@
 ---
-title: Installing Diablo II in 2019
+title: Installing Diablo II
 date: 2019-11-02
-logo: diablo2
+logo: diablo3
 lang: en
 issue: 51
 ---

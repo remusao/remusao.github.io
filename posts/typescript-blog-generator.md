@@ -1,5 +1,5 @@
 ---
-title: Static Blog Generator in TypeScript
+title: A static blog generator in TypeScript
 date: 2019-07-19
 logo: typescript
 lang: en

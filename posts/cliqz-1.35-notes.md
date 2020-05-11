@@ -1,5 +1,5 @@
 ---
-title: What's Exciting in Cliqz 1.35
+title: What's exciting in Cliqz 1.35
 date: 2019-03-22
 logo: cliqz
 lang: en

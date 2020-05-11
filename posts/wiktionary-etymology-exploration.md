@@ -1,5 +1,5 @@
 ---
-title: Exploring Etymology using Wiktionary Data
+title: Exploring etymology using Wiktionary data
 date: 2018-07-14
 logo: python
 lang: en

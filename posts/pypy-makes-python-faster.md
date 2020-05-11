@@ -1,5 +1,5 @@
 ---
-title: Pypy, « Make Python faster ! »
+title: Pypy—Make Python faster!
 date: 2011-11-10
 logo: python
 lang: fr

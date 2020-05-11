@@ -236,25 +236,29 @@ class Generator {
   public async generateIndex(): Promise<void> {
     console.log('generating index.html');
 
-    const indexEntry = (post: Post): string => `
-    <li>
-    <div class="logo logo-${post.logo}"></div>
-    <a href="${post.url}">${post.title}</a>
-    <span class="date">─ ${formatDate(post.date)}</span>
-    </li>
-    `;
+    const indexEntry = (post: Post): string =>
+      [
+        `<a href="${post.url}">`,
+        '  <li>',
+        `    <div class="logo logo-${post.logo}"></div>`,
+        `    ${post.title}`,
+        '  </li>',
+        '</a>',
+      ].join('\n');
 
-    const indexYear = (year: number, sameYearPosts: Post[]): string => `
-    <div>
-    <h2 class="year">${year}</h2>
-    <ul class="index">
-    ${sameYearPosts.map(indexEntry).join('\n')}
-    </ul>
-    </div>
-    `;
+    const indexYear = (year: number, sameYearPosts: Post[]): string =>
+      [
+        '<div>',
+        `  <h2 class="year">${year}</h2>`,
+        '  <ul class="index">',
+        ...sameYearPosts.map(indexEntry),
+        '  </ul>',
+        '</div>',
+      ].join('\n');
 
-    // @ts-ignore
-    const posts = Array.from(this.posts.values()).sort((p1: Post, p2: Post) => p2.date - p1.date);
+    const posts = Array.from(this.posts.values()).sort(
+      (p1: Post, p2: Post) => p2.date.getTime() - p1.date.getTime(),
+    );
 
     const postsByYear: Map<number, Post[]> = new Map();
     for (const post of posts.values()) {
@@ -275,11 +279,9 @@ class Generator {
       'en',
       'index.html',
       'Posts',
-      `
-        <div>
-        ${postsSortedByYear.map((group) => indexYear(group[0], group[1])).join('\n')}
-        </div>
-        `,
+      ['<div>', ...postsSortedByYear.map((group) => indexYear(group[0], group[1])), '</div>'].join(
+        '\n',
+      ),
       this.indexCSS,
     );
 
@@ -294,7 +296,7 @@ class Generator {
           `.logo-${name} {`,
           `  background-image: url('${getSvgAsDataUrl(path)}');`,
           '  background-repeat: no-repeat;',
-          '}'
+          '}',
         ].join('\n'),
       );
     }

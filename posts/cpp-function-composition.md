@@ -1,5 +1,5 @@
 ---
-title: C++, composition de fonctions
+title: C++—Composition de fonctions
 date: 2013-05-30
 logo: cpp
 lang: fr
@@ -58,7 +58,7 @@ Et enfin voici le code C++ correspondant :
 ```c++
 #ifndef PIPELINE_HH_
 # define PIPELINE_HH_
- 
+
 namespace
 {
     //
@@ -68,15 +68,15 @@ namespace
     //
     template <typename In, typename F, typename ...Args>
     struct result_of : public result_of<typename std::result_of<F(In)>::type, Args...> {};
- 
+
     template <typename In, typename F>
     struct result_of<In, F>
     {
         typedef typename std::result_of<F(In)>::type type;
     };
 }
- 
- 
+
+
 //
 // Pipeline of function
 // usage : pipeline(T arg, f1, f2, ..., fn) with:
@@ -91,7 +91,7 @@ In pipeline(In&& a)
 {
     return std::forward<In>(a);
 }
- 
+
 template <
     typename In,
     typename Function>
@@ -99,7 +99,7 @@ auto pipeline(In&& a, Function f) -> decltype (f(std::forward<In>(a)))
 {
     return f(std::forward<In>(a));
 }
- 
+
 template <
     typename In,
     typename Function,
@@ -108,7 +108,7 @@ auto pipeline(In&& a, Function f, Args... args) -> typename result_of<In, Functi
 {
     return pipeline<decltype (f(std::forward<In>(a)))>(f(std::forward<In>(a)), args...);
 }
- 
+
 #endif /* !PIPELINE_HH_ */
 ```
 

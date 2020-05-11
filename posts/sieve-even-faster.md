@@ -1,5 +1,5 @@
 ---
-title: The Sieve, Even faster!
+title: The Sieve—Even faster!
 date: 2011-12-27
 logo: cpp
 lang: en
@@ -9,7 +9,7 @@ lang: en
 find one of the (if not *the*) fastest implementation there: <http://primesieve.org/>
 
 It has been a while since I posted my last article on the blog, my
-studies didn’t leave me enough time for writing. But during Christmas
+studies didn't leave me enough time for writing. But during Christmas
 holidays I found some time to share with you some discoveries and
 developments that I made recently on the Sieve of Eratosthenes.
 This article follows the previous article on the Sieve and aim to
@@ -32,14 +32,14 @@ For the second optimization, we just have to get the next number that
 has not yet been eliminated. With a simple loop. We then gain precious
 seconds at runtime.
 
-Regarding the first optimization, it turns out that it’s not easy
+Regarding the first optimization, it turns out that it's not easy
 to work directly on the bits in C, except with bit fields, but this
 is complicated in the case of the Sieve of Eratosthenes. So I decided
 to implement the algorithm in C++, which offers the type bool, which
 takes only one bit in memory as well as Bitset, which are nothing more
 than arrays of bits, provided with various operations. Thanks to a
 std::vector (or a simple array) of bool the memory usage of the program
-is reduced by 8, which is pretty good. But it’s possible to use a data
+is reduced by 8, which is pretty good. But it's possible to use a data
 structure more efficient. You certainly heard about Boost, a library
 which provide many very powerful tools for C++, and among this tools
 is the Bitset (it also exists in STD, but it is less efficient). Using

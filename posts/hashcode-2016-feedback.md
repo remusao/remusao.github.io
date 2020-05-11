@@ -1,5 +1,5 @@
 ---
-title: Feedback from Hash Code 2016 Qualification Round
+title: Feedback from Hash Code 2016 qualification round
 date: 2016-02-12
 logo: hashcode
 lang: en

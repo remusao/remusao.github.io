@@ -1,5 +1,5 @@
 ---
-title: Ascii, astuces
+title: Ascii—Astuces
 date: 2012-12-25
 logo: cpp
 lang: fr

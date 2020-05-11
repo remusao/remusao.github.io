@@ -1,5 +1,5 @@
 ---
-title: Ocaml, Hashtable Vs Pattern- Matching
+title: Ocaml—Hash table vs. pattern matching
 date: 2012-11-01
 logo: ocaml
 lang: fr

@@ -1,7 +1,7 @@
 ---
-title: Synacor - Down the Rabbit Hole
+title: Synacor—Down the rabbit hole
 date: 2018-06-10
-logo: synacor 
+logo: synacor
 issue: 14
 lang: en
 ---
@@ -67,7 +67,7 @@ After implementing most of the instructions, I tried to run the program:
 
 > Welcome to the Synacor Challenge! Please record your progress by
 > putting codes like this one into the challenge website: XXXXXXXXXXX
-> 
+>
 > Executing self-test...
 
 Nice, so the program actually starts by *testing the virtual machine*,
@@ -98,7 +98,7 @@ already solved the challenge, or do not intend to do so.
 >
 > Things of interest here:
 > - tablet
-> 
+>
 > There are 2 exits:
 > - doorway
 > - south

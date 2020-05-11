@@ -1,5 +1,5 @@
 ---
-title: C++, taille d’un tableau static en temps constant
+title: C++—Taille d'un tableau static en temps constant
 date: 2012-12-25
 logo: cpp
 lang: fr

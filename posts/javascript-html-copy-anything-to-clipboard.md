@@ -1,7 +1,7 @@
 ---
-title: Copy Anything to Clipboard in HTML and Javascript
+title: Copy anything to clipboard in HTML and JavaScript
 date: 2018-06-09
-logo: html5 
+logo: html5
 issue: 13
 lang: en
 ---

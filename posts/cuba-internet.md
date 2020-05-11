@@ -1,5 +1,5 @@
 ---
-title: People in Cuba Built Their own Internet
+title: People in Cuba built their own Internet
 date: 2017-12-30
 logo: ccc
 issue: 9

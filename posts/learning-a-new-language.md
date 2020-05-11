@@ -1,5 +1,5 @@
 ---
-title: Learning a New Language
+title: Learning a new language
 date: 2016-01-25
 logo: learning
 lang: en

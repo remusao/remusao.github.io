@@ -1,5 +1,5 @@
 ---
-title: TypeScript Performance Tip - Escaping Partial
+title: TypeScript performance tip—Escaping partial
 date: 2018-09-25
 logo: typescript
 lang: en

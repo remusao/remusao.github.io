@@ -1,5 +1,5 @@
 ---
-title: Debugging Iptables Rules
+title: Debugging iptables rules
 date: 2018-10-24
 logo: linux
 lang: en

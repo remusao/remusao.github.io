@@ -1,5 +1,5 @@
 ---
-title: Python, lister le contenu des répertoires
+title: Python—Lister le contenu des répertoires
 date: 2012-02-02
 logo: python
 lang: fr

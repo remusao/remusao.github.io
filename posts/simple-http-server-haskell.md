@@ -1,5 +1,5 @@
 ---
-title: A Simple HTTP Server in Haskell
+title: A simple HTTP server in Haskell
 date: 2017-11-12
 logo: haskell
 lang: en

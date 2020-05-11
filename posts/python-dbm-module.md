@@ -1,11 +1,11 @@
 ---
-title: TIL - Python has a Built-in Persistent Key-Value Store
+title: TIL—Python has a built-in persistent key-value store
 date: 2018-06-10
 logo: python
 issue: 15
 lang: en
 ---
- 
+
 Python is, in a lot of ways, a very rich language. After years of using
 it, I still regularly discover new parts of the ecosystem, even in the
 standard library. In particular, there are a few modules which are not

@@ -1,10 +1,10 @@
 ---
-title: Crible d'Ératosthène, Un algo pour les trouver tous
+title: Crible d'Ératosthène—Un algo pour les trouver tous
 date: 2011-11-15
 logo: cpp
 lang: fr
 ---
- 	
+
 Il y a quelques temps je me suis intéressé au crible
 d’Ératosthène, qui permet de trouver l’ensemble des nombres
 premiers inférieurs à une borne donnée. L’application naïve
@@ -19,7 +19,7 @@ fournis tout au long de l’article.
 3. Optimisations.
 4. Performances.
 5. Conclusion.
- 
+
 
 *Qu’est-ce qu’un nombre premier* – Un nombre premier est un entier
 naturel qui n’admet que deux diviseurs, 1 et lui-même. Ce qui exclut

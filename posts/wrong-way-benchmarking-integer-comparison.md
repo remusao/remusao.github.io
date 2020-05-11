@@ -1,5 +1,5 @@
 ---
-title: The Wrong Way of Benchmarking Integer Comparison Functions
+title: The wrong way of benchmarking integer comparison functions
 date: 2017-11-25
 logo: v8
 lang: en

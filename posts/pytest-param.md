@@ -1,5 +1,5 @@
 ---
-title: Pytest Paramaterize Tests With External Data
+title: Pytest—Paramaterize tests with external data
 date: 2014-11-26
 logo: python
 lang: en

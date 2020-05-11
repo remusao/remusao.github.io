@@ -1,11 +1,11 @@
 ---
-title: Python, Le saviez-vous ?
+title: Python—Le saviez-vous ?
 date: 2012-02-05
 logo: python
 lang: fr
 ---
 
-J’en apprend tous les jours sur le Python, et tous les jours je
+J’en apprends tous les jours sur le Python, et tous les jours je
 suis émerveillé par la richesse de ce langage. Je fais actuellement
 quelques recherches sur des utilisations avancées des décorateurs
 (afin de faire de la méta-programmation par exemple), j’ai découvert

@@ -1,5 +1,5 @@
 ---
-title: What's in a Parser Combinator?
+title: What's in a parser combinator?
 date: 2016-02-23
 logo: haskell
 lang: en
