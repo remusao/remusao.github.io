@@ -9,7 +9,7 @@ issue: 51
 <picture>
   <source srcset="../images/diablo2-banner.webp" type="image/webp">
   <source srcset="../images/diablo2-banner.png" type="image/png">
-  <img loading="lazy" src="../images/diablo2-banner.png" alt="Diablo II" style="width:100%">
+  <img src="../images/diablo2-banner.png" alt="Diablo II banner" style="width:100%">
 </picture>
 
 You might have heard the news: *Diablo IV* has been announced yesterday with a
