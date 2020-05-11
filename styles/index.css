@@ -18,13 +18,13 @@
   color: #2e3436;
   font-size: 1.1em;
   text-decoration: none;
+  width: 100%;
 }
 
 .index li {
   padding-bottom: 6px;
   padding-left: 15px;
   padding-top: 6px;
-  width: 100%;
 }
 
 .index li:hover {

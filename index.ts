@@ -278,7 +278,7 @@ class Generator {
     const index = this.wrapHtml(
       'en',
       'index.html',
-      'Posts',
+      'Simplex Sigillum Veri',
       ['<div>', ...postsSortedByYear.map((group) => indexYear(group[0], group[1])), '</div>'].join(
         '\n',
       ),
