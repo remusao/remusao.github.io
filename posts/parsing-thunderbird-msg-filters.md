@@ -1,5 +1,5 @@
 ---
-title: Parsing Thunderbird message filtering rules
+title: Parsing Thunderbird filtering rules
 date: 2019-11-24
 logo: thunderbird
 lang: en

@@ -57,7 +57,7 @@ are a few examples of possible connections:
   with English word 'chair'
 
 
-# Parsing the data
+## Parsing the data
 
 The parsing stage takes as input one or multiple
 [dumps](https://dumps.wikimedia.org/backup-index.html), and produces a
@@ -89,7 +89,7 @@ and `origin` (optional, since not all origins are specified in the data).
 And this is all we need start exploring the data and answer interesting
 questions!
 
-# Etymological Summary Visualization
+## Etymological summary visualization
 
 Once we have a graph of "etymological" connections between words, one of the
 simplest things we can do is to visualize the neighborhood of a given word. This
@@ -170,7 +170,7 @@ comes from. The "Trojan Horse" gave its name to a way to prepare (or
 grill) the pork called: "Porka de Troja", and they 'truie' in French.
 
 
-# Distance Between two Words
+## Distance between two words
 
 Another simple application of the graph is to compute the size of
 the shortest path between two words. This can be achieved using the
@@ -233,7 +233,7 @@ that multiple paths of the same length link two words of the graph. A possible
 improvement would be to find all possible paths between two words, which would
 probably gives some nice insight! (It could also be visualized as a graph!)
 
-# Closest Word in a Target Language
+## Closest word in a target language
 
 Let's say you are learning a new language (e.g.: German) and while learning a
 new word, you are looking for a way to "connect" it to some words you already
@@ -293,7 +293,7 @@ Some connections are pretty far-fetched, and we would need to dig in the
 original data to understand why! And this is where it can get exciting to do
 some manual research!
 
-# What are the Easiest Words to Learn in a Language?
+## What are the easiest words to learn in a language?
 
 As a final application, and as a result of our ability to compute the minimum
 distance between two words in different languages, we can try to identify the
@@ -345,7 +345,7 @@ $ easiest graph.tsv
 At the moment it is not possible to specify other languages than French, English
 and German, but it will probably be in the future.
 
-# Closing Remarks
+## Closing remarks
 
 There is probably much more we can do using this data, and this is only
 the beginning, I already find the project useful to get insight about

@@ -382,7 +382,7 @@ class Generator {
 
 <h1>${post.title}</h1>
 <section class="header">
-  <div>${formatDate(post.date)} | <em>Reading time: ~${post.readingTime} minutes</em></div>
+  <div>└─ ${formatDate(post.date)} • <em>Reading time: ~${post.readingTime} minutes</em></div>
 </section>
 <article>
   <div class="main">
