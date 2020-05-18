@@ -40,7 +40,7 @@
     "typescript": "^3.9.2"
   },
   "dependencies": {
-    "@octokit/rest": "^17.9.1",
+    "@octokit/rest": "^17.9.2",
     "chokidar": "^3.4.0",
     "compression": "^1.7.4",
     "csso": "^4.0.3",
