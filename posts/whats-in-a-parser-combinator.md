@@ -6,8 +6,8 @@ lang: en
 ---
 
 As part of my ongoing effort to make progress in Haskell (that's
-one of my goals for 2016!), I'm following the [MOOC on functionnal programming](https://courses.edx.org/courses/course-v1:DelftX+FP101x+3T2
-015/info) by [Erik Meijer](https://twitter.com/headinthebox) on *edX*.
+one of my goals for 2016!), I'm following the [MOOC on functionnal programming](https://courses.edx.org/courses/course-v1:DelftX+FP101x+3T2015/info)
+by [Erik Meijer](https://twitter.com/headinthebox) on *edX*.
 
 The first lessons were pretty basic stuff, and I got through
 them quickly. Lesson 7 is about *Functional parsers* and

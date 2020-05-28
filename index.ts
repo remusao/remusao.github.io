@@ -12,13 +12,58 @@ import glob from 'glob';
 import hljs from 'highlight.js';
 import { minify } from 'html-minifier';
 import { JSDOM } from 'jsdom';
-import marked from 'marked';
 import moment from 'moment';
 import rimraf from 'rimraf';
 import serveStatic from 'serve-static';
 import TreeSync from 'tree-sync';
 
+import markdown from 'markdown-it';
+// @ts-ignore
+import markdownFootnote from 'markdown-it-footnote';
+// @ts-ignore
+import markdownAttributes from 'markdown-it-attrs';
+// @ts-ignore
+import markdownLinkAttributes from 'markdown-it-link-attributes';
+// @ts-ignore
+import markdownImplicitFigures from 'markdown-it-implicit-figures';
+import markdownKatex from '@traptitech/markdown-it-katex';
+
+const md: any = markdown({
+  html: true,
+  linkify: false,
+  typographer: true,
+  highlight(code, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return `<pre class="code" data-lang="${lang}"><code>${
+          hljs.highlight(lang, code, true).value
+        }</code></pre>`;
+      } catch (ex) { /* Empty */ }
+    }
+
+    return `<pre class="code" data-lang="${lang}"><code>${md.utils.escapeHtml(
+      code,
+    )}</code></pre>`;
+  },
+})
+  .use(markdownFootnote)
+  .use(markdownAttributes)
+  .use(markdownLinkAttributes, {
+    pattern: /^(?:dat:|http:|https:)?\/\//,
+    attrs: {
+      target: '_blank',
+      rel: 'noopener noreferrer',
+    },
+  })
+  .use(markdownImplicitFigures, {
+    figcaption: true,
+    link: true,
+  })
+  .use(markdownKatex);
+
+
 import emojis from './emojis';
+
 
 const ci = process.argv[process.argv.length - 1] === '--ci';
 
@@ -171,21 +216,11 @@ class Generator {
 
   private indexCSS!: string;
   private articleCSS!: string;
+  private articleKatexCSS!: string;
 
   constructor() {
     // Initialize posts
     this.posts = new Map();
-
-    // Initialize markdown to HTML converter
-    marked.setOptions({
-      breaks: false,
-      gfm: true,
-      smartLists: true,
-      smartypants: true,
-      highlight(code, lang) {
-        return hljs.highlight(lang, code).value;
-      },
-    });
 
     // Initialize DOM sanitizer
     // @ts-ignore
@@ -200,12 +235,14 @@ class Generator {
   }
 
   public async init(): Promise<void> {
-    const [index, article] = await Promise.all([
+    const [index, articleKatex, article] = await Promise.all([
       this.generateIndexCSS(),
-      this.generateArticleCSS(),
+      this.generateArticleCSS({ katex: true }),
+      this.generateArticleCSS({ katex: false }),
     ]);
 
     this.indexCSS = index;
+    this.articleKatexCSS = articleKatex;
     this.articleCSS = article;
   }
 
@@ -309,11 +346,8 @@ class Generator {
     return csso.minify(stylesheets.join('\n')).css;
   }
 
-  private async generateArticleCSS(): Promise<string> {
-    return csso.minify(
-      (
-        await Promise.all(
-          [
+  private async generateArticleCSS({ katex }: { katex: boolean; }): Promise<string> {
+    const stylesheets = [
             'styles/style.css',
             'styles/article.css',
             'styles/code.css',
@@ -323,7 +357,16 @@ class Generator {
             'styles/sharing.css',
             'styles/header.css',
             'styles/github.css',
-          ].map((path) => fs.readFile(join(__dirname, path), 'utf8')),
+    ];
+
+    if (katex) {
+      stylesheets.push('styles/katex.css');
+    }
+
+    return csso.minify(
+      (
+        await Promise.all(
+          stylesheets.map((path) => fs.readFile(join(__dirname, path), 'utf8')),
         )
       ).join('\n'),
     ).css;
@@ -398,7 +441,7 @@ class Generator {
   </div>
 </footer>
 `,
-      this.articleCSS,
+      post.html.includes('class="katex"') ? this.articleKatexCSS : this.articleCSS,
     );
   }
 
@@ -430,7 +473,7 @@ class Generator {
     }
 
     // Generate HTML from markdown
-    const html = marked(content.slice(endOfMetadata + 3));
+    const html = md.render(content.slice(endOfMetadata + 3));
 
     const issue = metadata.get('issue');
     const comments = issue === undefined ? '' : await this.createComments(issue);
@@ -513,7 +556,7 @@ ${
             <a class="date" href="${url}" title="${url}" target="_blank" rel="noopener noreferrer">${humanized}</a>
           </div>
 
-          <div class="content">${addEmojis(this.purifyDOM(marked(body)))}</div>
+          <div class="content">${addEmojis(this.purifyDOM(md.render(body)))}</div>
         </div>
       </li>
     `,
@@ -539,6 +582,7 @@ ${
   new TreeSync('images', '_site/images').sync();
   new TreeSync('snippets', '_site/snippets').sync();
   new TreeSync('experiments', '_site/experiments').sync();
+  new TreeSync('node_modules/katex/dist', '_site/katex').sync();
 
   // Generate all posts + index.html
   await Promise.all(glob.sync('./posts/*.md').map((path) => generator.generate(path))).then(() =>
