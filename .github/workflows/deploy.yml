@@ -5,6 +5,7 @@ on:
     - cron: '0 * * * *'
   push:
     branches: ["diy-ts"]
+  issue_comment:
 
 jobs:
   deploy:

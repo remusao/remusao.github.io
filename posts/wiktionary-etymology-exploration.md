@@ -3,7 +3,7 @@ title: Exploring etymology using Wiktionary data
 date: 2018-07-14
 logo: python
 lang: en
-issue: 13
+issue: 16
 ---
 
 Etymology is a fascinating topic. Looking closer at the origin of words often
