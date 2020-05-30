@@ -1,8 +1,9 @@
 ---
-title: A more efficient matching engine for HTTPS Everywhere Rulesets
+title: A more efficient matching engine for HTTPS Everywhere RuleSets
 date: 2020-05-30
 logo: https
 lang: en
+issue: 248
 ---
 
 **TL;DR:** *In this post I describe the results of an experiment showing
