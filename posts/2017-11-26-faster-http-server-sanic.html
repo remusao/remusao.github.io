@@ -2,11 +2,11 @@
 
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span>():</span>
     app = Sanic(__name__, log_config=<span class="hljs-literal">None</span>)
-    app.static(<span class="hljs-string">'/'</span>, <span class="hljs-string">'./index.html'</span>)
-    app.static(<span class="hljs-string">'/'</span>, <span class="hljs-string">'./'</span>)
-    app.run(host=<span class="hljs-string">"0.0.0.0"</span>)
+    app.static(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-string">&#x27;./index.html&#x27;</span>)
+    app.static(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-string">&#x27;./&#x27;</span>)
+    app.run(host=<span class="hljs-string">&quot;0.0.0.0&quot;</span>)
 
-<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:
     main()
 </code></pre><p>To make it even easier to use, I bundled this code into a package: <a href="https://github.com/remusao/simple-sanic" target="_blank" rel="noopener noreferrer">simple-sanic</a>, which is a drop-in replacement for <code>http.server</code>. It allows to serve the content of the current directory over http with a single command:</p><pre class="code" data-lang="sh"><code>$ python -m simple-sanic
 </code></pre><p>The package is available on <a href="https://pypi.python.org/pypi/simple-sanic" target="_blank" rel="noopener noreferrer">Pypi</a> and <a href="https://github.com/remusao/simple-sanic" target="_blank" rel="noopener noreferrer">Github</a>. To install:</p><pre class="code" data-lang="sh"><code>$ pip install simple-sanic

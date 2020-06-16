@@ -47,25 +47,25 @@
   }
 
   <span class="hljs-keyword">if</span> (found !== <span class="hljs-number">8191</span>) {
-    <span class="hljs-built_in">console</span>.error(<span class="hljs-string">'Found bug'</span>, found);
+    <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&#x27;Found bug&#x27;</span>, found);
   }
 }
 </code></pre><ul><li><em>Benchmark</em></li></ul><pre class="code" data-lang="javascript"><code><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bench</span>(<span class="hljs-params"></span>) </span>{
-  <span class="hljs-keyword">var</span> Benchmark = <span class="hljs-built_in">require</span>(<span class="hljs-string">'benchmark'</span>);
+  <span class="hljs-keyword">var</span> Benchmark = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;benchmark&#x27;</span>);
   <span class="hljs-keyword">var</span> suite = <span class="hljs-keyword">new</span> Benchmark.Suite();
 
   suite
-    .add(<span class="hljs-string">'compare1'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    .add(<span class="hljs-string">&#x27;compare1&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
       run(compare1);
     })
-    .add(<span class="hljs-string">'compare2'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    .add(<span class="hljs-string">&#x27;compare2&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
       run(compare2);
     })
-    .on(<span class="hljs-string">'cycle'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) </span>{
+    .on(<span class="hljs-string">&#x27;cycle&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) </span>{
       <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">String</span>(event.target));
     })
-    .on(<span class="hljs-string">'complete'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Fastest is '</span> + <span class="hljs-keyword">this</span>.filter(<span class="hljs-string">'fastest'</span>).map(<span class="hljs-string">'name'</span>));
+    .on(<span class="hljs-string">&#x27;complete&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Fastest is &#x27;</span> + <span class="hljs-built_in">this</span>.filter(<span class="hljs-string">&#x27;fastest&#x27;</span>).map(<span class="hljs-string">&#x27;name&#x27;</span>));
     })
     .run({});
 }

@@ -13,16 +13,16 @@
 <span class="hljs-title">oneChar</span> = <span class="hljs-type">Parser</span> $ \s -&gt; <span class="hljs-keyword">case</span> s <span class="hljs-keyword">of</span>
             [] -&gt; <span class="hljs-type">Nothing</span>
             (c:xs) -&gt; <span class="hljs-type">Just</span> (c, xs)
-</code></pre><p>Let’s test these parsers:</p><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> failure <span class="hljs-string">"Hello Parser!"</span>
+</code></pre><p>Let’s test these parsers:</p><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> failure <span class="hljs-string">&quot;Hello Parser!&quot;</span>
 </code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Nothing</span>
-</code></pre></blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (return <span class="hljs-number">42</span>) <span class="hljs-string">"Hello Parser!"</span>
-</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-number">42</span>, <span class="hljs-string">"Hello Parser!"</span>)
-</code></pre></blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> oneChar <span class="hljs-string">"Hello Parser!"</span>
-</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> ('<span class="hljs-type">H'</span>,<span class="hljs-string">"ello Parser!"</span>)
-</code></pre></blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> oneChar <span class="hljs-string">""</span>
+</code></pre></blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (return <span class="hljs-number">42</span>) <span class="hljs-string">&quot;Hello Parser!&quot;</span>
+</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-number">42</span>, <span class="hljs-string">&quot;Hello Parser!&quot;</span>)
+</code></pre></blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> oneChar <span class="hljs-string">&quot;Hello Parser!&quot;</span>
+</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (&#x27;<span class="hljs-type">H&#x27;</span>,<span class="hljs-string">&quot;ello Parser!&quot;</span>)
+</code></pre></blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> oneChar <span class="hljs-string">&quot;&quot;</span>
 </code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Nothing</span>
 </code></pre></blockquote><p>The basic parsers seem to behave as expected. We get <code>Nothing</code> in case of failure, and they are able to partially consume the input. So all is good, but what about more complex parsers? We would like to parse strings, or more complex patterns. Let’s try to recognize a string from the input, using our basic parsers:</p><pre class="code" data-lang="haskell"><code><span class="hljs-title">string</span> :: <span class="hljs-type">String</span> -&gt; <span class="hljs-type">Parser</span> <span class="hljs-type">String</span>
-<span class="hljs-title">string</span> <span class="hljs-string">""</span> = return <span class="hljs-string">""</span>
+<span class="hljs-title">string</span> <span class="hljs-string">&quot;&quot;</span> = return <span class="hljs-string">&quot;&quot;</span>
 <span class="hljs-title">string</span> (c1:xs1) = <span class="hljs-type">Parser</span> $ \s -&gt;
   <span class="hljs-keyword">case</span> runParser oneChar s <span class="hljs-keyword">of</span>
     <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-type">Nothing</span>
@@ -32,12 +32,12 @@
         <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-type">Nothing</span>
         <span class="hljs-type">Just</span> (match, rest2) -&gt; <span class="hljs-type">Just</span> (c2:match, rest2)
       <span class="hljs-keyword">else</span> <span class="hljs-type">Nothing</span>
-</code></pre><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (string <span class="hljs-string">"Hello"</span>) <span class="hljs-string">"Hello Parser!"</span>
-</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-string">"Hello"</span>, <span class="hljs-string">" Parser!"</span>)
-</code></pre></blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (string <span class="hljs-string">"Hello"</span>) <span class="hljs-string">"Foo Bar"</span>
+</code></pre><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (string <span class="hljs-string">&quot;Hello&quot;</span>) <span class="hljs-string">&quot;Hello Parser!&quot;</span>
+</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-string">&quot;Hello&quot;</span>, <span class="hljs-string">&quot; Parser!&quot;</span>)
+</code></pre></blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (string <span class="hljs-string">&quot;Hello&quot;</span>) <span class="hljs-string">&quot;Foo Bar&quot;</span>
 </code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Nothing</span>
-</code></pre></blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (string <span class="hljs-string">""</span>) <span class="hljs-string">"Hello Parser!"</span>
-</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-string">""</span>,<span class="hljs-string">"Hello Parser!"</span>)
+</code></pre></blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (string <span class="hljs-string">&quot;&quot;</span>) <span class="hljs-string">&quot;Hello Parser!&quot;</span>
+</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-string">&quot;&quot;</span>,<span class="hljs-string">&quot;Hello Parser!&quot;</span>)
 </code></pre></blockquote><p>This isn’t very convenient (but it works)… Because we have to write the boilerplate to <em>compose parsers</em> over and over. Hopefully, we know a famous structure that allows composition in Haskell, and this is called <em>Monad</em> (and I won’t make yet another tutorial on <em>Monads</em>, so I will assume you already are familiar with this concept). That means we could avoid all the boilerplate, by making our <code>Parser</code> type an instance of <em>Monad</em>. This would allow us to use the <em>do syntax</em> to cleanly compose our parsers! Sweet!</p><p>To do so, we’ll have to make our <em>Parser</em> an instance of: <em>Functor</em>, <em>Applicative</em> and <em>Monad</em>.</p><h4>Parser is a Functor</h4><p>First of all, our Parser is an instance of <a href="https://en.wikibooks.org/wiki/Haskell/The_Functor_class" target="_blank" rel="noopener noreferrer"><em>Functor</em></a>, which means we can <code>map</code> functions over the result of our parsing:</p><pre class="code" data-lang="haskell"><code><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> <span class="hljs-type">Parser</span> <span class="hljs-keyword">where</span></span>
     <span class="hljs-comment">-- fmap :: (a -&gt; b) -&gt; Parser a -&gt; Parser b</span>
     <span class="hljs-comment">-- 1. Run parser on input string.</span>
@@ -46,12 +46,12 @@
       <span class="hljs-keyword">case</span> runParser p s <span class="hljs-keyword">of</span>
         <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-type">Nothing</span>
         <span class="hljs-type">Just</span> (a, rest) -&gt; <span class="hljs-type">Just</span> (f a, rest)
-</code></pre><pre class="code" data-lang="haskell"><code><span class="hljs-comment">-- Parse `String` "42" and then convert it to `Int` using `read`</span>
+</code></pre><pre class="code" data-lang="haskell"><code><span class="hljs-comment">-- Parse `String` &quot;42&quot; and then convert it to `Int` using `read`</span>
 <span class="hljs-title">parse42</span> :: <span class="hljs-type">Parser</span> <span class="hljs-type">Int</span>
-<span class="hljs-title">parse42</span> = (fmap read $ string <span class="hljs-string">"42"</span>)
+<span class="hljs-title">parse42</span> = (fmap read $ string <span class="hljs-string">&quot;42&quot;</span>)
 
-<span class="hljs-title">runParser</span> parse42 <span class="hljs-string">"42 is the answer!"</span>
-</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-number">42</span>, <span class="hljs-string">" is the answer!"</span>)
+<span class="hljs-title">runParser</span> parse42 <span class="hljs-string">&quot;42 is the answer!&quot;</span>
+</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-number">42</span>, <span class="hljs-string">&quot; is the answer!&quot;</span>)
 </code></pre></blockquote><h4>Parser is an Applicative</h4><p>Secondly, we can make our parser an instance of <a href="https://en.wikibooks.org/wiki/Haskell/Applicative_functors" target="_blank" rel="noopener noreferrer"><em>Applicative</em></a>. This part wasn’t obvious for me. All the examples I found were about instances for easy types like <code>Maybe</code>, but I found a <em>Parser</em> to be pretty different. But thanks to the types and some use-cases (that you’ll find below), I figured the following implementation (which will hopefully be correct…):</p><pre class="code" data-lang="haskell"><code><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> <span class="hljs-type">Parser</span> <span class="hljs-keyword">where</span></span>
     <span class="hljs-comment">-- pure :: a -&gt; Parser a</span>
     <span class="hljs-comment">-- Wrap a value inside a parser, leaving input unchanged.</span>
@@ -68,8 +68,8 @@
           <span class="hljs-type">Just</span> (a, rest2) -&gt; <span class="hljs-type">Just</span> (f a, rest2)
 </code></pre><p>The usefulness of the previous instance might not be obvious, but it allows us to <code>lift</code> some function inside the realm of parsers. For example if we want to take the result of several parsers and then group their results into a tuple, we can do it using <em>Applicatives</em>:</p><pre class="code" data-lang="haskell"><code><span class="hljs-title">parseTuple</span> :: <span class="hljs-type">Parser</span> (<span class="hljs-type">Char</span>, <span class="hljs-type">Char</span>)
 <span class="hljs-title">parseTuple</span> =  (,) &lt;$&gt; oneChar &lt;*&gt; oneChar
-<span class="hljs-title">runParser</span> parseTuple <span class="hljs-string">"ab"</span>
-</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (('a', 'b'), <span class="hljs-string">""</span>)
+<span class="hljs-title">runParser</span> parseTuple <span class="hljs-string">&quot;ab&quot;</span>
+</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> ((&#x27;a&#x27;, &#x27;b&#x27;), <span class="hljs-string">&quot;&quot;</span>)
 </code></pre></blockquote><p>This is the kind of constructs we will use to convert the raw parsed structure into our own types (e.g: an AST).</p><pre class="code" data-lang="haskell"><code><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">AST</span> =</span>
     <span class="hljs-type">Foo</span> <span class="hljs-type">String</span>
   | <span class="hljs-type">Bar</span> <span class="hljs-type">String</span>
@@ -77,15 +77,15 @@
   <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>)
 
 <span class="hljs-title">parseFoo</span>, parseBar, parsePair :: <span class="hljs-type">Parser</span> <span class="hljs-type">AST</span>
-<span class="hljs-title">parseFoo</span> = <span class="hljs-type">Foo</span> &lt;$&gt; string <span class="hljs-string">"foo"</span>
-<span class="hljs-title">parseBar</span> = <span class="hljs-type">Bar</span> &lt;$&gt; string <span class="hljs-string">"bar"</span>
+<span class="hljs-title">parseFoo</span> = <span class="hljs-type">Foo</span> &lt;$&gt; string <span class="hljs-string">&quot;foo&quot;</span>
+<span class="hljs-title">parseBar</span> = <span class="hljs-type">Bar</span> &lt;$&gt; string <span class="hljs-string">&quot;bar&quot;</span>
 <span class="hljs-title">parsePair</span> = <span class="hljs-type">Pair</span> &lt;$&gt; oneChar &lt;*&gt; oneChar
-</code></pre><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> parseFoo <span class="hljs-string">"foo bar"</span>
-<span class="hljs-title">runParser</span> parseBar <span class="hljs-string">"bar baz"</span>
-<span class="hljs-title">runParser</span> parsePair <span class="hljs-string">"xyz"</span>
-</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-type">Foo</span> <span class="hljs-string">"foo"</span>, <span class="hljs-string">" bar"</span>)
-</code></pre></blockquote><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span>(<span class="hljs-type">Bar</span> <span class="hljs-string">"bar"</span>, <span class="hljs-string">" baz"</span>)
-</code></pre></blockquote><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-type">Pair</span> 'x' 'y', <span class="hljs-string">"z"</span>)
+</code></pre><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> parseFoo <span class="hljs-string">&quot;foo bar&quot;</span>
+<span class="hljs-title">runParser</span> parseBar <span class="hljs-string">&quot;bar baz&quot;</span>
+<span class="hljs-title">runParser</span> parsePair <span class="hljs-string">&quot;xyz&quot;</span>
+</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-type">Foo</span> <span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot; bar&quot;</span>)
+</code></pre></blockquote><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span>(<span class="hljs-type">Bar</span> <span class="hljs-string">&quot;bar&quot;</span>, <span class="hljs-string">&quot; baz&quot;</span>)
+</code></pre></blockquote><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-type">Pair</span> &#x27;x&#x27; &#x27;y&#x27;, <span class="hljs-string">&quot;z&quot;</span>)
 </code></pre></blockquote><h4>Parser is a Monad</h4><p>Last but not least, our parser is a <a href="https://en.wikibooks.org/wiki/Haskell/Understanding_monads" target="_blank" rel="noopener noreferrer"><em>Monad</em></a>. Which means it must implement: <code>&gt;&gt;=</code>, <code>&gt;&gt;</code>, <code>return</code> and <code>fail</code>:</p><pre class="code" data-lang="haskell"><code><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> <span class="hljs-type">Parser</span> <span class="hljs-keyword">where</span></span>
     <span class="hljs-comment">-- (&gt;&gt;=) :: Parser a -&gt; (a -&gt; Parser b) -&gt; Parser b</span>
     <span class="hljs-comment">-- 1. Run first parser on input.</span>
@@ -113,19 +113,19 @@
     <span class="hljs-keyword">if</span> c == c1
        <span class="hljs-keyword">then</span> return c1
        <span class="hljs-keyword">else</span> failure
-</code></pre><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (char '<span class="hljs-type">H'</span>) <span class="hljs-string">"Hello!"</span>
-<span class="hljs-title">runParser</span> (char 'e') <span class="hljs-string">"Hello!"</span>
+</code></pre><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (char &#x27;<span class="hljs-type">H&#x27;</span>) <span class="hljs-string">&quot;Hello!&quot;</span>
+<span class="hljs-title">runParser</span> (char &#x27;e&#x27;) <span class="hljs-string">&quot;Hello!&quot;</span>
 </code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span>(‘<span class="hljs-type">H</span>’,“ello!”)
 </code></pre></blockquote><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Nothing</span>
 </code></pre></blockquote><p>We can also implement a cleaner version of our <code>string</code> parser (found above):</p><pre class="code" data-lang="haskell"><code><span class="hljs-comment">-- Parse a specific pattern from the input</span>
-<span class="hljs-title">string'</span> :: <span class="hljs-type">String</span> -&gt; <span class="hljs-type">Parser</span> <span class="hljs-type">String</span>
-<span class="hljs-title">string'</span> [] = return []
-<span class="hljs-title">string'</span> (c:xs) = <span class="hljs-keyword">do</span>
+<span class="hljs-title">string&#x27;</span> :: <span class="hljs-type">String</span> -&gt; <span class="hljs-type">Parser</span> <span class="hljs-type">String</span>
+<span class="hljs-title">string&#x27;</span> [] = return []
+<span class="hljs-title">string&#x27;</span> (c:xs) = <span class="hljs-keyword">do</span>
     c1 &lt;- char c
-    rest &lt;- string' xs
+    rest &lt;- string&#x27; xs
     return (c1:rest)
-</code></pre><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (string' <span class="hljs-string">"Hello"</span>) <span class="hljs-string">"Hello"</span>
-<span class="hljs-title">runParser</span> (string' <span class="hljs-string">"Hello"</span>) <span class="hljs-string">"Foo"</span>
-</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span>(<span class="hljs-string">"Hello"</span>, <span class="hljs-string">""</span>)
+</code></pre><pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (string&#x27; <span class="hljs-string">&quot;Hello&quot;</span>) <span class="hljs-string">&quot;Hello&quot;</span>
+<span class="hljs-title">runParser</span> (string&#x27; <span class="hljs-string">&quot;Hello&quot;</span>) <span class="hljs-string">&quot;Foo&quot;</span>
+</code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span>(<span class="hljs-string">&quot;Hello&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)
 </code></pre></blockquote><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Nothing</span>
 </code></pre></blockquote><p>The <code>do</code> notation makes it very easy to combine parsers! We now have some basic building blocks that we could use to implement more parsing combinators: <code>choice</code>, <code>many</code>, <code>option</code>, etc. But I’ll leave it as an exercise.</p><p>Moreover, it would be interesting to implement an error reporting mechanism, as well as position tracking (to locate errors in the input), but I’ll leave it for another blog-post (or as an exercise for the reader!).</p><h2>What I learned while reinventing the wheel</h2><p>Implementing (very) basic parsing combinators led me to better understand the foundation of libraries like <em>Parsec</em> or <em>Attoparsec</em>, and to implement not so trivial instances of typeclasses like <em>Applicatives</em> and <em>Monads</em>. Although basic, I think it’s a good way to be more familiar with the <em>DSL</em>-like capabilities of Haskell, and to feel the power that the language offers in term of domain-specific modeling.</p></div><div class="comments"></div></article><footer><div class="share"><ul><li><a href="https://www.facebook.com/sharer/sharer.php?u=https://remusao.github.io//posts/whats-in-a-parser-combinator.html&t=What's in a parser combinator?" title="Share on Facebook" target="_blank" rel="noopener noreferrer"><img loading="lazy" alt="Share on Facebook" src="/images/social_flat_rounded_rects_svg/Facebook.svg"><a></a></li><li><a href="https://twitter.com/share?url=https://remusao.github.io//posts/whats-in-a-parser-combinator.html&text=What's in a parser combinator?&via=Pythux" title="Tweet" target="_blank" rel="noopener noreferrer"><img loading="lazy" alt="Tweet" src="/images/social_flat_rounded_rects_svg/Twitter.svg"><a></a></li><li><a href="https://getpocket.com/save?url=https://remusao.github.io//posts/whats-in-a-parser-combinator.html&title=What's in a parser combinator?" title="Add to Pocket" target="_blank" rel="noopener noreferrer"><img loading="lazy" alt="Add to Pocket" src="/images/social_flat_rounded_rects_svg/Pocket.svg"><a></a></li><li><a href="https://news.ycombinator.com/submitlink?u=https://remusao.github.io//posts/whats-in-a-parser-combinator.html&t=What's in a parser combinator?" title="Submit to Hacker News" target="_blank" rel="noopener noreferrer"><img loading="lazy" alt="Submit to Hacker News" src="/images/social_flat_rounded_rects_svg/HackerNews.svg"><a></a></li><li><a href="https://www.reddit.com/submit?url=https://remusao.github.io//posts/whats-in-a-parser-combinator.html&title=What's in a parser combinator?" title="Submit to Reddit" target="_blank" rel="noopener noreferrer"><img loading="lazy" alt="Submit to Reddit" src="/images/social_flat_rounded_rects_svg/Reddit.svg"><a></a></li></ul></div></footer></main></body></html>

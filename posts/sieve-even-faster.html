@@ -33,13 +33,13 @@
 </span>{
   <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>)
   {
-    <span class="hljs-built_in">std</span>::<span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"Please, you must give a number as argument."</span> &lt;&lt; <span class="hljs-built_in">std</span>::<span class="hljs-built_in">endl</span>;
+    <span class="hljs-built_in">std</span>::<span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">&quot;Please, you must give a number as argument.&quot;</span> &lt;&lt; <span class="hljs-built_in">std</span>::<span class="hljs-built_in">endl</span>;
     <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
   }
 
   <span class="hljs-keyword">unsigned</span> <span class="hljs-built_in">size</span> = <span class="hljs-number">0</span>;
   <span class="hljs-keyword">for</span> (<span class="hljs-keyword">unsigned</span> i = <span class="hljs-number">0</span>; argv[<span class="hljs-number">1</span>][i]; i++)
-    <span class="hljs-built_in">size</span> = <span class="hljs-built_in">size</span> * <span class="hljs-number">10</span> + (argv[<span class="hljs-number">1</span>][i] - <span class="hljs-string">'0'</span>);
+    <span class="hljs-built_in">size</span> = <span class="hljs-built_in">size</span> * <span class="hljs-number">10</span> + (argv[<span class="hljs-number">1</span>][i] - <span class="hljs-string">&#x27;0&#x27;</span>);
 
   boost::dynamic_bitset&lt;&gt;* tab = <span class="hljs-keyword">new</span> boost::dynamic_bitset&lt;&gt; (<span class="hljs-built_in">size</span> / <span class="hljs-number">2</span>);
 

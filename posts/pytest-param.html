@@ -22,10 +22,10 @@
         <span class="hljs-keyword">yield</span> check, test
 </code></pre><p>This will tell you that <code>test_feature</code> expects one argument but that none are provided.</p><p>End of the story… Wait, no, <code>py.test</code> is awesome remember? So there must be a solution!</p><h2>Parametrization</h2><p>One of the cool features of <code>py.test</code> is the ability to add parameters on our tests or fixtures, so that a test is ran once for each parameter (from <a href="http://pytest.org/latest/parametrize.html" target="_blank" rel="noopener noreferrer">py.test doc</a>):</p><pre class="code" data-lang="python"><code><span class="hljs-comment"># content of test_expectation.py</span>
 <span class="hljs-keyword">import</span> pytest
-<span class="hljs-meta">@pytest.mark.parametrize("input,expected", [</span>
-    (<span class="hljs-string">"3+5"</span>, <span class="hljs-number">8</span>),
-    (<span class="hljs-string">"2+4"</span>, <span class="hljs-number">6</span>),
-    (<span class="hljs-string">"6*9"</span>, <span class="hljs-number">42</span>),
+<span class="hljs-meta">@pytest.mark.parametrize(&quot;input,expected&quot;, [</span>
+    (<span class="hljs-string">&quot;3+5&quot;</span>, <span class="hljs-number">8</span>),
+    (<span class="hljs-string">&quot;2+4&quot;</span>, <span class="hljs-number">6</span>),
+    (<span class="hljs-string">&quot;6*9&quot;</span>, <span class="hljs-number">42</span>),
 ])
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_eval</span>(<span class="hljs-params">input, expected</span>):</span>
     <span class="hljs-keyword">assert</span> eval(input) == expected
@@ -39,24 +39,24 @@ test_expectation.py ..F
 ================================= FAILURES =================================
 ____________________________ test_eval[<span class="hljs-number">6</span>*<span class="hljs-number">9</span><span class="hljs-number">-42</span>] _____________________________
 
-input = <span class="hljs-string">'6*9'</span>, expected = <span class="hljs-number">42</span>
+input = <span class="hljs-string">&#x27;6*9&#x27;</span>, expected = <span class="hljs-number">42</span>
 
-<span class="hljs-meta">    @pytest.mark.parametrize("input,expected", [</span>
-        (<span class="hljs-string">"3+5"</span>, <span class="hljs-number">8</span>),
-        (<span class="hljs-string">"2+4"</span>, <span class="hljs-number">6</span>),
-        (<span class="hljs-string">"6*9"</span>, <span class="hljs-number">42</span>),
+<span class="hljs-meta">    @pytest.mark.parametrize(&quot;input,expected&quot;, [</span>
+        (<span class="hljs-string">&quot;3+5&quot;</span>, <span class="hljs-number">8</span>),
+        (<span class="hljs-string">&quot;2+4&quot;</span>, <span class="hljs-number">6</span>),
+        (<span class="hljs-string">&quot;6*9&quot;</span>, <span class="hljs-number">42</span>),
     ])
     <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_eval</span>(<span class="hljs-params">input, expected</span>):</span>
 &gt;       <span class="hljs-keyword">assert</span> eval(input) == expected
 E       <span class="hljs-keyword">assert</span> <span class="hljs-number">54</span> == <span class="hljs-number">42</span>
-E        +  where <span class="hljs-number">54</span> = eval(<span class="hljs-string">'6*9'</span>)
+E        +  where <span class="hljs-number">54</span> = eval(<span class="hljs-string">&#x27;6*9&#x27;</span>)
 
 test_expectation.py:<span class="hljs-number">8</span>: AssertionError
 ==================== <span class="hljs-number">1</span> failed, <span class="hljs-number">2</span> passed <span class="hljs-keyword">in</span> <span class="hljs-number">0.01</span> seconds ====================
 </code></pre><p>So here our <code>test_eval</code> function has been called <em>three times</em>. Once for each parameter. Great! But what if you want your parameters to come from another file, or from a function. In other words, what if you want to <em>dynamically parametrize</em> your function?</p><h2>Hooks at the rescue</h2><p><a href="http://pytest.org/latest/plugins.html#well-specified-hooks" target="_blank" rel="noopener noreferrer">Hooks</a> allow you to plug code into <code>py.test</code> at diffent stages of the test run. The hook that can be useful for us is <code>pytest_generate_tests</code> that will allow to generate several calls to the same test function, but with different arguments (from <a href="http://pytest.org/latest/funcargs.html#basic-generated-test-example" target="_blank" rel="noopener noreferrer">py.test doc</a>):</p><pre class="code" data-lang="python"><code><span class="hljs-comment"># content of test_example.py</span>
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">pytest_generate_tests</span>(<span class="hljs-params">metafunc</span>):</span>
-    <span class="hljs-keyword">if</span> <span class="hljs-string">"numiter"</span> <span class="hljs-keyword">in</span> metafunc.funcargnames:
-        metafunc.parametrize(<span class="hljs-string">"numiter"</span>, range(<span class="hljs-number">10</span>))
+    <span class="hljs-keyword">if</span> <span class="hljs-string">&quot;numiter&quot;</span> <span class="hljs-keyword">in</span> metafunc.funcargnames:
+        metafunc.parametrize(<span class="hljs-string">&quot;numiter&quot;</span>, range(<span class="hljs-number">10</span>))
 
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_func</span>(<span class="hljs-params">numiter</span>):</span>
     <span class="hljs-keyword">assert</span> numiter &lt; <span class="hljs-number">9</span>
@@ -79,11 +79,11 @@ E       <span class="hljs-keyword">assert</span> <span class="hljs-number">9</sp
 test_example.py:<span class="hljs-number">6</span>: AssertionError
 ==================== <span class="hljs-number">1</span> failed, <span class="hljs-number">9</span> passed <span class="hljs-keyword">in</span> <span class="hljs-number">0.02</span> seconds ====================
 </code></pre><p>Great, so the last things to do is:</p><ol><li>Detect functions that make use of a fixture whose name starts with <code>data_</code></li><li>Load the corresponding file or resource for the test source</li><li>Parametrize the function with each of the data</li></ol><p>For example, here is what you can do:</p><pre class="code" data-lang="python"><code><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">pytest_generate_tests</span>(<span class="hljs-params">metafunc</span>):</span>
-    <span class="hljs-string">""" This allows us to load tests from external files by
+    <span class="hljs-string">&quot;&quot;&quot; This allows us to load tests from external files by
     parametrizing tests with each test case found in a data_X
-    file """</span>
+    file &quot;&quot;&quot;</span>
     <span class="hljs-keyword">for</span> fixture <span class="hljs-keyword">in</span> metafunc.fixturenames:
-        <span class="hljs-keyword">if</span> fixture.startswith(<span class="hljs-string">'data_'</span>):
+        <span class="hljs-keyword">if</span> fixture.startswith(<span class="hljs-string">&#x27;data_&#x27;</span>):
             <span class="hljs-comment"># Load associated test data</span>
             tests = load_tests(fixture)
             metafunc.parametrize(fixture, tests)

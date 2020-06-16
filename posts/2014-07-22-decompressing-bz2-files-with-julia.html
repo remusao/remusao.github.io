@@ -11,9 +11,9 @@
     in_stream.close()
 
 
-<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:
     main()
-</code></pre><p>Nothing easier, it takes <em>85 seconds</em> to run.</p><h2>What about Julia?</h2><p>Since I really love <em>Julia</em> language, I was tempted to do the same with Julia. Here are the differents solutions that I went through, with their respective timings.</p><h3>Using bz2 Python module through PyCall</h3><p>The first naive option is to use the original module from Python. It’s easy enough using the <code>PyCall</code> module. We can install it like so:</p><pre class="code" data-lang="julia"><code>julia&gt; Pkg.add(<span class="hljs-string">"PyCall"</span>)
+</code></pre><p>Nothing easier, it takes <em>85 seconds</em> to run.</p><h2>What about Julia?</h2><p>Since I really love <em>Julia</em> language, I was tempted to do the same with Julia. Here are the differents solutions that I went through, with their respective timings.</p><h3>Using bz2 Python module through PyCall</h3><p>The first naive option is to use the original module from Python. It’s easy enough using the <code>PyCall</code> module. We can install it like so:</p><pre class="code" data-lang="julia"><code>julia&gt; Pkg.add(<span class="hljs-string">&quot;PyCall&quot;</span>)
 julia&gt; Pkg.update()
 </code></pre><p>The script:</p><pre class="code" data-lang="julia"><code><span class="hljs-keyword">using</span> PyCall
 <span class="hljs-meta">@pyimport</span> bz2

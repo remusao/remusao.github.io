@@ -3,15 +3,15 @@
 <span class="hljs-comment">-- Custom data type</span>
 <span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Answer</span> = <span class="hljs-type">Answer</span></span>
 
-<span class="hljs-comment">-- Make it "displayable"</span>
+<span class="hljs-comment">-- Make it &quot;displayable&quot;</span>
 <span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">IHaskellDisplay</span> <span class="hljs-type">Answer</span> <span class="hljs-keyword">where</span></span>
     <span class="hljs-comment">-- List of two kinds of Display: html and plain text</span>
     display value = return $ <span class="hljs-type">Display</span> [htmlDisplay, txtDisplay]
         <span class="hljs-keyword">where</span>
             <span class="hljs-comment">-- HTML Display</span>
-            htmlDisplay = html <span class="hljs-string">"&lt;div&gt;The answer is 42!&lt;/div&gt;"</span>
+            htmlDisplay = html <span class="hljs-string">&quot;&lt;div&gt;The answer is 42!&lt;/div&gt;&quot;</span>
             <span class="hljs-comment">-- Plain Text Display</span>
-            txtDisplay = plain <span class="hljs-string">"42"</span>
+            txtDisplay = plain <span class="hljs-string">&quot;42&quot;</span>
 
 <span class="hljs-comment">-- Display an instance of our type</span>
 <span class="hljs-type">Answer</span>
@@ -25,10 +25,10 @@
     ihaskell-magic
 </code></pre><h2>ihaskell-basic</h2><p>IHaskell <a href="https://hackage.haskell.org/package/ihaskell-basic" target="_blank" rel="noopener noreferrer">basic</a> contains <em>“Instances of IHaskellDisplay for default prelude data types”</em>. Currently, only <code>Maybe</code> seems to be supported. Maybe some more <em>Displays</em> will be provided in the future?</p><p>Anyway, here is how you can use it, and what it looks like:</p><pre class="code" data-lang="haskell"><code><span class="hljs-comment">-- import IHaskell.Display.Basic</span>
 <span class="hljs-type">Just</span> <span class="hljs-number">42</span>
-<span class="hljs-type">Just</span> (<span class="hljs-type">Just</span> <span class="hljs-string">"Foo Bar Baz"</span>)
+<span class="hljs-type">Just</span> (<span class="hljs-type">Just</span> <span class="hljs-string">&quot;Foo Bar Baz&quot;</span>)
 <span class="hljs-type">Nothing</span>
 </code></pre><blockquote><pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> <span class="hljs-number">42</span>
-<span class="hljs-type">Just</span> <span class="hljs-type">Just</span> <span class="hljs-string">"Foo Bar Baz"</span>
+<span class="hljs-type">Just</span> <span class="hljs-type">Just</span> <span class="hljs-string">&quot;Foo Bar Baz&quot;</span>
 <span class="hljs-type">Nothing</span>
 </code></pre></blockquote><h2>ihaskell-aeson</h2><p><a href="https://hackage.haskell.org/package/aeson" target="_blank" rel="noopener noreferrer">Aeson</a> is a library used to manipulate <em>JSON</em> format from Haskell. It allows you to use <code>ToJSON</code> and <code>FromJSON</code> typeclasses to convert your custom data-types <em>to</em> and <em>from</em> JSON format.</p><p>In our small example, we declare a type of document with an arbitrary number of metadata attached, here is how we could do it:</p><pre class="code" data-lang="haskell"><code>:extension <span class="hljs-type">OverloadedStrings</span>
 
@@ -52,15 +52,15 @@
 <span class="hljs-class">
 <span class="hljs-keyword">instance</span> <span class="hljs-type">A</span>.<span class="hljs-type">ToJSON</span> <span class="hljs-type">Document</span> <span class="hljs-keyword">where</span></span>
    toJSON (<span class="hljs-type">Document</span> (<span class="hljs-type">Title</span> t) (<span class="hljs-type">Body</span> b) m) = <span class="hljs-type">A</span>.object [
-       <span class="hljs-string">"title"</span> <span class="hljs-type">A</span>..= t,
-       <span class="hljs-string">"body"</span> <span class="hljs-type">A</span>..= b,
-       <span class="hljs-string">"metadata"</span> <span class="hljs-type">A</span>..= <span class="hljs-type">A</span>.toJSON m]
+       <span class="hljs-string">&quot;title&quot;</span> <span class="hljs-type">A</span>..= t,
+       <span class="hljs-string">&quot;body&quot;</span> <span class="hljs-type">A</span>..= b,
+       <span class="hljs-string">&quot;metadata&quot;</span> <span class="hljs-type">A</span>..= <span class="hljs-type">A</span>.toJSON m]
 
-<span class="hljs-title">document</span> = <span class="hljs-keyword">let</span> body = <span class="hljs-type">Body</span> <span class="hljs-string">"Lorem Ipsum"</span>
-               title = <span class="hljs-type">Title</span> <span class="hljs-string">"Foo Bar"</span>
+<span class="hljs-title">document</span> = <span class="hljs-keyword">let</span> body = <span class="hljs-type">Body</span> <span class="hljs-string">&quot;Lorem Ipsum&quot;</span>
+               title = <span class="hljs-type">Title</span> <span class="hljs-string">&quot;Foo Bar&quot;</span>
                metadata = <span class="hljs-type">Metadata</span> [
-                   (<span class="hljs-type">Property</span> <span class="hljs-string">"Encoding"</span>, <span class="hljs-type">Value</span> <span class="hljs-string">"UTF-8"</span>),
-                   (<span class="hljs-type">Property</span> <span class="hljs-string">"Author"</span>, <span class="hljs-type">Value</span> <span class="hljs-string">"Jonh Doe"</span>)]
+                   (<span class="hljs-type">Property</span> <span class="hljs-string">&quot;Encoding&quot;</span>, <span class="hljs-type">Value</span> <span class="hljs-string">&quot;UTF-8&quot;</span>),
+                   (<span class="hljs-type">Property</span> <span class="hljs-string">&quot;Author&quot;</span>, <span class="hljs-type">Value</span> <span class="hljs-string">&quot;Jonh Doe&quot;</span>)]
            <span class="hljs-keyword">in</span> <span class="hljs-type">Document</span> {_title=title, _body=body, _metadata=metadata }
 
 <span class="hljs-type">A</span>.<span class="hljs-type">Null</span>
@@ -71,12 +71,12 @@
 <span class="hljs-title">true</span>
 
 {
-    <span class="hljs-string">"body"</span>: <span class="hljs-string">"Lorem Ipsum"</span>,
-    <span class="hljs-string">"metadata"</span>: {
-        <span class="hljs-string">"Author"</span>: <span class="hljs-string">"Jonh Doe"</span>,
-        <span class="hljs-string">"Encoding"</span>: <span class="hljs-string">"UTF-8"</span>
+    <span class="hljs-string">&quot;body&quot;</span>: <span class="hljs-string">&quot;Lorem Ipsum&quot;</span>,
+    <span class="hljs-string">&quot;metadata&quot;</span>: {
+        <span class="hljs-string">&quot;Author&quot;</span>: <span class="hljs-string">&quot;Jonh Doe&quot;</span>,
+        <span class="hljs-string">&quot;Encoding&quot;</span>: <span class="hljs-string">&quot;UTF-8&quot;</span>
     },
-    <span class="hljs-string">"title"</span>: <span class="hljs-string">"Foo Bar"</span>
+    <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;Foo Bar&quot;</span>
 }
 </code></pre></blockquote><h2>ihaskell-blaze</h2><p><a href="https://hackage.haskell.org/package/blaze-html" target="_blank" rel="noopener noreferrer">Blaze</a> is a fast combinator library used to assemble <em>HTML</em> documents directly in Haskell code <em>(<a href="https://wiki.haskell.org/Embedded_domain_specific_language" target="_blank" rel="noopener noreferrer">Embedded Domain Specific Language</a>)</em>. According to the official description, <em>“the project is aimed at those who seek to write web applications in Haskell – it integrates well with all Haskell web frameworks.”</em></p><pre class="code" data-lang="haskell"><code><span class="hljs-comment">-- This example if from the IHaskell official introduction</span>
 :extension <span class="hljs-type">OverloadedStrings</span>
@@ -89,16 +89,16 @@
 
 <span class="hljs-title">forM</span> [<span class="hljs-number">1.</span><span class="hljs-number">.5</span>] $ \size -&gt; <span class="hljs-keyword">do</span>
   <span class="hljs-keyword">let</span> s = <span class="hljs-type">B</span>.toValue $ size * <span class="hljs-number">70</span>
-  <span class="hljs-type">B</span>.img <span class="hljs-type">B</span>.! <span class="hljs-type">A</span>.src <span class="hljs-string">"https://www.google.com/images/srpr/logo11w.png"</span> <span class="hljs-type">B</span>.! <span class="hljs-type">A</span>.width s
+  <span class="hljs-type">B</span>.img <span class="hljs-type">B</span>.! <span class="hljs-type">A</span>.src <span class="hljs-string">&quot;https://www.google.com/images/srpr/logo11w.png&quot;</span> <span class="hljs-type">B</span>.! <span class="hljs-type">A</span>.width s
 </code></pre><img src="../images/google-logo.png" width="70"> <img src="../images/google-logo.png" width="140"> <img src="../images/google-logo.png" width="210"> <img src="../images/google-logo.png" width="280"> <img src="../images/google-logo.png" width="350"><h2>ihaskell-charts</h2><p><a href="https://hackage.haskell.org/package/Chart" target="_blank" rel="noopener noreferrer">Charts</a> is a <em>“2D charting library for haskell”</em>. Here a two examples taken from the <a href="https://github.com/timbod7/haskell-chart/wiki" target="_blank" rel="noopener noreferrer">official wiki</a> on github. To adapt examples to notebooks, you must replace any reference of <code>toFile</code>, etc. by <code>toRenderable</code>.</p><pre class="code" data-lang="haskell"><code><span class="hljs-comment">-- This example is taken from the wiki: https://github.com/timbod7/haskell-chart/wiki/example%205</span>
 <span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Graphics.Rendering.Chart.Easy <span class="hljs-keyword">as</span> E
 
 <span class="hljs-title">values</span> :: [(<span class="hljs-type">String</span>, <span class="hljs-type">Double</span>, <span class="hljs-type">Bool</span>)]
-<span class="hljs-title">values</span> = [ (<span class="hljs-string">"Mexico City"</span>, <span class="hljs-number">19.2</span>, <span class="hljs-type">False</span>)
-         , (<span class="hljs-string">"Mumbai"</span>, <span class="hljs-number">12.9</span>, <span class="hljs-type">False</span>)
-         , (<span class="hljs-string">"Sydney"</span>, <span class="hljs-number">4.3</span>, <span class="hljs-type">False</span>)
-         , (<span class="hljs-string">"London"</span>, <span class="hljs-number">8.3</span>, <span class="hljs-type">False</span>)
-         , (<span class="hljs-string">"New York"</span>,<span class="hljs-number">8.2</span>,<span class="hljs-type">True</span>)]
+<span class="hljs-title">values</span> = [ (<span class="hljs-string">&quot;Mexico City&quot;</span>, <span class="hljs-number">19.2</span>, <span class="hljs-type">False</span>)
+         , (<span class="hljs-string">&quot;Mumbai&quot;</span>, <span class="hljs-number">12.9</span>, <span class="hljs-type">False</span>)
+         , (<span class="hljs-string">&quot;Sydney&quot;</span>, <span class="hljs-number">4.3</span>, <span class="hljs-type">False</span>)
+         , (<span class="hljs-string">&quot;London&quot;</span>, <span class="hljs-number">8.3</span>, <span class="hljs-type">False</span>)
+         , (<span class="hljs-string">&quot;New York&quot;</span>,<span class="hljs-number">8.2</span>,<span class="hljs-type">True</span>)]
 
 <span class="hljs-title">pitem</span> (s, v, o) = <span class="hljs-type">E</span>.pitem_value <span class="hljs-type">E</span>..~ v
               $ <span class="hljs-type">E</span>.pitem_label <span class="hljs-type">E</span>..~ s
@@ -106,15 +106,15 @@
               $ <span class="hljs-type">E</span>.def
 
 <span class="hljs-type">E</span>.toRenderable
-  $ <span class="hljs-type">E</span>.pie_title <span class="hljs-type">E</span>..~ <span class="hljs-string">"Relative Population"</span>
+  $ <span class="hljs-type">E</span>.pie_title <span class="hljs-type">E</span>..~ <span class="hljs-string">&quot;Relative Population&quot;</span>
   $ <span class="hljs-type">E</span>.pie_plot . <span class="hljs-type">E</span>.pie_data <span class="hljs-type">E</span>..~ map pitem values
   $ <span class="hljs-type">E</span>.def
 </code></pre><figure><a href="../images/ihaskell-chart.svg"><img src="../images/ihaskell-chart.svg" alt=""></a><figcaption>pie chart</figcaption></figure><pre class="code" data-lang="haskell"><code><span class="hljs-comment">-- This example is taken from the wiki: https://github.com/timbod7/haskell-chart/wiki/example%2012</span>
 <span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Graphics.Rendering.Chart.Easy <span class="hljs-keyword">as</span> E
 
-<span class="hljs-title">r'</span> x y z = sqrt $ x^<span class="hljs-number">2</span> + y^<span class="hljs-number">2</span> + z^<span class="hljs-number">2</span>
-<span class="hljs-title">efield</span> sign x y = (sign * x / r, sign * y / r) <span class="hljs-keyword">where</span> r = r' x y <span class="hljs-number">10</span>
-<span class="hljs-title">bfield</span> sign x y = (-sign * y / r^<span class="hljs-number">2</span>, sign * x / r^<span class="hljs-number">2</span>) <span class="hljs-keyword">where</span> r = r' x y <span class="hljs-number">10</span>
+<span class="hljs-title">r&#x27;</span> x y z = sqrt $ x^<span class="hljs-number">2</span> + y^<span class="hljs-number">2</span> + z^<span class="hljs-number">2</span>
+<span class="hljs-title">efield</span> sign x y = (sign * x / r, sign * y / r) <span class="hljs-keyword">where</span> r = r&#x27; x y <span class="hljs-number">10</span>
+<span class="hljs-title">bfield</span> sign x y = (-sign * y / r^<span class="hljs-number">2</span>, sign * x / r^<span class="hljs-number">2</span>) <span class="hljs-keyword">where</span> r = r&#x27; x y <span class="hljs-number">10</span>
 <span class="hljs-title">square</span> a s = [(x, y) | x &lt;- range, y &lt;- range] <span class="hljs-keyword">where</span> range = [-a, -a + s..a] :: [<span class="hljs-type">Double</span>]
 <span class="hljs-title">add</span> (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
 
@@ -133,9 +133,9 @@
 <span class="hljs-title">main</span> = <span class="hljs-type">E</span>.toRenderable $ <span class="hljs-keyword">do</span>
     <span class="hljs-type">E</span>.setColors [<span class="hljs-type">E</span>.opaque <span class="hljs-type">E</span>.black, <span class="hljs-type">E</span>.opaque <span class="hljs-type">E</span>.blue]
 
-    <span class="hljs-type">E</span>.layout_title <span class="hljs-type">E</span>..= <span class="hljs-string">"Positive and Negative Charges"</span>
-    <span class="hljs-type">E</span>.plot $ vectorField <span class="hljs-string">"Electric Field"</span> ef grid
-    <span class="hljs-type">E</span>.plot $ vectorField <span class="hljs-string">"B-field"</span> bf grid
+    <span class="hljs-type">E</span>.layout_title <span class="hljs-type">E</span>..= <span class="hljs-string">&quot;Positive and Negative Charges&quot;</span>
+    <span class="hljs-type">E</span>.plot $ vectorField <span class="hljs-string">&quot;Electric Field&quot;</span> ef grid
+    <span class="hljs-type">E</span>.plot $ vectorField <span class="hljs-string">&quot;B-field&quot;</span> bf grid
 <span class="hljs-title">main</span>
 </code></pre><figure><a href="../images/ihaskell-field.svg"><img src="../images/ihaskell-field.svg" alt=""></a><figcaption>field</figcaption></figure><h2>ihaskell-diagrams</h2><p><a href="http://projects.haskell.org/diagrams/" target="_blank" rel="noopener noreferrer">Diagrams</a> is a <em>“powerful, flexible, declarative domain-specific language for creating vector graphics”</em>. That is, it provides a flexible embedded DSL used to describe vectorized figures that you can then render using different backends.</p><pre class="code" data-lang="haskell"><code>:extension <span class="hljs-type">NoMonomorphismRestriction</span>
 :extension <span class="hljs-type">FlexibleContexts</span>
@@ -153,18 +153,18 @@
 
 <span class="hljs-title">diagram</span> $ <span class="hljs-type">F</span>.fdGridList <span class="hljs-number">6</span> <span class="hljs-type">D</span>.# <span class="hljs-type">D</span>.center <span class="hljs-type">D</span>.# <span class="hljs-type">D</span>.pad <span class="hljs-number">1.05</span>
 </code></pre><figure><a href="../images/ihaskell-diagram2.svg"><img src="../images/ihaskell-diagram2.svg" alt=""></a><figcaption>field</figcaption></figure><h2>ihaskell-magic</h2><p>In this case, libmagic is used to determine type of files using magic values at the beginning, which allows us to display binary content in notebooks, in the right way. For example, if we want to display an image (png, jpeg, svg, etc.), we just have to read its content as a <code>ByteString</code>, then <code>libmagic</code> is used behind the scene by <em>IHaskell</em> to determine what kind of content it is, based on the magic bytes present in the file, and then inline it in the notebook.</p><p>What is important to understand here, is that an instance of IHaskellDisplay is defined for both <code>ByteString</code> and <code>Text</code>, in case this strings represent something else than text (images, for example), <em>IHaskell</em> is able to know it thanks to <code>libmagic</code> and display the content accordingly, otherwise, it just displays the string.</p><pre class="code" data-lang="haskell"><code><span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.ByteString <span class="hljs-keyword">as</span> B
-<span class="hljs-type">B</span>.readFile <span class="hljs-string">"./haskell-logo.png"</span>
+<span class="hljs-type">B</span>.readFile <span class="hljs-string">&quot;./haskell-logo.png&quot;</span>
 </code></pre><figure><a href="../images/output_25_0.png"><img src="../images/output_25_0.png" alt=""></a><figcaption>Haskell logo</figcaption></figure><pre class="code" data-lang="haskell"><code>:extension <span class="hljs-type">OverloadedStrings</span>
 <span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.ByteString <span class="hljs-keyword">as</span> B
-<span class="hljs-string">"This is a string of type ByteString"</span> :: <span class="hljs-type">B</span>.<span class="hljs-type">ByteString</span>
+<span class="hljs-string">&quot;This is a string of type ByteString&quot;</span> :: <span class="hljs-type">B</span>.<span class="hljs-type">ByteString</span>
 </code></pre><pre class="code" data-lang="sh"><code>This is a string of <span class="hljs-built_in">type</span> ByteString
 </code></pre><pre class="code" data-lang="haskell"><code>:extension <span class="hljs-type">OverloadedStrings</span>
 <span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Text <span class="hljs-keyword">as</span> T
-<span class="hljs-string">"This is a string of type Text"</span> :: <span class="hljs-type">T</span>.<span class="hljs-type">Text</span>
+<span class="hljs-string">&quot;This is a string of type Text&quot;</span> :: <span class="hljs-type">T</span>.<span class="hljs-type">Text</span>
 </code></pre><pre class="code" data-lang="sh"><code>This is a string of <span class="hljs-built_in">type</span> Text
-</code></pre><h2>ihaskell-static-canvas</h2><p>Following on the <a href="https://github.com/gibiansky/IHaskell/blob/master/notebooks/Static%20Canvas%20IHaskell%20Display.ipynb" target="_blank" rel="noopener noreferrer">excellent introduction</a> from the author of <em>IHaskell</em>. Let’s try to use <a href="https://github.com/jeffreyrosenbluth/static-canvas" target="_blank" rel="noopener noreferrer">static-canvas</a> to create more elaborate inlings in notebooks! The github page is full of <a href="">examples</a> that we can try out right now. But before that, we must create an instance of <code>IHaskellDisplay</code> for <code>CanvasFree</code> (which is taken directly from the mentionned tutorial (I hope it’s Ok, since <code>ihaskell-static-canvas</code> doesn’t seem to be part of Stackage LTS at the moment).</p><pre class="code" data-lang="haskell"><code><span class="hljs-keyword">import</span> IHaskell.Display <span class="hljs-comment">-- From the 'ihaskell' package.</span>
+</code></pre><h2>ihaskell-static-canvas</h2><p>Following on the <a href="https://github.com/gibiansky/IHaskell/blob/master/notebooks/Static%20Canvas%20IHaskell%20Display.ipynb" target="_blank" rel="noopener noreferrer">excellent introduction</a> from the author of <em>IHaskell</em>. Let’s try to use <a href="https://github.com/jeffreyrosenbluth/static-canvas" target="_blank" rel="noopener noreferrer">static-canvas</a> to create more elaborate inlings in notebooks! The github page is full of <a href="">examples</a> that we can try out right now. But before that, we must create an instance of <code>IHaskellDisplay</code> for <code>CanvasFree</code> (which is taken directly from the mentionned tutorial (I hope it’s Ok, since <code>ihaskell-static-canvas</code> doesn’t seem to be part of Stackage LTS at the moment).</p><pre class="code" data-lang="haskell"><code><span class="hljs-keyword">import</span> IHaskell.Display <span class="hljs-comment">-- From the &#x27;ihaskell&#x27; package.</span>
 <span class="hljs-keyword">import</span> IHaskell.IPython.Types (<span class="hljs-type">MimeType(..)</span>)
-<span class="hljs-keyword">import</span> Graphics.Static  <span class="hljs-comment">-- From the 'static-canvas' package.</span>
+<span class="hljs-keyword">import</span> Graphics.Static  <span class="hljs-comment">-- From the &#x27;static-canvas&#x27; package.</span>
 
 <span class="hljs-comment">-- Text conversion functions.</span>
 <span class="hljs-keyword">import</span> Data.Text.Lazy.Builder (<span class="hljs-title">toLazyText</span>)
@@ -186,13 +186,13 @@
 
 <span class="hljs-title">text</span> :: <span class="hljs-type">CanvasFree</span> ()
 <span class="hljs-title">text</span> = <span class="hljs-keyword">do</span>
-  font <span class="hljs-string">"italic 60pt Calibri"</span>
+  font <span class="hljs-string">&quot;italic 60pt Calibri&quot;</span>
   lineWidth <span class="hljs-number">6</span>
   strokeStyle blue
   fillStyle goldenrod
   textBaseline <span class="hljs-type">TextBaselineMiddle</span>
-  strokeText <span class="hljs-string">"Haskell"</span> <span class="hljs-number">150</span> <span class="hljs-number">100</span>
-  fillText <span class="hljs-string">"Haskell!"</span> <span class="hljs-number">150</span> <span class="hljs-number">100</span>
+  strokeText <span class="hljs-string">&quot;Haskell&quot;</span> <span class="hljs-number">150</span> <span class="hljs-number">100</span>
+  fillText <span class="hljs-string">&quot;Haskell!&quot;</span> <span class="hljs-number">150</span> <span class="hljs-number">100</span>
 
 <span class="hljs-title">text</span>
 </code></pre><figure><a href="../images/ihaskell-canvas.png"><img src="../images/ihaskell-canvas.png" alt=""></a></figure><h2>Conclusion</h2><p>This was a short introduction without much new stuff, but it gave me a better understanding on how <em>IHaskell</em> (and in a way, <em>Jupyter</em>) works. Thanks to the awesome work of some haskellers, we are able to benefit from the great <em>Jupyter</em> ecosystem, and I think it can bring a lot to <em>Haskell</em> itself. It’s easier to share code, easier to write about <em>Haskell</em>-related stuff, easier to dig into a new projet.</p><p><em>IHaskell</em> is a solid foundation for more to come: more widgets, more integrations with <em>Haskell</em> libraries, etc. I wonder if, for example, we could use <em>Blaze</em> to generate <em>Display</em> on-the-fly? Could we reuse some code from the <em>Python</em> Kernel of <em>Jupyter</em>? I’m also looking forward to try the <code>ihaskell-widgets</code> extension.</p><p>That’s pretty much it, I’d like to say I’m very excited for Haskell, because it becomes much more accessible for newcomers, thanks to (for example) Stack, IHaskell, and lot of effort that is being made by the community. I hope I can continue to contribute at my level to this effort!</p><p>Thanks for reading!</p></div><div class="comments"></div></article><footer><div class="share"><ul><li><a href="https://www.facebook.com/sharer/sharer.php?u=https://remusao.github.io//posts/ihashell-extensions-tour.html&t=A tour of IHaskell extensions" title="Share on Facebook" target="_blank" rel="noopener noreferrer"><img loading="lazy" alt="Share on Facebook" src="/images/social_flat_rounded_rects_svg/Facebook.svg"><a></a></li><li><a href="https://twitter.com/share?url=https://remusao.github.io//posts/ihashell-extensions-tour.html&text=A tour of IHaskell extensions&via=Pythux" title="Tweet" target="_blank" rel="noopener noreferrer"><img loading="lazy" alt="Tweet" src="/images/social_flat_rounded_rects_svg/Twitter.svg"><a></a></li><li><a href="https://getpocket.com/save?url=https://remusao.github.io//posts/ihashell-extensions-tour.html&title=A tour of IHaskell extensions" title="Add to Pocket" target="_blank" rel="noopener noreferrer"><img loading="lazy" alt="Add to Pocket" src="/images/social_flat_rounded_rects_svg/Pocket.svg"><a></a></li><li><a href="https://news.ycombinator.com/submitlink?u=https://remusao.github.io//posts/ihashell-extensions-tour.html&t=A tour of IHaskell extensions" title="Submit to Hacker News" target="_blank" rel="noopener noreferrer"><img loading="lazy" alt="Submit to Hacker News" src="/images/social_flat_rounded_rects_svg/HackerNews.svg"><a></a></li><li><a href="https://www.reddit.com/submit?url=https://remusao.github.io//posts/ihashell-extensions-tour.html&title=A tour of IHaskell extensions" title="Submit to Reddit" target="_blank" rel="noopener noreferrer"><img loading="lazy" alt="Submit to Reddit" src="/images/social_flat_rounded_rects_svg/Reddit.svg"><a></a></li></ul></div></footer></main></body></html>

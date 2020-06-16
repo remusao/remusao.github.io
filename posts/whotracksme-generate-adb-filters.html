@@ -5,67 +5,67 @@
 <span class="hljs-comment"># Categories to tracker domains</span>
 tracker_domains_per_category = defaultdict(list)
 
-<span class="hljs-comment"># Keep track of normalized "app" name for each tracker domain. A given "app"</span>
-<span class="hljs-comment"># such as "doubleclick" can use several domains: 2mdn.net, doubleclick.net, etc.</span>
+<span class="hljs-comment"># Keep track of normalized &quot;app&quot; name for each tracker domain. A given &quot;app&quot;</span>
+<span class="hljs-comment"># such as &quot;doubleclick&quot; can use several domains: 2mdn.net, doubleclick.net, etc.</span>
 tracker_domains_to_app = {}
 
 <span class="hljs-comment"># Load trackers and group them by category</span>
-sql_query = <span class="hljs-string">"""
+sql_query = <span class="hljs-string">&quot;&quot;&quot;
   SELECT categories.name, tracker, domain FROM tracker_domains
   INNER JOIN trackers ON trackers.id = tracker_domains.tracker
   INNER JOIN categories ON categories.id = trackers.category_id;
-"""</span>
+&quot;&quot;&quot;</span>
 <span class="hljs-keyword">with</span> load_tracker_db() <span class="hljs-keyword">as</span> connection:
     <span class="hljs-keyword">for</span> (category, tracker, domain) <span class="hljs-keyword">in</span> connection.execute(sql_query):
         tracker_domains_per_category[category].append(domain)
         tracker_domains_to_app[domain] = tracker
 </code></pre><p>Here is a sample of what we get in <code>tracker_domains_per_category</code>. Note that if you run the same script, you might get slightly different results as the data is being constantly updated:</p><blockquote><pre class="code" data-lang="python"><code>defaultdict(list, {
-  <span class="hljs-string">'advertising'</span>: [
-    <span class="hljs-string">'doubleclick.net'</span>,
+  <span class="hljs-string">&#x27;advertising&#x27;</span>: [
+    <span class="hljs-string">&#x27;doubleclick.net&#x27;</span>,
     ...
   ],
-  <span class="hljs-string">'audio_video_player'</span>: [
-    <span class="hljs-string">'soundcloud.com'</span>
+  <span class="hljs-string">&#x27;audio_video_player&#x27;</span>: [
+    <span class="hljs-string">&#x27;soundcloud.com&#x27;</span>
     ...
   ],
-  <span class="hljs-string">'cdn'</span>: [
-    <span class="hljs-string">'googleapis.com'</span>,
+  <span class="hljs-string">&#x27;cdn&#x27;</span>: [
+    <span class="hljs-string">&#x27;googleapis.com&#x27;</span>,
     ...
   ],
-  <span class="hljs-string">'comments'</span>: [
-    <span class="hljs-string">'disqus.com'</span>,
+  <span class="hljs-string">&#x27;comments&#x27;</span>: [
+    <span class="hljs-string">&#x27;disqus.com&#x27;</span>,
     ...
   ],
-  <span class="hljs-string">'customer_interaction'</span>: [
-    <span class="hljs-string">'zendesk.com'</span>,
+  <span class="hljs-string">&#x27;customer_interaction&#x27;</span>: [
+    <span class="hljs-string">&#x27;zendesk.com&#x27;</span>,
     ...
   ],
-  <span class="hljs-string">'essential'</span>: [
-    <span class="hljs-string">'googletagmanager.com'</span>,
+  <span class="hljs-string">&#x27;essential&#x27;</span>: [
+    <span class="hljs-string">&#x27;googletagmanager.com&#x27;</span>,
     ...
   ],
-  <span class="hljs-string">'extensions'</span>: [
-    <span class="hljs-string">'kaspersky-labs.com'</span>,
+  <span class="hljs-string">&#x27;extensions&#x27;</span>: [
+    <span class="hljs-string">&#x27;kaspersky-labs.com&#x27;</span>,
     ...
   ],
-  <span class="hljs-string">'hosting'</span>: [
-    <span class="hljs-string">'amazonaws.com'</span>,
+  <span class="hljs-string">&#x27;hosting&#x27;</span>: [
+    <span class="hljs-string">&#x27;amazonaws.com&#x27;</span>,
     ...
   ],
-  <span class="hljs-string">'misc'</span>: [
-    <span class="hljs-string">'linkedin.com'</span>,
+  <span class="hljs-string">&#x27;misc&#x27;</span>: [
+    <span class="hljs-string">&#x27;linkedin.com&#x27;</span>,
     ...
   ],
-  <span class="hljs-string">'pornvertising'</span>: [
-    <span class="hljs-string">'pornhub.com'</span>,
+  <span class="hljs-string">&#x27;pornvertising&#x27;</span>: [
+    <span class="hljs-string">&#x27;pornhub.com&#x27;</span>,
     ...
   ],
-  <span class="hljs-string">'site_analytics'</span>: [
-    <span class="hljs-string">'google-analytics.com'</span>,
+  <span class="hljs-string">&#x27;site_analytics&#x27;</span>: [
+    <span class="hljs-string">&#x27;google-analytics.com&#x27;</span>,
     ...
   ],
-  <span class="hljs-string">'social_media'</span>: [
-    <span class="hljs-string">'twitter.com'</span>,
+  <span class="hljs-string">&#x27;social_media&#x27;</span>: [
+    <span class="hljs-string">&#x27;twitter.com&#x27;</span>,
     ...
   ]
 ]})
@@ -73,77 +73,77 @@ sql_query = <span class="hljs-string">"""
 <span class="hljs-keyword">from</span> whotracksme.data <span class="hljs-keyword">import</span> load_apps
 
 apps = load_apps()
-</code></pre><p><code>apps</code> is a dictionary with keys being <em>app ids</em> (e.g.: <code>google_analytics</code>) and values containing all we know about each <em>app</em>. Let’s take an example:</p><pre class="code" data-lang="json"><code>apps[<span class="hljs-string">"google_analytics"</span>]
+</code></pre><p><code>apps</code> is a dictionary with keys being <em>app ids</em> (e.g.: <code>google_analytics</code>) and values containing all we know about each <em>app</em>. Let’s take an example:</p><pre class="code" data-lang="json"><code>apps[<span class="hljs-string">&quot;google_analytics&quot;</span>]
 
 {
-    <span class="hljs-attr">"overview"</span>: {
-        <span class="hljs-attr">"bad_qs"</span>: <span class="hljs-number">0.4377430033329568</span>,
-        <span class="hljs-attr">"content_length"</span>: <span class="hljs-number">14771.492718357234</span>,
-        <span class="hljs-attr">"cookies"</span>: <span class="hljs-number">0.0015869678941083753</span>,
-        <span class="hljs-attr">"https"</span>: <span class="hljs-number">0.7507222054912428</span>,
-        <span class="hljs-attr">"id"</span>: <span class="hljs-string">"google_analytics"</span>,
-        <span class="hljs-attr">"reach"</span>: <span class="hljs-number">0.44292899275150094</span>,
-        <span class="hljs-attr">"requests"</span>: <span class="hljs-number">3.834100333790446</span>,
-        <span class="hljs-attr">"requests_tracking"</span>: <span class="hljs-number">1.202157901660253</span>,
-        <span class="hljs-attr">"site_reach"</span>: <span class="hljs-number">0.616005569531587</span>,
-        <span class="hljs-attr">"tracked"</span>: <span class="hljs-number">0.4383474801843971</span>
+    <span class="hljs-attr">&quot;overview&quot;</span>: {
+        <span class="hljs-attr">&quot;bad_qs&quot;</span>: <span class="hljs-number">0.4377430033329568</span>,
+        <span class="hljs-attr">&quot;content_length&quot;</span>: <span class="hljs-number">14771.492718357234</span>,
+        <span class="hljs-attr">&quot;cookies&quot;</span>: <span class="hljs-number">0.0015869678941083753</span>,
+        <span class="hljs-attr">&quot;https&quot;</span>: <span class="hljs-number">0.7507222054912428</span>,
+        <span class="hljs-attr">&quot;id&quot;</span>: <span class="hljs-string">&quot;google_analytics&quot;</span>,
+        <span class="hljs-attr">&quot;reach&quot;</span>: <span class="hljs-number">0.44292899275150094</span>,
+        <span class="hljs-attr">&quot;requests&quot;</span>: <span class="hljs-number">3.834100333790446</span>,
+        <span class="hljs-attr">&quot;requests_tracking&quot;</span>: <span class="hljs-number">1.202157901660253</span>,
+        <span class="hljs-attr">&quot;site_reach&quot;</span>: <span class="hljs-number">0.616005569531587</span>,
+        <span class="hljs-attr">&quot;tracked&quot;</span>: <span class="hljs-number">0.4383474801843971</span>
     },
-    <span class="hljs-attr">"history"</span>: ...,
-    <span class="hljs-attr">"rank"</span>: ...,
-    <span class="hljs-attr">"sites"</span>: ...
+    <span class="hljs-attr">&quot;history&quot;</span>: ...,
+    <span class="hljs-attr">&quot;rank&quot;</span>: ...,
+    <span class="hljs-attr">&quot;sites&quot;</span>: ...
 }
 </code></pre><p>That’s a lot of data, and we plan to release a more complete documentation about what all this is about soon. For now let’s just say that everything is already made accessible on the website, in form of nice graphs and aggregations!</p><p>For our use-case, we will only consider the field: <code>tracked</code>. It represents the proportion of page loads including <em>app</em>, identified as performing some form of tracking (using either identifying <em>cookies</em> or <em>fingerprinting</em>). In the case of <code>google_analytics</code>, it means that out of 100 page loads where <code>google_analytics</code> was present, tracking occurred 44 times.</p><p>Before generating the filter list, let’s keep only <em>apps</em> tracking users more than <code>10%</code> of the time. Please note that finding the right threshold would require some finer analysis, and could depend on the application.</p><pre class="code" data-lang="python"><code><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">filter_domains</span>(<span class="hljs-params">domains</span>):</span>
     <span class="hljs-keyword">for</span> domain <span class="hljs-keyword">in</span> domains:
         app_name = tracker_domains_to_app[domain]
         <span class="hljs-keyword">if</span> app_name <span class="hljs-keyword">in</span> apps:
             app = apps[tracker_domains_to_app[domain]]
-            tracked = app[<span class="hljs-string">'overview'</span>][<span class="hljs-string">'tracked'</span>]
+            tracked = app[<span class="hljs-string">&#x27;overview&#x27;</span>][<span class="hljs-string">&#x27;tracked&#x27;</span>]
             <span class="hljs-keyword">if</span> tracked &gt;= <span class="hljs-number">0.1</span>:
                 <span class="hljs-keyword">yield</span> domain
 </code></pre><p>We need to check if the <em>app</em> exists first because we currently only have the top 500 hosted on Github. We will host more in the future.</p><h2>Generating the lists</h2><p>We now proceed to generate the filter lists from these domains. They can take two forms:</p><ul><li>ADB compatible syntax: <code>||{domain}$third-party</code></li><li>Hostname syntax: <code>127.0.0.1 {domain}</code></li></ul><p>Note that the second option will probably be too aggressive in a lot of cases, as it will also block the domain even if they are first-party (e.g., <code>google.com</code> might get blocked by these rules).</p><pre class="code" data-lang="python"><code><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">generate_adb_filters</span>(<span class="hljs-params">domains</span>):</span>
-    <span class="hljs-string">"""Given a list of domains, generate filters using the
-    ADB syntax to be used in an adblocker"""</span>
+    <span class="hljs-string">&quot;&quot;&quot;Given a list of domains, generate filters using the
+    ADB syntax to be used in an adblocker&quot;&quot;&quot;</span>
     <span class="hljs-keyword">for</span> domain <span class="hljs-keyword">in</span> domains:
-        <span class="hljs-keyword">yield</span> <span class="hljs-string">f"||<span class="hljs-subst">{domain}</span>$third-party"</span>
+        <span class="hljs-keyword">yield</span> <span class="hljs-string">f&quot;||<span class="hljs-subst">{domain}</span>$third-party&quot;</span>
 
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">generate_hostname_filters</span>(<span class="hljs-params">domains</span>):</span>
-    <span class="hljs-string">"""Given a list of domains, generate filters using
-    the hostname syntax"""</span>
+    <span class="hljs-string">&quot;&quot;&quot;Given a list of domains, generate filters using
+    the hostname syntax&quot;&quot;&quot;</span>
     <span class="hljs-keyword">for</span> domain <span class="hljs-keyword">in</span> domains:
-        <span class="hljs-keyword">yield</span> <span class="hljs-string">f"127.0.0.1 <span class="hljs-subst">{domain}</span>"</span>
+        <span class="hljs-keyword">yield</span> <span class="hljs-string">f&quot;127.0.0.1 <span class="hljs-subst">{domain}</span>&quot;</span>
 
 <span class="hljs-comment"># Generate filters with *ADB* syntax</span>
 adb_filters = {
-    category: <span class="hljs-string">'\n'</span>.join(generate_adb_filters(filter_domains(domains)))
+    category: <span class="hljs-string">&#x27;\n&#x27;</span>.join(generate_adb_filters(filter_domains(domains)))
     <span class="hljs-keyword">for</span> (category, domains) <span class="hljs-keyword">in</span> tracker_domains_per_category.items()
 }
 
 <span class="hljs-comment"># Generate filters with *hostname* syntax</span>
 hostname_filters = {
-    category: <span class="hljs-string">'\n'</span>.join(generate_hostname_filters(filter_domains(domains)))
+    category: <span class="hljs-string">&#x27;\n&#x27;</span>.join(generate_hostname_filters(filter_domains(domains)))
     <span class="hljs-keyword">for</span> (category, domains) <span class="hljs-keyword">in</span> tracker_domains_per_category.items()
 }
 </code></pre><p>Each dictionary now contains a valid adblocking list for each category:</p><pre class="code" data-lang="python"><code>hostname_filters.keys()
 </code></pre><blockquote><pre class="code" data-lang="python"><code>dict_keys([
-  <span class="hljs-string">'advertising'</span>,
-  <span class="hljs-string">'audio_video_player'</span>,
-  <span class="hljs-string">'cdn'</span>,
-  <span class="hljs-string">'comments'</span>,
-  <span class="hljs-string">'customer_interaction'</span>,
-  <span class="hljs-string">'essential'</span>,
-  <span class="hljs-string">'extensions'</span>,
-  <span class="hljs-string">'hosting'</span>,
-  <span class="hljs-string">'misc'</span>,
-  <span class="hljs-string">'pornvertising'</span>,
-  <span class="hljs-string">'site_analytics'</span>,
-  <span class="hljs-string">'social_media'</span>,
-  <span class="hljs-string">'unknown'</span>
+  <span class="hljs-string">&#x27;advertising&#x27;</span>,
+  <span class="hljs-string">&#x27;audio_video_player&#x27;</span>,
+  <span class="hljs-string">&#x27;cdn&#x27;</span>,
+  <span class="hljs-string">&#x27;comments&#x27;</span>,
+  <span class="hljs-string">&#x27;customer_interaction&#x27;</span>,
+  <span class="hljs-string">&#x27;essential&#x27;</span>,
+  <span class="hljs-string">&#x27;extensions&#x27;</span>,
+  <span class="hljs-string">&#x27;hosting&#x27;</span>,
+  <span class="hljs-string">&#x27;misc&#x27;</span>,
+  <span class="hljs-string">&#x27;pornvertising&#x27;</span>,
+  <span class="hljs-string">&#x27;site_analytics&#x27;</span>,
+  <span class="hljs-string">&#x27;social_media&#x27;</span>,
+  <span class="hljs-string">&#x27;unknown&#x27;</span>
 ])
-</code></pre></blockquote><p>And here is what we get for example in the <code>advertising</code> category:</p><pre class="code" data-lang="python"><code>print(adb_filters[<span class="hljs-string">'advertising'</span>])
+</code></pre></blockquote><p>And here is what we get for example in the <code>advertising</code> category:</p><pre class="code" data-lang="python"><code>print(adb_filters[<span class="hljs-string">&#x27;advertising&#x27;</span>])
 </code></pre><blockquote><pre class="code" data-lang="sh"><code>||doubleclick.com<span class="hljs-variable">$third</span>-party
 ||criteo.com<span class="hljs-variable">$third</span>-party
 ...
-</code></pre></blockquote><p>And the same domains but as <code>hostname</code> filters:</p><pre class="code" data-lang="python"><code>print(hostname_filters[<span class="hljs-string">'advertising'</span>])
+</code></pre></blockquote><p>And the same domains but as <code>hostname</code> filters:</p><pre class="code" data-lang="python"><code>print(hostname_filters[<span class="hljs-string">&#x27;advertising&#x27;</span>])
 </code></pre><blockquote><pre class="code" data-lang="sh"><code>127.0.0.1 doubleclick.com
 127.0.0.1 criteo.com
 ...

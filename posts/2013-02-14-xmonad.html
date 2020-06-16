@@ -20,8 +20,8 @@
 
 <span class="hljs-comment">-- Main</span>
 <span class="hljs-title">main</span> = <span class="hljs-keyword">do</span>
-    xmproc &lt;- spawnPipe <span class="hljs-string">"xmobar /home/berson_r/.xmobarrc"</span> <span class="hljs-comment">-- lance xmobar avec le bon fichier de config</span>
-    spawn <span class="hljs-string">"nitrogen --restore"</span> <span class="hljs-comment">-- affiche le fond d'écran</span>
+    xmproc &lt;- spawnPipe <span class="hljs-string">&quot;xmobar /home/berson_r/.xmobarrc&quot;</span> <span class="hljs-comment">-- lance xmobar avec le bon fichier de config</span>
+    spawn <span class="hljs-string">&quot;nitrogen --restore&quot;</span> <span class="hljs-comment">-- affiche le fond d&#x27;écran</span>
     xmonad $ defaultConfig { <span class="hljs-comment">-- redéfinition de certaines options de XMonad</span>
     <span class="hljs-comment">-- simple stuff</span>
     terminal           = myTerminal,
@@ -48,27 +48,27 @@
 
 <span class="hljs-comment">-- Default terminal to use</span>
 <span class="hljs-title">myTerminal</span> :: <span class="hljs-type">String</span>
-<span class="hljs-title">myTerminal</span> = <span class="hljs-string">"urxvt"</span>
+<span class="hljs-title">myTerminal</span> = <span class="hljs-string">&quot;urxvt&quot;</span>
 
 <span class="hljs-comment">-- Names of the workspaces</span>
 <span class="hljs-title">myWorkspaces</span> :: [<span class="hljs-type">String</span>]
-<span class="hljs-title">myWorkspaces</span> = [<span class="hljs-string">"term"</span>, <span class="hljs-string">"web"</span>, <span class="hljs-string">"mail"</span>, <span class="hljs-string">"music"</span>] ++ (map show [<span class="hljs-number">5.</span><span class="hljs-number">.9</span>])
+<span class="hljs-title">myWorkspaces</span> = [<span class="hljs-string">&quot;term&quot;</span>, <span class="hljs-string">&quot;web&quot;</span>, <span class="hljs-string">&quot;mail&quot;</span>, <span class="hljs-string">&quot;music&quot;</span>] ++ (map show [<span class="hljs-number">5.</span><span class="hljs-number">.9</span>])
 
 <span class="hljs-comment">-- Color of normal borders</span>
 <span class="hljs-title">myNormalBorderColor</span> :: <span class="hljs-type">String</span>
-<span class="hljs-title">myNormalBorderColor</span>  = <span class="hljs-string">"#7c7c7c"</span>
+<span class="hljs-title">myNormalBorderColor</span>  = <span class="hljs-string">&quot;#7c7c7c&quot;</span>
 
-<span class="hljs-comment">-- Color of the selected window's borders</span>
+<span class="hljs-comment">-- Color of the selected window&#x27;s borders</span>
 <span class="hljs-title">myFocusedBorderColor</span> :: <span class="hljs-type">String</span>
-<span class="hljs-title">myFocusedBorderColor</span> = <span class="hljs-string">"#ffb6b0"</span>
+<span class="hljs-title">myFocusedBorderColor</span> = <span class="hljs-string">&quot;#ffb6b0&quot;</span>
 
 <span class="hljs-comment">-- Color of current window title in xmobar.</span>
 <span class="hljs-title">xmobarTitleColor</span> :: <span class="hljs-type">String</span>
-<span class="hljs-title">xmobarTitleColor</span> = <span class="hljs-string">"#FFB6B0"</span>
+<span class="hljs-title">xmobarTitleColor</span> = <span class="hljs-string">&quot;#FFB6B0&quot;</span>
 
 <span class="hljs-comment">-- -- Color of current workspace in xmobar.</span>
 <span class="hljs-title">xmobarCurrentWorkspaceColor</span> :: <span class="hljs-type">String</span>
-<span class="hljs-title">xmobarCurrentWorkspaceColor</span> = <span class="hljs-string">"#CEFFAC"</span>
+<span class="hljs-title">xmobarCurrentWorkspaceColor</span> = <span class="hljs-string">&quot;#CEFFAC&quot;</span>
 
 <span class="hljs-comment">-- Custom layout</span>
 <span class="hljs-title">myLayout</span> = avoidStruts (
@@ -79,14 +79,14 @@
     spiral (<span class="hljs-number">6</span>/<span class="hljs-number">7</span>)) |||
     noBorders (fullscreenFull <span class="hljs-type">Full</span>)
 
-<span class="hljs-comment">-- Colors for text and backgrounds of each tab when in "Tabbed" layout.</span>
+<span class="hljs-comment">-- Colors for text and backgrounds of each tab when in &quot;Tabbed&quot; layout.</span>
 <span class="hljs-title">tabConfig</span> = defaultTheme {
-    activeBorderColor = <span class="hljs-string">"#7C7C7C"</span>,
-    activeTextColor = <span class="hljs-string">"#CEFFAC"</span>,
-    activeColor = <span class="hljs-string">"#000000"</span>,
-    inactiveBorderColor = <span class="hljs-string">"#7C7C7C"</span>,
-    inactiveTextColor = <span class="hljs-string">"#EEEEEE"</span>,
-    inactiveColor = <span class="hljs-string">"#000000"</span>
+    activeBorderColor = <span class="hljs-string">&quot;#7C7C7C&quot;</span>,
+    activeTextColor = <span class="hljs-string">&quot;#CEFFAC&quot;</span>,
+    activeColor = <span class="hljs-string">&quot;#000000&quot;</span>,
+    inactiveBorderColor = <span class="hljs-string">&quot;#7C7C7C&quot;</span>,
+    inactiveTextColor = <span class="hljs-string">&quot;#EEEEEE&quot;</span>,
+    inactiveColor = <span class="hljs-string">&quot;#000000&quot;</span>
 }
 
 
@@ -95,21 +95,21 @@
 <span class="hljs-comment">-- Custom rules</span>
 <span class="hljs-title">myManageHook</span> :: <span class="hljs-type">ManageHook</span>
 <span class="hljs-title">myManageHook</span> = composeAll
-    [ className =? <span class="hljs-string">"Chromium"</span>       <span class="hljs-comment">--&gt; doShift "web"</span>
-    , className =? <span class="hljs-string">"Firefox"</span>        <span class="hljs-comment">--&gt; doShift "web"</span>
-    , className =? <span class="hljs-string">"Uzbl-core"</span>      <span class="hljs-comment">--&gt; doShift "web"</span>
-    , className =? <span class="hljs-string">"Thunderbird"</span>    <span class="hljs-comment">--&gt; doShift "mail"</span>
-    , className =? <span class="hljs-string">"Spotify"</span>        <span class="hljs-comment">--&gt; doShift "music"</span>
-    , className =? <span class="hljs-string">"Vlc"</span>            <span class="hljs-comment">--&gt; doFloat</span>
-    , className =? <span class="hljs-string">"Steam"</span>          <span class="hljs-comment">--&gt; doFloat</span>
-    , className =? <span class="hljs-string">"Gimp"</span>           <span class="hljs-comment">--&gt; doFloat</span>
+    [ className =? <span class="hljs-string">&quot;Chromium&quot;</span>       <span class="hljs-comment">--&gt; doShift &quot;web&quot;</span>
+    , className =? <span class="hljs-string">&quot;Firefox&quot;</span>        <span class="hljs-comment">--&gt; doShift &quot;web&quot;</span>
+    , className =? <span class="hljs-string">&quot;Uzbl-core&quot;</span>      <span class="hljs-comment">--&gt; doShift &quot;web&quot;</span>
+    , className =? <span class="hljs-string">&quot;Thunderbird&quot;</span>    <span class="hljs-comment">--&gt; doShift &quot;mail&quot;</span>
+    , className =? <span class="hljs-string">&quot;Spotify&quot;</span>        <span class="hljs-comment">--&gt; doShift &quot;music&quot;</span>
+    , className =? <span class="hljs-string">&quot;Vlc&quot;</span>            <span class="hljs-comment">--&gt; doFloat</span>
+    , className =? <span class="hljs-string">&quot;Steam&quot;</span>          <span class="hljs-comment">--&gt; doFloat</span>
+    , className =? <span class="hljs-string">&quot;Gimp&quot;</span>           <span class="hljs-comment">--&gt; doFloat</span>
     , manageDocks]
 <span class="hljs-comment">--    , isFullscreen --&gt; (doF W.focusDown &lt;+&gt; doFullFloat)]</span>
 
 <span class="hljs-title">myLogHook</span> :: <span class="hljs-type">Handle</span> -&gt; <span class="hljs-type">X</span> ()
 <span class="hljs-title">myLogHook</span> xmproc = dynamicLogWithPP xmobarPP {
     ppOutput = hPutStrLn xmproc,
-    ppTitle = xmobarColor <span class="hljs-string">"green"</span> <span class="hljs-string">""</span> . shorten <span class="hljs-number">50</span>
+    ppTitle = xmobarColor <span class="hljs-string">&quot;green&quot;</span> <span class="hljs-string">&quot;&quot;</span> . shorten <span class="hljs-number">50</span>
 }
 
 
@@ -119,10 +119,10 @@
   <span class="hljs-comment">-- Custom key bindings</span>
 
   [ ((modMask .|. shiftMask, xK_Return), spawn $ <span class="hljs-type">XMonad</span>.terminal conf) <span class="hljs-comment">-- start term</span>
-  , ((modMask, xK_r), spawn <span class="hljs-string">"exe=`dmenu_path_c | yeganesh` &amp;&amp; eval \"exec $exe\""</span>) <span class="hljs-comment">-- dmenu</span>
-  , ((modMask .|. controlMask, xK_m), spawn <span class="hljs-string">"amixer -q set Master toggle"</span>) <span class="hljs-comment">-- mute volume</span>
-  , ((modMask .|. controlMask, xK_j), spawn <span class="hljs-string">"amixer -q set Master 10%-"</span>) <span class="hljs-comment">-- dec volume</span>
-  , ((modMask .|. controlMask, xK_k), spawn <span class="hljs-string">"amixer -q set Master 10%+"</span>) <span class="hljs-comment">-- inc volume</span>
+  , ((modMask, xK_r), spawn <span class="hljs-string">&quot;exe=`dmenu_path_c | yeganesh` &amp;&amp; eval \&quot;exec $exe\&quot;&quot;</span>) <span class="hljs-comment">-- dmenu</span>
+  , ((modMask .|. controlMask, xK_m), spawn <span class="hljs-string">&quot;amixer -q set Master toggle&quot;</span>) <span class="hljs-comment">-- mute volume</span>
+  , ((modMask .|. controlMask, xK_j), spawn <span class="hljs-string">&quot;amixer -q set Master 10%-&quot;</span>) <span class="hljs-comment">-- dec volume</span>
+  , ((modMask .|. controlMask, xK_k), spawn <span class="hljs-string">&quot;amixer -q set Master 10%+&quot;</span>) <span class="hljs-comment">-- inc volume</span>
   , ((modMask, xK_g), goToSelected defaultGSConfig) <span class="hljs-comment">-- display selection grid</span>
   <span class="hljs-comment">-- workspaces</span>
   , ((modMask, xK_Right), nextWS)
@@ -130,7 +130,7 @@
   , ((modMask, xK_Left), prevWS)
   , ((modMask .|. shiftMask, xK_Left), shiftToPrev)
 
-  <span class="hljs-comment">-- "Standard" xmonad key bindings</span>
+  <span class="hljs-comment">-- &quot;Standard&quot; xmonad key bindings</span>
 
   , ((modMask .|. shiftMask, xK_c), kill) <span class="hljs-comment">-- close selected window</span>
   , ((modMask, xK_space), sendMessage <span class="hljs-type">NextLayout</span>) <span class="hljs-comment">-- change layout</span>
@@ -173,7 +173,7 @@
 
   <span class="hljs-comment">-- Restart xmonad.</span>
   , ((modMask, xK_q),
-     restart <span class="hljs-string">"xmonad"</span> <span class="hljs-type">True</span>)
+     restart <span class="hljs-string">&quot;xmonad&quot;</span> <span class="hljs-type">True</span>)
   ]
   ++
 
@@ -189,17 +189,17 @@
   [((m .|. modMask, key), screenWorkspace sc &gt;&gt;= flip whenJust (windows . f))
       | (key, sc) &lt;- zip [xK_w, xK_e, xK_p] [<span class="hljs-number">0.</span>.]
       , (f, m) &lt;- [(<span class="hljs-type">W</span>.view, <span class="hljs-number">0</span>), (<span class="hljs-type">W</span>.shift, shiftMask)]]
-</code></pre><p>Globalement, on peut résumer l’organisation du fichier de configuration comme ceci :</p><ol><li>Les imports permettant de faire appel à des fonctionnalités de XMonad, ou toute autre bibliothèque Haskell (car vous pouvez vraiment mettre n’importe quoi dans votre fichier de configuration, si vous le vouliez vous pourriez coder factorielle, Fibonacci et un crible d’Ératosthène pour les afficher dans votre barre des tâches, aucun problème !).</li><li>Des redéfinitions d’options ou de comportements sous forme de constantes.</li><li>Une fonction Main qui regroupe tout ceci et spécifie à XMonad toutes les options, et les comportements que vous désirez. Globalement vous pourrez quasiment tout modifier via un type enregistrement. Les champs non spécifiés auront leur valeur par défaut, on se contente donc de spécifier ce qui nous intéresse.</li></ol><h2>Barre d’état</h2><p>Par défaut, XMonad ne dispose pas d’une barre des tâches. Il en existe une qui est également en Haskell et qui s’intègre très simplement avec XMonad, il s’agit de XMobar. Elle est très légère et permettra de répondre à la plupart des besoins. Il suffit pour la mettre en place de :</p><ol><li>Disposer d’un fichier de configuration situé ici : <code>~/.xmobarrc</code> (vous trouverez le mien un peu plus bas)</li><li>Rajouter la ligne : <code>xmproc &lt;- spawnPipe &quot;xmobar /home/berson_r/.xmobarrc</code> en haut de votre fonction main (cf mon fichier de configuration ci-dessus).</li><li>Indiquer quelles informations XMonad doit transmettre à XMobar lors de l’exécution (les workspaces par exemple). Pour ceci il faut redéfinir le myLogHook dans le main, je vous invite encore une fois à regarder mon exemple donné un peu plus haut.</li></ol><pre class="code" data-lang="haskell"><code><span class="hljs-type">Config</span> { font = <span class="hljs-string">"-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"</span>
-, bgColor = <span class="hljs-string">"black"</span>
-, fgColor = <span class="hljs-string">"grey"</span>
+</code></pre><p>Globalement, on peut résumer l’organisation du fichier de configuration comme ceci :</p><ol><li>Les imports permettant de faire appel à des fonctionnalités de XMonad, ou toute autre bibliothèque Haskell (car vous pouvez vraiment mettre n’importe quoi dans votre fichier de configuration, si vous le vouliez vous pourriez coder factorielle, Fibonacci et un crible d’Ératosthène pour les afficher dans votre barre des tâches, aucun problème !).</li><li>Des redéfinitions d’options ou de comportements sous forme de constantes.</li><li>Une fonction Main qui regroupe tout ceci et spécifie à XMonad toutes les options, et les comportements que vous désirez. Globalement vous pourrez quasiment tout modifier via un type enregistrement. Les champs non spécifiés auront leur valeur par défaut, on se contente donc de spécifier ce qui nous intéresse.</li></ol><h2>Barre d’état</h2><p>Par défaut, XMonad ne dispose pas d’une barre des tâches. Il en existe une qui est également en Haskell et qui s’intègre très simplement avec XMonad, il s’agit de XMobar. Elle est très légère et permettra de répondre à la plupart des besoins. Il suffit pour la mettre en place de :</p><ol><li>Disposer d’un fichier de configuration situé ici : <code>~/.xmobarrc</code> (vous trouverez le mien un peu plus bas)</li><li>Rajouter la ligne : <code>xmproc &lt;- spawnPipe &quot;xmobar /home/berson_r/.xmobarrc</code> en haut de votre fonction main (cf mon fichier de configuration ci-dessus).</li><li>Indiquer quelles informations XMonad doit transmettre à XMobar lors de l’exécution (les workspaces par exemple). Pour ceci il faut redéfinir le myLogHook dans le main, je vous invite encore une fois à regarder mon exemple donné un peu plus haut.</li></ol><pre class="code" data-lang="haskell"><code><span class="hljs-type">Config</span> { font = <span class="hljs-string">&quot;-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*&quot;</span>
+, bgColor = <span class="hljs-string">&quot;black&quot;</span>
+, fgColor = <span class="hljs-string">&quot;grey&quot;</span>
 , position = <span class="hljs-type">TopW</span> <span class="hljs-type">L</span> <span class="hljs-number">90</span>
 , lowerOnStart = <span class="hljs-type">True</span>
-, commands = [ <span class="hljs-type">Run</span> <span class="hljs-type">Date</span> <span class="hljs-string">"%a %b %_d %H:%M"</span> <span class="hljs-string">"date"</span> <span class="hljs-number">10</span>
+, commands = [ <span class="hljs-type">Run</span> <span class="hljs-type">Date</span> <span class="hljs-string">&quot;%a %b %_d %H:%M&quot;</span> <span class="hljs-string">&quot;date&quot;</span> <span class="hljs-number">10</span>
 , <span class="hljs-type">Run</span> <span class="hljs-type">StdinReader</span>
 ]
-, sepChar = <span class="hljs-string">"%"</span>
-, alignSep = <span class="hljs-string">"}{"</span>
-, template = <span class="hljs-string">"%StdinReader% }{ &lt;fc=#ee9a00&gt;%date%&lt;/fc&gt; =&lt;&lt;"</span>
+, sepChar = <span class="hljs-string">&quot;%&quot;</span>
+, alignSep = <span class="hljs-string">&quot;}{&quot;</span>
+, template = <span class="hljs-string">&quot;%StdinReader% }{ &lt;fc=#ee9a00&gt;%date%&lt;/fc&gt; =&lt;&lt;&quot;</span>
 }
 </code></pre><p>Attention, contrairement aux apparences, ce n’est pas du Haskell, donc ne mettez pas de commentaires dans ce fichier. Une fois les deux étapes décrites plus hauts effectuées, xmobar devrait s’afficher au lancement de XMonad. Vous remarquerez qu’il affiche les workspaces, l’application qui a le focus, l’heure, la date et … c’est tout. En plus il y a un espace de 10% de la taille de l’écran sur la droite. Il servira à mettre un trayer. C’est justement l’objet de la section suivante.</p><h2>System Tray</h2><p>Par défaut, ni XMonad ni xmobar ne proposent un « trayer », où vous pourriez voir les icônes des applications en cours d’exécution. Pour cela j’utilise trayer, qui est très léger et facile à mettre en place. En fait, une fois qu’on lui a réservé une petite place (ce qui est notre cas), il suffit de le lancer avec les bonnes options depuis notre .xinitrc (ou .Xsessions). Voici la commande telle que je l’utilise :</p><pre class="code" data-lang="sh"><code>trayer --SetDockType <span class="hljs-literal">true</span>       \
        --SetPartialStrut <span class="hljs-literal">true</span>   \
@@ -213,7 +213,7 @@
        --transparent <span class="hljs-literal">true</span>       \
        --width 10 &amp;
 </code></pre><h2>Fond d’écran</h2><p>Vous l’aurez compris, XMonad ne propose pas non plus par défaut d’utilitaire pour changer l’image ou la couleur du fond d’écran. Mais il est relativement simple d’en mettre un en place. J’ai personnellement utilisé nitrogen. Il est très simple à utiliser, la première fois il suffit de le lancer à la main et d’aller chercher le fond d’écran désiré. Ensuite, il suffira de le relancer à chaque démmarage avec la commande :</p><pre class="code" data-lang="sh"><code>nitrogen --restore &amp;
-</code></pre><p>Et c’est exactement le rôle de la ligne 23 dans la fonction main du fichier <code>xmonad.hs</code> :</p><pre class="code" data-lang="haskell"><code><span class="hljs-title">spawn</span> <span class="hljs-string">"nitrogen --restore"</span>
+</code></pre><p>Et c’est exactement le rôle de la ligne 23 dans la fonction main du fichier <code>xmonad.hs</code> :</p><pre class="code" data-lang="haskell"><code><span class="hljs-title">spawn</span> <span class="hljs-string">&quot;nitrogen --restore&quot;</span>
 </code></pre><h2>Raccourcies clavier utiles</h2><p>Le seul raccourci qu’il me manquait afin que ce soit parfait, était le <code>« mod + flèche »</code> afin de se déplacer sur le workspace de droite ou de gauche. Pour ce faire, il suffit de rajouter les lignes suivantes dans le tableau des raccourcis personnalisés :</p><pre class="code" data-lang="haskell"><code>, ((modMask, xK_Right), nextWS)
 , ((modMask .|. shiftMask, xK_Right), shiftToNext)
 , ((modMask, xK_Left), prevWS)

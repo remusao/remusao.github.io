@@ -3,18 +3,18 @@
   <span class="hljs-keyword">let</span> selected = <span class="hljs-literal">null</span>;
 
   <span class="hljs-comment">// Attach our custom copy-to-clipboard-on-click trick to `elt`</span>
-  <span class="hljs-keyword">const</span> elt = <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'...'</span>);
-  elt.onclick = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> elt = <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">&#x27;...&#x27;</span>);
+  elt.onclick = <span class="hljs-function">() =&gt;</span> {
     <span class="hljs-comment">// Store reference to this element in the global `selected`</span>
     selected = elt;
     <span class="hljs-comment">// Emit fake `copy` event</span>
-    <span class="hljs-built_in">document</span>.execCommand(<span class="hljs-string">'copy'</span>);
+    <span class="hljs-built_in">document</span>.execCommand(<span class="hljs-string">&#x27;copy&#x27;</span>);
     <span class="hljs-comment">// Remove reference from `selected` to allow normal copies</span>
     <span class="hljs-comment">// to be performed on the page.</span>
-    setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> { selected = <span class="hljs-literal">null</span>; }, <span class="hljs-number">1000</span>);
+    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> { selected = <span class="hljs-literal">null</span>; }, <span class="hljs-number">1000</span>);
   };
 </code></pre><ul><li>Listen to this <code>copy</code> event and copy the content of the latest element clicked to clipboard.</li></ul><pre class="code" data-lang="javascript"><code>  <span class="hljs-comment">// Intercept copy events</span>
-  <span class="hljs-built_in">document</span>.addEventListener(<span class="hljs-string">'copy'</span>, (e) =&gt; {
+  <span class="hljs-built_in">document</span>.addEventListener(<span class="hljs-string">&#x27;copy&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
     <span class="hljs-keyword">if</span> (selected === <span class="hljs-literal">null</span>) {
       <span class="hljs-comment">// No element was clicked</span>
       <span class="hljs-keyword">return</span>;
@@ -22,7 +22,7 @@
 
     <span class="hljs-comment">// Copy content of clicked element to clipboard</span>
     e.clipboardData.setData(
-      <span class="hljs-string">'text/plain'</span>,
+      <span class="hljs-string">&#x27;text/plain&#x27;</span>,
       selected.innerText,
     );
 
