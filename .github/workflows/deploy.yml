@@ -32,6 +32,9 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Check
+        run: find _site/images/comments/
+
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
