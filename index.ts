@@ -482,8 +482,8 @@ class Generator {
     const html = md.render(content.slice(endOfMetadata + 3));
 
     const issue = metadata.get('issue');
-    // const comments = ci === false || issue === undefined ? '' : await this.createComments(issue);
-    const comments = issue === undefined ? '' : await this.createComments(issue);
+    const comments = ci === false || issue === undefined ? '' : await this.createComments(issue);
+    // const comments = issue === undefined ? '' : await this.createComments(issue);
 
     const rawDate = metadata.get('date');
     const date = rawDate === undefined ? new Date() : new Date(rawDate);
