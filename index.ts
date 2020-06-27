@@ -1,7 +1,8 @@
-import { promises as fs } from 'fs';
-import { readFileSync, readdirSync } from 'fs';
+import { readFileSync, readdirSync, promises as fs } from 'fs';
 import { join, parse } from 'path';
 
+import sharp from 'sharp';
+import got from 'got';
 import { Octokit } from '@octokit/rest';
 import chokidar from 'chokidar';
 import compression from 'compression';
@@ -30,7 +31,7 @@ import markdownKatex from '@traptitech/markdown-it-katex';
 
 const md: any = markdown({
   html: true,
-  linkify: false,
+  linkify: true,
   typographer: true,
   highlight(code, lang) {
     if (lang && hljs.getLanguage(lang)) {
@@ -38,12 +39,12 @@ const md: any = markdown({
         return `<pre class="code" data-lang="${lang}"><code>${
           hljs.highlight(lang, code, true).value
         }</code></pre>`;
-      } catch (ex) { /* Empty */ }
+      } catch (ex) {
+        /* Empty */
+      }
     }
 
-    return `<pre class="code" data-lang="${lang}"><code>${md.utils.escapeHtml(
-      code,
-    )}</code></pre>`;
+    return `<pre class="code" data-lang="${lang}"><code>${md.utils.escapeHtml(code)}</code></pre>`;
   },
 })
   .use(markdownFootnote)
@@ -61,9 +62,7 @@ const md: any = markdown({
   })
   .use(markdownKatex);
 
-
 import emojis from './emojis';
-
 
 const ci = process.argv[process.argv.length - 1] === '--ci';
 
@@ -79,14 +78,23 @@ function escape(s: string): string {
   return `(?:${s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')})`;
 }
 
-function addEmojis(body: string): string {
+async function addEmojis(body: string): Promise<string> {
+  const emojiPath = join('images', 'comments', 'emoji');
+  await fs.mkdir(join(__dirname, '_site', emojiPath), { recursive: true });
   for (const [gh, hex] of emojis) {
     const tag = `${gh}:`;
     if (body.includes(tag)) {
       console.log('>>', tag, hex);
+
+      const path = `${emojiPath}/${hex.toLowerCase()}.png`;
+      const url = `https://github.githubassets.com/images/icons/emoji/unicode/${hex.toLowerCase()}.png`;
+      await sharp(await got(url).buffer())
+        .resize(64, 64)
+        .toFile(join(__dirname, '_site', path));
+
       body = body.replace(
         new RegExp(escape(tag), 'g'),
-        `<img loading="lazy" class="emoji" alt="${tag}" src="https://github.githubassets.com/images/icons/emoji/unicode/${hex.toLowerCase()}.png"/>`,
+        `<img loading="lazy" class="emoji" alt="${tag}" src="/${path}"/>`,
       );
     }
   }
@@ -346,17 +354,17 @@ class Generator {
     return csso.minify(stylesheets.join('\n')).css;
   }
 
-  private async generateArticleCSS({ katex }: { katex: boolean; }): Promise<string> {
+  private async generateArticleCSS({ katex }: { katex: boolean }): Promise<string> {
     const stylesheets = [
-            'styles/style.css',
-            'styles/article.css',
-            'styles/code.css',
-            'styles/comments.css',
-            'styles/table.css',
-            'styles/footer.css',
-            'styles/sharing.css',
-            'styles/header.css',
-            'styles/github.css',
+      'styles/style.css',
+      'styles/article.css',
+      'styles/code.css',
+      'styles/comments.css',
+      'styles/table.css',
+      'styles/footer.css',
+      'styles/sharing.css',
+      'styles/header.css',
+      'styles/github.css',
     ];
 
     if (katex) {
@@ -365,9 +373,7 @@ class Generator {
 
     return csso.minify(
       (
-        await Promise.all(
-          stylesheets.map((path) => fs.readFile(join(__dirname, path), 'utf8')),
-        )
+        await Promise.all(stylesheets.map((path) => fs.readFile(join(__dirname, path), 'utf8')))
       ).join('\n'),
     ).css;
   }
@@ -476,6 +482,7 @@ class Generator {
     const html = md.render(content.slice(endOfMetadata + 3));
 
     const issue = metadata.get('issue');
+    // const comments = ci === false || issue === undefined ? '' : await this.createComments(issue);
     const comments = issue === undefined ? '' : await this.createComments(issue);
 
     const rawDate = metadata.get('date');
@@ -534,6 +541,9 @@ class Generator {
       url: html_url,
     }));
 
+    const avatarPath = join('images', 'comments', 'avatar');
+    await fs.mkdir(join(__dirname, '_site', avatarPath), { recursive: true });
+
     return `
 <span>
   <a class="leave-comment-btn" href="${issueLink}" title="${issueLink}" target="_blank" rel="noopener noreferrer">Leave a comment on GitHub</a>
@@ -544,24 +554,35 @@ ${
     : `
 <details>
   <summary>${comments.length === 1 ? '1 comment' : `${comments.length} comments`}</summary>
-  <ul class="comments-list">${comments
-    .map(
-      ({ author, body, profile, avatar, url, humanized }) => `
+  <ul class="comments-list">${(
+    await Promise.all(
+      comments.map(async ({ author, body, profile, avatar, url, humanized }) => {
+        const path = join(
+          avatarPath,
+          `${avatar.slice(avatar.lastIndexOf('/') + 1, avatar.lastIndexOf('?'))}.jpg`,
+        );
+
+        await sharp(await got(avatar).buffer())
+          .resize(80, 80)
+          .toFile(join(__dirname, '_site', path));
+
+        return `
       <li>
         <div class="comment">
           <div class="meta">
-            <img loading="lazy" class="avatar" src="${avatar}" width="40" height="40"/>
+            <img loading="lazy" class="avatar" src="/${path}" width="40" height="40"/>
             <a class="author" href="${profile}" title="${author}" target="_blank" rel="noopener noreferrer">${author}</a>
             <span> commented </span>
             <a class="date" href="${url}" title="${url}" target="_blank" rel="noopener noreferrer">${humanized}</a>
           </div>
 
-          <div class="content">${addEmojis(this.purifyDOM(md.render(body)))}</div>
+          <div class="content">${await addEmojis(this.purifyDOM(md.render(body)))}</div>
         </div>
       </li>
-    `,
+    `;
+      }),
     )
-    .join('\n')}</ul>
+  ).join('\n')}</ul>
 </details>
   `
 }
@@ -575,8 +596,7 @@ ${
 
   // Clean-up
   rimraf.sync('./_site');
-  await fs.mkdir('./_site');
-  await fs.mkdir('./_site/posts');
+  await fs.mkdir('./_site/posts', { recursive: true });
 
   // Copy assets to output folder
   new TreeSync('images', '_site/images').sync();
