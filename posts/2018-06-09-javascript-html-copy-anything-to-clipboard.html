@@ -50,15 +50,16 @@
 	<span class="hljs-attribute">left</span>: <span class="hljs-number">0</span>
 }
 </code></pre></details><p>Use of a “staging” hidden input field (visually; not literally <code>type=hidden</code>) ensures rich text media will not be sent to the clipboard. (Always love pasting “Read more…” that happens to be a link, instead of the link, into a non-rich-text input… and you did indeed read that right.) This can be especially egregious if font, font color, and background information gets copied.</p><p>The technique is otherwise similar in that it utilizes the same underlying <code>execCommand</code> invocation, but without having to intercept such invocations to manipulate <code>clipboardData</code> directly:</p><details open=""><summary><code>sample.js</code></summary><pre data-lang="js" class="code"><code><span class="hljs-comment">// Attaching to the body allows capture of "bubbled" events.</span>
-<span class="hljs-comment">// It saves worrying about binding the handler to each individually, and any dynamic elements as they are added.</span>
+<span class="hljs-comment">// It saves worrying about binding the handler to each individually, and</span>
+<span class="hljs-comment">// to any dynamic elements as they are added.</span>
 <span class="hljs-built_in">document</span>.body.addEventListener(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
 	<span class="hljs-comment">// We "exit early" if the element clicked isn't of interest to us.</span>
 	<span class="hljs-keyword">if</span> ( !e.target.classList.contains(<span class="hljs-string">'copy'</span>) ) <span class="hljs-keyword">return</span>
 	<span class="hljs-keyword">let</span> elem = e.target.matches(<span class="hljs-string">'li[data-uri]'</span>) ? e.target : e.target.closest(<span class="hljs-string">'li[data-uri]'</span>)
 	<span class="hljs-keyword">if</span> ( !elem ) <span class="hljs-keyword">return</span>
 	
-	<span class="hljs-comment">// My use-case: copy the data-uri property from the clicked element,</span>
-	<span class="hljs-comment">// ... or the nearest parent element having one.</span>
+	<span class="hljs-comment">// My use-case: copy the data-uri property from the clicked</span>
+	<span class="hljs-comment">// element... or the nearest parent element having one.</span>
 	clipboard.innerText = elem.dataset.uri
 	clipboard.select()
 	<span class="hljs-built_in">document</span>.execCommand(<span class="hljs-string">"copy"</span>)
