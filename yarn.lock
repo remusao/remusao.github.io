@@ -329,12 +329,12 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@traptitech/markdown-it-katex@^3.2.4":
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/@traptitech/markdown-it-katex/-/markdown-it-katex-3.2.4.tgz#312d435756973bce22c6e94d844e9c2abd76998b"
-  integrity sha512-5uyBN+uxEI3aMAPFa1D5E27U8cz6OTXbdk5gH2ZHFDr1OregarlVR1gPleb5mIH9bJCIh/pR6loH4/erxFLpCg==
+"@traptitech/markdown-it-katex@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@traptitech/markdown-it-katex/-/markdown-it-katex-3.3.0.tgz#7161a992e7df83b9d64dbcafdc5cb8afc552022a"
+  integrity sha512-9PM7tVjLn+mRYCTd8Aps8yuKOH8aRttZ8sMyVYkKltlLMDxFX1LfclZuRv01kct/Q7Euwe4neY/nB1wZNLjblg==
   dependencies:
-    katex "^0.11.1"
+    katex "^0.12.0"
 
 "@types/body-parser@*":
   version "1.19.0"
@@ -2307,6 +2307,13 @@ katex@^0.11.1:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/katex/-/katex-0.11.1.tgz#df30ca40c565c9df01a466a00d53e079e84ffaa2"
   integrity sha512-5oANDICCTX0NqYIyAiFCCwjQ7ERu3DQG2JFHLbYOf+fXaMoH8eg/zOq5WSYJsKMi/QebW+Eh3gSM+oss1H/bww==
+  dependencies:
+    commander "^2.19.0"
+
+katex@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/katex/-/katex-0.12.0.tgz#2fb1c665dbd2b043edcf8a1f5c555f46beaa0cb9"
+  integrity sha512-y+8btoc/CK70XqcHqjxiGWBOeIL8upbS0peTPXTvgrh21n1RiWWcIpSWM+4uXq+IAgNh9YYQWdc7LVDPDAEEAg==
   dependencies:
     commander "^2.19.0"
 
