@@ -43,7 +43,7 @@
     "@abreto/markdown-it-katex": "^3.2.0",
     "@octokit/rest": "^18.0.3",
     "@traptitech/markdown-it-katex": "^3.3.0",
-    "@types/markdown-it": "^10.0.1",
+    "@types/markdown-it": "^10.0.2",
     "chokidar": "^3.4.2",
     "compression": "^1.7.4",
     "csso": "^4.0.3",
