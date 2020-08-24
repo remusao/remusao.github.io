@@ -16,7 +16,7 @@ Quick start:
 ```python
 import dbm
 
-with open('my_store', 'c') as db:
+with dbm.open('my_store', 'c') as db:
   db['key'] = 'value'
   print(db.keys()) # ['key']
   print(db['key']) # 'value'
