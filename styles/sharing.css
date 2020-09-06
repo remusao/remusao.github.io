@@ -7,6 +7,8 @@
   padding: 0 5px;
 }
 
-.share img {
+.sharing {
+  display: inline-block;
+  height: 32px;
   width: 32px;
 }

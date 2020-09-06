@@ -70,10 +70,6 @@ const blogDomain = 'https://remusao.github.io/';
 const blogTitle = 'Simplex Sigillum Veri';
 const blogDescription = blogTitle;
 
-// TODO - re-architecture source code
-// TODO - support KaTex?
-// TODO - consider using JSX for HTML
-
 function escape(s: string): string {
   return `(?:${s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')})`;
 }
@@ -118,38 +114,38 @@ function createButtons(title: string, url: string): string {
     {
       alt: 'Share on Facebook',
       href: `https://www.facebook.com/sharer/sharer.php?u=${url}&t=${title}`,
-      img: 'Facebook.svg',
+      img: 'facebook',
     },
     {
       alt: 'Tweet',
       href: `https://twitter.com/share?url=${url}&text=${title}&via=Pythux`,
-      img: 'Twitter.svg',
+      img: 'twitter',
     },
     {
       alt: 'Add to Pocket',
       href: `https://getpocket.com/save?url=${url}&title=${title}`,
-      img: 'Pocket.svg',
+      img: 'pocket',
     },
     {
       alt: 'Submit to Hacker News',
       href: `https://news.ycombinator.com/submitlink?u=${url}&t=${title}`,
-      img: 'HackerNews.svg',
+      img: 'hackernews',
     },
     {
       alt: 'Submit to Reddit',
       href: `https://www.reddit.com/submit?url=${url}&title=${title}`,
-      img: 'Reddit.svg',
+      img: 'reddit',
     },
   ]
-    .map(({ href, alt, img }) => {
-      return `
-        <li>
-          <a href="${href}" title="${alt}" target="_blank" rel="noopener noreferrer">
-            <img loading="lazy" alt="${alt}" src="/images/social_flat_rounded_rects_svg/${img}"></img>
-          <a/>
-        </li>
-      `;
-    })
+    .map(
+      ({ href, alt, img }) => `
+          <li>
+        <a href="${href}" title="${alt}" target="_blank" rel="noopener noreferrer">
+            <div class="sharing sharing-${img}"></div>
+        </a>
+          </li>
+      `,
+    )
     .join('\n')}
   </ul>`;
 }
@@ -367,14 +363,35 @@ class Generator {
       'styles/github.css',
     ];
 
+    const sharing = [];
+    for (const [name, path] of [
+      ['facebook', 'images/social_flat_rounded_rects_svg/Facebook.svg'],
+      ['twitter', 'images/social_flat_rounded_rects_svg/Twitter.svg'],
+      ['pocket', 'images/social_flat_rounded_rects_svg/Pocket.svg'],
+      ['hackernews', 'images/social_flat_rounded_rects_svg/HackerNews.svg'],
+      ['reddit', 'images/social_flat_rounded_rects_svg/Reddit.svg'],
+    ]) {
+      sharing.push(
+        [
+          `.sharing-${name} {`,
+          `  background-image: url('${getSvgAsDataUrl(path)}');`,
+          '  background-repeat: no-repeat;',
+          '}',
+        ].join('\n'),
+      );
+    }
+
     if (katex) {
       stylesheets.push('styles/katex.css');
     }
 
     return csso.minify(
-      (
-        await Promise.all(stylesheets.map((path) => fs.readFile(join(__dirname, path), 'utf8')))
-      ).join('\n'),
+      [
+        sharing.join('\n'),
+        ...(await Promise.all(
+          stylesheets.map((path) => fs.readFile(join(__dirname, path), 'utf8')),
+        )),
+      ].join('\n'),
     ).css;
   }
 
