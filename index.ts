@@ -587,7 +587,7 @@ ${
       <li>
         <div class="comment">
           <div class="meta">
-            <img loading="lazy" class="avatar" src="/${path}" width="40" height="40"/>
+            <img loading="lazy" class="avatar" alt="GitHub avatar from user ${author}" src="/${path}" width="40" height="40"/>
             <a class="author" href="${profile}" title="${author}" target="_blank" rel="noopener noreferrer">${author}</a>
             <span> commented </span>
             <a class="date" href="${url}" title="${url}" target="_blank" rel="noopener noreferrer">${humanized}</a>
