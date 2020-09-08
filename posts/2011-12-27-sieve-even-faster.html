@@ -6,7 +6,7 @@
 <span class="hljs-title">print_tab</span> <span class="hljs-params">(boost::dynamic_bitset&lt;&gt;&amp; tab)</span>
 </span>{
   <span class="hljs-built_in">std</span>::<span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-number">2</span> &lt;&lt; <span class="hljs-built_in">std</span>::<span class="hljs-built_in">endl</span>;
-  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">unsigned</span> i = <span class="hljs-number">1</span>; i &lt; tab.<span class="hljs-built_in">size</span> (); i++)
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">unsigned</span> i = <span class="hljs-number">1</span>; i &lt; tab.size (); i++)
     <span class="hljs-keyword">if</span> (!tab[i])
       <span class="hljs-built_in">std</span>::<span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span> &lt;&lt; <span class="hljs-built_in">std</span>::<span class="hljs-built_in">endl</span>;
 }
@@ -15,12 +15,12 @@
 <span class="hljs-title">erato</span> <span class="hljs-params">(boost::dynamic_bitset&lt;&gt;&amp; tab)</span>
 </span>{
   <span class="hljs-keyword">unsigned</span> i = <span class="hljs-number">0</span>;
-  <span class="hljs-keyword">unsigned</span> j, <span class="hljs-built_in">step</span>, borne = <span class="hljs-built_in">sqrt</span> (tab.<span class="hljs-built_in">size</span> ());
+  <span class="hljs-keyword">unsigned</span> j, step, borne = <span class="hljs-built_in">sqrt</span> (tab.size ());
 
   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; borne; i++)
   {
-    <span class="hljs-built_in">step</span> = <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span>;
-    <span class="hljs-keyword">for</span> (j = i + <span class="hljs-built_in">step</span>; j &lt; tab.<span class="hljs-built_in">size</span> (); j += <span class="hljs-built_in">step</span>)
+    step = <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (j = i + step; j &lt; tab.size (); j += step)
       tab[j] = <span class="hljs-number">1</span>;
 
     <span class="hljs-keyword">while</span> (tab[i])
@@ -37,11 +37,11 @@
     <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
   }
 
-  <span class="hljs-keyword">unsigned</span> <span class="hljs-built_in">size</span> = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">unsigned</span> size = <span class="hljs-number">0</span>;
   <span class="hljs-keyword">for</span> (<span class="hljs-keyword">unsigned</span> i = <span class="hljs-number">0</span>; argv[<span class="hljs-number">1</span>][i]; i++)
-    <span class="hljs-built_in">size</span> = <span class="hljs-built_in">size</span> * <span class="hljs-number">10</span> + (argv[<span class="hljs-number">1</span>][i] - <span class="hljs-string">&#x27;0&#x27;</span>);
+    size = size * <span class="hljs-number">10</span> + (argv[<span class="hljs-number">1</span>][i] - <span class="hljs-string">&#x27;0&#x27;</span>);
 
-  boost::dynamic_bitset&lt;&gt;* tab = <span class="hljs-keyword">new</span> boost::dynamic_bitset&lt;&gt; (<span class="hljs-built_in">size</span> / <span class="hljs-number">2</span>);
+  boost::dynamic_bitset&lt;&gt;* tab = <span class="hljs-keyword">new</span> boost::dynamic_bitset&lt;&gt; (size / <span class="hljs-number">2</span>);
 
   erato (*tab);
   <span class="hljs-comment">//print_tab (*tab);</span>
