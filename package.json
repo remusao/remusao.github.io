@@ -44,7 +44,7 @@
     "@octokit/rest": "^18.0.6",
     "@traptitech/markdown-it-katex": "^3.3.0",
     "@types/markdown-it": "^10.0.2",
-    "chokidar": "^3.4.2",
+    "chokidar": "^3.4.3",
     "compression": "^1.7.4",
     "csso": "^4.0.3",
     "dompurify": "^2.1.1",
