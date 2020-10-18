@@ -20,25 +20,25 @@ condition=&quot;ALL&quot;
 </code></pre><p>You can also format rules to the same original format:</p><pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { format } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
 
 <span class="hljs-keyword">const</span> rules = format({
-  version: <span class="hljs-string">&#x27;9&#x27;</span>,
-  logging: <span class="hljs-string">&#x27;no&#x27;</span>,
-  rules: [
+  <span class="hljs-attr">version</span>: <span class="hljs-string">&#x27;9&#x27;</span>,
+  <span class="hljs-attr">logging</span>: <span class="hljs-string">&#x27;no&#x27;</span>,
+  <span class="hljs-attr">rules</span>: [
     {
-      name: <span class="hljs-string">&#x27;rule 1&#x27;</span>,
-      enabled: <span class="hljs-string">&#x27;yes&#x27;</span>,
-      <span class="hljs-keyword">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
-      actions: [{ name: <span class="hljs-string">&#x27;Mark flagged&#x27;</span>}],
-      condition: <span class="hljs-string">&#x27;OR (subject,contains,foo) OR (subject,contains,bar)&#x27;</span>
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 1&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [{ <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark flagged&#x27;</span>}],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;OR (subject,contains,foo) OR (subject,contains,bar)&#x27;</span>
     },
     {
-      name: <span class="hljs-string">&#x27;rule 2&#x27;</span>,
-      enabled: <span class="hljs-string">&#x27;yes&#x27;</span>,
-      <span class="hljs-keyword">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
-      actions: [
-        { name: <span class="hljs-string">&#x27;Mark read&#x27;</span> }
-        { name: <span class="hljs-string">&#x27;JunkScore&#x27;</span>, value: <span class="hljs-string">&#x27;100&#x27;</span> }
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 2&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark read&#x27;</span> }
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;JunkScore&#x27;</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;100&#x27;</span> }
       ],
-      condition: <span class="hljs-string">&#x27;ALL&#x27;</span>
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;ALL&#x27;</span>
     },
   ]
 });

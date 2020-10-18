@@ -27,8 +27,8 @@
     (<span class="hljs-string">&quot;2+4&quot;</span>, <span class="hljs-number">6</span>),
     (<span class="hljs-string">&quot;6*9&quot;</span>, <span class="hljs-number">42</span>),
 ])
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_eval</span>(<span class="hljs-params">input, expected</span>):</span>
-    <span class="hljs-keyword">assert</span> eval(input) == expected
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_eval</span>(<span class="hljs-params"><span class="hljs-built_in">input</span>, expected</span>):</span>
+    <span class="hljs-keyword">assert</span> <span class="hljs-built_in">eval</span>(<span class="hljs-built_in">input</span>) == expected
 </code></pre><pre class="code" data-lang="python"><code>$ py.test
 =========================== test session starts ============================
 platform linux -- Python <span class="hljs-number">3.4</span><span class="hljs-number">.0</span> -- py<span class="hljs-number">-1.4</span><span class="hljs-number">.26</span> -- pytest<span class="hljs-number">-2.6</span><span class="hljs-number">.4</span>
@@ -39,24 +39,24 @@ test_expectation.py ..F
 ================================= FAILURES =================================
 ____________________________ test_eval[<span class="hljs-number">6</span>*<span class="hljs-number">9</span><span class="hljs-number">-42</span>] _____________________________
 
-input = <span class="hljs-string">&#x27;6*9&#x27;</span>, expected = <span class="hljs-number">42</span>
+<span class="hljs-built_in">input</span> = <span class="hljs-string">&#x27;6*9&#x27;</span>, expected = <span class="hljs-number">42</span>
 
 <span class="hljs-meta">    @pytest.mark.parametrize(&quot;input,expected&quot;, [</span>
         (<span class="hljs-string">&quot;3+5&quot;</span>, <span class="hljs-number">8</span>),
         (<span class="hljs-string">&quot;2+4&quot;</span>, <span class="hljs-number">6</span>),
         (<span class="hljs-string">&quot;6*9&quot;</span>, <span class="hljs-number">42</span>),
     ])
-    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_eval</span>(<span class="hljs-params">input, expected</span>):</span>
-&gt;       <span class="hljs-keyword">assert</span> eval(input) == expected
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_eval</span>(<span class="hljs-params"><span class="hljs-built_in">input</span>, expected</span>):</span>
+&gt;       <span class="hljs-keyword">assert</span> <span class="hljs-built_in">eval</span>(<span class="hljs-built_in">input</span>) == expected
 E       <span class="hljs-keyword">assert</span> <span class="hljs-number">54</span> == <span class="hljs-number">42</span>
-E        +  where <span class="hljs-number">54</span> = eval(<span class="hljs-string">&#x27;6*9&#x27;</span>)
+E        +  where <span class="hljs-number">54</span> = <span class="hljs-built_in">eval</span>(<span class="hljs-string">&#x27;6*9&#x27;</span>)
 
 test_expectation.py:<span class="hljs-number">8</span>: AssertionError
 ==================== <span class="hljs-number">1</span> failed, <span class="hljs-number">2</span> passed <span class="hljs-keyword">in</span> <span class="hljs-number">0.01</span> seconds ====================
 </code></pre><p>So here our <code>test_eval</code> function has been called <em>three times</em>. Once for each parameter. Great! But what if you want your parameters to come from another file, or from a function. In other words, what if you want to <em>dynamically parametrize</em> your function?</p><h2>Hooks at the rescue</h2><p><a href="http://pytest.org/latest/plugins.html#well-specified-hooks" target="_blank" rel="noopener noreferrer">Hooks</a> allow you to plug code into <code>py.test</code> at diffent stages of the test run. The hook that can be useful for us is <code>pytest_generate_tests</code> that will allow to generate several calls to the same test function, but with different arguments (from <a href="http://pytest.org/latest/funcargs.html#basic-generated-test-example" target="_blank" rel="noopener noreferrer">py.test doc</a>):</p><pre class="code" data-lang="python"><code><span class="hljs-comment"># content of test_example.py</span>
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">pytest_generate_tests</span>(<span class="hljs-params">metafunc</span>):</span>
     <span class="hljs-keyword">if</span> <span class="hljs-string">&quot;numiter&quot;</span> <span class="hljs-keyword">in</span> metafunc.funcargnames:
-        metafunc.parametrize(<span class="hljs-string">&quot;numiter&quot;</span>, range(<span class="hljs-number">10</span>))
+        metafunc.parametrize(<span class="hljs-string">&quot;numiter&quot;</span>, <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>))
 
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">test_func</span>(<span class="hljs-params">numiter</span>):</span>
     <span class="hljs-keyword">assert</span> numiter &lt; <span class="hljs-number">9</span>

@@ -3,7 +3,7 @@
 <span class="hljs-keyword">from</span> whotracksme.data <span class="hljs-keyword">import</span> load_tracker_db
 
 <span class="hljs-comment"># Categories to tracker domains</span>
-tracker_domains_per_category = defaultdict(list)
+tracker_domains_per_category = defaultdict(<span class="hljs-built_in">list</span>)
 
 <span class="hljs-comment"># Keep track of normalized &quot;app&quot; name for each tracker domain. A given &quot;app&quot;</span>
 <span class="hljs-comment"># such as &quot;doubleclick&quot; can use several domains: 2mdn.net, doubleclick.net, etc.</span>
@@ -19,7 +19,7 @@ sql_query = <span class="hljs-string">&quot;&quot;&quot;
     <span class="hljs-keyword">for</span> (category, tracker, domain) <span class="hljs-keyword">in</span> connection.execute(sql_query):
         tracker_domains_per_category[category].append(domain)
         tracker_domains_to_app[domain] = tracker
-</code></pre><p>Here is a sample of what we get in <code>tracker_domains_per_category</code>. Note that if you run the same script, you might get slightly different results as the data is being constantly updated:</p><blockquote><pre class="code" data-lang="python"><code>defaultdict(list, {
+</code></pre><p>Here is a sample of what we get in <code>tracker_domains_per_category</code>. Note that if you run the same script, you might get slightly different results as the data is being constantly updated:</p><blockquote><pre class="code" data-lang="python"><code>defaultdict(<span class="hljs-built_in">list</span>, {
   <span class="hljs-string">&#x27;advertising&#x27;</span>: [
     <span class="hljs-string">&#x27;doubleclick.net&#x27;</span>,
     ...

@@ -23,8 +23,8 @@
     <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">result_of</span> :</span> <span class="hljs-keyword">public</span> result_of&lt;<span class="hljs-keyword">typename</span> <span class="hljs-built_in">std</span>::result_of&lt;F(In)&gt;::type, Args...&gt; {};
 
     <span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> In, <span class="hljs-keyword">typename</span> F&gt;
-    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">result_of</span>&lt;In, F&gt;
-    {</span>
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">result_of</span>&lt;</span>In, F&gt;
+    {
         <span class="hljs-keyword">typedef</span> <span class="hljs-keyword">typename</span> <span class="hljs-built_in">std</span>::result_of&lt;F(In)&gt;::type type;
     };
 }

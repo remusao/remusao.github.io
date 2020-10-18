@@ -6,7 +6,7 @@ soup = BeautifulSoup(r.text, <span class="hljs-string">&#x27;html.parser&#x27;</
 raw_lines = [
     line.contents[:<span class="hljs-number">5</span>]
     <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> table.find_all(<span class="hljs-string">&quot;tr&quot;</span>)
-    <span class="hljs-keyword">if</span> len(line) == <span class="hljs-number">6</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(line) == <span class="hljs-number">6</span>
 ]
 raw_lines[<span class="hljs-number">0</span>]
 </code></pre><blockquote><p>1 | <a href="/results/p.php?i=2011ETTE01">Lucas Etter</a> | 4.90 | USA | <a href="/results/c.php?i=RiverHillFall2015">River Hill Fall 2015</a> — | — | — | — |</p></blockquote><p>We get a list of <code>HMTL Entities</code> that we will process to extract the data we need. But first, let’s automate this extraction process with a function, since every tables on this website respect the same format:</p><pre class="code" data-lang="python"><code><span class="hljs-keyword">from</span> bs4 <span class="hljs-keyword">import</span> BeautifulSoup
@@ -22,33 +22,33 @@ raw_lines[<span class="hljs-number">0</span>]
     raw_lines = [
         line.contents
         <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> table.find_all(<span class="hljs-string">&quot;tr&quot;</span>)
-        <span class="hljs-keyword">if</span> len(line) == cols
+        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(line) == cols
     ]
 
     <span class="hljs-keyword">return</span> [[c.text <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> line] <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> raw_lines]
 </code></pre><p>Since we’ll have to deal with dates and timings, we could use this little helpers to do the conversions:</p><pre class="code" data-lang="python"><code><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">extract_year_from_competition</span>(<span class="hljs-params">competition</span>):</span>
     <span class="hljs-comment"># Format is [name] [year]</span>
-    <span class="hljs-keyword">return</span> int(competition.strip().rsplit(<span class="hljs-string">&#x27; &#x27;</span>, <span class="hljs-number">1</span>)[<span class="hljs-number">-1</span>])
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(competition.strip().rsplit(<span class="hljs-string">&#x27; &#x27;</span>, <span class="hljs-number">1</span>)[<span class="hljs-number">-1</span>])
 
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">convert_timing_to_seconds</span>(<span class="hljs-params">timing</span>):</span>
     <span class="hljs-keyword">try</span>:
         <span class="hljs-comment"># Try to convert directly in seconds</span>
-        <span class="hljs-keyword">return</span> float(timing)
+        <span class="hljs-keyword">return</span> <span class="hljs-built_in">float</span>(timing)
     <span class="hljs-keyword">except</span> ValueError:
         <span class="hljs-keyword">try</span>:
             <span class="hljs-comment"># Format should be [minutes]:[seconds].[tenth]</span>
             minutes, rest = timing.split(<span class="hljs-string">&quot;:&quot;</span>, <span class="hljs-number">1</span>)
             seconds, tenth = rest.split(<span class="hljs-string">&quot;.&quot;</span>, <span class="hljs-number">1</span>)
             <span class="hljs-keyword">return</span> (
-                float(minutes) * <span class="hljs-number">60</span> +
-                float(seconds) +
-                float(tenth) / <span class="hljs-number">100</span>
+                <span class="hljs-built_in">float</span>(minutes) * <span class="hljs-number">60</span> +
+                <span class="hljs-built_in">float</span>(seconds) +
+                <span class="hljs-built_in">float</span>(tenth) / <span class="hljs-number">100</span>
             )
         <span class="hljs-keyword">except</span> ValueError:
             <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span>
 </code></pre><p>Let’s use our helpers to extract all the data:</p><pre class="code" data-lang="python"><code>url = <span class="hljs-string">&quot;https://www.worldcubeassociation.org/results/events.php?eventId=333&amp;regionId=&amp;years=&amp;show=All%2BPersons&amp;single=Single&quot;</span>
 clean_table = []
-<span class="hljs-keyword">for</span> rank, (_, person, timing, country, competition, _) <span class="hljs-keyword">in</span> enumerate(get_table_raws(url, <span class="hljs-number">6</span>)):
+<span class="hljs-keyword">for</span> rank, (_, person, timing, country, competition, _) <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(get_table_raws(url, <span class="hljs-number">6</span>)):
     year = extract_year_from_competition(competition)
     timing = convert_timing_to_seconds(timing)
     clean_table.append((rank + <span class="hljs-number">1</span>, person, timing, country, competition, year))
@@ -59,7 +59,7 @@ clean_table[:<span class="hljs-number">5</span>]
  (<span class="hljs-number">3</span>, <span class="hljs-string">u&#x27;Collin Burns&#x27;</span>, <span class="hljs-number">5.25</span>, <span class="hljs-string">u&#x27;USA&#x27;</span>, <span class="hljs-string">u&#x27;Doylestown Spring 2015&#x27;</span>, <span class="hljs-number">2015</span>),
  (<span class="hljs-number">4</span>, <span class="hljs-string">u&#x27;Feliks Zemdegs&#x27;</span>, <span class="hljs-number">5.39</span>, <span class="hljs-string">u&#x27;Australia&#x27;</span>, <span class="hljs-string">u&#x27;World Championship 2015&#x27;</span>, <span class="hljs-number">2015</span>),
  (<span class="hljs-number">5</span>, <span class="hljs-string">u&#x27;Mats Valk&#x27;</span>, <span class="hljs-number">5.55</span>, <span class="hljs-string">u&#x27;Netherlands&#x27;</span>, <span class="hljs-string">u&#x27;Zonhoven Open 2013&#x27;</span>, <span class="hljs-number">2013</span>)]
-</code></pre></blockquote><pre class="code" data-lang="python"><code>len(clean_table)
+</code></pre></blockquote><pre class="code" data-lang="python"><code><span class="hljs-built_in">len</span>(clean_table)
 </code></pre><blockquote><pre class="code" data-lang="python"><code><span class="hljs-number">47465</span>
 </code></pre></blockquote><p>Let’s see if we can gain some insight from this dataset using Pandas:</p><pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
 <span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
@@ -91,7 +91,7 @@ clean_table = []
 <span class="hljs-keyword">for</span> (_, single, avg, person, country, competition, _) <span class="hljs-keyword">in</span> get_table_raws(url, <span class="hljs-number">7</span>):
     single = convert_timing_to_seconds(single.strip())
     avg = convert_timing_to_seconds(avg.strip())
-    year = float(extract_year_from_competition(competition))
+    year = <span class="hljs-built_in">float</span>(extract_year_from_competition(competition))
     clean_table.append((person, single, avg, country, competition, year))
 
 clean_table[:<span class="hljs-number">5</span>]
