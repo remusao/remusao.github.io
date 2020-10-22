@@ -47,7 +47,7 @@
     "chokidar": "^3.4.3",
     "compression": "^1.7.4",
     "csso": "^4.0.3",
-    "dompurify": "^2.1.1",
+    "dompurify": "^2.2.0",
     "express": "^4.17.1",
     "finalhandler": "^1.1.2",
     "glob": "^7.1.4",
