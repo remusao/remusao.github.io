@@ -46,7 +46,7 @@
     "@types/markdown-it": "^10.0.2",
     "chokidar": "^3.4.3",
     "compression": "^1.7.4",
-    "csso": "^4.1.0",
+    "csso": "^4.1.1",
     "dompurify": "^2.2.2",
     "express": "^4.17.1",
     "finalhandler": "^1.1.2",
