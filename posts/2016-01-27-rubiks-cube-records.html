@@ -28,7 +28,7 @@ raw_lines[<span class="hljs-number">0</span>]
     <span class="hljs-keyword">return</span> [[c.text <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> line] <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> raw_lines]
 </code></pre><p>Since we’ll have to deal with dates and timings, we could use this little helpers to do the conversions:</p><pre class="code" data-lang="python"><code><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">extract_year_from_competition</span>(<span class="hljs-params">competition</span>):</span>
     <span class="hljs-comment"># Format is [name] [year]</span>
-    <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(competition.strip().rsplit(<span class="hljs-string">&#x27; &#x27;</span>, <span class="hljs-number">1</span>)[<span class="hljs-number">-1</span>])
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(competition.strip().rsplit(<span class="hljs-string">&#x27; &#x27;</span>, <span class="hljs-number">1</span>)[-<span class="hljs-number">1</span>])
 
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">convert_timing_to_seconds</span>(<span class="hljs-params">timing</span>):</span>
     <span class="hljs-keyword">try</span>:
