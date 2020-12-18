@@ -42,7 +42,7 @@
   "dependencies": {
     "@abreto/markdown-it-katex": "^3.2.0",
     "@octokit/rest": "^18.0.9",
-    "@traptitech/markdown-it-katex": "^3.3.0",
+    "@traptitech/markdown-it-katex": "^3.3.1",
     "@types/markdown-it": "^10.0.2",
     "chokidar": "^3.4.3",
     "compression": "^1.7.4",

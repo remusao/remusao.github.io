@@ -336,10 +336,10 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@traptitech/markdown-it-katex@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@traptitech/markdown-it-katex/-/markdown-it-katex-3.3.0.tgz#7161a992e7df83b9d64dbcafdc5cb8afc552022a"
-  integrity sha512-9PM7tVjLn+mRYCTd8Aps8yuKOH8aRttZ8sMyVYkKltlLMDxFX1LfclZuRv01kct/Q7Euwe4neY/nB1wZNLjblg==
+"@traptitech/markdown-it-katex@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@traptitech/markdown-it-katex/-/markdown-it-katex-3.3.1.tgz#331ba07a474749fd9d43099b35f4643396089a50"
+  integrity sha512-t4VoObNWL37VvZR3vTWn3nT0EF17T1CtQi4fRBClxs7Nr7wKQnu51sT+AdZubgPAJ/Lk7HBzEd6eADqq7y4ayw==
   dependencies:
     katex "^0.12.0"
 
