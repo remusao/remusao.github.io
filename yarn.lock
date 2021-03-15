@@ -336,12 +336,12 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@traptitech/markdown-it-katex@^3.3.1":
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/@traptitech/markdown-it-katex/-/markdown-it-katex-3.3.1.tgz#331ba07a474749fd9d43099b35f4643396089a50"
-  integrity sha512-t4VoObNWL37VvZR3vTWn3nT0EF17T1CtQi4fRBClxs7Nr7wKQnu51sT+AdZubgPAJ/Lk7HBzEd6eADqq7y4ayw==
+"@traptitech/markdown-it-katex@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@traptitech/markdown-it-katex/-/markdown-it-katex-3.4.0.tgz#42c4438cb767b2f37f8a986fda648e7ed748c09c"
+  integrity sha512-Zy/LV0nbrOXPV+jCUEWIhR6226+DzYp310Kd9J1qFsquwKBefvz6V8Gs5ooUqlMHEdqU09fZN319/PhucIplmg==
   dependencies:
-    katex "^0.12.0"
+    katex "^0.13.0"
 
 "@types/body-parser@*":
   version "1.19.0"
@@ -1107,6 +1107,11 @@ commander@^2.12.1, commander@^2.19.0:
   version "2.20.3"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
+
+commander@^6.0.0:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-6.2.1.tgz#0792eb682dfbc325999bb2b84fddddba110ac73c"
+  integrity sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==
 
 compressible@~2.0.16:
   version "2.0.18"
@@ -2329,12 +2334,12 @@ katex@^0.11.1:
   dependencies:
     commander "^2.19.0"
 
-katex@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/katex/-/katex-0.12.0.tgz#2fb1c665dbd2b043edcf8a1f5c555f46beaa0cb9"
-  integrity sha512-y+8btoc/CK70XqcHqjxiGWBOeIL8upbS0peTPXTvgrh21n1RiWWcIpSWM+4uXq+IAgNh9YYQWdc7LVDPDAEEAg==
+katex@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/katex/-/katex-0.13.0.tgz#62900e56c1ad8fdf7da23399e50d7a7b690b39ab"
+  integrity sha512-6cHbzbegYgS9vvVGuH8UA+o97X+ZshtboSqJJCdq7trBYzuD75JNwr7Ef606xkUjecPPhFnyB+afx1dVafielg==
   dependencies:
-    commander "^2.19.0"
+    commander "^6.0.0"
 
 keyv@^4.0.0:
   version "4.0.1"
