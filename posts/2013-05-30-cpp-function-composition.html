@@ -4,11 +4,11 @@
 <span class="hljs-title">fm</span> :: <span class="hljs-type">Tm</span> -&gt; <span class="hljs-type">Tn</span>
 <span class="hljs-title">fn</span> :: <span class="hljs-type">Tn</span> -&gt; <span class="hljs-type">To</span>
 </code></pre><p>Nous aimerions pouvoir les composer de la manière suivante :</p><pre class="code" data-lang="haskell"><code><span class="hljs-title">fn</span> o fm o ... o f2 o f1
-</code></pre><p>Ce qui dans un langage comme C++ nous obligerait à faire :</p><pre class="code" data-lang="c++"><code><span class="hljs-keyword">auto</span> res1 = f1(arg);
-<span class="hljs-keyword">auto</span> res2 = f2(res1);
+</code></pre><p>Ce qui dans un langage comme C++ nous obligerait à faire :</p><pre class="code" data-lang="c++"><code><span class="hljs-keyword">auto</span> res1 = <span class="hljs-built_in">f1</span>(arg);
+<span class="hljs-keyword">auto</span> res2 = <span class="hljs-built_in">f2</span>(res1);
 ...
-<span class="hljs-keyword">auto</span> resn = fn(resm);
-</code></pre><p>Ce qui est assez peu élégant. De plus, nous pourrions avoir envie qu’il n’y ait pas de copie dans les différents passages de paramètres (ce que nous pouvons faire en passant les arguments par référence, ou en utilisant un <em>move semantic</em>). Puisque nous ne faisons rien des résultats intermédiaires, nous aimerions disposer d’une fonction, qui prendrait les fonctions en arguments, ainsi que l’argument à donner à la première fonction, et s’occuperait de faire les appels successifs, tout en passant les arguments par move semantic ou référence. Une telle fonction peut-être créée en <code>c++11</code>, voici une solution possible.</p><p>L’idée est assez simple, nous utilisons un template récursif qui correspond a peu de choses près à la fonction suivante, le reste n’est que du surplut visant à propager les types et déterminer le type de retour des fonctions (avec <code>std::result_of</code>) :</p><pre class="code" data-lang="c++"><code>pipeline(arg, f1, f_suivantes) = pipeline(f1(arg), f_suivantes)
+<span class="hljs-keyword">auto</span> resn = <span class="hljs-built_in">fn</span>(resm);
+</code></pre><p>Ce qui est assez peu élégant. De plus, nous pourrions avoir envie qu’il n’y ait pas de copie dans les différents passages de paramètres (ce que nous pouvons faire en passant les arguments par référence, ou en utilisant un <em>move semantic</em>). Puisque nous ne faisons rien des résultats intermédiaires, nous aimerions disposer d’une fonction, qui prendrait les fonctions en arguments, ainsi que l’argument à donner à la première fonction, et s’occuperait de faire les appels successifs, tout en passant les arguments par move semantic ou référence. Une telle fonction peut-être créée en <code>c++11</code>, voici une solution possible.</p><p>L’idée est assez simple, nous utilisons un template récursif qui correspond a peu de choses près à la fonction suivante, le reste n’est que du surplut visant à propager les types et déterminer le type de retour des fonctions (avec <code>std::result_of</code>) :</p><pre class="code" data-lang="c++"><code><span class="hljs-built_in">pipeline</span>(arg, f1, f_suivantes) = <span class="hljs-built_in">pipeline</span>(<span class="hljs-built_in">f1</span>(arg), f_suivantes)
 </code></pre><p>Et enfin voici le code C++ correspondant :</p><pre class="code" data-lang="c++"><code><span class="hljs-meta">#<span class="hljs-meta-keyword">ifndef</span> PIPELINE_HH_</span>
 <span class="hljs-meta"># <span class="hljs-meta-keyword">define</span> PIPELINE_HH_</span>
 
@@ -20,12 +20,12 @@
     <span class="hljs-comment">// the pipeline.</span>
     <span class="hljs-comment">//</span>
     <span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> In, <span class="hljs-keyword">typename</span> F, <span class="hljs-keyword">typename</span> ...Args&gt;
-    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">result_of</span> :</span> <span class="hljs-keyword">public</span> result_of&lt;<span class="hljs-keyword">typename</span> <span class="hljs-built_in">std</span>::result_of&lt;F(In)&gt;::type, Args...&gt; {};
+    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">result_of</span> :</span> <span class="hljs-keyword">public</span> result_of&lt;<span class="hljs-keyword">typename</span> std::result_of&lt;<span class="hljs-built_in">F</span>(In)&gt;::type, Args...&gt; {};
 
     <span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> In, <span class="hljs-keyword">typename</span> F&gt;
     <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">result_of</span>&lt;</span>In, F&gt;
     {
-        <span class="hljs-keyword">typedef</span> <span class="hljs-keyword">typename</span> <span class="hljs-built_in">std</span>::result_of&lt;F(In)&gt;::type type;
+        <span class="hljs-keyword">typedef</span> <span class="hljs-keyword">typename</span> std::result_of&lt;<span class="hljs-built_in">F</span>(In)&gt;::type type;
     };
 }
 
@@ -42,15 +42,15 @@
 <span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> In&gt;
 <span class="hljs-function">In <span class="hljs-title">pipeline</span><span class="hljs-params">(In&amp;&amp; a)</span>
 </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-built_in">std</span>::forward&lt;In&gt;(a);
+    <span class="hljs-keyword">return</span> std::forward&lt;In&gt;(a);
 }
 
 <span class="hljs-keyword">template</span> &lt;
     <span class="hljs-keyword">typename</span> In,
     <span class="hljs-keyword">typename</span> Function&gt;
-<span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">pipeline</span><span class="hljs-params">(In&amp;&amp; a, Function f)</span> -&gt; <span class="hljs-title">decltype</span> <span class="hljs-params">(f(<span class="hljs-built_in">std</span>::forward&lt;In&gt;(a)))</span>
+<span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">pipeline</span><span class="hljs-params">(In&amp;&amp; a, Function f)</span> -&gt; <span class="hljs-title">decltype</span> <span class="hljs-params">(f(std::forward&lt;In&gt;(a)))</span>
 </span>{
-    <span class="hljs-keyword">return</span> f(<span class="hljs-built_in">std</span>::forward&lt;In&gt;(a));
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">f</span>(std::forward&lt;In&gt;(a));
 }
 
 <span class="hljs-keyword">template</span> &lt;
@@ -59,7 +59,7 @@
     <span class="hljs-keyword">typename</span> ...Args&gt;
 <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">pipeline</span><span class="hljs-params">(In&amp;&amp; a, Function f, Args... args)</span> -&gt; <span class="hljs-keyword">typename</span> result_of&lt;In, Function, Args...&gt;::type
 </span>{
-    <span class="hljs-keyword">return</span> pipeline&lt;<span class="hljs-keyword">decltype</span> (f(<span class="hljs-built_in">std</span>::forward&lt;In&gt;(a)))&gt;(f(<span class="hljs-built_in">std</span>::forward&lt;In&gt;(a)), args...);
+    <span class="hljs-keyword">return</span> pipeline&lt;<span class="hljs-keyword">decltype</span> (<span class="hljs-built_in">f</span>(std::forward&lt;In&gt;(a)))&gt;(<span class="hljs-built_in">f</span>(std::forward&lt;In&gt;(a)), args...);
 }
 
 <span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span> <span class="hljs-comment">/* !PIPELINE_HH_ */</span></span>

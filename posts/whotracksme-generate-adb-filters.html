@@ -139,11 +139,11 @@ hostname_filters = {
   <span class="hljs-string">&#x27;social_media&#x27;</span>,
   <span class="hljs-string">&#x27;unknown&#x27;</span>
 ])
-</code></pre></blockquote><p>And here is what we get for example in the <code>advertising</code> category:</p><pre class="code" data-lang="python"><code>print(adb_filters[<span class="hljs-string">&#x27;advertising&#x27;</span>])
+</code></pre></blockquote><p>And here is what we get for example in the <code>advertising</code> category:</p><pre class="code" data-lang="python"><code><span class="hljs-built_in">print</span>(adb_filters[<span class="hljs-string">&#x27;advertising&#x27;</span>])
 </code></pre><blockquote><pre class="code" data-lang="sh"><code>||doubleclick.com<span class="hljs-variable">$third</span>-party
 ||criteo.com<span class="hljs-variable">$third</span>-party
 ...
-</code></pre></blockquote><p>And the same domains but as <code>hostname</code> filters:</p><pre class="code" data-lang="python"><code>print(hostname_filters[<span class="hljs-string">&#x27;advertising&#x27;</span>])
+</code></pre></blockquote><p>And the same domains but as <code>hostname</code> filters:</p><pre class="code" data-lang="python"><code><span class="hljs-built_in">print</span>(hostname_filters[<span class="hljs-string">&#x27;advertising&#x27;</span>])
 </code></pre><blockquote><pre class="code" data-lang="sh"><code>127.0.0.1 doubleclick.com
 127.0.0.1 criteo.com
 ...

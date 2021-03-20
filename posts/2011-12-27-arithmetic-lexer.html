@@ -40,15 +40,15 @@ expr[expr_size] = <span class="hljs-string">&#x27;\0&#x27;</span>;
 </code></pre><p>We will see later why each field of the list is associated with a number.</p><h2>Memory management</h2><p>We will try as much as possible to do it without dynamic memory allocation. Our couples (offset, size) and our tokens are then stored on the stack, using the static allocation, avoiding calls to new/delete and malloc/free. As we are using the string containing the expression to store our intermediate results, our memory consumption will be optimized. We must therefore adapt our algorithms for arithmetic in order to store the results directly in the string representing the expression.</p><h2>The Lexer</h2><p>We will create a <code>Lexer class</code>, containing methods for lexing and some private variables such as the string containing the expression, the current offset, etc. …</p><p>The use of an object has several advantages in our case:</p><ol><li>This prevents parsing functions to take a lot of arguments (with the object of type <code>Lexer</code>, we can afford to give a single argument to functions).</li><li>To determine the next token, the lexer needs some informations, including the expression, the offset, the variable used to return the possible pair (offset, size) representing a number, etc. … All variables can be stored in the object.</li><li>This makes the code more readable, without reducing the performances of the program.</li></ol><p>Our <code>Lexer</code> will be defined as follows:</p><pre class="code" data-lang="c++"><code><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Lexer</span>
 {</span>
   <span class="hljs-keyword">public</span>:
-    Lexer (<span class="hljs-keyword">char</span>* expr, <span class="hljs-keyword">char</span>* table,
+    <span class="hljs-built_in">Lexer</span> (<span class="hljs-keyword">char</span>* expr, <span class="hljs-keyword">char</span>* table,
            <span class="hljs-keyword">unsigned</span> expr_size, <span class="hljs-keyword">char</span>* op)
-      : num_ (s_number ()),
-        expr_ (expr),
-        offset_ (<span class="hljs-number">0</span>),
-        table_ (table),
-        expr_size_ (expr_size),
-        op_ (op) {}
-    ~Lexer () {}
+      : <span class="hljs-built_in">num_</span> (<span class="hljs-built_in">s_number</span> ()),
+        <span class="hljs-built_in">expr_</span> (expr),
+        <span class="hljs-built_in">offset_</span> (<span class="hljs-number">0</span>),
+        <span class="hljs-built_in">table_</span> (table),
+        <span class="hljs-built_in">expr_size_</span> (expr_size),
+        <span class="hljs-built_in">op_</span> (op) {}
+    ~<span class="hljs-built_in">Lexer</span> () {}
 
     <span class="hljs-function"><span class="hljs-keyword">unsigned</span> <span class="hljs-title">get_token</span> <span class="hljs-params">()</span></span>;
 
@@ -76,7 +76,7 @@ New base : 01234
   <span class="hljs-keyword">if</span> (offset_ &gt;= expr_size_)
     <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
 
-  <span class="hljs-keyword">int</span> tok = get_op_ (expr_[offset_++]);
+  <span class="hljs-keyword">int</span> tok = <span class="hljs-built_in">get_op_</span> (expr_[offset_++]);
 
   <span class="hljs-keyword">if</span> (tok)
     <span class="hljs-keyword">return</span> tok;

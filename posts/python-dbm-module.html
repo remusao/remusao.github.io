@@ -2,9 +2,9 @@
 
 <span class="hljs-keyword">with</span> dbm.<span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;my_store&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>) <span class="hljs-keyword">as</span> db:
   db[<span class="hljs-string">&#x27;key&#x27;</span>] = <span class="hljs-string">&#x27;value&#x27;</span>
-  print(db.keys()) <span class="hljs-comment"># [&#x27;key&#x27;]</span>
-  print(db[<span class="hljs-string">&#x27;key&#x27;</span>]) <span class="hljs-comment"># &#x27;value&#x27;</span>
-  print(<span class="hljs-string">&#x27;key&#x27;</span> <span class="hljs-keyword">in</span> db) <span class="hljs-comment"># True</span>
+  <span class="hljs-built_in">print</span>(db.keys()) <span class="hljs-comment"># [&#x27;key&#x27;]</span>
+  <span class="hljs-built_in">print</span>(db[<span class="hljs-string">&#x27;key&#x27;</span>]) <span class="hljs-comment"># &#x27;value&#x27;</span>
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;key&#x27;</span> <span class="hljs-keyword">in</span> db) <span class="hljs-comment"># True</span>
 </code></pre><p>It behaves a lot like a <code>dict</code> except:</p><ul><li>It persists its values on disk</li><li>You can only use <code>str</code> or <code>bytes</code> as key and values</li></ul><p>The performance is also slower than a dictionary, but faster than <code>sqlite3</code>.</p><p>The benchmark consists in performing <em>10k</em> writes and <em>10k</em> random reads:</p><pre class="code" data-lang="python"><code><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> random
 <span class="hljs-keyword">import</span> time
 

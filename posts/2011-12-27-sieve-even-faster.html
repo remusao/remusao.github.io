@@ -5,22 +5,22 @@
 <span class="hljs-function"><span class="hljs-keyword">void</span>
 <span class="hljs-title">print_tab</span> <span class="hljs-params">(boost::dynamic_bitset&lt;&gt;&amp; tab)</span>
 </span>{
-  <span class="hljs-built_in">std</span>::<span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-number">2</span> &lt;&lt; <span class="hljs-built_in">std</span>::<span class="hljs-built_in">endl</span>;
-  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">unsigned</span> i = <span class="hljs-number">1</span>; i &lt; tab.size (); i++)
+  std::cout &lt;&lt; <span class="hljs-number">2</span> &lt;&lt; std::endl;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">unsigned</span> i = <span class="hljs-number">1</span>; i &lt; tab.<span class="hljs-built_in">size</span> (); i++)
     <span class="hljs-keyword">if</span> (!tab[i])
-      <span class="hljs-built_in">std</span>::<span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span> &lt;&lt; <span class="hljs-built_in">std</span>::<span class="hljs-built_in">endl</span>;
+      std::cout &lt;&lt; <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span> &lt;&lt; std::endl;
 }
 
 <span class="hljs-function"><span class="hljs-keyword">void</span>
 <span class="hljs-title">erato</span> <span class="hljs-params">(boost::dynamic_bitset&lt;&gt;&amp; tab)</span>
 </span>{
   <span class="hljs-keyword">unsigned</span> i = <span class="hljs-number">0</span>;
-  <span class="hljs-keyword">unsigned</span> j, step, borne = <span class="hljs-built_in">sqrt</span> (tab.size ());
+  <span class="hljs-keyword">unsigned</span> j, step, borne = <span class="hljs-built_in">sqrt</span> (tab.<span class="hljs-built_in">size</span> ());
 
   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; borne; i++)
   {
     step = <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span>;
-    <span class="hljs-keyword">for</span> (j = i + step; j &lt; tab.size (); j += step)
+    <span class="hljs-keyword">for</span> (j = i + step; j &lt; tab.<span class="hljs-built_in">size</span> (); j += step)
       tab[j] = <span class="hljs-number">1</span>;
 
     <span class="hljs-keyword">while</span> (tab[i])
@@ -33,7 +33,7 @@
 </span>{
   <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>)
   {
-    <span class="hljs-built_in">std</span>::<span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">&quot;Please, you must give a number as argument.&quot;</span> &lt;&lt; <span class="hljs-built_in">std</span>::<span class="hljs-built_in">endl</span>;
+    std::cout &lt;&lt; <span class="hljs-string">&quot;Please, you must give a number as argument.&quot;</span> &lt;&lt; std::endl;
     <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
   }
 
@@ -43,7 +43,7 @@
 
   boost::dynamic_bitset&lt;&gt;* tab = <span class="hljs-keyword">new</span> boost::dynamic_bitset&lt;&gt; (size / <span class="hljs-number">2</span>);
 
-  erato (*tab);
+  <span class="hljs-built_in">erato</span> (*tab);
   <span class="hljs-comment">//print_tab (*tab);</span>
 }
 </code></pre><p>With this algorithm we get much better performance than with the previous implementation.</p><h2>Complexity approximation</h2><p>The complexity of an algorithm is used to express the number of operations needed to execution depending on the size of the input (in our case it will be the limit up to which we want to calculate the prime numbers).</p><p>Soon I will post a more accurate approximation of the complexity of this algorithm, but my initial investigations suggest that the complexity is linear (3xN?).</p><h2>The last words</h2><p>After presenting a number of optimizations to the algorithm of the Sieve of Eratosthenes, we saw that it is always possible to improve a program, and this, in two lines of research. First, one can often optimize the algorithm itself, by choosing appropriate data structures, trying to reduce the memory footprint or by reducing the number of calculations needed to compute the result, etc. … One can also optimize the implementation of the algorithm, it’s often the last step, during which we will try to find tips, related to language itself, that allow us to make our program faster by changing the compiler flags (-O, -march, etc. …), etc. …</p><p>The last implementation presented in this article is far from being the most optimized, we could still find ways to improve performances, for exemple by eliminating multiples of 3, 5 and 7 at the initialization of the array or by using bit masks to eliminate several multiples at a time. However, keep in mind that it is difficult to keep the compactness and readability of our algorithm with such optimizations.</p><p>If you know other optimizations, or have any comments on this article, feel free to contact me or leave a comment below.</p></div><div class="comments"></div></article><footer><div class="share"><ul><li><a href="https://www.facebook.com/sharer/sharer.php?u=https://remusao.github.io//posts/sieve-even-faster.html&t=The Sieve—Even faster!" title="Share on Facebook" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-facebook"></div></a></li><li><a href="https://twitter.com/share?url=https://remusao.github.io//posts/sieve-even-faster.html&text=The Sieve—Even faster!&via=Pythux" title="Tweet" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-twitter"></div></a></li><li><a href="https://getpocket.com/save?url=https://remusao.github.io//posts/sieve-even-faster.html&title=The Sieve—Even faster!" title="Add to Pocket" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-pocket"></div></a></li><li><a href="https://news.ycombinator.com/submitlink?u=https://remusao.github.io//posts/sieve-even-faster.html&t=The Sieve—Even faster!" title="Submit to Hacker News" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-hackernews"></div></a></li><li><a href="https://www.reddit.com/submit?url=https://remusao.github.io//posts/sieve-even-faster.html&title=The Sieve—Even faster!" title="Submit to Reddit" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-reddit"></div></a></li></ul></div></footer></main></body></html>

@@ -26,9 +26,9 @@ connection.executemany(
 
 <span class="hljs-comment"># Print inserted rows</span>
 <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
-    print(row)
+    <span class="hljs-built_in">print</span>(row)
 </code></pre><h2>Cursors Can Be Iterated Upon</h2><p>You might often see examples making use of <code>fetchone</code> or <code>fetchall</code> on the result of a <code>SELECT</code> query. But I find that the most natural way to consume the results is to actually iterate on the cursor directly:</p><pre class="code" data-lang="python"><code><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
-    print(row)
+    <span class="hljs-built_in">print</span>(row)
 </code></pre><p>This way, you can stop as soon as you got enough results and not waste resources. Of course, if you know beforehand how many results you want, you can use the <code>LIMIT</code> SQL statement instead, but Python generators are very handy and allow you to decouple data generation from data consumption.</p><h2>Use Context Managers</h2><p>Shit happens, even in the middle of a SQL transaction. To avoid having to deal manually with <code>rollback</code> or <code>commit</code>, you can simply use the <code>connection</code> object as a context manager. In the following example we create a table, and insert <em>by mistake</em> duplicated values:</p><pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> sqlite3
 connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
 
@@ -45,11 +45,11 @@ connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</spa
             (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
         ])
 <span class="hljs-keyword">except</span> (sqlite3.OperationalError, sqlite3.IntegrityError) <span class="hljs-keyword">as</span> e:
-    print(<span class="hljs-string">&#x27;Could not complete operation:&#x27;</span>, e)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Could not complete operation:&#x27;</span>, e)
 
 <span class="hljs-comment"># No row was inserted because transaction failed</span>
 <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
-    print(row)
+    <span class="hljs-built_in">print</span>(row)
 
 connection.close()
 </code></pre><h2>Use Pragmas</h2><p>…<em>when it makes sense</em></p><p>There are a few <em>pragmas</em> you can use to tweak the behavior of <code>sqlite3</code> in your program. In particular, one that could improve the performance is <code>synchronous</code>:</p><pre class="code" data-lang="python"><code>connection.execute(<span class="hljs-string">&#x27;PRAGMA synchronous = OFF&#x27;</span>)
