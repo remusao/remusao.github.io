@@ -86,7 +86,7 @@ connection and *will return a cursor*. Here is an example to demonstrate that:
 ```python
 import sqlite3
 
-connection = sqlite3(':memory:')
+connection = sqlite3.connect(':memory:')
 
 # Create a table
 connection.execute('CREATE TABLE events(ts, msg)')
