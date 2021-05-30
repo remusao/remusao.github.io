@@ -9,8 +9,8 @@
 ...
 <span class="hljs-keyword">auto</span> resn = <span class="hljs-built_in">fn</span>(resm);
 </code></pre><p>Ce qui est assez peu élégant. De plus, nous pourrions avoir envie qu’il n’y ait pas de copie dans les différents passages de paramètres (ce que nous pouvons faire en passant les arguments par référence, ou en utilisant un <em>move semantic</em>). Puisque nous ne faisons rien des résultats intermédiaires, nous aimerions disposer d’une fonction, qui prendrait les fonctions en arguments, ainsi que l’argument à donner à la première fonction, et s’occuperait de faire les appels successifs, tout en passant les arguments par move semantic ou référence. Une telle fonction peut-être créée en <code>c++11</code>, voici une solution possible.</p><p>L’idée est assez simple, nous utilisons un template récursif qui correspond a peu de choses près à la fonction suivante, le reste n’est que du surplut visant à propager les types et déterminer le type de retour des fonctions (avec <code>std::result_of</code>) :</p><pre class="code" data-lang="c++"><code><span class="hljs-built_in">pipeline</span>(arg, f1, f_suivantes) = <span class="hljs-built_in">pipeline</span>(<span class="hljs-built_in">f1</span>(arg), f_suivantes)
-</code></pre><p>Et enfin voici le code C++ correspondant :</p><pre class="code" data-lang="c++"><code><span class="hljs-meta">#<span class="hljs-meta-keyword">ifndef</span> PIPELINE_HH_</span>
-<span class="hljs-meta"># <span class="hljs-meta-keyword">define</span> PIPELINE_HH_</span>
+</code></pre><p>Et enfin voici le code C++ correspondant :</p><pre class="code" data-lang="c++"><code><span class="hljs-meta">#<span class="hljs-keyword">ifndef</span> PIPELINE_HH_</span>
+<span class="hljs-meta"># <span class="hljs-keyword">define</span> PIPELINE_HH_</span>
 
 <span class="hljs-keyword">namespace</span>
 {
@@ -20,10 +20,10 @@
     <span class="hljs-comment">// the pipeline.</span>
     <span class="hljs-comment">//</span>
     <span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> In, <span class="hljs-keyword">typename</span> F, <span class="hljs-keyword">typename</span> ...Args&gt;
-    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">result_of</span> :</span> <span class="hljs-keyword">public</span> result_of&lt;<span class="hljs-keyword">typename</span> std::result_of&lt;<span class="hljs-built_in">F</span>(In)&gt;::type, Args...&gt; {};
+    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">result_of</span> : <span class="hljs-keyword">public</span> result_of&lt;<span class="hljs-keyword">typename</span> std::result_of&lt;<span class="hljs-built_in">F</span>(In)&gt;::type, Args...&gt; {};
 
     <span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> In, <span class="hljs-keyword">typename</span> F&gt;
-    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">result_of</span>&lt;</span>In, F&gt;
+    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">result_of</span>&lt;In, F&gt;
     {
         <span class="hljs-keyword">typedef</span> <span class="hljs-keyword">typename</span> std::result_of&lt;<span class="hljs-built_in">F</span>(In)&gt;::type type;
     };
@@ -62,5 +62,5 @@
     <span class="hljs-keyword">return</span> pipeline&lt;<span class="hljs-keyword">decltype</span> (<span class="hljs-built_in">f</span>(std::forward&lt;In&gt;(a)))&gt;(<span class="hljs-built_in">f</span>(std::forward&lt;In&gt;(a)), args...);
 }
 
-<span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span> <span class="hljs-comment">/* !PIPELINE_HH_ */</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">endif</span> <span class="hljs-comment">/* !PIPELINE_HH_ */</span></span>
 </code></pre><p>N’hésitez pas à me faire part de vos remarques.</p></div><div class="comments"></div></article><footer><div class="share"><ul><li><a href="https://www.facebook.com/sharer/sharer.php?u=https://remusao.github.io//posts/cpp-function-composition.html&t=C++—Composition de fonctions" title="Share on Facebook" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-facebook"></div></a></li><li><a href="https://twitter.com/share?url=https://remusao.github.io//posts/cpp-function-composition.html&text=C++—Composition de fonctions&via=Pythux" title="Tweet" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-twitter"></div></a></li><li><a href="https://getpocket.com/save?url=https://remusao.github.io//posts/cpp-function-composition.html&title=C++—Composition de fonctions" title="Add to Pocket" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-pocket"></div></a></li><li><a href="https://news.ycombinator.com/submitlink?u=https://remusao.github.io//posts/cpp-function-composition.html&t=C++—Composition de fonctions" title="Submit to Hacker News" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-hackernews"></div></a></li><li><a href="https://www.reddit.com/submit?url=https://remusao.github.io//posts/cpp-function-composition.html&title=C++—Composition de fonctions" title="Submit to Reddit" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-reddit"></div></a></li></ul></div></footer></main></body></html>

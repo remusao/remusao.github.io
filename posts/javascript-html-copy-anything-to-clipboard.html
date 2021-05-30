@@ -3,32 +3,32 @@
   <span class="hljs-keyword">let</span> selected = <span class="hljs-literal">null</span>;
 
   <span class="hljs-comment">// Attach our custom copy-to-clipboard-on-click trick to `elt`</span>
-  <span class="hljs-keyword">const</span> elt = <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">&#x27;...&#x27;</span>);
-  elt.onclick = <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">const</span> elt = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&#x27;...&#x27;</span>);
+  elt.<span class="hljs-property">onclick</span> = <span class="hljs-function">() =&gt;</span> {
     <span class="hljs-comment">// Store reference to this element in the global `selected`</span>
     selected = elt;
     <span class="hljs-comment">// Emit fake `copy` event</span>
-    <span class="hljs-built_in">document</span>.execCommand(<span class="hljs-string">&#x27;copy&#x27;</span>);
+    <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">execCommand</span>(<span class="hljs-string">&#x27;copy&#x27;</span>);
     <span class="hljs-comment">// Remove reference from `selected` to allow normal copies</span>
     <span class="hljs-comment">// to be performed on the page.</span>
     <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> { selected = <span class="hljs-literal">null</span>; }, <span class="hljs-number">1000</span>);
   };
 </code></pre><ul><li>Listen to this <code>copy</code> event and copy the content of the latest element clicked to clipboard.</li></ul><pre class="code" data-lang="javascript"><code>  <span class="hljs-comment">// Intercept copy events</span>
-  <span class="hljs-built_in">document</span>.addEventListener(<span class="hljs-string">&#x27;copy&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
+  <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;copy&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
     <span class="hljs-keyword">if</span> (selected === <span class="hljs-literal">null</span>) {
       <span class="hljs-comment">// No element was clicked</span>
       <span class="hljs-keyword">return</span>;
     }
 
     <span class="hljs-comment">// Copy content of clicked element to clipboard</span>
-    e.clipboardData.setData(
+    e.<span class="hljs-property">clipboardData</span>.<span class="hljs-title function_">setData</span>(
       <span class="hljs-string">&#x27;text/plain&#x27;</span>,
-      selected.innerText,
+      selected.<span class="hljs-property">innerText</span>,
     );
 
     <span class="hljs-comment">// We want our data, not data from any selection,</span>
     <span class="hljs-comment">// to be written to the clipboard</span>
-    e.preventDefault();
+    e.<span class="hljs-title function_">preventDefault</span>();
   });
 
 </code></pre></div><div class="comments"><span><a class="leave-comment-btn" href="https://github.com/remusao/remusao.github.io/issues/13" title="https://github.com/remusao/remusao.github.io/issues/13" target="_blank" rel="noopener noreferrer">Leave a comment on GitHub</a></span><details><summary>2 comments</summary><ul class="comments-list"><li><div class="comment"><div class="meta"><img loading="lazy" class="avatar" alt="GitHub avatar from user amcgregor" src="/images/comments/avatar/76750.jpg" width="40" height="40"> <a class="author" href="https://github.com/amcgregor" title="amcgregor" target="_blank" rel="noopener noreferrer">amcgregor</a> <span>commented </span><a class="date" href="https://github.com/remusao/remusao.github.io/issues/13#issuecomment-653712564" title="https://github.com/remusao/remusao.github.io/issues/13#issuecomment-653712564" target="_blank" rel="noopener noreferrer">a year ago</a></div><div class="content"><p>Interesting. Ran into this problem myself recently with a file upload interface and “copy short link” actions, excepting that I did not want the URI being copied present on the page. (It technically <em>is</em>, but in an abbreviated form that would not produce a viable URI. The “slashes” aren’t: they’re <code>／</code> or a Unicode FULLWIDTH SOLIDUS.)</p><p>My solution involved a “staging area” plain text input to use to place the value to be copied within. If that sentence can even English.</p><details open=""><summary><code>sample.html</code></summary><pre data-lang="html" class="code"><code><span class="hljs-comment">&lt;!-- A place to use as the origin of the copy operation. --&gt;</span>
@@ -52,17 +52,17 @@
 </code></pre></details><p>Use of a “staging” hidden input field (visually; not literally <code>type=hidden</code>) ensures rich text media will not be sent to the clipboard. (Always love pasting “Read more…” that happens to be a link, instead of the link, into a non-rich-text input… and you did indeed read that right.) This can be especially egregious if font, font color, and background information gets copied.</p><p>The technique is otherwise similar in that it utilizes the same underlying <code>execCommand</code> invocation, but without having to intercept such invocations to manipulate <code>clipboardData</code> directly:</p><details open=""><summary><code>sample.js</code></summary><pre data-lang="js" class="code"><code><span class="hljs-comment">// Attaching to the body allows capture of "bubbled" events.</span>
 <span class="hljs-comment">// It saves worrying about binding the handler to each individually, and</span>
 <span class="hljs-comment">// to any dynamic elements as they are added.</span>
-<span class="hljs-built_in">document</span>.body.addEventListener(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
+<span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> {
 	<span class="hljs-comment">// We "exit early" if the element clicked isn't of interest to us.</span>
-	<span class="hljs-keyword">if</span> ( !e.target.classList.contains(<span class="hljs-string">'copy'</span>) ) <span class="hljs-keyword">return</span>
-	<span class="hljs-keyword">let</span> elem = e.target.matches(<span class="hljs-string">'li[data-uri]'</span>) ? e.target : e.target.closest(<span class="hljs-string">'li[data-uri]'</span>)
+	<span class="hljs-keyword">if</span> ( !e.<span class="hljs-property">target</span>.<span class="hljs-property">classList</span>.<span class="hljs-title function_">contains</span>(<span class="hljs-string">'copy'</span>) ) <span class="hljs-keyword">return</span>
+	<span class="hljs-keyword">let</span> elem = e.<span class="hljs-property">target</span>.<span class="hljs-title function_">matches</span>(<span class="hljs-string">'li[data-uri]'</span>) ? e.<span class="hljs-property">target</span> : e.<span class="hljs-property">target</span>.<span class="hljs-title function_">closest</span>(<span class="hljs-string">'li[data-uri]'</span>)
 	<span class="hljs-keyword">if</span> ( !elem ) <span class="hljs-keyword">return</span>
 	
 	<span class="hljs-comment">// My use-case: copy the data-uri property from the clicked</span>
 	<span class="hljs-comment">// element... or the nearest parent element having one.</span>
-	clipboard.innerText = elem.dataset.uri
-	clipboard.select()
-	<span class="hljs-built_in">document</span>.execCommand(<span class="hljs-string">"copy"</span>)
-	clipboard.blur()
+	clipboard.<span class="hljs-property">innerText</span> = elem.<span class="hljs-property">dataset</span>.<span class="hljs-property">uri</span>
+	clipboard.<span class="hljs-title function_">select</span>()
+	<span class="hljs-variable language_">document</span>.<span class="hljs-title function_">execCommand</span>(<span class="hljs-string">"copy"</span>)
+	clipboard.<span class="hljs-title function_">blur</span>()
 })
 </code></pre></details><p>Note also several shortcuts utilized: arrow functions because they’re darned nice, like your sample, but with a notable lack of <code>getElementById</code> despite using an HTML element for the stage… HTML elements identified with JavaScript symbol-safe names are exposed as attributes of the <code>window</code> object: global variables. Also: who needs semicolons? 😉</p><p>Visually, the prototype looked like: (in dark mode)</p><p><img src="https://user-images.githubusercontent.com/76750/86503981-88191f00-bd81-11ea-960a-df9a92f015d2.png" alt="Screen Shot 2020-07-03 at 22 39 41" width="100%"></p><p>One deficit that could be corrected: this does not restore any prior focus or selection… but it could be extended to. Edited to add: though an arbitrary “one second timeout” to do so would be exceptionally sub-optimal, IMO. Similar to link analytics services like Google Analytics literally delaying every link on your page by 200ms just to ensure the XHR gets out. <strong>Not good!</strong> 😜</p></div></div></li><li><div class="comment"><div class="meta"><img loading="lazy" class="avatar" alt="GitHub avatar from user remusao" src="/images/comments/avatar/1299873.jpg" width="40" height="40"> <a class="author" href="https://github.com/remusao" title="remusao" target="_blank" rel="noopener noreferrer">remusao</a> <span>commented </span><a class="date" href="https://github.com/remusao/remusao.github.io/issues/13#issuecomment-653790561" title="https://github.com/remusao/remusao.github.io/issues/13#issuecomment-653790561" target="_blank" rel="noopener noreferrer">a year ago</a></div><div class="content"><p>Very nice. Thank you for sharing! Regarding the timeout, I am not sure why I did not simply clear the global reference in the ‘copy’ listener, I guess it should always trigger…</p></div></div></li></ul></details></div></article><footer><div class="share"><ul><li><a href="https://www.facebook.com/sharer/sharer.php?u=https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html&t=Copy anything to clipboard in HTML and JavaScript" title="Share on Facebook" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-facebook"></div></a></li><li><a href="https://twitter.com/share?url=https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html&text=Copy anything to clipboard in HTML and JavaScript&via=Pythux" title="Tweet" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-twitter"></div></a></li><li><a href="https://getpocket.com/save?url=https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html&title=Copy anything to clipboard in HTML and JavaScript" title="Add to Pocket" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-pocket"></div></a></li><li><a href="https://news.ycombinator.com/submitlink?u=https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html&t=Copy anything to clipboard in HTML and JavaScript" title="Submit to Hacker News" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-hackernews"></div></a></li><li><a href="https://www.reddit.com/submit?url=https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html&title=Copy anything to clipboard in HTML and JavaScript" title="Submit to Reddit" target="_blank" rel="noopener noreferrer"><div class="sharing sharing-reddit"></div></a></li></ul></div></footer></main></body></html>

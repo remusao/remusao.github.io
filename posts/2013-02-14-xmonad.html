@@ -52,7 +52,7 @@
 
 <span class="hljs-comment">-- Names of the workspaces</span>
 <span class="hljs-title">myWorkspaces</span> :: [<span class="hljs-type">String</span>]
-<span class="hljs-title">myWorkspaces</span> = [<span class="hljs-string">&quot;term&quot;</span>, <span class="hljs-string">&quot;web&quot;</span>, <span class="hljs-string">&quot;mail&quot;</span>, <span class="hljs-string">&quot;music&quot;</span>] ++ (map show [<span class="hljs-number">5.</span><span class="hljs-number">.9</span>])
+<span class="hljs-title">myWorkspaces</span> = [<span class="hljs-string">&quot;term&quot;</span>, <span class="hljs-string">&quot;web&quot;</span>, <span class="hljs-string">&quot;mail&quot;</span>, <span class="hljs-string">&quot;music&quot;</span>] ++ (map show [<span class="hljs-number">5</span>..<span class="hljs-number">9</span>])
 
 <span class="hljs-comment">-- Color of normal borders</span>
 <span class="hljs-title">myNormalBorderColor</span> :: <span class="hljs-type">String</span>
@@ -162,7 +162,7 @@
 
   <span class="hljs-comment">-- Decrement the number of windows in the master area.</span>
   , ((modMask, xK_period),
-     sendMessage (<span class="hljs-type">IncMasterN</span> (<span class="hljs-number">-1</span>)))
+     sendMessage (<span class="hljs-type">IncMasterN</span> (-<span class="hljs-number">1</span>)))
 
   <span class="hljs-comment">-- Toggle the status bar gap.</span>
   <span class="hljs-comment">-- <span class="hljs-doctag">TODO:</span> update this binding with avoidStruts, ((modMask, xK_b),</span>
@@ -187,7 +187,7 @@
   <span class="hljs-comment">-- mod-{w,e,r}, Switch to physical/Xinerama screens 1, 2, or 3</span>
   <span class="hljs-comment">-- mod-shift-{w,e,r}, Move client to screen 1, 2, or 3</span>
   [((m .|. modMask, key), screenWorkspace sc &gt;&gt;= flip whenJust (windows . f))
-      | (key, sc) &lt;- zip [xK_w, xK_e, xK_p] [<span class="hljs-number">0.</span>.]
+      | (key, sc) &lt;- zip [xK_w, xK_e, xK_p] [<span class="hljs-number">0</span>..]
       , (f, m) &lt;- [(<span class="hljs-type">W</span>.view, <span class="hljs-number">0</span>), (<span class="hljs-type">W</span>.shift, shiftMask)]]
 </code></pre><p>Globalement, on peut résumer l’organisation du fichier de configuration comme ceci :</p><ol><li>Les imports permettant de faire appel à des fonctionnalités de XMonad, ou toute autre bibliothèque Haskell (car vous pouvez vraiment mettre n’importe quoi dans votre fichier de configuration, si vous le vouliez vous pourriez coder factorielle, Fibonacci et un crible d’Ératosthène pour les afficher dans votre barre des tâches, aucun problème !).</li><li>Des redéfinitions d’options ou de comportements sous forme de constantes.</li><li>Une fonction Main qui regroupe tout ceci et spécifie à XMonad toutes les options, et les comportements que vous désirez. Globalement vous pourrez quasiment tout modifier via un type enregistrement. Les champs non spécifiés auront leur valeur par défaut, on se contente donc de spécifier ce qui nous intéresse.</li></ol><h2>Barre d’état</h2><p>Par défaut, XMonad ne dispose pas d’une barre des tâches. Il en existe une qui est également en Haskell et qui s’intègre très simplement avec XMonad, il s’agit de XMobar. Elle est très légère et permettra de répondre à la plupart des besoins. Il suffit pour la mettre en place de :</p><ol><li>Disposer d’un fichier de configuration situé ici : <code>~/.xmobarrc</code> (vous trouverez le mien un peu plus bas)</li><li>Rajouter la ligne : <code>xmproc &lt;- spawnPipe &quot;xmobar /home/berson_r/.xmobarrc</code> en haut de votre fonction main (cf mon fichier de configuration ci-dessus).</li><li>Indiquer quelles informations XMonad doit transmettre à XMobar lors de l’exécution (les workspaces par exemple). Pour ceci il faut redéfinir le myLogHook dans le main, je vous invite encore une fois à regarder mon exemple donné un peu plus haut.</li></ol><pre class="code" data-lang="haskell"><code><span class="hljs-type">Config</span> { font = <span class="hljs-string">&quot;-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*&quot;</span>
 , bgColor = <span class="hljs-string">&quot;black&quot;</span>

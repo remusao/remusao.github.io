@@ -87,7 +87,7 @@
 <span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Text.Blaze.Html4.Strict <span class="hljs-keyword">as</span> B
 <span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Text.Blaze.Html4.Strict.Attributes <span class="hljs-keyword">as</span> A
 
-<span class="hljs-title">forM</span> [<span class="hljs-number">1.</span><span class="hljs-number">.5</span>] $ \size -&gt; <span class="hljs-keyword">do</span>
+<span class="hljs-title">forM</span> [<span class="hljs-number">1</span>..<span class="hljs-number">5</span>] $ \size -&gt; <span class="hljs-keyword">do</span>
   <span class="hljs-keyword">let</span> s = <span class="hljs-type">B</span>.toValue $ size * <span class="hljs-number">70</span>
   <span class="hljs-type">B</span>.img <span class="hljs-type">B</span>.! <span class="hljs-type">A</span>.src <span class="hljs-string">&quot;https://www.google.com/images/srpr/logo11w.png&quot;</span> <span class="hljs-type">B</span>.! <span class="hljs-type">A</span>.width s
 </code></pre><img src="../images/google-logo.png" width="70"> <img src="../images/google-logo.png" width="140"> <img src="../images/google-logo.png" width="210"> <img src="../images/google-logo.png" width="280"> <img src="../images/google-logo.png" width="350"><h2>ihaskell-charts</h2><p><a href="https://hackage.haskell.org/package/Chart" target="_blank" rel="noopener noreferrer">Charts</a> is a <em>“2D charting library for haskell”</em>. Here a two examples taken from the <a href="https://github.com/timbod7/haskell-chart/wiki" target="_blank" rel="noopener noreferrer">official wiki</a> on github. To adapt examples to notebooks, you must replace any reference of <code>toFile</code>, etc. by <code>toRenderable</code>.</p><pre class="code" data-lang="haskell"><code><span class="hljs-comment">-- This example is taken from the wiki: https://github.com/timbod7/haskell-chart/wiki/example%205</span>
@@ -118,8 +118,8 @@
 <span class="hljs-title">square</span> a s = [(x, y) | x &lt;- range, y &lt;- range] <span class="hljs-keyword">where</span> range = [-a, -a + s..a] :: [<span class="hljs-type">Double</span>]
 <span class="hljs-title">add</span> (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
 
-<span class="hljs-title">ef</span> (x, y) = efield <span class="hljs-number">1</span> (x - <span class="hljs-number">20</span>) y `add` efield (<span class="hljs-number">-1</span>) (x + <span class="hljs-number">20</span>) y
-<span class="hljs-title">bf</span> (x, y) = bfield <span class="hljs-number">1</span> (x - <span class="hljs-number">20</span>) y `add` bfield (<span class="hljs-number">-1</span>) (x + <span class="hljs-number">20</span>) y
+<span class="hljs-title">ef</span> (x, y) = efield <span class="hljs-number">1</span> (x - <span class="hljs-number">20</span>) y `add` efield (-<span class="hljs-number">1</span>) (x + <span class="hljs-number">20</span>) y
+<span class="hljs-title">bf</span> (x, y) = bfield <span class="hljs-number">1</span> (x - <span class="hljs-number">20</span>) y `add` bfield (-<span class="hljs-number">1</span>) (x + <span class="hljs-number">20</span>) y
 <span class="hljs-title">grid</span> = square <span class="hljs-number">30</span> <span class="hljs-number">3</span>
 
 <span class="hljs-title">vectorField</span> title f grid = fmap <span class="hljs-type">E</span>.plotVectorField $ <span class="hljs-type">E</span>.liftEC $ <span class="hljs-keyword">do</span>

@@ -3,18 +3,18 @@
   Pour chaque i dans Tableau
     supprimer_multiples de i dans Tableau
   Fin Pour Fin Crible
-</code></pre><p>Le pseudo-code suivant peut aisément être implémenté en Python :</p><pre class="code" data-lang="python"><code><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Supprimer_multiples</span>(<span class="hljs-params">i, tableau</span>):</span>
+</code></pre><p>Le pseudo-code suivant peut aisément être implémenté en Python :</p><pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">Supprimer_multiples</span>(<span class="hljs-params">i, tableau</span>):
   <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> tableau:
     <span class="hljs-keyword">if</span> x &gt; i <span class="hljs-keyword">and</span> x % i == <span class="hljs-number">0</span>:
       tableau.remove(x)
 
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Crible</span>(<span class="hljs-params">n</span>):</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">Crible</span>(<span class="hljs-params">n</span>):
   tableau = [i <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">2</span>, n)]
   <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> tableau:
     Supprimer_multiples(i, tableau)
   <span class="hljs-keyword">return</span> tableau
 
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span>():</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():
   tableau = Crible(<span class="hljs-number">100</span>)
   <span class="hljs-built_in">print</span> tableau
 
@@ -23,10 +23,10 @@ main()
 gcc -lm -o3 crible_1.c
 </code></pre><p>Nous pourrions nous arrêter là, puisque les performances sont déjà très bonnes (11 ms pour un crible jusqu’à 1.000.000 et 40-45 secondes jusqu’à 1.000.000.000), mais nous allons voir qu’il est encore possible de diminuer drastiquement le temps de calcul. En effet, nous savons qu’à part le nombre 2, aucun nombre pair n’est premier. Nous pourrions donc chercher un moyen de ne pas les stocker dans le tableau, afin de ne garder que les nombres impairs. Nous diviserions donc dans un premier temps l’espace mémoire occupé par deux. Pour un crible jusqu’à n = 30, nous aurions à stocker les éléments suivants :</p><pre class="code" data-lang="sh"><code>Les nombres -&gt; [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
 Les index   -&gt; [0, 1, 2, 3, 4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14]
-</code></pre><p>Hors, nous ne pouvons plus simplement utiliser les index dans le tableau pour connaitre les nombres associés. En fait, on peut remarquer que pour retrouver le nombre associé a chaque case du tableau, il nous suffit de calculer : <code>index * 2 + 1</code> . Deuxièmement, pour retrouver les multiples d’un nombre N dans le tableau, il nous suffit d’aller de N en N dans le tableau en partant de la case <code>N / 2</code>. Enfin, on remarque qu’avec cette technique, l’algorithme est plus compact et nous pouvons nous contenter d’initialiser toutes les cases du tableau à 1 (avec la fonction memset de la bibliothèque <code>&lt;string&gt;</code> du langage C). Voici le code source de cette implémentation (sources : <a href="http://www.pythux.com/exemples/erato/crible.c" target="_blank" rel="noopener noreferrer">http://www.pythux.com/exemples/erato/crible.c</a>) :</p><pre class="code" data-lang="c"><code><span class="hljs-function"><span class="hljs-keyword">char</span> *<span class="hljs-title">erato_opti</span><span class="hljs-params">(<span class="hljs-keyword">int</span> n)</span>
-</span>{
-  <span class="hljs-keyword">char</span>  *tab = <span class="hljs-built_in">malloc</span>(n / <span class="hljs-number">2</span>);
-  <span class="hljs-keyword">int</span>   i = <span class="hljs-number">1</span>, j, borne = <span class="hljs-built_in">sqrt</span>(n / <span class="hljs-number">2</span>), step;
+</code></pre><p>Hors, nous ne pouvons plus simplement utiliser les index dans le tableau pour connaitre les nombres associés. En fait, on peut remarquer que pour retrouver le nombre associé a chaque case du tableau, il nous suffit de calculer : <code>index * 2 + 1</code> . Deuxièmement, pour retrouver les multiples d’un nombre N dans le tableau, il nous suffit d’aller de N en N dans le tableau en partant de la case <code>N / 2</code>. Enfin, on remarque qu’avec cette technique, l’algorithme est plus compact et nous pouvons nous contenter d’initialiser toutes les cases du tableau à 1 (avec la fonction memset de la bibliothèque <code>&lt;string&gt;</code> du langage C). Voici le code source de cette implémentation (sources : <a href="http://www.pythux.com/exemples/erato/crible.c" target="_blank" rel="noopener noreferrer">http://www.pythux.com/exemples/erato/crible.c</a>) :</p><pre class="code" data-lang="c"><code><span class="hljs-type">char</span> *<span class="hljs-title function_">erato_opti</span><span class="hljs-params">(<span class="hljs-type">int</span> n)</span>
+{
+  <span class="hljs-type">char</span>  *tab = <span class="hljs-built_in">malloc</span>(n / <span class="hljs-number">2</span>);
+  <span class="hljs-type">int</span>   i = <span class="hljs-number">1</span>, j, borne = <span class="hljs-built_in">sqrt</span>(n / <span class="hljs-number">2</span>), step;
 
   tab = <span class="hljs-built_in">memset</span>(tab, <span class="hljs-number">1</span>, n / <span class="hljs-number">2</span>);
 
@@ -39,9 +39,9 @@ Les index   -&gt; [0, 1, 2, 3, 4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14]
 
   <span class="hljs-keyword">return</span> (tab);
 }
-</code></pre><p>Si nous voulons afficher les nombres premiers produits par la fonction erato_opti il nous suffit d’utiliser l’astuce du <code>nombre = index * 2 + 1</code> et de ne pas oublier d’afficher le nombre 2 (qui n’est pas contenu dans le tableau) :</p><pre class="code" data-lang="c"><code><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">print_erato_space</span><span class="hljs-params">(<span class="hljs-keyword">char</span> *tab, <span class="hljs-keyword">int</span> n)</span>
-</span>{
-  <span class="hljs-keyword">int</span> i = <span class="hljs-number">1</span>;
+</code></pre><p>Si nous voulons afficher les nombres premiers produits par la fonction erato_opti il nous suffit d’utiliser l’astuce du <code>nombre = index * 2 + 1</code> et de ne pas oublier d’afficher le nombre 2 (qui n’est pas contenu dans le tableau) :</p><pre class="code" data-lang="c"><code><span class="hljs-type">void</span> <span class="hljs-title function_">print_erato_space</span><span class="hljs-params">(<span class="hljs-type">char</span> *tab, <span class="hljs-type">int</span> n)</span>
+{
+  <span class="hljs-type">int</span> i = <span class="hljs-number">1</span>;
 
   <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;2\n&quot;</span>);
   <span class="hljs-keyword">for</span> (; i &lt; n / <span class="hljs-number">2</span>; i++)
