@@ -33,18 +33,18 @@ const md: any = markdown({
   html: true,
   linkify: true,
   typographer: true,
-  highlight(code, lang) {
-    if (lang && hljs.getLanguage(lang)) {
+  highlight(code, language) {
+    if (language && hljs.getLanguage(language)) {
       try {
-        return `<pre class="code" data-lang="${lang}"><code>${
-          hljs.highlight(lang, code, true).value
+        return `<pre class="code" data-lang="${language}"><code>${
+          hljs.highlight(code, { language, ignoreIllegals: true }).value
         }</code></pre>`;
       } catch (ex) {
         /* Empty */
       }
     }
 
-    return `<pre class="code" data-lang="${lang}"><code>${md.utils.escapeHtml(code)}</code></pre>`;
+    return `<pre class="code" data-lang="${language}"><code>${md.utils.escapeHtml(code)}</code></pre>`;
   },
 })
   .use(markdownFootnote)
@@ -232,7 +232,7 @@ class Generator {
     this.purifyDOM = (html) => DOMPurify.sanitize(html);
 
     // Initialize octokit for GitHub APIs
-    const token = process.env.GITHUB_TOKEN;
+    const token = process.env['GITHUB_TOKEN'];
     this.octokit = new Octokit({
       auth: token,
     });
@@ -370,7 +370,7 @@ class Generator {
       ['pocket', 'images/social_flat_rounded_rects_svg/Pocket.svg'],
       ['hackernews', 'images/social_flat_rounded_rects_svg/HackerNews.svg'],
       ['reddit', 'images/social_flat_rounded_rects_svg/Reddit.svg'],
-    ]) {
+    ] as const) {
       sharing.push(
         [
           `.sharing-${name} {`,
@@ -548,15 +548,22 @@ class Generator {
       throw new Error(`could not fetch comments from issue ${issue}: ${status}`);
     }
 
-    const comments: Comment[] = data.map(({ body, created_at, html_url, user }) => ({
-      author: user.login,
-      avatar: user.avatar_url,
-      body,
-      date: created_at,
-      humanized: moment(created_at).from(moment()),
-      profile: user.html_url,
-      url: html_url,
-    }));
+    const comments: Comment[] = [];
+    for (const { body, created_at, html_url, user } of data){
+      if (user === null || body === undefined) {
+        continue;
+      }
+
+      comments.push({
+        author: user.login,
+        avatar: user.avatar_url,
+        body,
+        date: created_at,
+        humanized: moment(created_at).from(moment()),
+        profile: user.html_url,
+        url: html_url,
+      });
+    }
 
     const avatarPath = join('images', 'comments', 'avatar');
     await fs.mkdir(join(__dirname, '_site', avatarPath), { recursive: true });
