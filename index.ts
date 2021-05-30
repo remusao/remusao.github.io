@@ -66,7 +66,7 @@ import emojis from './emojis';
 
 const ci = process.argv[process.argv.length - 1] === '--ci';
 
-const blogDomain = 'https://remusao.github.io/';
+const blogDomain = 'https://remusao.github.io';
 const blogTitle = 'Simplex Sigillum Veri';
 const blogDescription = blogTitle;
 
