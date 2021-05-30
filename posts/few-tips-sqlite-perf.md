@@ -229,3 +229,5 @@ definitely worth reading:
 * You can [customize `row_factory`](https://docs.python.org/3.6/library/sqlite3.html#sqlite3.Connection.row_factory)
   to get something more useful than `tuple`s as results from `SELECT` queries.
 * Consider changing `isolation_level` to `DEFERRED` or `IMMEDIATE`.
+
+*Edit 30-05-2021*: Fixed a missing `.connect` in the "You Don't Need Cursors" section. Thanks to [Gelma](https://github.com/Gelma) for noticing.
