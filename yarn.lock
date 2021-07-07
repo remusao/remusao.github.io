@@ -459,10 +459,10 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
-"@types/finalhandler@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@types/finalhandler/-/finalhandler-1.1.0.tgz#7c62084bac116918c55ad3f884f7c68ca8921124"
-  integrity sha512-iMD07b+UPNuqA6cm3yjbTJUfFfZNZpDc6MGQGK60jy5sdqX1W4wUC5RAi3FhaW72+RmVnzYxba8byPP9FWL8/w==
+"@types/finalhandler@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/finalhandler/-/finalhandler-1.1.1.tgz#a40f17b991ad92d66dfc6c447173f7ad1a9e98ba"
+  integrity sha512-fT+Qs+kczrGnY9EpJpFHbdfdyKSoHUCKo3gJYbDWSSQFc18Td87AelfhMM8zqHRcP97/tk8AijV2zSUdClJK+Q==
   dependencies:
     "@types/node" "*"
 
