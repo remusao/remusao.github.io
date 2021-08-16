@@ -481,11 +481,6 @@
   dependencies:
     highlight.js "*"
 
-"@types/highlight.js@^9.7.0":
-  version "9.12.4"
-  resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.12.4.tgz#8c3496bd1b50cc04aeefd691140aa571d4dbfa34"
-  integrity sha512-t2szdkwmg2JJyuCM20e8kR2X59WCE5Zkl4bzm1u1Oukjm79zpbiAv+QjnwLnuuV0WHEcX2NgUItu0pAMKuOPww==
-
 "@types/html-minifier@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/html-minifier/-/html-minifier-4.0.0.tgz#2065cb9944f2d1b241146707c6935aa7b947d279"
@@ -521,14 +516,14 @@
   resolved "https://registry.yarnpkg.com/@types/linkify-it/-/linkify-it-3.0.1.tgz#4d26a9efe3aa2caf829234ec5a39580fc88b6001"
   integrity sha512-pQv3Sygwxxh6jYQzXaiyWDAHevJqWtqDUv6t11Sa9CPGiXny66II7Pl6PR8QO5OVysD6HYOkHMeBgIjLnk9SkQ==
 
-"@types/markdown-it@^12.0.2":
-  version "12.0.2"
-  resolved "https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-12.0.2.tgz#153e5477970ed2a47b2f619ed4ab66f870de8a04"
-  integrity sha512-p4DIfLMmGN0iLSbMxknDXeSm8W2ZRqQeN/1EAwVxVqJietzgp3WeP1UQjCKWDXWBcEbUa1ECx8YAfdpQdDQmZQ==
+"@types/markdown-it@^12.2.0":
+  version "12.2.0"
+  resolved "https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-12.2.0.tgz#f609929ac1e50cf0d039473fb331ebc62e313b34"
+  integrity sha512-YEpywby5S2wt64C2E3bcpLvtIV8BuCj+4AGtL7tU51V8Vr1qwm+cX9gFfWRyclgLC0UK/7w2heYmhymDi+snzw==
   dependencies:
-    "@types/highlight.js" "^9.7.0"
     "@types/linkify-it" "*"
     "@types/mdurl" "*"
+    highlight.js "^10.7.2"
 
 "@types/mdast@^3.0.0":
   version "3.0.3"
@@ -1839,6 +1834,11 @@ highlight.js@*, highlight.js@^11.0.1:
   version "11.0.1"
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-11.0.1.tgz#a78bafccd9aa297978799fe5eed9beb7ee1ef887"
   integrity sha512-EqYpWyTF2s8nMfttfBA2yLKPNoZCO33pLS4MnbXQ4hECf1TKujCt1Kq7QAdrio7roL4+CqsfjqwYj4tYgq0pJQ==
+
+highlight.js@^10.7.2:
+  version "10.7.3"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-10.7.3.tgz#697272e3991356e40c3cac566a74eef681756531"
+  integrity sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==
 
 hosted-git-info@^2.1.4:
   version "2.8.9"
