@@ -481,11 +481,6 @@
   dependencies:
     highlight.js "*"
 
-"@types/highlight.js@^9.7.0":
-  version "9.12.4"
-  resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.12.4.tgz#8c3496bd1b50cc04aeefd691140aa571d4dbfa34"
-  integrity sha512-t2szdkwmg2JJyuCM20e8kR2X59WCE5Zkl4bzm1u1Oukjm79zpbiAv+QjnwLnuuV0WHEcX2NgUItu0pAMKuOPww==
-
 "@types/html-minifier@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/html-minifier/-/html-minifier-4.0.0.tgz#2065cb9944f2d1b241146707c6935aa7b947d279"
@@ -521,12 +516,11 @@
   resolved "https://registry.yarnpkg.com/@types/linkify-it/-/linkify-it-3.0.1.tgz#4d26a9efe3aa2caf829234ec5a39580fc88b6001"
   integrity sha512-pQv3Sygwxxh6jYQzXaiyWDAHevJqWtqDUv6t11Sa9CPGiXny66II7Pl6PR8QO5OVysD6HYOkHMeBgIjLnk9SkQ==
 
-"@types/markdown-it@^12.0.2":
-  version "12.0.2"
-  resolved "https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-12.0.2.tgz#153e5477970ed2a47b2f619ed4ab66f870de8a04"
-  integrity sha512-p4DIfLMmGN0iLSbMxknDXeSm8W2ZRqQeN/1EAwVxVqJietzgp3WeP1UQjCKWDXWBcEbUa1ECx8YAfdpQdDQmZQ==
+"@types/markdown-it@^12.2.2":
+  version "12.2.2"
+  resolved "https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-12.2.2.tgz#b451a2a6645c45138143ac1183351574c3b7ccbd"
+  integrity sha512-mgqTMVcbwAMUs15tS13VtxBCSqP/sXDkMqBhIdGofOywDzzlOj2Y38PFi1pD+PKJDzk5OdN1RJkRx7GPJf+Twg==
   dependencies:
-    "@types/highlight.js" "^9.7.0"
     "@types/linkify-it" "*"
     "@types/mdurl" "*"
 
