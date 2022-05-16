@@ -50,7 +50,7 @@
     "dompurify": "^2.2.9",
     "express": "^4.17.1",
     "finalhandler": "^1.1.2",
-    "glob": "^7.1.7",
+    "glob": "^8.0.3",
     "got": "^11.8.2",
     "highlight.js": "^11.0.1",
     "html-minifier": "^4.0.0",
