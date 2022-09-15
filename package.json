@@ -60,7 +60,7 @@
     "markdown-it-footnote": "^3.0.3",
     "markdown-it-implicit-figures": "^0.10.0",
     "markdown-it-link-attributes": "^3.0.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "rimraf": "^3.0.0",
     "serve-static": "^1.15.0",
     "sharp": "^0.31.0",
