@@ -79,8 +79,8 @@ persisted on disk, `dbm` is a serious contender!
   creating the table improves performance of SQLite3, so I've updated the
   benchmark accordingly. It does help with performance indeed (see below).
 * *Using WAL pragma*---It was suggested that using WAL journaling instead of
-  default mode would also make more sense. I have updated the benchmarking
-  script accordingly.
+  default mode would also make more sense. I have updated the [benchmarking
+  script](https://github.com/remusao/remusao.github.io/blob/42743be91b5ec4bf4233ffe25c3c7c90cf515627/snippets/dbm_bench.py) accordingly.
 * *Using one INSERT at a time vs. `executemany`*---It was called out that
   executing one INSERT command per key instead of batching the operations
   is less efficient. The benchmark measures both scenarios: one where single
@@ -91,7 +91,7 @@ persisted on disk, `dbm` is a serious contender!
   SQLite3 is still slower than DBM.
 * *Using an index with SQLite3*---In order to improve performances of SQLite3
   operations, creating an index can also be benefitial, and this was suggested
-  in the comments. I've added two new entries to the benchmark to show the
+  in the comments. I've added two new entries to the [benchmark](https://github.com/remusao/remusao.github.io/blob/42743be91b5ec4bf4233ffe25c3c7c90cf515627/snippets/dbm_bench.py) to show the
   performance when creating an index before insertions and also after
   insertions but before reading the values back.
 * *Which DBM implementation is used*---This is something that the initial
@@ -99,7 +99,7 @@ persisted on disk, `dbm` is a serious contender!
   the new benchmarking code now explicitely imports. The performance might vary
   vastely between implementations (worst case being if the [dbm.dumb](https://docs.python.org/3/library/dbm.html#module-dbm.dumb) module is used).
 
-With all the above, I have updated the benchmarks and here are the new results obtained with CPython 3.11.0, best of 5 runs:
+With all the above, I have updated the [benchmarks](https://github.com/remusao/remusao.github.io/blob/42743be91b5ec4bf4233ffe25c3c7c90cf515627/snippets/dbm_bench.py) and here are the new results obtained with CPython 3.11.0, best of 5 runs:
 
 * `dict`---took 0.001 seconds, 0.11792 microseconds / record
 * `dbm`---took 0.009 seconds, 0.88954 microseconds / record
