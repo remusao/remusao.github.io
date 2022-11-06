@@ -37,4 +37,3 @@ jobs:
         with:
           branch: master
           folder: _site
-          base-branch: diy-ts
