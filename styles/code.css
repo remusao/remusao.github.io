@@ -7,6 +7,8 @@ code {
 }
 
 pre code {
+  border-radius: 2%;
   display: block;
   overflow-x: auto; /* Make code block scrollable */
+  padding: 10px;
 }
