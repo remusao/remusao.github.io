@@ -17,6 +17,7 @@ import moment from 'moment';
 import rimraf from 'rimraf';
 import serveStatic from 'serve-static';
 import TreeSync from 'tree-sync';
+import { Feed } from "feed";
 
 import markdown from 'markdown-it';
 // @ts-ignore
@@ -329,6 +330,43 @@ class Generator {
     await fs.writeFile('./_site/index.html', index, { encoding: 'utf-8' });
   }
 
+  public async generateRSS(): Promise<void> {
+    const feed = new Feed({
+      title: blogTitle,
+      description: blogDescription,
+      id: blogDomain,
+      link: blogDomain,
+      copyright: "All rights reserved 2023, Rémi Berson",
+      feedLinks: {
+        json: `${blogDomain}/rss.xml`,
+        atom: `${blogDomain}/atom.xml`
+      },
+      author: {
+        name: "Rémi Berson",
+        link: blogDomain
+      }
+    });
+
+    const posts = Array.from(this.posts.values()).sort(
+      (p1: Post, p2: Post) => p2.date.getTime() - p1.date.getTime(),
+    );
+    
+    posts.forEach(post => {
+      feed.addItem({
+        title: post.title,
+        id: `${blogDomain}/${post.url}`,
+        link: `${blogDomain}/${post.url}`,
+        content: post.html,
+        date: post.date,
+      });
+    });
+    
+    await Promise.all([
+      fs.writeFile('./_site/rss.xml', feed.rss2(), { encoding: 'utf-8' }),
+      fs.writeFile('./_site/atom.xml', feed.atom1(), { encoding: 'utf-8' }),
+    ]);
+  }
+
   private async generateIndexCSS(): Promise<string> {
     const logos = [];
     for (const [name, path] of Object.entries(LOGOS)) {
@@ -628,9 +666,12 @@ ${
   new TreeSync('experiments', '_site/experiments').sync();
   new TreeSync('node_modules/katex/dist', '_site/katex').sync();
 
-  // Generate all posts + index.html
+  // Generate all posts + index.html + rss feeds
   await Promise.all(glob.sync('./posts/*.md').map((path) => generator.generate(path))).then(() =>
-    generator.generateIndex(),
+    Promise.all([
+      generator.generateIndex(),
+      generator.generateRSS(),
+    ])
   );
 
   if (ci === false) {
@@ -638,6 +679,7 @@ ${
     chokidar.watch('./posts/*.md', { persistent: ci === false }).on('change', async (path) => {
       await generator.generate(path);
       await generator.generateIndex();
+      await generator.generateRSS();
     });
 
     // Start serving site locally
