@@ -17,7 +17,7 @@ import moment from 'moment';
 import rimraf from 'rimraf';
 import serveStatic from 'serve-static';
 import TreeSync from 'tree-sync';
-import { Feed } from "feed";
+import { Feed } from 'feed';
 
 import markdown from 'markdown-it';
 // @ts-ignore
@@ -45,7 +45,9 @@ const md: any = markdown({
       }
     }
 
-    return `<pre class="code" data-lang="${language}"><code>${md.utils.escapeHtml(code)}</code></pre>`;
+    return `<pre class="code" data-lang="${language}"><code>${md.utils.escapeHtml(
+      code,
+    )}</code></pre>`;
   },
 })
   .use(markdownFootnote)
@@ -336,22 +338,22 @@ class Generator {
       description: blogDescription,
       id: blogDomain,
       link: blogDomain,
-      copyright: "All rights reserved 2023, Rémi Berson",
+      copyright: 'All rights reserved 2023, Rémi Berson',
       feedLinks: {
-        json: `${blogDomain}/rss.xml`,
-        atom: `${blogDomain}/atom.xml`
+        rss: `${blogDomain}/rss.xml`,
+        atom: `${blogDomain}/atom.xml`,
       },
       author: {
-        name: "Rémi Berson",
-        link: blogDomain
-      }
+        name: 'Rémi Berson',
+        link: blogDomain,
+      },
     });
 
     const posts = Array.from(this.posts.values()).sort(
       (p1: Post, p2: Post) => p2.date.getTime() - p1.date.getTime(),
     );
-    
-    posts.forEach(post => {
+
+    posts.forEach((post) => {
       feed.addItem({
         title: post.title,
         id: `${blogDomain}/${post.url}`,
@@ -360,7 +362,7 @@ class Generator {
         date: post.date,
       });
     });
-    
+
     await Promise.all([
       fs.writeFile('./_site/rss.xml', feed.rss2(), { encoding: 'utf-8' }),
       fs.writeFile('./_site/atom.xml', feed.atom1(), { encoding: 'utf-8' }),
@@ -587,7 +589,7 @@ class Generator {
     }
 
     const comments: Comment[] = [];
-    for (const { body, created_at, html_url, user } of data){
+    for (const { body, created_at, html_url, user } of data) {
       if (user === null || body === undefined) {
         continue;
       }
@@ -668,10 +670,7 @@ ${
 
   // Generate all posts + index.html + rss feeds
   await Promise.all(glob.sync('./posts/*.md').map((path) => generator.generate(path))).then(() =>
-    Promise.all([
-      generator.generateIndex(),
-      generator.generateRSS(),
-    ])
+    Promise.all([generator.generateIndex(), generator.generateRSS()]),
   );
 
   if (ci === false) {
