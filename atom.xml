@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2023-10-22T17:36:16.964Z</updated>
+    <updated>2023-10-22T17:54:53.273Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -4160,7 +4160,7 @@ leave <code>&quot;toto&quot;</code> as a remaining input. Thus the result would 
 <pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> oneChar <span class="hljs-string">&quot;Hello Parser!&quot;</span>
 </code></pre>
 <blockquote>
-<pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (&#x27;<span class="hljs-type">H&#x27;</span>,<span class="hljs-string">&quot;ello Parser!&quot;</span>)
+<pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-string">&#x27;H&#x27;</span>,<span class="hljs-string">&quot;ello Parser!&quot;</span>)
 </code></pre>
 </blockquote>
 <pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> oneChar <span class="hljs-string">&quot;&quot;</span>
@@ -4268,7 +4268,7 @@ their results into a tuple, we can do it using <em>Applicatives</em>:</p>
 <span class="hljs-title">runParser</span> parseTuple <span class="hljs-string">&quot;ab&quot;</span>
 </code></pre>
 <blockquote>
-<pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> ((&#x27;a&#x27;, &#x27;b&#x27;), <span class="hljs-string">&quot;&quot;</span>)
+<pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> ((<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>), <span class="hljs-string">&quot;&quot;</span>)
 </code></pre>
 </blockquote>
 <p>This is the kind of constructs we will use to convert the raw parsed
@@ -4297,7 +4297,7 @@ structure into our own types (e.g: an AST).</p>
 </code></pre>
 </blockquote>
 <blockquote>
-<pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-type">Pair</span> &#x27;x&#x27; &#x27;y&#x27;, <span class="hljs-string">&quot;z&quot;</span>)
+<pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span> (<span class="hljs-type">Pair</span> <span class="hljs-string">&#x27;x&#x27;</span> <span class="hljs-string">&#x27;y&#x27;</span>, <span class="hljs-string">&quot;z&quot;</span>)
 </code></pre>
 </blockquote>
 <h4>Parser is a Monad</h4>
@@ -4334,8 +4334,8 @@ can do.</p>
        <span class="hljs-keyword">then</span> return c1
        <span class="hljs-keyword">else</span> failure
 </code></pre>
-<pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (char &#x27;<span class="hljs-type">H&#x27;</span>) <span class="hljs-string">&quot;Hello!&quot;</span>
-<span class="hljs-title">runParser</span> (char &#x27;e&#x27;) <span class="hljs-string">&quot;Hello!&quot;</span>
+<pre class="code" data-lang="haskell"><code><span class="hljs-title">runParser</span> (char <span class="hljs-string">&#x27;H&#x27;</span>) <span class="hljs-string">&quot;Hello!&quot;</span>
+<span class="hljs-title">runParser</span> (char <span class="hljs-string">&#x27;e&#x27;</span>) <span class="hljs-string">&quot;Hello!&quot;</span>
 </code></pre>
 <blockquote>
 <pre class="code" data-lang="haskell"><code><span class="hljs-type">Just</span>(‘<span class="hljs-type">H</span>’,“ello!”)
@@ -6451,14 +6451,14 @@ quelques points importants.</p>
 <span class="hljs-comment">-- Custom rules</span>
 <span class="hljs-title">myManageHook</span> :: <span class="hljs-type">ManageHook</span>
 <span class="hljs-title">myManageHook</span> = composeAll
-    [ className =? <span class="hljs-string">&quot;Chromium&quot;</span>       <span class="hljs-comment">--&gt; doShift &quot;web&quot;</span>
-    , className =? <span class="hljs-string">&quot;Firefox&quot;</span>        <span class="hljs-comment">--&gt; doShift &quot;web&quot;</span>
-    , className =? <span class="hljs-string">&quot;Uzbl-core&quot;</span>      <span class="hljs-comment">--&gt; doShift &quot;web&quot;</span>
-    , className =? <span class="hljs-string">&quot;Thunderbird&quot;</span>    <span class="hljs-comment">--&gt; doShift &quot;mail&quot;</span>
-    , className =? <span class="hljs-string">&quot;Spotify&quot;</span>        <span class="hljs-comment">--&gt; doShift &quot;music&quot;</span>
-    , className =? <span class="hljs-string">&quot;Vlc&quot;</span>            <span class="hljs-comment">--&gt; doFloat</span>
-    , className =? <span class="hljs-string">&quot;Steam&quot;</span>          <span class="hljs-comment">--&gt; doFloat</span>
-    , className =? <span class="hljs-string">&quot;Gimp&quot;</span>           <span class="hljs-comment">--&gt; doFloat</span>
+    [ className =? <span class="hljs-string">&quot;Chromium&quot;</span>       --&gt; doShift <span class="hljs-string">&quot;web&quot;</span>
+    , className =? <span class="hljs-string">&quot;Firefox&quot;</span>        --&gt; doShift <span class="hljs-string">&quot;web&quot;</span>
+    , className =? <span class="hljs-string">&quot;Uzbl-core&quot;</span>      --&gt; doShift <span class="hljs-string">&quot;web&quot;</span>
+    , className =? <span class="hljs-string">&quot;Thunderbird&quot;</span>    --&gt; doShift <span class="hljs-string">&quot;mail&quot;</span>
+    , className =? <span class="hljs-string">&quot;Spotify&quot;</span>        --&gt; doShift <span class="hljs-string">&quot;music&quot;</span>
+    , className =? <span class="hljs-string">&quot;Vlc&quot;</span>            --&gt; doFloat
+    , className =? <span class="hljs-string">&quot;Steam&quot;</span>          --&gt; doFloat
+    , className =? <span class="hljs-string">&quot;Gimp&quot;</span>           --&gt; doFloat
     , manageDocks]
 <span class="hljs-comment">--    , isFullscreen --&gt; (doF W.focusDown &lt;+&gt; doFullFloat)]</span>
 

@@ -95,14 +95,14 @@
 <span class="hljs-comment">-- Custom rules</span>
 <span class="hljs-title">myManageHook</span> :: <span class="hljs-type">ManageHook</span>
 <span class="hljs-title">myManageHook</span> = composeAll
-    [ className =? <span class="hljs-string">&quot;Chromium&quot;</span>       <span class="hljs-comment">--&gt; doShift &quot;web&quot;</span>
-    , className =? <span class="hljs-string">&quot;Firefox&quot;</span>        <span class="hljs-comment">--&gt; doShift &quot;web&quot;</span>
-    , className =? <span class="hljs-string">&quot;Uzbl-core&quot;</span>      <span class="hljs-comment">--&gt; doShift &quot;web&quot;</span>
-    , className =? <span class="hljs-string">&quot;Thunderbird&quot;</span>    <span class="hljs-comment">--&gt; doShift &quot;mail&quot;</span>
-    , className =? <span class="hljs-string">&quot;Spotify&quot;</span>        <span class="hljs-comment">--&gt; doShift &quot;music&quot;</span>
-    , className =? <span class="hljs-string">&quot;Vlc&quot;</span>            <span class="hljs-comment">--&gt; doFloat</span>
-    , className =? <span class="hljs-string">&quot;Steam&quot;</span>          <span class="hljs-comment">--&gt; doFloat</span>
-    , className =? <span class="hljs-string">&quot;Gimp&quot;</span>           <span class="hljs-comment">--&gt; doFloat</span>
+    [ className =? <span class="hljs-string">&quot;Chromium&quot;</span>       --&gt; doShift <span class="hljs-string">&quot;web&quot;</span>
+    , className =? <span class="hljs-string">&quot;Firefox&quot;</span>        --&gt; doShift <span class="hljs-string">&quot;web&quot;</span>
+    , className =? <span class="hljs-string">&quot;Uzbl-core&quot;</span>      --&gt; doShift <span class="hljs-string">&quot;web&quot;</span>
+    , className =? <span class="hljs-string">&quot;Thunderbird&quot;</span>    --&gt; doShift <span class="hljs-string">&quot;mail&quot;</span>
+    , className =? <span class="hljs-string">&quot;Spotify&quot;</span>        --&gt; doShift <span class="hljs-string">&quot;music&quot;</span>
+    , className =? <span class="hljs-string">&quot;Vlc&quot;</span>            --&gt; doFloat
+    , className =? <span class="hljs-string">&quot;Steam&quot;</span>          --&gt; doFloat
+    , className =? <span class="hljs-string">&quot;Gimp&quot;</span>           --&gt; doFloat
     , manageDocks]
 <span class="hljs-comment">--    , isFullscreen --&gt; (doF W.focusDown &lt;+&gt; doFullFloat)]</span>
 
