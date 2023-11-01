@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2023-11-01T00:26:11.140Z</updated>
+    <updated>2023-11-01T01:44:44.476Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -915,67 +915,6 @@ your code (although some <a href="https://blog.thecodewhisperer.com/permalink/in
 hold them both to high standards. Not doing so might lead to a situation where
 your tests become a liability and slow you down instead of empowering you to
 write better and more robust features.</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[A static blog generator in TypeScript]]></title>
-        <id>https://remusao.github.io//posts/typescript-blog-generator.html</id>
-        <link href="https://remusao.github.io//posts/typescript-blog-generator.html"/>
-        <updated>2019-07-19T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<blockquote>
-<p>Oups, I did it again…</p>
-</blockquote>
-<p>A while ago I was joking with <a href="https://twitter.com/sebadzia" target="_blank" rel="noopener noreferrer">@sebadzia</a> about
-the fact that if you are not re-writting your blog generation mechanism from
-scratch every <em>N</em> posts, then you’re doing it wrong. It appears that I’m
-actually living by these words and have been re-implementing my own blog over
-and over again; maybe in the hope that it would motivate me to write more. This
-blog <em>became an end instead of a mean</em> to communicate things.</p>
-<p>Here are the 6 engines I’ve used over the years (and this does not even account
-for the different themes that I used with each of them):</p>
-<ul>
-<li><a href="https://wordpress.org/" target="_blank" rel="noopener noreferrer">WordPress</a></li>
-<li><a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a></li>
-<li><a href="https://blog.getpelican.com/" target="_blank" rel="noopener noreferrer">Pelican</a></li>
-<li><a href="https://jaspervdj.be/hakyll/" target="_blank" rel="noopener noreferrer">Hakyll</a></li>
-<li><a href="https://github.com/remusao/remusao.github.io/tree/diy" target="_blank" rel="noopener noreferrer">Custom generator in Haskell</a></li>
-<li><a href="https://github.com/remusao/remusao.github.io/tree/diy-ts" target="_blank" rel="noopener noreferrer"><strong>Custom generator in TypeScript</strong></a></li>
-</ul>
-<p>This means that the blog engine has been changed on average every <em>8.5</em> posts.
-Not too bad! Maybe the next one will be in Rust?</p>
-<p>I think what made me switch this time is the fact that I’m actually enjoying
-TypeScript very much lately (I find the type system super neat, and already
-liked JavaScript tooling a lot); and I was a bit fed up by the build time of
-the Haskell version. The way I did it was most probably sub-optimal as I am by
-no mean an experienced Haskell developer. Last but not least, I was on vacation
-and had some time to waste…</p>
-<p>The TypeScript generator is still rough around the edges but it’s working and
-allows me to build the site, watch changes, and serve locally in development
-mode.</p>
-<p>I rely on the following packages to do the heavy lifting:</p>
-<ul>
-<li><a href="https://www.npmjs.com/package/@octokit/rest" target="_blank" rel="noopener noreferrer">@octokit/rest</a> to interact with GitHub APIs (used to fetch static comments)</li>
-<li><a href="https://www.npmjs.com/package/chokidar" target="_blank" rel="noopener noreferrer">chokidar</a> to watch for files changes</li>
-<li><a href="https://www.npmjs.com/package/express" target="_blank" rel="noopener noreferrer">express</a> to serve blog locally</li>
-<li><a href="https://www.npmjs.com/package/dompurify" target="_blank" rel="noopener noreferrer">dompurify</a> to sanitize final HTML</li>
-<li><a href="https://www.npmjs.com/package/highlight.js" target="_blank" rel="noopener noreferrer">highlight.js</a> to provide syntactic coloration for code blocks in posts</li>
-<li><a href="https://www.npmjs.com/package/html-minifier" target="_blank" rel="noopener noreferrer">html-minifier</a> to minimize HTML</li>
-<li><a href="https://www.npmjs.com/package/marked" target="_blank" rel="noopener noreferrer">marked</a> to convert markdown to HTML</li>
-</ul>
-<p>Overall I’m fairly happy with this setup. The generator currently fits into a
-single source file (which should probably be split at some point) and generation
-is pretty fast: <em>~50</em> seconds from scratch (which includes installing all npm
-dependencies, generating posts and fetching comments from GitHub). Generating
-posts only takes less than 10 seconds, and most of the time is spent waiting
-for comments to be fetched from GitHub issues.</p>
-<p>There are a few things I’d like to try or investigate in the future to improve:</p>
-<ul>
-<li>consider using JSX (with React in pure server-side rendering mode)</li>
-<li>consider writing CSS in TypeScript as well with typing</li>
-<li>add support for inlined math using KaTex (which I do not need at the moment)</li>
-<li>improve comments display with better rendering and support for reactions and emojis</li>
-</ul>
-<p>And of course, I will try my best to write more content here in the future!</p>
 ]]></content>
     </entry>
     <entry>
