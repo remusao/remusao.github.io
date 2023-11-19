@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2023-11-19T02:21:57.269Z</updated>
+    <updated>2023-11-19T03:00:43.344Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -435,6 +435,130 @@ the HTTPS Everywhere extension.</p>
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Parsing Thunderbird filtering rules]]></title>
+        <id>https://remusao.github.io//posts/parsing-thunderbird-msg-filters.html</id>
+        <link href="https://remusao.github.io//posts/parsing-thunderbird-msg-filters.html"/>
+        <updated>2019-11-24T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p><a href="https://www.thunderbird.net/" target="_blank" rel="noopener noreferrer">Thunderbird</a> is a free email application that’s
+easy to set up and customize - and it’s loaded with great features!</p>
+</blockquote>
+<p>I have been using Thunderbird as my email client of choice for many years, it
+is the hub which allows me to manage all the emails I get: work, multiple
+personal addresses, etc. As of today my combined mail folders are about <code>30GB</code>
+and counting. Still, Thunderbird has been running rock solid and I had no issue
+so far.</p>
+<p>I have to say that I make extensive use of folders, labels and <em>message
+filters</em>. These features combined allow to effortlessly manage a high volume of
+emails by filtering, sorting, tagging, dispatching emails; greatly reducing the
+amount of manual work needed to process then read them.</p>
+<p>As an example, I receive a lot of emails notifications from GitHub, both for work and personal
+OSS projects. I also tend to follow activity of repositories which I find
+interesting; but I do not want to have to go through all these notifications
+myself. A few years ago I adopted the following strategy:</p>
+<ol>
+<li>Create folders or subfolders for each repository:</li>
+</ol>
+<ul>
+<li><code>github/work/repo1</code>,</li>
+<li><code>github/work/repo2</code>,</li>
+<li><code>github/perso/repo3</code>,</li>
+<li>etc.</li>
+</ul>
+<ol start="2">
+<li>Create a first filter rule <em>for each repository</em> to automatically move
+GitHub notifications to their respective folders. This can be achieve by
+detecting <code>notifications@github.com</code> using a condition of the form <code>From is notifications@github.com</code> and adding a <code>Move Message to</code> action.</li>
+<li>Optionally, I create rules to automatically mark as read any
+message which is not directed to me specifically (e.g.: via direct mention
+of my GitHub handler, PR request, issue assigned, etc.); especially on very
+active repositories. This can be achieved by detecting things like
+<code>mention@noreply.github.com</code> or <code>assign@noreply.github.com</code> in the <code>Cc</code>
+field.</li>
+</ol>
+<p>GitHub has a <a href="https://help.github.com/en/github/receiving-notifications-about-activity-on-github/about-email-notifications" target="_blank" rel="noopener noreferrer">full page of documentation</a>
+describing all the values you can use to filter email notifications. This is
+<em>really useful</em>. For example I tag emails where I am directly mentioned in
+<strong>red</strong> but notifications about discussions that I was involved in but not
+directly mentioned with <strong>blue</strong>. This allows to filter at a glance what I
+really need to check, versus what I can check later. In practice, more than 90%
+of notifications do not need to be checked manually. This is huge!</p>
+<p>Unfortunately, as the number of filters grows, I found the built-in interface
+to not be very convenient. Finding or editing rules can become a pain.
+Fortunately, Thunderbird stores all the filters for a given account in a
+single, plain text file named: <code>msgFilterRules.dat</code>, located in your
+Thunderbird profile folder. So I decided to write <a href="https://github.com/remusao/thunderbird-msg-filters" target="_blank" rel="noopener noreferrer">a
+library</a> which allows to
+manipulate these rules through a minimal and type-safe API; in <em>TypeScript</em>.</p>
+<p>The goal of the project is to allow developing more high-level tooling to
+read, transform, extend, update the rules while not having to worry about the
+low-level parsing details. It would also be possible to store the rules in a
+nicer format then use the library to produce the final file which can be
+consumed by Thunderbird.</p>
+<p>To install the library: <code>npm install --save thunderbird-msg-filters</code>.</p>
+<p>You can then use it to parse a <code>msgFilterRules.dat</code> file which you can find in
+your Thunderbird folder (one per email account configured):</p>
+<pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { parse } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
+
+<span class="hljs-comment">// A typical `msgFilterRules.dat` could contain this raw value.</span>
+<span class="hljs-keyword">const</span> rules = <span class="hljs-title function_">parse</span>(<span class="hljs-string">`
+version=&quot;9&quot;
+logging=&quot;no&quot;
+name=&quot;rule 1&quot;
+enabled=&quot;yes&quot;
+type=&quot;17&quot;
+action=&quot;Mark flagged&quot;
+condition=&quot;OR (subject,contains,foo) OR (subject,contains,bar)&quot;
+name=&quot;rule 2&quot;
+enabled=&quot;yes&quot;
+type=&quot;17&quot;
+action=&quot;Mark read&quot;
+action=&quot;JunkScore&quot;
+actionValue=&quot;100&quot;
+condition=&quot;ALL&quot;
+`</span>);
+</code></pre>
+<p>You can also format rules to the same original format:</p>
+<pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { format } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
+
+<span class="hljs-keyword">const</span> rules = <span class="hljs-title function_">format</span>({
+  <span class="hljs-attr">version</span>: <span class="hljs-string">&#x27;9&#x27;</span>,
+  <span class="hljs-attr">logging</span>: <span class="hljs-string">&#x27;no&#x27;</span>,
+  <span class="hljs-attr">rules</span>: [
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 1&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [{ <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark flagged&#x27;</span>}],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;OR (subject,contains,foo) OR (subject,contains,bar)&#x27;</span>
+    },
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 2&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark read&#x27;</span> }
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;JunkScore&#x27;</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;100&#x27;</span> }
+      ],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;ALL&#x27;</span>
+    },
+  ]
+});
+</code></pre>
+<p>The library is currently very young and will probably contain bugs, so use at
+your own risks. Feel free to use it and <a href="https://github.com/remusao/thunderbird-msg-filters/issues/new" target="_blank" rel="noopener noreferrer">open an issue</a>
+for any feedback!</p>
+<p><strong>What’s next?</strong> I plan to use this library to store the message filters rules
+in a separate location and synchronize it potentially between multiple
+computers. The nice thing is that the rules can now be expressed in a typed
+language (TypeScript) which will give me more confidence about their validity.
+It is also much easier to manipulate them from a single file, in a familiar
+developer environment (i.e.: your editor of choice) than through the
+Thunderbird interface.</p>
+<p>GitHub repository: <a href="https://github.com/remusao/thunderbird-msg-filters/" target="_blank" rel="noopener noreferrer">https://github.com/remusao/thunderbird-msg-filters/</a></p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Installing Diablo II]]></title>
         <id>https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html</id>
         <link href="https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html"/>
@@ -791,6 +915,67 @@ your code (although some <a href="https://blog.thecodewhisperer.com/permalink/in
 hold them both to high standards. Not doing so might lead to a situation where
 your tests become a liability and slow you down instead of empowering you to
 write better and more robust features.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[A static blog generator in TypeScript]]></title>
+        <id>https://remusao.github.io//posts/typescript-blog-generator.html</id>
+        <link href="https://remusao.github.io//posts/typescript-blog-generator.html"/>
+        <updated>2019-07-19T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>Oups, I did it again…</p>
+</blockquote>
+<p>A while ago I was joking with <a href="https://twitter.com/sebadzia" target="_blank" rel="noopener noreferrer">@sebadzia</a> about
+the fact that if you are not re-writting your blog generation mechanism from
+scratch every <em>N</em> posts, then you’re doing it wrong. It appears that I’m
+actually living by these words and have been re-implementing my own blog over
+and over again; maybe in the hope that it would motivate me to write more. This
+blog <em>became an end instead of a mean</em> to communicate things.</p>
+<p>Here are the 6 engines I’ve used over the years (and this does not even account
+for the different themes that I used with each of them):</p>
+<ul>
+<li><a href="https://wordpress.org/" target="_blank" rel="noopener noreferrer">WordPress</a></li>
+<li><a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a></li>
+<li><a href="https://blog.getpelican.com/" target="_blank" rel="noopener noreferrer">Pelican</a></li>
+<li><a href="https://jaspervdj.be/hakyll/" target="_blank" rel="noopener noreferrer">Hakyll</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy" target="_blank" rel="noopener noreferrer">Custom generator in Haskell</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy-ts" target="_blank" rel="noopener noreferrer"><strong>Custom generator in TypeScript</strong></a></li>
+</ul>
+<p>This means that the blog engine has been changed on average every <em>8.5</em> posts.
+Not too bad! Maybe the next one will be in Rust?</p>
+<p>I think what made me switch this time is the fact that I’m actually enjoying
+TypeScript very much lately (I find the type system super neat, and already
+liked JavaScript tooling a lot); and I was a bit fed up by the build time of
+the Haskell version. The way I did it was most probably sub-optimal as I am by
+no mean an experienced Haskell developer. Last but not least, I was on vacation
+and had some time to waste…</p>
+<p>The TypeScript generator is still rough around the edges but it’s working and
+allows me to build the site, watch changes, and serve locally in development
+mode.</p>
+<p>I rely on the following packages to do the heavy lifting:</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/@octokit/rest" target="_blank" rel="noopener noreferrer">@octokit/rest</a> to interact with GitHub APIs (used to fetch static comments)</li>
+<li><a href="https://www.npmjs.com/package/chokidar" target="_blank" rel="noopener noreferrer">chokidar</a> to watch for files changes</li>
+<li><a href="https://www.npmjs.com/package/express" target="_blank" rel="noopener noreferrer">express</a> to serve blog locally</li>
+<li><a href="https://www.npmjs.com/package/dompurify" target="_blank" rel="noopener noreferrer">dompurify</a> to sanitize final HTML</li>
+<li><a href="https://www.npmjs.com/package/highlight.js" target="_blank" rel="noopener noreferrer">highlight.js</a> to provide syntactic coloration for code blocks in posts</li>
+<li><a href="https://www.npmjs.com/package/html-minifier" target="_blank" rel="noopener noreferrer">html-minifier</a> to minimize HTML</li>
+<li><a href="https://www.npmjs.com/package/marked" target="_blank" rel="noopener noreferrer">marked</a> to convert markdown to HTML</li>
+</ul>
+<p>Overall I’m fairly happy with this setup. The generator currently fits into a
+single source file (which should probably be split at some point) and generation
+is pretty fast: <em>~50</em> seconds from scratch (which includes installing all npm
+dependencies, generating posts and fetching comments from GitHub). Generating
+posts only takes less than 10 seconds, and most of the time is spent waiting
+for comments to be fetched from GitHub issues.</p>
+<p>There are a few things I’d like to try or investigate in the future to improve:</p>
+<ul>
+<li>consider using JSX (with React in pure server-side rendering mode)</li>
+<li>consider writing CSS in TypeScript as well with typing</li>
+<li>add support for inlined math using KaTex (which I do not need at the moment)</li>
+<li>improve comments display with better rendering and support for reactions and emojis</li>
+</ul>
+<p>And of course, I will try my best to write more content here in the future!</p>
 ]]></content>
     </entry>
     <entry>
@@ -2899,6 +3084,137 @@ Options:
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[The wrong way of benchmarking integer comparison functions]]></title>
+        <id>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</id>
+        <link href="https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html"/>
+        <updated>2017-11-25T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p><em>TL;DR</em>: Naive code can sometimes run faster than “clever” code. Compilers are
+usually designed to optimize for the most common code, and common code is not
+clever. Lessons learned; if you try to write clever code, benchmark it to make
+sure there is a benefit.</p>
+<p>I recently stumbled upon <a href="https://blogs.msdn.microsoft.com/oldnewthing/20171117-00/?p=97416" target="_blank" rel="noopener noreferrer">an article</a>,
+describing how trying to out-smart the compiler can result in bad
+performances compared to more naive code. The benchmark is about finding
+the most efficient way to write a comparison function between integers,
+to be used in conjunction with <code>sort</code> or binary search for example. The
+original post being about <code>c++</code>, I was curious to know if the results
+would transfer to JavaScript (in particular <code>V8</code>, using <code>Node.js</code>). This
+is what this post is about.</p>
+<p>Let see the contenders:</p>
+<ul>
+<li><em>Naive</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">compare1</span>(<span class="hljs-params">a, b</span>) {
+    <span class="hljs-keyword">if</span> (a &lt; b) <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+    <span class="hljs-keyword">if</span> (a &gt; b) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}
+</code></pre>
+<ul>
+<li><em>Clever</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">compare2</span>(<span class="hljs-params">a, b</span>) {
+    <span class="hljs-keyword">return</span> a - b;
+}
+</code></pre>
+<h2>Benchmarks</h2>
+<p>The original article has a very good point saying that to benchmark this
+code realistically, you need a real use-case. Just sorting the array and
+summing the numbers does not make any sense, no one would do it. But if
+instead you perform a binary search on the sorted array, it gets closer
+to something one might do in a real code-base.</p>
+<p>I took the liberty of converting the original <code>C++</code> implementation of the binary
+search into JavaScript, to stick closely to the article:</p>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">binarySearch</span>(<span class="hljs-params">array, first, last, key, compare</span>) {
+  <span class="hljs-keyword">var</span> length = last - first;
+  <span class="hljs-keyword">while</span> (length &gt; <span class="hljs-number">0</span>) {
+    <span class="hljs-keyword">var</span> step = (length / <span class="hljs-number">2</span>) | <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">var</span> middle = first + step;
+    <span class="hljs-keyword">var</span> result = <span class="hljs-title function_">compare</span>(array[middle], key);
+    <span class="hljs-keyword">if</span> (result &lt; <span class="hljs-number">0</span>) {
+      first = middle + <span class="hljs-number">1</span>;
+      length -= step + <span class="hljs-number">1</span>;
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (result === <span class="hljs-number">0</span>) {
+      <span class="hljs-keyword">return</span> middle;
+    } <span class="hljs-keyword">else</span> {
+      length = step;
+    }
+  }
+
+  <span class="hljs-keyword">return</span> last;
+}
+</code></pre>
+<p>Using the great <a href="https://www.npmjs.com/package/benchmark" target="_blank" rel="noopener noreferrer">benchmark</a>
+library, let’s evaluate the performance of each compare function:</p>
+<ul>
+<li><em>Setup</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">compare</span>) {
+  <span class="hljs-comment">// Create a sorted array</span>
+  <span class="hljs-keyword">var</span> array = [];
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">8192</span>; ++i) {
+    array.<span class="hljs-title function_">push</span>(i * <span class="hljs-number">2</span>);
+  }
+
+  <span class="hljs-keyword">var</span> found = <span class="hljs-number">0</span>;
+
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = -<span class="hljs-number">1</span>; j &lt; <span class="hljs-number">16383</span>; ++j) {
+    <span class="hljs-keyword">var</span> index = <span class="hljs-title function_">binarySearch</span>(
+      array,              <span class="hljs-comment">// sorted array</span>
+      <span class="hljs-number">0</span>,                  <span class="hljs-comment">// start index</span>
+      array.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>,   <span class="hljs-comment">// end index</span>
+      j,                  <span class="hljs-comment">// element we are looking for</span>
+      compare);           <span class="hljs-comment">// comparison function</span>
+
+    <span class="hljs-keyword">if</span> (index !== -<span class="hljs-number">1</span> &amp;&amp; array[index] === j) {
+      found += <span class="hljs-number">1</span>;
+    }
+  }
+
+  <span class="hljs-keyword">if</span> (found !== <span class="hljs-number">8191</span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">&#x27;Found bug&#x27;</span>, found);
+  }
+}
+</code></pre>
+<ul>
+<li><em>Benchmark</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">bench</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">var</span> <span class="hljs-title class_">Benchmark</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;benchmark&#x27;</span>);
+  <span class="hljs-keyword">var</span> suite = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Benchmark</span>.<span class="hljs-title class_">Suite</span>();
+
+  suite
+    .<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;compare1&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-title function_">run</span>(compare1);
+    })
+    .<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;compare2&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-title function_">run</span>(compare2);
+    })
+    .<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;cycle&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">String</span>(event.<span class="hljs-property">target</span>));
+    })
+    .<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;complete&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Fastest is &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">filter</span>(<span class="hljs-string">&#x27;fastest&#x27;</span>).<span class="hljs-title function_">map</span>(<span class="hljs-string">&#x27;name&#x27;</span>));
+    })
+    .<span class="hljs-title function_">run</span>({});
+}
+
+<span class="hljs-title function_">bench</span>();
+</code></pre>
+<p>And…</p>
+<blockquote>
+<pre class="code" data-lang="sh"><code>compare1 x 421 ops/sec ±0.51% (91 runs sampled)
+compare2 x 394 ops/sec ±0.39% (89 runs sampled)
+</code></pre>
+</blockquote>
+<p>It happens that the naive <code>compare1</code> is a bit faster than <code>compare2</code>.
+It’s not day and night, but the <em>naive</em>, more readable code is more
+efficient on V8 than the clever one.</p>
+<p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
+there</a></p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
         <id>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</id>
         <link href="https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html"/>
@@ -3213,6 +3529,58 @@ hostname_filters = {
 <p>There is so much more we can do with this database. At the moment the
 API to load the data is pretty-low level, but it will be improved over
 time.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Fully static comments]]></title>
+        <id>https://remusao.github.io//posts/static-comments.html</id>
+        <link href="https://remusao.github.io//posts/static-comments.html"/>
+        <updated>2017-11-19T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>I’d like to give a quick update about the comments
+on this blog. I already mentioned in a <a href="/posts/state-of-static-blogs.html" target="_blank" rel="noopener noreferrer">previous post</a>
+that I wanted to experiment with fully static comments for my blog. By
+fully static I mean that comments are directly integrated in the HTML of
+each page, at generation time. It requires to generate pages with new
+comments regularly but I think it’s a good trade-off.</p>
+<p>I’d like to give an overview of how it works, and how it looks in practice.</p>
+<h2>How does it Work?</h2>
+<ol>
+<li>Comments will be posted and hosted on <em>Github Issues</em>.</li>
+<li>Each <code>post</code>’s original <code>Markdown</code> document has an optional <code>issue</code>
+attribute in its metadata; when it is specified, the static blog
+generator will fetch the comments of the specified issue every time we
+build the site.</li>
+<li>Issues are directly integrated in the HTML of the page (at the bottom) and
+are collapsed by default.</li>
+</ol>
+<h2>Pros</h2>
+<p>I see several advantages with this system:</p>
+<ol>
+<li>It’s fast because it’s part of the page’s HTML.</li>
+<li>The look and feel of the page is consistent.</li>
+<li>It does not require any third-party Javascript to work (so no tracking…).</li>
+<li>It leverages Github, which is already used to host the blog anyway, so why
+not use the <code>issues</code> as well.</li>
+</ol>
+<h2>Cons</h2>
+<p>Obviously it’s not perfect because:</p>
+<ol>
+<li>People need a Github account to post comments: but I expect a lot of people
+do, and if they don’t, there are a lot of ways to discuss blog posts on the
+Internet: Reddit, HackerNews, Twitter; and they all have their sharing button
+at the bottom of the page!</li>
+<li>It takes a bit of time to refresh the comments (currently <code>Travis</code> will
+deploy the posts at least once a day + every time I do a commit), but they
+can always be seen in real time on the <code>issue</code> itself.</li>
+<li>It might not scale very well with a lot of comments, but I will be happy to
+figure out a solution for this problem when it happens with this blog!</li>
+</ol>
+<h2>How it Looks</h2>
+<p>This post is already equipped with the static comments. I created a few of them
+to demonstrate the look and feel. You can expend the comments by
+clicking the first link on the left <code>N comments</code>, or post a new one by clicking
+on <code>Leave a comment on Github</code> (you will be redirected on the correct <code>issue</code>).</p>
+<p>Feel free to add more! I’d love to get some feedback on this.</p>
 ]]></content>
     </entry>
     <entry>
