@@ -27,7 +27,7 @@
     "@types/highlight.js": "^10.1.0",
     "@types/html-minifier": "^4.0.2",
     "@types/jsdom": "^20.0.0",
-    "@types/node": "^18.11.9",
+    "@types/node": "^20.9.2",
     "@types/rimraf": "^3.0.2",
     "@types/serve-static": "^1.15.0",
     "@types/sharp": "^0.31.0",
