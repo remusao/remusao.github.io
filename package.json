@@ -55,7 +55,7 @@
     "got": "^11.8.2",
     "highlight.js": "^11.6.0",
     "html-minifier": "^4.0.0",
-    "jsdom": "^20.0.2",
+    "jsdom": "^23.0.0",
     "markdown-it": "^13.0.1",
     "markdown-it-attrs": "^4.1.4",
     "markdown-it-footnote": "^3.0.3",
