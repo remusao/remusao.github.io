@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Tue, 28 Nov 2023 12:00:51 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 28 Nov 2023 13:07:53 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -3081,6 +3081,44 @@ Options:
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
+            <link>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</link>
+            <guid>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</guid>
+            <pubDate>Sat, 25 Nov 2017 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
+fast fuzzy matching and approximate set membership tests, I found myself in a
+situation where I needed more insight about what optimizations <code>V8</code> was
+performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
+compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
+consider!</p>
+<p>This article assumes you’re using
+<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
+extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
+During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
+very useful!</p>
+<h1>Building V8 From Source</h1>
+<h2>Installing depot_tools</h2>
+<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
+<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
+$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
+</code></pre>
+<h2>Compiling V8</h2>
+<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
+<pre class="code" data-lang="sh"><code>$ fetch v8
+</code></pre>
+<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
+version of the sources. It will also configure everything needed for the build.</p>
+<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
+$ ninja -C out.gn/x64.release
+</code></pre>
+<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
+intended by running the tests:</p>
+<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
+</code></pre>
+<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[The wrong way of benchmarking integer comparison functions]]></title>
             <link>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</link>
             <guid>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</guid>
@@ -3209,44 +3247,6 @@ It’s not day and night, but the <em>naive</em>, more readable code is more
 efficient on V8 than the clever one.</p>
 <p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
 there</a></p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
-            <link>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</link>
-            <guid>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</guid>
-            <pubDate>Sat, 25 Nov 2017 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
-fast fuzzy matching and approximate set membership tests, I found myself in a
-situation where I needed more insight about what optimizations <code>V8</code> was
-performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
-compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
-consider!</p>
-<p>This article assumes you’re using
-<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
-extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
-During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
-very useful!</p>
-<h1>Building V8 From Source</h1>
-<h2>Installing depot_tools</h2>
-<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
-<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
-$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
-</code></pre>
-<h2>Compiling V8</h2>
-<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
-<pre class="code" data-lang="sh"><code>$ fetch v8
-</code></pre>
-<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
-version of the sources. It will also configure everything needed for the build.</p>
-<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
-$ ninja -C out.gn/x64.release
-</code></pre>
-<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
-intended by running the tests:</p>
-<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
-</code></pre>
-<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -7017,6 +7017,34 @@ sans modification.</p>
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[Visualiser la structure d’un projet python]]></title>
+            <link>https://remusao.github.io//posts/visualize-project-structure-python.html</link>
+            <guid>https://remusao.github.io//posts/visualize-project-structure-python.html</guid>
+            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Lors d’une de mes dernières contributions à un projet écrit en
+Python, j’ai voulu trouver un moyen de rapidement pouvoir visualiser
+la structure d’un projet selon plusieurs critères (dépendances
+entres les modules, héritages entre les objets, etc.). J’ai donc
+écris un script Python qui permet de générer un graphe à partir de
+différentes données.</p>
+<p><a href="https://github.com/remusao/PyProjectViewer" target="_blank" rel="noopener noreferrer">Project sur GitHub</a></p>
+<p>J’ai essayé de faire en sorte de rentre le projet flexible afin de
+pouvoir scanner d’autres types de données à l’avenir (et pourquoi
+pas d’autres langages). Pour le moment on peut générer le graphe des
+importations ainsi que le graphe de l’héritage.</p>
+<p>Le projet est divisé en deux parties :</p>
+<ol>
+<li>Les fichiers Scan, qui doivent respecter l’interface d’un scanner.</li>
+<li>Un objet modelViewer qui s’occupe de parcourir tout votre projet et d’appeler son scanner sur chaque fichier.</li>
+</ol>
+<p>Ainsi on peut tout à fait rajouter des Scanners à volonté. Pour
+finir, voici un graphe de dépendance d’un de mes projets en Python.
+Le graphe est coloré et chaque module (chaque dossier) possède sa
+propre couleur.</p>
+<p>N’hésitez pas à faire des remarques ou à proposer des améliorations !</p>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[Raspberry Pi]]></title>
             <link>https://remusao.github.io//posts/raspberry-pi.html</link>
             <guid>https://remusao.github.io//posts/raspberry-pi.html</guid>
@@ -7057,34 +7085,6 @@ quelques paquets elle est pleine à 94%. Je l’utilise actuellement
 pour streamer du contenu présent sur un de mes disques durs externe via
 Mediatomb. Cela permet d’accéder à vos vidéos, photos, musiques
 depuis n’importe quel périphérique supportant la technologie uPnP.</p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Visualiser la structure d’un projet python]]></title>
-            <link>https://remusao.github.io//posts/visualize-project-structure-python.html</link>
-            <guid>https://remusao.github.io//posts/visualize-project-structure-python.html</guid>
-            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Lors d’une de mes dernières contributions à un projet écrit en
-Python, j’ai voulu trouver un moyen de rapidement pouvoir visualiser
-la structure d’un projet selon plusieurs critères (dépendances
-entres les modules, héritages entre les objets, etc.). J’ai donc
-écris un script Python qui permet de générer un graphe à partir de
-différentes données.</p>
-<p><a href="https://github.com/remusao/PyProjectViewer" target="_blank" rel="noopener noreferrer">Project sur GitHub</a></p>
-<p>J’ai essayé de faire en sorte de rentre le projet flexible afin de
-pouvoir scanner d’autres types de données à l’avenir (et pourquoi
-pas d’autres langages). Pour le moment on peut générer le graphe des
-importations ainsi que le graphe de l’héritage.</p>
-<p>Le projet est divisé en deux parties :</p>
-<ol>
-<li>Les fichiers Scan, qui doivent respecter l’interface d’un scanner.</li>
-<li>Un objet modelViewer qui s’occupe de parcourir tout votre projet et d’appeler son scanner sur chaque fichier.</li>
-</ol>
-<p>Ainsi on peut tout à fait rajouter des Scanners à volonté. Pour
-finir, voici un graphe de dépendance d’un de mes projets en Python.
-Le graphe est coloré et chaque module (chaque dossier) possède sa
-propre couleur.</p>
-<p>N’hésitez pas à faire des remarques ou à proposer des améliorations !</p>
 ]]></content:encoded>
         </item>
         <item>
