@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Tue, 28 Nov 2023 13:07:53 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 28 Nov 2023 14:00:47 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -7017,34 +7017,6 @@ sans modification.</p>
 ]]></content:encoded>
         </item>
         <item>
-            <title><![CDATA[Visualiser la structure d’un projet python]]></title>
-            <link>https://remusao.github.io//posts/visualize-project-structure-python.html</link>
-            <guid>https://remusao.github.io//posts/visualize-project-structure-python.html</guid>
-            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Lors d’une de mes dernières contributions à un projet écrit en
-Python, j’ai voulu trouver un moyen de rapidement pouvoir visualiser
-la structure d’un projet selon plusieurs critères (dépendances
-entres les modules, héritages entre les objets, etc.). J’ai donc
-écris un script Python qui permet de générer un graphe à partir de
-différentes données.</p>
-<p><a href="https://github.com/remusao/PyProjectViewer" target="_blank" rel="noopener noreferrer">Project sur GitHub</a></p>
-<p>J’ai essayé de faire en sorte de rentre le projet flexible afin de
-pouvoir scanner d’autres types de données à l’avenir (et pourquoi
-pas d’autres langages). Pour le moment on peut générer le graphe des
-importations ainsi que le graphe de l’héritage.</p>
-<p>Le projet est divisé en deux parties :</p>
-<ol>
-<li>Les fichiers Scan, qui doivent respecter l’interface d’un scanner.</li>
-<li>Un objet modelViewer qui s’occupe de parcourir tout votre projet et d’appeler son scanner sur chaque fichier.</li>
-</ol>
-<p>Ainsi on peut tout à fait rajouter des Scanners à volonté. Pour
-finir, voici un graphe de dépendance d’un de mes projets en Python.
-Le graphe est coloré et chaque module (chaque dossier) possède sa
-propre couleur.</p>
-<p>N’hésitez pas à faire des remarques ou à proposer des améliorations !</p>
-]]></content:encoded>
-        </item>
-        <item>
             <title><![CDATA[Raspberry Pi]]></title>
             <link>https://remusao.github.io//posts/raspberry-pi.html</link>
             <guid>https://remusao.github.io//posts/raspberry-pi.html</guid>
@@ -7085,6 +7057,34 @@ quelques paquets elle est pleine à 94%. Je l’utilise actuellement
 pour streamer du contenu présent sur un de mes disques durs externe via
 Mediatomb. Cela permet d’accéder à vos vidéos, photos, musiques
 depuis n’importe quel périphérique supportant la technologie uPnP.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Visualiser la structure d’un projet python]]></title>
+            <link>https://remusao.github.io//posts/visualize-project-structure-python.html</link>
+            <guid>https://remusao.github.io//posts/visualize-project-structure-python.html</guid>
+            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Lors d’une de mes dernières contributions à un projet écrit en
+Python, j’ai voulu trouver un moyen de rapidement pouvoir visualiser
+la structure d’un projet selon plusieurs critères (dépendances
+entres les modules, héritages entre les objets, etc.). J’ai donc
+écris un script Python qui permet de générer un graphe à partir de
+différentes données.</p>
+<p><a href="https://github.com/remusao/PyProjectViewer" target="_blank" rel="noopener noreferrer">Project sur GitHub</a></p>
+<p>J’ai essayé de faire en sorte de rentre le projet flexible afin de
+pouvoir scanner d’autres types de données à l’avenir (et pourquoi
+pas d’autres langages). Pour le moment on peut générer le graphe des
+importations ainsi que le graphe de l’héritage.</p>
+<p>Le projet est divisé en deux parties :</p>
+<ol>
+<li>Les fichiers Scan, qui doivent respecter l’interface d’un scanner.</li>
+<li>Un objet modelViewer qui s’occupe de parcourir tout votre projet et d’appeler son scanner sur chaque fichier.</li>
+</ol>
+<p>Ainsi on peut tout à fait rajouter des Scanners à volonté. Pour
+finir, voici un graphe de dépendance d’un de mes projets en Python.
+Le graphe est coloré et chaque module (chaque dossier) possède sa
+propre couleur.</p>
+<p>N’hésitez pas à faire des remarques ou à proposer des améliorations !</p>
 ]]></content:encoded>
         </item>
         <item>
