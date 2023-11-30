@@ -52,7 +52,7 @@
     "feed": "^4.2.2",
     "finalhandler": "^1.2.0",
     "glob": "^8.0.3",
-    "got": "^11.8.2",
+    "got": "^14.0.0",
     "highlight.js": "^11.6.0",
     "html-minifier": "^4.0.0",
     "jsdom": "^20.0.2",
