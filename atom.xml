@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2023-12-14T22:00:41.025Z</updated>
+    <updated>2023-12-14T23:00:49.385Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -12,6 +12,972 @@
     <link rel="self" href="https://remusao.github.io/atom.xml"/>
     <subtitle>Simplex Sigillum Veri</subtitle>
     <rights>All rights reserved 2023, Rémi Berson</rights>
+    <entry>
+        <title type="html"><![CDATA[A more efficient matching engine for HTTPS Everywhere RuleSets]]></title>
+        <id>https://remusao.github.io//posts/efficient-https-everywhere-engine.html</id>
+        <link href="https://remusao.github.io//posts/efficient-https-everywhere-engine.html"/>
+        <updated>2020-05-30T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p><strong>TL;DR:</strong> <em>In this post I describe the results of an experiment showing
+how matching of HTTPS Everywhere rules can be made <strong>between 4x and
+10x more memory-efficient</strong>, initialization of the matching engine
+reduced to less than <strong>25 milliseconds</strong>, and HTTPS upgrades performed
+in <strong>0.0029</strong> to <strong>0.0073 milliseconds</strong>, using a different design
+inspired by modern adblockers, without relying on the Rust/WebAssembly
+combo (i.e. pure JavaScript).</em></p>
+<p><strong>Disclaimer:</strong> <em>This work was <em>not</em> conducted as part of the HTTPS
+Everywhere project. My intent when experimenting with rulesets matching
+was to explore new ways to implement an efficient engine and document
+my findings. I would of course love it if some of these ideas are used
+upstream.</em></p>
+<p>Over the last few years, the adoption of HTTPS has continuously increased,
+reaching 50% of the Web traffic for the <a href="https://letsencrypt.org/stats/#percent-pageloads" target="_blank" rel="noopener noreferrer">first time in 2017</a>
+and up to <a href="https://almanac.httparchive.org/en/2019/security#transport-layer-security" target="_blank" rel="noopener noreferrer">80% in 2019</a>.
+Yet, <a href="https://www.eff.org/https-everywhere" target="_blank" rel="noopener noreferrer">according to the EFF</a>:
+<em>“Many sites on the web [still] offer some limited support for
+encryption over HTTPS, but make it difficult to use. For instance, they
+may default to unencrypted HTTP, or fill encrypted pages with links that
+go back to the unencrypted site.”</em></p>
+<p>For this reason, the EFF started the HTTPS Everywhere project in 2014,
+providing users with a browser extension able to automatically upgrade
+connections to HTTPS whenever possible.</p>
+<p>To decide when an upgrade is feasible, the extension relies on a database of
+<em>rulesets</em> allowing it to know for a given URL if HTTPS is supported. These
+rules are <a href="https://github.com/EFForg/https-everywhere/commits/master/src/chrome/content/rules" target="_blank" rel="noopener noreferrer">continuously updated</a>
+to limit breakage and maximize coverage.</p>
+<p>Having spent a fair amount of my time working on <a href="https://github.com/cliqz-oss/adblocker" target="_blank" rel="noopener noreferrer">content blockers</a> in the last
+few years—especially on the <a href="https://whotracks.me/blog/adblockers_performance_study.html" target="_blank" rel="noopener noreferrer">performance aspect</a>—, I have always been curious
+about how the rule-matching logic was implemented in HTTPS Everywhere, since the
+task shares many similarities with adblocking. More recently, I stumbled
+upon two tickets mentioning <a href="https://github.com/EFForg/https-everywhere/issues/12232" target="_blank" rel="noopener noreferrer">high memory usage</a> and <a href="https://trac.torproject.org/projects/tor/ticket/23719" target="_blank" rel="noopener noreferrer">slow initialization of the extension</a> and decided to have a closer look.</p>
+<p>High memory and CPU usage are problematic for multiple reasons. As HTTPS
+Everywhere is running in various environments—including potentially
+low-end mobile phones—it has to perform decently even under
+limited IO performance, slow CPUs and low amount of memory. Moreover,
+HTTPS is included in Tor (on both desktop and mobile) where the JIT
+can be disabled when security settings are maxed out, further degrading
+performance. Also consider that while loading a
+page, many components of the browser are competing for resources:
+parsing HTML, evaluating JavaScript, rendering the page, but also
+privacy protections such as adblockers, and of course, HTTPS
+Everywhere. Last but not the least, energy consumption (especially on
+mobile devices), is not to be ignored: A higher CPU usage means reduced
+battery life.</p>
+<p>While experimenting, I was wondering if some of the optimizations implemented
+as part of modern content blockers would make sense in HTTPS Everywhere
+and if they would improve the overall efficiency. This blog post presents some
+of the results of this investigation. The following contributions and
+improvements are presented:</p>
+<ul>
+<li>A new design, inspired by some of the same optimizations implemented
+in the fastest content blockers, leading to an increased efficiency:
+<ul>
+<li><strong>~4.7MB</strong> of memory usage (<strong>4x less than the current HTTPS Everywhere</strong>
+Rust/WebAssembly implementation), further reduced to <strong>~2.1MB</strong> when using an
+experimental statistical data structure (with ideas to reduce it even more).</li>
+<li>Decision time between <strong>0.0029</strong> and <strong>0.0073 milliseconds</strong> when
+querying the rulesets with a URL to be upgraded to HTTPS.</li>
+<li>Serialization to and deserialization from a compact binary representation
+in under <strong>25 milliseconds</strong> and no memory copy.</li>
+</ul>
+</li>
+<li>Design and implementation of a compact index data structure allowing to
+efficiently retrieve a small subset of rules likely to apply to a given input
+URL.</li>
+<li>A built-in small string compression implementation inspired by SMAZ which
+allows to reduce memory usage by up to 60%.</li>
+<li>An experimental statistical data structure allowing an even lower
+memory usage, at the risk of unlikely collisions.</li>
+<li>An experimentation with a compact trie data structure to attempt reducing
+memory usage further.</li>
+</ul>
+<h2>The Rules</h2>
+<p>Before digging deeper into the design of the matching engine, let’s briefly
+describe <a href="https://www.eff.org/https-everywhere/rulesets" target="_blank" rel="noopener noreferrer">HTTPS Everwhere rulesets</a>.</p>
+<p>The database of rules is made of <em>thousands of rulesets</em> (currently
+about 25k). Each <em>ruleset</em> is an XML file containing information about
+upgrading requests to HTTPS for a domain or group of domains (e.g.
+for an organization like Bitly). The file can contain the following
+entities:</p>
+<ul>
+<li><strong>Targets</strong>—define which domains are targeted by this ruleset (e.g.
+<code>example.com</code>). They can also make use of wildcards, either to target all
+subdomains, or multiple top-level domains.</li>
+<li><strong>Exclusions</strong>—are regular expressions allowing to prevent some specific domains or URLs from
+being upgraded to HTTPS (e.g. to prevent breakage).</li>
+<li><strong>Rules</strong>—define how insecure requests should be upgraded <em>from</em>
+insecure <em>to</em> secure (i.e. they encode the URL rewriting logic).
+They define a <code>from</code> regular expression which the input URL should match,
+associated with a <code>to</code> attribute describing how the upgraded URL should look like.
+The most common case being to simply transform <code>^http:</code> into <code>https:</code>.</li>
+<li><strong>Secure Cookies</strong>—Optionally defined if cookies from one of the targeted
+domains should be secured as well using hardened flags.</li>
+</ul>
+<p>Here is a simple example of how such a ruleset could look like:</p>
+<pre class="code" data-lang="xml"><code><span class="hljs-tag">&lt;<span class="hljs-name">ruleset</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;example.com&quot;</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">target</span> <span class="hljs-attr">host</span>=<span class="hljs-string">&quot;example.com&quot;</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">target</span> <span class="hljs-attr">host</span>=<span class="hljs-string">&quot;*.example.com&quot;</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">exclusion</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;^http://unsecure\.example\.com/&quot;</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">rule</span> <span class="hljs-attr">from</span>=<span class="hljs-string">&quot;^http:&quot;</span> <span class="hljs-attr">to</span>=<span class="hljs-string">&quot;https:&quot;</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">securecookie</span> <span class="hljs-attr">host</span>=<span class="hljs-string">&quot;.+&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;.+&quot;</span> /&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">ruleset</span>&gt;</span>
+</code></pre>
+<h2>Matching Algorithm</h2>
+<p>Given a collection of rulesets, the decision of upgrading an insecure request
+to a secure one relies on the following steps:</p>
+<ol>
+<li>Identifying the subset of rulesets <em>targeting</em> the URL’s domain.</li>
+<li>Eliminating rulesets having at least one matching <em>exclusion</em> rule.</li>
+<li>Evaluating the <em>rules</em> from the candidate rulesets until one matches.</li>
+</ol>
+<p>If a matching <code>rule</code> is found following the previous steps, then the URL is
+rewritten to a secure version using the rewriting logic defined by
+this <code>rule</code>. For more information about the exact semantic of matching
+rulesets, check <a href="https://www.eff.org/https-everywhere/rulesets" target="_blank" rel="noopener noreferrer">this page</a> of the official documentation.</p>
+<h2>Efficient Matching</h2>
+<p>The naive approach to writing a matching algorithm would be to iteratively inspect
+all rulesets for each input URL, checking their <em>targets</em>, <em>exclusions</em> and
+<em>rules</em> until a match is found. This would not be very efficient and
+we can do better (to be clear, this is <em>not</em> the approach taken by HTTPS
+Everywhere and I only describe it to get a sense of the most naive solution).</p>
+<p>In the following few sections we are going to explore some of the
+biggest ideas contributing to the speed and memory efficiency of the
+new matching engine. Firstly, I will present the central <em>indexing
+data structure which allows to drastically reduce the amount of work
+required</em> to find relevant rulesets. Secondly, I will walk you through
+<em>how this index can be represented in a very compact way</em>, as a single
+typed array. Thirdly, we will see how we can further reduce the memory
+usage by implementing a built-in string compression capability to this
+compact index. Lastly I will briefly describe two other attempts at
+reducing the size of the index using a trie data structure and an
+experimental probabilistic data structure based on hashing.</p>
+<h3>Reverse Index</h3>
+<p>Instead of iterating through all rulesets for each input URL, we
+want to quickly identify a small subset of candidates which will be
+evaluated against the input URL. To achieve this goal, we rely on
+a <a href="https://github.com/remusao/https-everywhere-core/blob/master/src/reverse-index.ts" target="_blank" rel="noopener noreferrer">reverse index</a>
+which groups <em>targets</em>, <em>exclusions</em> and <em>rules</em> into buckets indexed
+by a common substring (or <em>token</em>) that they contain. This allows us to
+collect candidates for a given URL by querying the index with tokens
+found in the URL. Each candidate retrieved is thus guaranteed to share
+at least a common substring with the URL. In practice, this drastically
+reduces the amount of work required to take a decision. This technique is
+<a href="https://0x65.dev/blog/2019-12-20/not-all-adblockers-are-born-equal.html#CurrentApproach" target="_blank" rel="noopener noreferrer">used as part of content blockers</a>
+to identify lists of filters indicating that a network request should be
+canceled.</p>
+<p>We create a separate index for <em>targets</em>, <em>exclusions</em>, <em>rules</em> and
+<em>secure cookies</em>. To minimize the number of candidates retrieved for
+each URL, we make sure that each <em>target</em> and <em>secure cookie</em> is indexed using <em>its rarest
+token</em>, whereas <em>exclusions</em> and <em>rules</em> are indexed only using the ID
+of the ruleset they belong to. In practice, each index is created
+using the following algorithm:</p>
+<ol>
+<li>Each element is tokenized using <code>\w+</code> (alpha-numeric characters) or
+the ruleset ID is used as a token. For example <em>target</em> <code>example.com</code>
+would be tokenized into <code>['example', 'com']</code>.</li>
+<li>We keep track of the number of occurrences of each token with a global
+counter.</li>
+<li>We then select the <em>best</em> (i.e. least seen) token for each element, and use
+it as a key in the reverse index.</li>
+</ol>
+<p>As a result, most <em>buckets</em> of the index will contain a single element
+(meaning that we found a token which is unique globally to index the
+element). To get a better idea of the dispatching capabilities brought by this
+technique, consider the following statistics collected by matching <a href="https://cdn.cliqz.com/adblocking/requests_top500.json.gz" target="_blank" rel="noopener noreferrer">a
+datasets</a>
+containing 240k URLs from the most popular domains against the HTTPS
+Everywhere rulesets:</p>
+<ul>
+<li>The median number of <em>targets</em> candidates evaluated for a given URL
+is: <strong>7</strong>—from a total of 163k; which means we only need to look at
+0.004% of all <em>targets</em> on average. And out of these targets, most
+only cost a look-up in a <code>Set</code> since we often get multiple candidates from
+the same ruleset. By keeping track of which rulesets we are already
+considering, we only need to evaluate the first target from a given ruleset. The
+median number of <em>targets</em> candidates requiring a string comparison is: <strong>5</strong>.</li>
+<li>The median number of <em>rulesets</em> considered is: <strong>1</strong>, with a maximum of:
+<strong>2</strong> in the rare case where a given domain is targeted by more than one
+ruleset (from a total of 25k).</li>
+<li>For each ruleset, we then retrieve a combined exclusion (all regular
+expressions aggregated into one, joined with <code>|</code> characters), resulting in one
+or two <code>RegExp</code> evaluations (from the one or two rulesets considered).</li>
+<li>Finally, we inspect the <em>rules</em> from each ruleset not already excluded, until we find a
+match. The median number of <em>rules</em> considered is <strong>2</strong>.</li>
+</ul>
+<figure><a href="../images/posts/efficient-https-everywhere-engine/speed.svg" target="_blank" rel="noopener noreferrer"><img src="../images/posts/efficient-https-everywhere-engine/speed.svg" alt="" loading="lazy"></a><figcaption>Average decision time per URL.</figcaption></figure>
+<p>This graph depicts the average time it takes to rewrite a request to
+HTTPS, based on the latest snapshots of rulesets, evaluated against the
+dataset of 240k URLs mentioned above. Please note that internal caching
+of HTTPS Everywhere <em>was disabled</em> for these measurements, to only take
+into account the raw speed of the engine.</p>
+<p>It is surprising to observe that the Rust/WebAssembly version is slower
+than the JavaScript implementation. Although both are really fast since
+even the “slowest” result is of <strong>0.028 milliseconds</strong> on average.
+It could very well be that the overhead of transferring data from
+JavaScript to WebAssembly is responsible for this result. On the other
+hand, we see that our reverse index implementation is faster than both,
+with an average time between <strong>0.0046</strong> and <strong>0.0073 milliseconds</strong>. Note
+that running the same benchmark in Node.js results in an even faster
+decision time of <strong>0.0029 milliseconds</strong>—this might be explained by
+the fact that browsers are less friendly to benchmarking due to the many
+components potentially competing for CPU resources, but this is just
+speculation on my part.</p>
+<h3>Binary Representation</h3>
+<p>While the indexing technique described in the previous section
+speeds-up matching drastically, it is not optimal in terms of memory
+usage and initialization time. If the index is represented as a <code>Map</code>,
+it means that on each initialization (when the extension starts) we need
+to either re-create the index from scratch (using the raw XML rulesets or a JSON
+version of it), or load it from a textual representation of the <code>Map</code>
+(i.e. from cache), like an array of <em>key</em>, <em>value</em> pairs.</p>
+<p>Instead, the reverse index described above is implemented as a compact binary
+data structure stored in a single <code>Uint8Array</code> (typed array), where the data is
+organized in a way that allows for efficient look-ups. In-memory
+instances of <em>targets</em>, <em>exclusions</em>, <em>rules</em> and <em>secure cookies</em>
+along with the instances of <code>RegExp</code> required to match against input
+URLs and domains are only lazily loaded and compiled from their binary
+representation stored in the typed array, when there is a chance they will match, thanks to the
+reverse index. These instances can also be (optionally) cached into a
+<code>Map</code> so that subsequent look-ups do not need to hit the binary index
+(which is a bit slower than <code>Map.get</code>).</p>
+<p>Since the number of rulesets really considered in practice is more or less
+proportional to the number of unique domains visited by a user during a browsing
+session, the additional memory usage required for the caching mechanism is
+fairly small.</p>
+<p>More implementation details are given in the section “Going low-level with typed arrays” from <a href="https://0x65.dev/blog/2019-12-20/not-all-adblockers-are-born-equal.html" target="_blank" rel="noopener noreferrer">this other article</a>. To summarize the benefits of this data structure:</p>
+<ul>
+<li>It allows to encode all rulesets into a very compact, binary format, stored
+in a single <code>Uint8Array</code>. The total memory usage of the extension using such
+an engine is therefore fairly predictable, and close to the size of this typed array.</li>
+<li>Serialization and deserialization are extremely efficient since the
+look-ups can be performed directly on this <code>Uint8Array</code> instance without
+the need to first copy the data into a more convenient data structure
+such as a <code>Map</code>. Serialization thus consists in storing the same typed
+array locally (e.g. in IndexedDB), and deserialization consists in
+reading it back.</li>
+<li>This binary data structure can be created once on the server-side and hosted
+on a CDN, so that clients can fetch it directly, speeding-up initialization
+further (The following <a href="https://github.com/remusao/https-everywhere-core/blob/master/engine.bin" target="_blank" rel="noopener noreferrer">binary file</a> is updated automatically using a GitHub Workflow triggered using <code>cron</code>).</li>
+<li>In-memory instances of <em>targets</em>, <em>exclusions</em>, <em>rules</em> and <em>secure
+cookies</em> along with the instances of <code>RegExp</code> required to match against
+input URLs and domains are only lazily loaded and compiled from the
+binary representation, when there is a chance they will match, thanks to
+the reverse index.</li>
+</ul>
+<p>The drawback of this approach, though, is that updating (adding or deleting
+elements from the index), currently requires to recreate the index completely,
+which is relatively costly (it takes around <em>500 milliseconds</em>). But since
+updates can be performed backend-side, and are relatively infrequent,
+this is not a road-blocker.</p>
+<figure><a href="../images/posts/efficient-https-everywhere-engine/init.svg" target="_blank" rel="noopener noreferrer"><img src="../images/posts/efficient-https-everywhere-engine/init.svg" alt="" loading="lazy"></a><figcaption>Average initialization time for rulesets.</figcaption></figure>
+<p>These measurements offer some fairly surprising results. On the one hand
+we see that Chrome seems to struggle with the WebAssembly version compared to
+Firefox. Once again the JavaScript implementation outperforms the
+Rust/WebAssembly combo, though. Again, my best guess is that the amount of
+data transfered to WebAssembly context might be partly responsible for that, but
+I would love to get more insights from core developers on this. We also see that
+our binary index is extremely fast to initialize, between <strong>12</strong> and <strong>45
+milliseconds</strong>. We could reduce it further by disabling the built-in <em>CRC-32</em> checksum
+mechanism which ensures that the buffer is not corruption before deserializing
+it, but this does not seem necessary.</p>
+<h3>String Compression</h3>
+<p>Up to this point, we have shown how we can efficiently query rulesets and how the
+indexing data structures can be represented in a compact way, friendly to
+serialization and deserialization to allow faster initializations. The size of
+the final typed array is roughly of <strong>7MB</strong>. When looking closer, it appears that a
+big proportion of this data consists of the raw strings from <em>targets</em> (<code>host</code>),
+<em>exclusions</em> (<code>pattern</code>), <em>rules</em> (<code>from</code> and <code>to</code>), as well as <em>secure cookies</em>
+(<code>host</code> and <code>name</code>): about <strong>3MB</strong>, or a bit more than 40% of the total size.</p>
+<p>Looking at these strings, it does not take long to notice that some values are
+very frequent, like <code>.+</code> in <em>secure cookies</em>, or <code>^http:</code> and <code>https:</code> in
+<em>rules</em>. One way to take advantage of these patterns would be to hard-code the
+detection of some of the common strings and replace them by
+opcodes, or perform some kind of <a href="https://en.wikipedia.org/wiki/String_interning" target="_blank" rel="noopener noreferrer">string interning</a>,
+to avoid having many times the same data in memory (or in the compact reverse
+index).</p>
+<p>Another way to look at the problem, which could also be seen as a string
+interning mechanism, is to rely on a codebook-based compression algorithm to
+reduce the size of strings. It so happens that I had already experimented with
+such techniques in the past (e.g. using <a href="https://github.com/antirez/smaz" target="_blank" rel="noopener noreferrer">SMAZ</a> or
+<a href="https://ed-von-schleck.github.io/shoco/" target="_blank" rel="noopener noreferrer">shoco</a>). I ended up implementing a
+custom variant of SMAZ in pure-JavaScript to integrate into the <a href="https://github.com/cliqz-oss/adblocker" target="_blank" rel="noopener noreferrer">adblocker</a>
+I was working on. The library offers an <a href="https://github.com/remusao/mono/tree/master/packages/smaz-generate#remusaosmaz-generate" target="_blank" rel="noopener noreferrer">automatic codebook-generation
+function</a>
+that tries to find optimal codebooks based on a list of input strings.</p>
+<p>Applying this codebook compression idea to rulesets, we are able to compress
+strings by 40 to 60%, further reducing the total size of the serialized engine to
+<strong>5MB</strong> (i.e. a <em>2MB</em>, or <em>30%</em>, reduction). Applying this optimization can be
+done transparently in the custom DataView-like <a href="https://github.com/remusao/https-everywhere-core/blob/master/src/data-view.ts" target="_blank" rel="noopener noreferrer">abstraction</a>
+used to serialize data to the binary representation and back.</p>
+<p>A drawback of relying on codebooks is that they need to be re-generated when the
+rulesets are updated so that they remain relevant. The <a href="https://github.com/remusao/https-everywhere-core/blob/master/.github/workflows/rulesets.yml" target="_blank" rel="noopener noreferrer">prototype hosted on
+GitHub</a>
+is relying on a GitHub Workflow to update the codebooks based on the latest
+snapshot of the rules and open a PR with the updated assets. The codebooks are
+also shipped as part of the binary representation of the matching engine, which
+means that clients downloading a new version from the CDN (i.e. GitHub) always
+get the best compression, without needing to update the source code.</p>
+<figure><a href="../images/posts/efficient-https-everywhere-engine/memory.svg" target="_blank" rel="noopener noreferrer"><img src="../images/posts/efficient-https-everywhere-engine/memory.svg" alt="" loading="lazy"></a><figcaption>Memory usage with strings compression.</figcaption></figure>
+<p>This plot shows the size occupied by rulesets as reported by the Chrome
+Memory Dev Tool with a snapshot. We see that the memory usage went down
+with WebAssembly compared to the initial JavaScript implementation of
+HTTPS Everywhere. On the other hand, our binary index uses less memory,
+and the difference is even bigger when using string compression as well.</p>
+<h3>Do. Or do not. There is no Trie.</h3>
+<p>Although the codebook-based compression is very effective at reducing the memory usage
+of raw strings needed for matching rulesets, there might be more efficient
+approaches depending on the nature of the data. In particular, <em>targets</em> are
+domain names, most of which are not using wildcards at all; they also represent the bulk of the strings. A <a href="https://en.wikipedia.org/wiki/Trie" target="_blank" rel="noopener noreferrer">trie</a>
+is commonly used to represent this kind of data. We expect suffixes of domains
+to be repeated among many targets (some top-level domains are very common).</p>
+<p>I already knew it was possible to encode a trie in a very compact
+way—using only one 32-bit number to represent each node when storing ASCII
+strings. Before putting the work to implement this new data structure, I started
+by estimating the expected final size to make sure it was worth it.</p>
+<p>I constructed the trie in-memory using a more naive representation based
+on JavaScript objects and an instance of <code>Map</code> in each node to link
+a parent to its children. Storing all <em>targets</em> resulted in a trie of
+<code>1,654,430</code> nodes, which would result in about <strong>6.6MB</strong> of memory with our
+compact representation. Not very encouraging…</p>
+<p>I then realized that it would probably make more sense to store the domains in
+reverse, to benefit from compression of top-level domains. After reversing the
+order of <em>targets</em> on insertion, the number of nodes went down to <code>878,251</code>,
+which would result in <strong>3.5MB</strong> of memory. This already seemed more reasonable.
+But we also need to factor-in the extra information about which ruleset each
+<em>target</em> belongs to (information needed when matching). Given that we have <code>163,486</code>
+<em>targets</em>, and assuming we find a way to encode the ruleset membership with an
+extra 32-bit number for each target, a back-of-the-envelope calculation tells us
+that we would need an extra <em>650KB</em>, resulting in a total of <strong>4.1MB</strong> memory
+usage. Even assuming a very optimistic 16-bit overhead per target, we would
+still need more memory to store <em>targets</em> than with the codebook-compression
+approach described above.</p>
+<p>This concluded the experimentation with tries. Unfortunately, it does not seem
+like using a trie would yield any significant savings compared to the string
+compression method already implemented. It might be a viable option if string
+compression is not to be implemented at all. Also, it could be that better
+results can be obtained using a more advanced trie structure such as a <a href="https://en.wikipedia.org/wiki/Radix_tree" target="_blank" rel="noopener noreferrer">patricia</a>
+or <a href="https://db.in.tum.de/~leis/papers/ART.pdf" target="_blank" rel="noopener noreferrer">adaptive (ART)</a> trie, which
+would allow to store multiple characters into a single node.</p>
+<h3>Compact Hashes</h3>
+<p>At this point it seemed like the different new ideas to improve the memory
+representation of rulesets were hitting diminishing returns. As a last trick, I
+thought of implementing a data structure which allows to trade space for
+uncertainty (a.k.a. probabilistic data structure). I had already experimented
+with a similar approach when working on the <a href="https://github.com/remusao/tldts#tldts---blazing-fast-url-parsing" target="_blank" rel="noopener noreferrer"><code>tldts-experiment</code></a> package.
+You are probably familiar with <a href="https://en.wikipedia.org/wiki/Bloom_filter" target="_blank" rel="noopener noreferrer">Bloom filters</a>,
+which allow to perform membership tests on a potentially large collection of
+elements, while keeping the memory usage under control (by adjusting the
+probability of false positives).</p>
+<p>Instead of going for full-blown Bloom filters, I decided to experiment with a
+simpler method, also based on hashing. The idea is fairly simple, each domain
+in the collection is stored in a bucket alongside domains having
+the same number of labels. Each bucket is a sorted array of 32-bit hashes of
+these domains. We could also store all hashes in a single array regardless of
+the number of labels, but this increases the probability of collisions by a
+<em>factor of 2</em>. Each bucket is followed by a second array of same size,
+containing ids of rulesets to which the targets belong. The final data structure
+is then composed of all buckets concatenated into a single <code>Uint32Array</code>.</p>
+<p>Using <a href="https://github.com/remusao/https-everywhere-core/blob/master/src/hashes.ts" target="_blank" rel="noopener noreferrer">this trick</a>
+allows to reduce the size of the final serialized engine to <strong>2.1MB</strong> (i.e. a
+<em>2MB</em>, or <em>40%</em>, reduction). This comes at the cost of a <code>0.000017</code> probability of
+collision when looking-up <em>targets</em> in the index (estimated using <a href="https://github.com/duckduckgo/smarter-encryption/blob/master/README.md#just-want-the-list" target="_blank" rel="noopener noreferrer">a list of 20M
+popular domains</a>).
+For this reason, this feature is turned-off by default but can be enabled
+using a config flag when building the binary engine.</p>
+<p>Note that an extra <em>320KB</em> of memory could be saved by
+using a 16-bit identifier for ruleset IDs instead of the current 32-bit
+identifier (which could work because we only have 25k rulesets at the
+moment and this can be represented using 16-bit numbers). This would reduce
+the total memory usage to <strong>1.8MB</strong> of memory (i.e. a 10x improvement over the
+memory usage of the current HTTPS Everywhere implementation in Rust compiled to
+WebAssembly).</p>
+<h2>Conclusion and Future Work</h2>
+<p>In this article I have presented the current state of an experiment
+aiming at implementing a more efficient matching engine for HTTPS
+Everywhere rulesets. Using a radically different design, matching can
+be made <strong>between 4x and 10x more memory-efficient</strong>, initialization of
+the engine reduced to less than <strong>25 milliseconds</strong>, and HTTPS upgrades
+performed in <strong>0.0029</strong> to <strong>0.0073 milliseconds</strong>, without relying on
+the Rust/WebAssembly combo.</p>
+<p>The source code can be <a href="https://github.com/remusao/https-everywhere-core" target="_blank" rel="noopener noreferrer">found on
+GitHub</a>. You can also
+install a simple WebExtension and try out the new engine locally in
+Firefox or Chromium.</p>
+<p>There are currently a few known limitations compared to the official
+HTTPS Everywhere:</p>
+<ul>
+<li>No way for users to add custom rules. This can be implemented
+as a second, smaller engine which would be stored separately from the
+main rulesets.</li>
+<li>Rulesets need to have a unique 32-bit identifier known when creating
+the index. For built-in rules, this ID is determined whenever the engine
+is created. To handle user-defined rules, we could either rely on a counter
+maintained client-side, or a 32-bit hash of the ruleset name.</li>
+<li>Metadata for rulesets (i.e. the name and default state) are currently
+discarded at build-time. It would be fairly easy to include them in the engine
+for an estimated overhead of <em>350KB</em> in the final size. It should be noted,
+though, that the <code>name</code> information is currently not needed in the prototype.</li>
+<li>Rulesets marked as <em>mixedcontent</em>—only supported in the Tor browser—are
+discarded at build time. They could easily be included, either enabled
+by default (if we ship two different engines, fetched by clients
+depending on their browser support), or side-by-side with the
+other rules and enabled dynamically.</li>
+</ul>
+<p>Lastly, I was surprised to observe that the Rust/WebAssembly version of
+the engine as currently shipped in HTTPS Everywhere seems to be slower at both
+initialization and operating than the previous JavaScript implementation. This
+seems to contradict the <a href="https://twitter.com/eff/status/1172622942158479360" target="_blank" rel="noopener noreferrer">previous claims</a>
+when this was <a href="https://twitter.com/HTTPSEverywhere/status/1144375820334424064" target="_blank" rel="noopener noreferrer">first released</a>.
+I’d love to get some feedback from core developers about this potential
+issue and more insights from them to understand why I got these results.</p>
+<p>I hope this work will be helpful to the community and I would be glad to
+discuss these findings in more details with people directly working on
+the HTTPS Everywhere extension.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Parsing Thunderbird filtering rules]]></title>
+        <id>https://remusao.github.io//posts/parsing-thunderbird-msg-filters.html</id>
+        <link href="https://remusao.github.io//posts/parsing-thunderbird-msg-filters.html"/>
+        <updated>2019-11-24T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p><a href="https://www.thunderbird.net/" target="_blank" rel="noopener noreferrer">Thunderbird</a> is a free email application that’s
+easy to set up and customize - and it’s loaded with great features!</p>
+</blockquote>
+<p>I have been using Thunderbird as my email client of choice for many years, it
+is the hub which allows me to manage all the emails I get: work, multiple
+personal addresses, etc. As of today my combined mail folders are about <code>30GB</code>
+and counting. Still, Thunderbird has been running rock solid and I had no issue
+so far.</p>
+<p>I have to say that I make extensive use of folders, labels and <em>message
+filters</em>. These features combined allow to effortlessly manage a high volume of
+emails by filtering, sorting, tagging, dispatching emails; greatly reducing the
+amount of manual work needed to process then read them.</p>
+<p>As an example, I receive a lot of emails notifications from GitHub, both for work and personal
+OSS projects. I also tend to follow activity of repositories which I find
+interesting; but I do not want to have to go through all these notifications
+myself. A few years ago I adopted the following strategy:</p>
+<ol>
+<li>Create folders or subfolders for each repository:</li>
+</ol>
+<ul>
+<li><code>github/work/repo1</code>,</li>
+<li><code>github/work/repo2</code>,</li>
+<li><code>github/perso/repo3</code>,</li>
+<li>etc.</li>
+</ul>
+<ol start="2">
+<li>Create a first filter rule <em>for each repository</em> to automatically move
+GitHub notifications to their respective folders. This can be achieve by
+detecting <code>notifications@github.com</code> using a condition of the form <code>From is notifications@github.com</code> and adding a <code>Move Message to</code> action.</li>
+<li>Optionally, I create rules to automatically mark as read any
+message which is not directed to me specifically (e.g.: via direct mention
+of my GitHub handler, PR request, issue assigned, etc.); especially on very
+active repositories. This can be achieved by detecting things like
+<code>mention@noreply.github.com</code> or <code>assign@noreply.github.com</code> in the <code>Cc</code>
+field.</li>
+</ol>
+<p>GitHub has a <a href="https://help.github.com/en/github/receiving-notifications-about-activity-on-github/about-email-notifications" target="_blank" rel="noopener noreferrer">full page of documentation</a>
+describing all the values you can use to filter email notifications. This is
+<em>really useful</em>. For example I tag emails where I am directly mentioned in
+<strong>red</strong> but notifications about discussions that I was involved in but not
+directly mentioned with <strong>blue</strong>. This allows to filter at a glance what I
+really need to check, versus what I can check later. In practice, more than 90%
+of notifications do not need to be checked manually. This is huge!</p>
+<p>Unfortunately, as the number of filters grows, I found the built-in interface
+to not be very convenient. Finding or editing rules can become a pain.
+Fortunately, Thunderbird stores all the filters for a given account in a
+single, plain text file named: <code>msgFilterRules.dat</code>, located in your
+Thunderbird profile folder. So I decided to write <a href="https://github.com/remusao/thunderbird-msg-filters" target="_blank" rel="noopener noreferrer">a
+library</a> which allows to
+manipulate these rules through a minimal and type-safe API; in <em>TypeScript</em>.</p>
+<p>The goal of the project is to allow developing more high-level tooling to
+read, transform, extend, update the rules while not having to worry about the
+low-level parsing details. It would also be possible to store the rules in a
+nicer format then use the library to produce the final file which can be
+consumed by Thunderbird.</p>
+<p>To install the library: <code>npm install --save thunderbird-msg-filters</code>.</p>
+<p>You can then use it to parse a <code>msgFilterRules.dat</code> file which you can find in
+your Thunderbird folder (one per email account configured):</p>
+<pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { parse } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
+
+<span class="hljs-comment">// A typical `msgFilterRules.dat` could contain this raw value.</span>
+<span class="hljs-keyword">const</span> rules = <span class="hljs-title function_">parse</span>(<span class="hljs-string">`
+version=&quot;9&quot;
+logging=&quot;no&quot;
+name=&quot;rule 1&quot;
+enabled=&quot;yes&quot;
+type=&quot;17&quot;
+action=&quot;Mark flagged&quot;
+condition=&quot;OR (subject,contains,foo) OR (subject,contains,bar)&quot;
+name=&quot;rule 2&quot;
+enabled=&quot;yes&quot;
+type=&quot;17&quot;
+action=&quot;Mark read&quot;
+action=&quot;JunkScore&quot;
+actionValue=&quot;100&quot;
+condition=&quot;ALL&quot;
+`</span>);
+</code></pre>
+<p>You can also format rules to the same original format:</p>
+<pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { format } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
+
+<span class="hljs-keyword">const</span> rules = <span class="hljs-title function_">format</span>({
+  <span class="hljs-attr">version</span>: <span class="hljs-string">&#x27;9&#x27;</span>,
+  <span class="hljs-attr">logging</span>: <span class="hljs-string">&#x27;no&#x27;</span>,
+  <span class="hljs-attr">rules</span>: [
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 1&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [{ <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark flagged&#x27;</span>}],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;OR (subject,contains,foo) OR (subject,contains,bar)&#x27;</span>
+    },
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 2&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark read&#x27;</span> }
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;JunkScore&#x27;</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;100&#x27;</span> }
+      ],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;ALL&#x27;</span>
+    },
+  ]
+});
+</code></pre>
+<p>The library is currently very young and will probably contain bugs, so use at
+your own risks. Feel free to use it and <a href="https://github.com/remusao/thunderbird-msg-filters/issues/new" target="_blank" rel="noopener noreferrer">open an issue</a>
+for any feedback!</p>
+<p><strong>What’s next?</strong> I plan to use this library to store the message filters rules
+in a separate location and synchronize it potentially between multiple
+computers. The nice thing is that the rules can now be expressed in a typed
+language (TypeScript) which will give me more confidence about their validity.
+It is also much easier to manipulate them from a single file, in a familiar
+developer environment (i.e.: your editor of choice) than through the
+Thunderbird interface.</p>
+<p>GitHub repository: <a href="https://github.com/remusao/thunderbird-msg-filters/" target="_blank" rel="noopener noreferrer">https://github.com/remusao/thunderbird-msg-filters/</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Installing Diablo II]]></title>
+        <id>https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html</id>
+        <link href="https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html"/>
+        <updated>2019-11-02T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<picture>
+  <source srcset="../images/diablo2-banner.webp" type="image/webp">
+  <source srcset="../images/diablo2-banner.png" type="image/png">
+  <img src="../images/diablo2-banner.png" alt="Diablo II banner" style="width:100%">
+</picture>
+<p>You might have heard the news: <em>Diablo IV</em> has been announced yesterday with a
+<a href="https://www.youtube.com/watch?v=9bRWIdOMfro" target="_blank" rel="noopener noreferrer">great cinematic</a>. What better
+time to install <s>Diablo III</s> <em>Diablo II</em> again and have some fun while
+waiting for the latest iteration of the franchise?</p>
+<p>But… it’s 2019 and it is not always easy to install a game first released
+back in June 2000 (yes, that’s 19 years ago. Yes, you’re old)! In this post I
+will show you how to install <em>Diablo II</em> with its extension <em>Lord of
+Destruction</em> on Windows, MacOS and Linux (Ubuntu in this case), using
+<a href="https://www.winehq.org" target="_blank" rel="noopener noreferrer"><em>Wine</em></a> as well as optional sandboxing using
+<a href="https://github.com/netblue30/firejail" target="_blank" rel="noopener noreferrer"><em>firejail</em></a>! Let’s get to it…</p>
+<p>If you are running <em>MacOS</em> or <em>Windows</em>, you’re in luck! The official game
+launcher already supports those platforms natively so you can install it and
+play straight away without extra hassle! Here are the links:</p>
+<ul>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Windows – Diablo II</a>.</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Windows – Lord of Destruction</a>.</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=MAC" target="_blank" rel="noopener noreferrer">MacOS – Diablo II</a>.</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=MAC" target="_blank" rel="noopener noreferrer">MacOS – Lord of Destruction</a>.</li>
+</ul>
+<h2>Get a License Key</h2>
+<p>First of, you will need a valid CD-Key for the game (both <em>Diablo II</em> and its
+extension <em>LOD</em>). You can get them on the <a href="https://www.blizzard.com" target="_blank" rel="noopener noreferrer">official website</a>
+for about <em>20 euros</em> from Blizzard (yes, that’s a shame, the game used to cost
+<em>15.99</em> euros a few years ago!), or by registering your old keys if you still
+have the box version (which is what I did).</p>
+<h2>Get the Launcher</h2>
+<p>The second step is to download the Windows launcher of the game which we will
+use in conjunction with Wine to make it work on Linux. You can find the links
+on <a href="https://www.blizzard.com/en-us/download/" target="_blank" rel="noopener noreferrer">Blizzard’s website</a>. Here they
+are if you want to save some time:</p>
+<ul>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Downloader_Diablo2_enUS.exe</a></li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Downloader_Diablo2_Lord_of_Destruction_enUS.exe</a></li>
+</ul>
+<h2>Installing Latest Wine</h2>
+<p>You could probably use the stock version of wine which ships with your Linux
+distribution but I always like to get the latest shiny version so here we go.
+If you use another distribution than Ubuntu, you can <em>skip this section
+completely</em>. From the <a href="https://wiki.winehq.org/Ubuntu" target="_blank" rel="noopener noreferrer">official wiki</a>:</p>
+<blockquote>
+<p>If your system is 64 bit, enable 32 bit architecture (if you haven’t already):</p>
+<pre class="code" data-lang="sh"><code>sudo dpkg --add-architecture i386
+</code></pre>
+<p>Download and add the repository key:</p>
+<pre class="code" data-lang="sh"><code>wget -nc https://dl.winehq.org/wine-builds/winehq.key
+sudo apt-key add winehq.key
+</code></pre>
+</blockquote>
+<p>Now you need to get the repository matching your release of Ubuntu. For me it
+was <code>bionic</code> (you can get yours using command <code>lsb_release -cs</code>), but check
+official instructions if that does not correspond to yours.</p>
+<blockquote>
+<pre class="code" data-lang="sh"><code>sudo apt-add-repository <span class="hljs-string">&#x27;deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main&#x27;</span>
+sudo apt install --install-recommends winehq-stable
+</code></pre>
+</blockquote>
+<p>Note that I could not install <code>winehq-stable</code> directly and had to first install
+one of its dependencies manually. If you encounter an error, then try to run
+the following command before installing <code>winehq-stable</code> again:</p>
+<pre class="code" data-lang="sh"><code>sudo apt install libasound2-plugins:i386
+</code></pre>
+<p>I am using <strong>version 4.0.2</strong> of <code>wine</code>.</p>
+<h2>[Optional] Installing Firejail</h2>
+<p>Firejail has a special place in my heart. It allows to sandbox any program
+running on Linux using kernel capabilities (some of them you might already know
+from Docker world). From the <a href="https://github.com/netblue30/firejail" target="_blank" rel="noopener noreferrer">official repository</a>:</p>
+<blockquote>
+<p>Firejail is a SUID sandbox program that reduces the risk of security breaches
+by restricting the running environment of untrusted applications using Linux
+namespaces, seccomp-bpf and Linux capabilities. It allows a process and all
+its descendants to have their own private view of the globally shared kernel
+resources, such as the network stack, process table, mount table. Firejail
+can work in a SELinux or AppArmor environment, and it is integrated with
+Linux Control Groups.</p>
+</blockquote>
+<p>There is an extra benefit in my opinion. You can specify a different directory
+to be used as the <code>~/</code> (home) folder of each program you run in a sandbox
+instead of your real home. This is great because it allows to keep files and
+folders of each app nicely isolated. For example I run <code>thunderbird</code>, <code>cliqz</code>
+and other programs in sandboxes and assign them different homes like
+<code>~/.sandboxes/thunderbird</code>, <code>~/.sandboxed/cliqz</code>, etc. This means that I can
+clean-up all files for each program by simply deleting their respective
+folders! That’s super convenient.</p>
+<p>Let’s get back to <em>Diablo II</em>! Install Firejail from your official Linux
+repositories (or <a href="https://github.com/netblue30/firejail#compile-and-install" target="_blank" rel="noopener noreferrer">compile it yourself</a> if that’s
+your thing… that’s what I did). I am currently running <strong>version 0.9.61</strong> but I
+assume this should work with other versions as well.</p>
+<p>Firejail comes with a preset for sandboxing wine which you can find at
+<code>/etc/firejail/wine.profile</code>. That’s the one we will be using!</p>
+<h2>Preparing Wine Home Folder</h2>
+<p>Let’s now prepare the <code>wine</code> folder that we will use in our Firejail sandbox:</p>
+<pre class="code" data-lang="sh"><code><span class="hljs-built_in">mkdir</span> -p ~/.sandboxes/wine
+</code></pre>
+<p>Copy the two downloaders into <code>~/.sandboxes/wine/</code>:</p>
+<ul>
+<li><code>~/.sandboxes/wine/Downloader_Diablo2_enUS.exe</code></li>
+<li><code>~/.sandboxes/wine/Downloader_Diablo2_Lord_of_Destruction_enUS.exe</code></li>
+</ul>
+<h2>Installing Diablo II</h2>
+<p>We can now proceed and install <em>Diablo II</em> base game:</p>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/Downloader_Diablo2_enUS.exe
+</code></pre>
+<p>Here are screenshots for each step of the installation process:</p>
+<figure>
+  <a href="../images/diablo2-install-1.png">
+    <picture>
+      <source srcset="../images/diablo2-install-1.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-1.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-1.png" alt="Press 'OK' to select default download folder." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Press 'OK' to select default download folder.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-2.png">
+    <picture>
+      <source srcset="../images/diablo2-install-2.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-2.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-2.png" alt="Enjoy the murloc view while downloading the game..." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Enjoy the murloc view while downloading the game...</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-3.png">
+    <picture>
+      <source srcset="../images/diablo2-install-3.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-3.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-3.png" alt="Press 'Install Diablo II'." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Press 'Install Diablo II'.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-7.png">
+    <picture>
+      <source srcset="../images/diablo2-install-7.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-7.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-7.png" alt="Accept license." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Accept license.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-6.png">
+    <picture>
+      <source srcset="../images/diablo2-install-6.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-6.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-6.png" alt="Enter you CD-Key." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Enter you CD-Key.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-5.png">
+    <picture>
+      <source srcset="../images/diablo2-install-5.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-5.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-5.png" alt="Press 'OK' to select default destination directory." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Press 'OK' to select default destination directory.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-4.png">
+    <picture>
+      <source srcset="../images/diablo2-install-4.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-4.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-4.png" alt="It's so fast that I don't know how I managed to make a screenshot!" style="width:100%">
+    </picture>
+  </a>
+  <figcaption>It's so fast that I don't know how I managed to make a screenshot!</figcaption>
+</figure>
+<p>Press <strong>Back</strong> then <strong>Exit Installer</strong>. Time to install the extension!</p>
+<h2>Installing Lord of Destruction</h2>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/Downloader_Diablo2_Lord_of_Destruction_enUS.exe
+</code></pre>
+<p>I will spare you all the screenshots since the procedure is identical to the
+base version of the game. When you are done, resist the damning temptation and
+<strong>exit the installer</strong>; there is one last thing we have to take care of…</p>
+<h2>Install Latest Patch</h2>
+<p>Before starting the game and finally start playing, you will want to install
+the latest patch for Diablo II: <strong>1.14d</strong>. Usually it can be done by accessing
+<a href="http://Battle.net" target="_blank" rel="noopener noreferrer">Battle.net</a> in-game but for some reason it failed in my case because of a corrupted
+file… Luckily, it’s possible to download and install the update manually. Get
+it from the following link:</p>
+<ul>
+<li><a href="http://ftp.blizzard.com/pub/diablo2exp/patches/PC/LODPatch_114d.exe" target="_blank" rel="noopener noreferrer">LODPatch_114d.exe</a></li>
+</ul>
+<p>Copy it into your <code>wine</code> home folder: <code>~/.sandboxes/wine/LODPatch_114d.exe</code>.
+Then start the update with:</p>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/LODPatch_114d.exe
+</code></pre>
+<h2>Let’s Play!</h2>
+<p>Finally, to launch the game you can use the following command:</p>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Diablo\ II/Diablo\ II.exe
+</code></pre>
+<p>Have fun!</p>
+<figure>
+  <a href="../images/diablo2-cows.jpg">
+    <picture>
+      <source srcset="../images/diablo2-cows.webp" type="image/webp">
+      <source srcset="../images/diablo2-cows.jpg" type="image/jpeg">
+      <img loading="lazy" src="../images/diablo2-cows.jpg" alt="There is no such thing as the 'Cow Level'." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>There is no such thing as the 'Cow Level'.</figcaption>
+</figure>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Thoughts about unit and integration tests]]></title>
+        <id>https://remusao.github.io//posts/unit-integration-tests.html</id>
+        <link href="https://remusao.github.io//posts/unit-integration-tests.html"/>
+        <updated>2019-10-26T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>Do not feed the anti-patterns!</p>
+</blockquote>
+<p>I recently found myself working with tests—integration and unit—. This
+experience led to some frustration, which got me thinking… Where did the
+frustration come from? How could it be done differently? And ultimately, what
+makes a good test? This post is a collection of thoughts about testing, not an
+exhaustive guide.</p>
+<h2>Unit vs. Integration?</h2>
+<blockquote>
+<p>It does not matter which one you pick first, you might need both eventually…</p>
+</blockquote>
+<p>Before writing any test, you might be wondering <em>which kind of test</em> makes
+sense. Would it be better to cover your new feature with unit or integration
+tests? You might want to pause for a moment and think about the trade-offs of
+the different options.</p>
+<p>Often, <em>unit tests</em> will run in a more controlled environment, maybe with some
+dependencies <a href="https://en.wikipedia.org/wiki/Mock_object" target="_blank" rel="noopener noreferrer">mocked</a>, so that you
+can focus on a specific file, class or function. This means that unit tests are
+more targeted than integration tests. It also means that they might be easier
+to reason about, and quicker to iterate with. As an example, imagine testing a
+JavaScript library; unit tests could be running in Node.js instead of a
+full-blown browser.</p>
+<p>On the other hand, <em>integration tests</em> will potentially target multiple systems
+interacting with each other, running in an environment which is much closer to
+production conditions. Using the same example, your JavaScript library might now be tested
+in a handful of browsers (e.g.: Firefox, Chromium and Safari, with different
+versions of each), while interacting with other libraries. This means that you
+will most likely gain more confidence that the code works in production
+environment, at the cost of a more complex setup.</p>
+<h2>Non-regression Tests</h2>
+<blockquote>
+<p>Non-regression is not the same as <em>non-evolution</em>.</p>
+</blockquote>
+<p>It is desirable to consolidate APIs or components with non-regression tests,
+but be careful not to prevent future evolution! This might happen if you take
+the current production system and generate test-cases by feeding inputs,
+getting the results and writing high-level tests which ensure that the output
+is always the one that was expected <em>at the time test-cases were generated</em>.</p>
+<p>Although this might feel good at first—we have great test coverage after
+all!—, this approach has at least one major short-coming: <em>it’s very hard to
+make the tests evolve in the future</em>. It’s nice to “freeze” the capabilities of
+your system with numerous tests, but unless said system is not meant to evolve
+in the future, the assumptions about expected results will most likely evolve
+over time. This means that when writing tests you probably need to think not
+only about coverage and the expected behavior <em>right now</em>, but also how easy it
+will be to make the tests evolve in the future.</p>
+<p>Tests are tightly related to the code being tested and, if you are not careful,
+rigid tests might make changing the source code much more painful than it
+should be.</p>
+<h2>Your Tests are Code</h2>
+<blockquote>
+<p>Tests are not the destination, they are the starting point and the path.</p>
+</blockquote>
+<p>There is a misunderstanding at the root of all evils: you shall not <em>treat
+your tests differently than your source code</em>. Tests <strong>are</strong> code! To make
+things a bit more concrete, here is a list of assumptions which I think are
+reasonable when it comes to source code but are rarely accepted for tests:</p>
+<ul>
+<li>You expect to be able to <em>build</em> and <em>run</em> your code easily.</li>
+<li>You expect your code to be <em>efficient</em>.</li>
+<li>You expect your code to be <em>understandable</em>.</li>
+<li>You expect your code to be <em>documented</em>.</li>
+<li>You expect your code to be <em>cross-platform</em>.</li>
+<li>You expect your code to be <em>easy to delete</em>!</li>
+<li>You expect your code to <em>not be redundant and use abstractions</em>.</li>
+</ul>
+<p>Whenever one of the expectations holds for your code, try replacing <code>code</code> with
+<code>tests</code> and ask yourself if it is still true. Your code and the tests you write
+to ensure it behaves in a correct way will have to evolve side-by-side in the
+future. You do not want your tests to become a <em>liability</em>.</p>
+<h2>Future-Proof Tests?</h2>
+<blockquote>
+<p>No developer ever reads the same code twice. — Heraclitus</p>
+</blockquote>
+<p>When writing tests, try to express your intent and give cues to the future
+reader —that might be you in a few months!— regarding why a given assertion was
+needed, what behavior is being tested, etc. Alongside the usual features of a
+language such as <em>comments</em>, <em>good names</em> for variables and functions, etc.
+modern testing frameworks give many tools to ease this process: use things like
+<code>describe(...)</code>, <code>it(...)</code> and explicit assertions <code>expect(...).to.be</code>.</p>
+<p>Additionally, as a contributor to a project which has tests, it should be
+reasonnably straightforward to answer the following questions:</p>
+<ul>
+<li>when looking at code, where can I find the existing tests?</li>
+<li>when looking at tests, which code is being tested?</li>
+</ul>
+<p>There should be a clear path to modify both code and tests:</p>
+<ul>
+<li>when changing code, which tests need to be changed?</li>
+<li>when deleting code, which tests need to be deleted?</li>
+</ul>
+<p>A few tips can ease this process. <em>Naming conventions</em> for test files should be
+consistent and finding the tests for a given file or component should not
+involve any interpretation, it should be mechanical (e.g.: tests for <code>module.js</code>
+are always to be found in <code>tests/module.test.js</code>).</p>
+<p>Tests should be organized in a way that follows the code structure closely so
+that changes in the source can be reflected to the tests and <em>vice versa</em>. This
+also applies to the internal structure of the tests. It can be helpful to group
+assertions by behavior or assumptions. It is also helpful to be explicit about
+both success and failure of an assertion!</p>
+<p>This last point is important because if you can quickly grasp the intent while
+reading a test; it allows to decide if an assertion still holds after a change
+in the code, or if it should go away completely.</p>
+<p>Last but not least, avoid repetition in tests. If you see yourself writing the
+same assertions over and over again to tests similar components, it might be
+worth abstracting these away. You will thank yourself in the future when you
+need to amend the tests!</p>
+<h2>By Way of Conclusion</h2>
+<blockquote>
+<p>Always pick the right hammer for your nails…</p>
+</blockquote>
+<p>As mentioned previously, this is not about picking unit tests over integration
+tests. You will likely need both eventually because they are often
+complementary and give you a different kind of confidence in the correctness of
+your code (although some <a href="https://blog.thecodewhisperer.com/permalink/integrated-tests-are-a-scam" target="_blank" rel="noopener noreferrer">argue against integration tests</a>).</p>
+<p>As a take-away, treat your tests the same way you treat your source code and
+hold them both to high standards. Not doing so might lead to a situation where
+your tests become a liability and slow you down instead of empowering you to
+write better and more robust features.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[A static blog generator in TypeScript]]></title>
+        <id>https://remusao.github.io//posts/typescript-blog-generator.html</id>
+        <link href="https://remusao.github.io//posts/typescript-blog-generator.html"/>
+        <updated>2019-07-19T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>Oups, I did it again…</p>
+</blockquote>
+<p>A while ago I was joking with <a href="https://twitter.com/sebadzia" target="_blank" rel="noopener noreferrer">@sebadzia</a> about
+the fact that if you are not re-writting your blog generation mechanism from
+scratch every <em>N</em> posts, then you’re doing it wrong. It appears that I’m
+actually living by these words and have been re-implementing my own blog over
+and over again; maybe in the hope that it would motivate me to write more. This
+blog <em>became an end instead of a mean</em> to communicate things.</p>
+<p>Here are the 6 engines I’ve used over the years (and this does not even account
+for the different themes that I used with each of them):</p>
+<ul>
+<li><a href="https://wordpress.org/" target="_blank" rel="noopener noreferrer">WordPress</a></li>
+<li><a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a></li>
+<li><a href="https://blog.getpelican.com/" target="_blank" rel="noopener noreferrer">Pelican</a></li>
+<li><a href="https://jaspervdj.be/hakyll/" target="_blank" rel="noopener noreferrer">Hakyll</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy" target="_blank" rel="noopener noreferrer">Custom generator in Haskell</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy-ts" target="_blank" rel="noopener noreferrer"><strong>Custom generator in TypeScript</strong></a></li>
+</ul>
+<p>This means that the blog engine has been changed on average every <em>8.5</em> posts.
+Not too bad! Maybe the next one will be in Rust?</p>
+<p>I think what made me switch this time is the fact that I’m actually enjoying
+TypeScript very much lately (I find the type system super neat, and already
+liked JavaScript tooling a lot); and I was a bit fed up by the build time of
+the Haskell version. The way I did it was most probably sub-optimal as I am by
+no mean an experienced Haskell developer. Last but not least, I was on vacation
+and had some time to waste…</p>
+<p>The TypeScript generator is still rough around the edges but it’s working and
+allows me to build the site, watch changes, and serve locally in development
+mode.</p>
+<p>I rely on the following packages to do the heavy lifting:</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/@octokit/rest" target="_blank" rel="noopener noreferrer">@octokit/rest</a> to interact with GitHub APIs (used to fetch static comments)</li>
+<li><a href="https://www.npmjs.com/package/chokidar" target="_blank" rel="noopener noreferrer">chokidar</a> to watch for files changes</li>
+<li><a href="https://www.npmjs.com/package/express" target="_blank" rel="noopener noreferrer">express</a> to serve blog locally</li>
+<li><a href="https://www.npmjs.com/package/dompurify" target="_blank" rel="noopener noreferrer">dompurify</a> to sanitize final HTML</li>
+<li><a href="https://www.npmjs.com/package/highlight.js" target="_blank" rel="noopener noreferrer">highlight.js</a> to provide syntactic coloration for code blocks in posts</li>
+<li><a href="https://www.npmjs.com/package/html-minifier" target="_blank" rel="noopener noreferrer">html-minifier</a> to minimize HTML</li>
+<li><a href="https://www.npmjs.com/package/marked" target="_blank" rel="noopener noreferrer">marked</a> to convert markdown to HTML</li>
+</ul>
+<p>Overall I’m fairly happy with this setup. The generator currently fits into a
+single source file (which should probably be split at some point) and generation
+is pretty fast: <em>~50</em> seconds from scratch (which includes installing all npm
+dependencies, generating posts and fetching comments from GitHub). Generating
+posts only takes less than 10 seconds, and most of the time is spent waiting
+for comments to be fetched from GitHub issues.</p>
+<p>There are a few things I’d like to try or investigate in the future to improve:</p>
+<ul>
+<li>consider using JSX (with React in pure server-side rendering mode)</li>
+<li>consider writing CSS in TypeScript as well with typing</li>
+<li>add support for inlined math using KaTex (which I do not need at the moment)</li>
+<li>improve comments display with better rendering and support for reactions and emojis</li>
+</ul>
+<p>And of course, I will try my best to write more content here in the future!</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[What's exciting in Cliqz 1.35]]></title>
         <id>https://remusao.github.io//posts/cliqz-1.35-notes.html</id>
@@ -558,6 +1524,466 @@ content-blockers improves.</p>
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Fast domains and URLs parsing with tldts]]></title>
+        <id>https://remusao.github.io//posts/tldts-benchmarks.html</id>
+        <link href="https://remusao.github.io//posts/tldts-benchmarks.html"/>
+        <updated>2019-02-02T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>For quite some time now I’ve been working on
+<a href="https://github.com/remusao/tldts/" target="_blank" rel="noopener noreferrer"><strong>tldts</strong></a> (<a href="https://www.npmjs.com/package/tldts" target="_blank" rel="noopener noreferrer"><strong>npm</strong></a>), an <em>extemely fast</em>,
+<em>feature-full</em>, <em>battle-tested</em> JavaScript library for domain parsing. It
+allows to answer questions such has:</p>
+<ul>
+<li>What’s the hostname of an URL?</li>
+<li>What’s the registrable domain of an URL, a hostname or an email address?</li>
+<li>What’s the sub-domain of a domain?</li>
+<li>etc.</li>
+</ul>
+<p>What puts <a href="https://github.com/remusao/tldts/" target="_blank" rel="noopener noreferrer"><strong>tldts</strong></a> appart from other libraries is:</p>
+<ul>
+<li>It is <strong>much faster</strong> than alternatives, allowing to parse between
+<strong>1 and 2 million</strong> domains per second (that’s <strong>up to 1000 times</strong> faster
+than other popular libraries).</li>
+<li>It is more feature-full, supporting <em>IPs detection</em>, <em>domain validation</em> and <em>complex URLs parsing</em>.</li>
+<li>It offers the smallest bundles, in both <code>cjs</code>, <code>esm</code> and <code>umd</code> formats; it runs <em>anywhere</em>.</li>
+<li>It is written in <em>TypeScript</em> and benefits from 100% test coverage.</li>
+</ul>
+<p>Most of the features are made possible by the <a href="https://publicsuffix.org/" target="_blank" rel="noopener noreferrer">public suffix
+list</a> project. But
+<a href="https://github.com/remusao/tldts/" target="_blank" rel="noopener noreferrer"><strong>tldts</strong></a> offers some bells and whistles on
+top. One of the goals is to be <em>conveniant</em> to use and as fast as it gets. Some
+libraries require you to provide already-valid hostnames, but
+<a href="https://github.com/remusao/tldts/" target="_blank" rel="noopener noreferrer"><strong>tldts</strong></a> has no such constraints and will
+happily parse complex URLs, as well as already-extracted hostnames. The best
+part is that this does not come with any over-head!</p>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">const</span> tldts = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;tldts&#x27;</span>);
+
+<span class="hljs-comment">// Retrieving hostname related informations of a given URL</span>
+tldts.<span class="hljs-title function_">parse</span>(<span class="hljs-string">&#x27;https://remusao.github.io/posts/tldts-benchmarks.html&#x27;</span>);
+<span class="hljs-comment">// { domain: &#x27;github.io&#x27;,</span>
+<span class="hljs-comment">//   hostname: &#x27;remusao.github.io&#x27;,</span>
+<span class="hljs-comment">//   isIcann: true,</span>
+<span class="hljs-comment">//   isIp: false,</span>
+<span class="hljs-comment">//   isPrivate: false,</span>
+<span class="hljs-comment">//   publicSuffix: &#x27;io&#x27;,</span>
+<span class="hljs-comment">//   subdomain: &#x27;remusao&#x27; }</span>
+</code></pre>
+<p>In this post I’d like to share some results of a performance comparison against
+other available JavaScript libraries offering the same kind of features. We
+will see that they vary greatly in terms of performance, ease of use or
+features. In fact, we observed that <code>tldts</code> is up to <strong>1000 times</strong> faster than
+some of the other libraries!</p>
+<p>Before presenting the results, a few words about the instrumentation and what
+was measured. We aim at comparing the libraries in the following aspects:</p>
+<ol>
+<li>Features</li>
+<li>Performance (in terms of operations per second)</li>
+<li>Loading time (time it took V8 to load the bundle)</li>
+<li>Memory used</li>
+</ol>
+<p>All the measurements were performed in the following environment:</p>
+<ul>
+<li><code>Node.js</code> version <strong>11.6.0</strong></li>
+<li>Hardware: X1 Carbon 4th with i7-6600U CPU and 16GB of RAM</li>
+</ul>
+<p>And now the list of the contenders:</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/tldts" target="_blank" rel="noopener noreferrer"><strong>tldts</strong></a></li>
+<li><a href="https://www.npmjs.com/package/psl" target="_blank" rel="noopener noreferrer">psl</a></li>
+<li><a href="https://www.npmjs.com/package/tldjs" target="_blank" rel="noopener noreferrer">tld.js</a></li>
+<li><a href="https://www.npmjs.com/package/parse-domain" target="_blank" rel="noopener noreferrer">parse-domain</a></li>
+<li><a href="https://www.npmjs.com/package/haraka-tld" target="_blank" rel="noopener noreferrer">haraka-tld</a></li>
+<li><a href="https://github.com/gorhill/uBlock/blob/master/src/lib/publicsuffixlist.js" target="_blank" rel="noopener noreferrer">uBlock’s publicsuffixlist.js</a></li>
+</ul>
+<p>In the results you will also see <code>tldts-experimental</code> mentioned. It is a
+probabilistic data-structure implementing the exact same features as <code>tldts</code>
+but using <em>much less memory</em>, <em>loading instantly</em> and offering <em>even higher
+performances</em>. It can be used in contexts with very constrained hardware
+capabilities such as mobiles.</p>
+<p>Now let’s now dig into the results!</p>
+<h2>Feature Matrix</h2>
+<p>The following features are considered:</p>
+<ul>
+<li>Is there <code>IDNA</code> support? Does the library support inputs with unicode such as <em>中国</em>?</li>
+<li>Does the library accept complex <code>URLs</code> as input, or is it necessary to extract the hostname before-hand?</li>
+<li>Is the library able to detect if the given input is an <code>IP</code> address? This is important, otherwise <code>getPublicSuffix('192.168.0.1')</code> would return <code>1</code>!</li>
+<li>Does the library allow you to extract <code>domain</code> and <code>public suffix</code>?</li>
+<li>Does the library support ICANN/Private sections of the public suffix list? Can they be disabled individually?</li>
+<li>Will the public suffix rules be <code>shipped</code> with the library, or do they need to be fetched separately?</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Library</th>
+<th style="text-align:center">IDNA</th>
+<th style="text-align:center">URLs</th>
+<th style="text-align:center">IPs</th>
+<th style="text-align:center">getDomain</th>
+<th style="text-align:center">getPublicSuffix</th>
+<th style="text-align:center">ICANN/Private</th>
+<th style="text-align:center">Ships lists</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><strong>tldts</strong></td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+</tr>
+<tr>
+<td style="text-align:center">tld.js</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+</tr>
+<tr>
+<td style="text-align:center">psl</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">X</td>
+</tr>
+<tr>
+<td style="text-align:center">parse-domain</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+</tr>
+<tr>
+<td style="text-align:center">haraka-tld</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">X</td>
+</tr>
+<tr>
+<td style="text-align:center">uBlock publicsuffixlist</td>
+<td style="text-align:center">?</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+<h1>Performance</h1>
+<p>Here we measure the performance of three common operations offered by domain
+parsing library: <em>getting the public suffix</em> of a hostname, <em>getting the
+domain</em> (tld + sld) and <em>getting the subdomain</em>.</p>
+<p>A few notes about this benchmark:</p>
+<ul>
+<li>The inputs used are always already valid hostnames (no URLs, although some
+libraries like tldts support it). You can find the list of inputs there:</li>
+<li>The selection of hostnames can be seen in <a href="https://github.com/remusao/tldts/blob/master/comparison/bench_performance.js#L12" target="_blank" rel="noopener noreferrer">bench_performance.js</a>
+and was selected to contain a mix of non-existing suffixes, ICANN rules,
+private rules as well as wildcards and exceptions.</li>
+<li>All hostnames were ASCII (puny-encoded if needed before-hand)</li>
+<li>All libraries were used in their default setup (no option given, with the
+exception of <code>tldts-no-parse</code> which runs <code>tldts</code> disabling the parsing phase
+and assuming that the input is already a valid hostname, to match the
+behavior of other libraries).</li>
+</ul>
+<p>The results are expressed in terms of operations per second (where each
+operation is calling the function once on a hostname).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Library</th>
+<th style="text-align:right">getPublicSuffix</th>
+<th style="text-align:right">getDomain</th>
+<th style="text-align:right">getSubdomain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>tldts-experimental</strong></td>
+<td style="text-align:right">1 898 446</td>
+<td style="text-align:right">1 690 572</td>
+<td style="text-align:right">1 615 166</td>
+</tr>
+<tr>
+<td style="text-align:left">tldts no parsing</td>
+<td style="text-align:right">1 780 469</td>
+<td style="text-align:right">1 515 703</td>
+<td style="text-align:right">1 502 692</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>tldts</strong></td>
+<td style="text-align:right"><strong>1 280 063</strong></td>
+<td style="text-align:right"><strong>1 134 956</strong></td>
+<td style="text-align:right">1 125 362</td>
+</tr>
+<tr>
+<td style="text-align:left">tld.js</td>
+<td style="text-align:right">1 141 414</td>
+<td style="text-align:right">1 049 180</td>
+<td style="text-align:right">1 125 362</td>
+</tr>
+<tr>
+<td style="text-align:left">ublock publicsuffix</td>
+<td style="text-align:right">620 816</td>
+<td style="text-align:right">567 664</td>
+<td style="text-align:right">?</td>
+</tr>
+<tr>
+<td style="text-align:left">parse-domain</td>
+<td style="text-align:right">554 355</td>
+<td style="text-align:right">528 217</td>
+<td style="text-align:right">551 008</td>
+</tr>
+<tr>
+<td style="text-align:left">haraka-tld</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">105 321</td>
+<td style="text-align:right">?</td>
+</tr>
+<tr>
+<td style="text-align:left">psl</td>
+<td style="text-align:right">1 654</td>
+<td style="text-align:right">1 693</td>
+<td style="text-align:right">1 673</td>
+</tr>
+</tbody>
+</table>
+<p>Here we see that the performance varies a lot between libraries, for the same
+operations. <code>tldts</code> is <strong>1000</strong> faster than <code>psl</code>, which is the most popular
+library.</p>
+<h1>Memory Usage</h1>
+<p>Here we estimate the memory used by each library. The measurements are done
+using the <a href="https://github.com/remusao/tldts/blob/master/comparison/bench_memory.js" target="_blank" rel="noopener noreferrer">bench_memory.js</a>
+script, which loads each file ten times and measure the average memory usage
+before and after GC using <code>process.memoryUsage()</code>. The result are then compared
+to a reference memory usage computed in the same way using <code>noop_test.js</code> which
+does not import anything.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Library</th>
+<th style="text-align:right">Before GC</th>
+<th style="text-align:right">After GC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>tldts-experimental</strong></td>
+<td style="text-align:right"><strong>461KB</strong></td>
+<td style="text-align:right"><strong>229 KB</strong></td>
+</tr>
+<tr>
+<td style="text-align:left">parse-domain</td>
+<td style="text-align:right">2.579 MB</td>
+<td style="text-align:right">1.310MB</td>
+</tr>
+<tr>
+<td style="text-align:left">psl</td>
+<td style="text-align:right">2.199 MB</td>
+<td style="text-align:right">1.537MB</td>
+</tr>
+<tr>
+<td style="text-align:left">tldjs</td>
+<td style="text-align:right">2.621 MB</td>
+<td style="text-align:right">1.714MB</td>
+</tr>
+<tr>
+<td style="text-align:left">tldts</td>
+<td style="text-align:right">3.094 MB</td>
+<td style="text-align:right">1.792MB</td>
+</tr>
+<tr>
+<td style="text-align:left">UBlock publicsuffix</td>
+<td style="text-align:right">4.529 MB*</td>
+<td style="text-align:right">2.399MB</td>
+</tr>
+<tr>
+<td style="text-align:left">haraka-tld</td>
+<td style="text-align:right">4.405 MB</td>
+<td style="text-align:right">2.595MB</td>
+</tr>
+</tbody>
+</table>
+<p>(*) The memory of uBlock cannot be estimated correctly as for this
+benchmarks the lists were inlined in the source code, which is not how
+it’s used in production.</p>
+<h1>Loading Time</h1>
+<p>One point of comparison which can make a difference in some contexts (e.g.:
+mobile or if the library is embedded in a website) is the loading time of the
+bundle itself (or time it takes to parse the code and initialize it). It can
+have a big impact if you use the library on very slow devices (like mobiles)
+and here again, not all the libraries are equal.</p>
+<p>The benchmark code can be found in <a href="https://github.com/remusao/tldts/blob/master/comparison/bench_startup.sh" target="_blank" rel="noopener noreferrer">bench_startup.sh</a>.
+It measures the time it takes to import each of the libraries. The measurements
+are performed using the <a href="https://hackage.haskell.org/package/bench" target="_blank" rel="noopener noreferrer">bench</a> CLI,
+looking at the <code>mean</code> time returned for each.</p>
+<p>Note that this benchmark was performed using the cjs bundle. The performance
+might be different in another environment or different bundle (e.g.: UMD in a
+browser).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Library</th>
+<th style="text-align:right">Mean (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Ref (no <code>require</code>)</td>
+<td style="text-align:right">48.21</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>tldts-experimental</strong></td>
+<td style="text-align:right"><strong>47.93</strong></td>
+</tr>
+<tr>
+<td style="text-align:left">psl</td>
+<td style="text-align:right">53.77</td>
+</tr>
+<tr>
+<td style="text-align:left">tld.js</td>
+<td style="text-align:right">58.74</td>
+</tr>
+<tr>
+<td style="text-align:left">parse-domain</td>
+<td style="text-align:right">61.96</td>
+</tr>
+<tr>
+<td style="text-align:left">tldts</td>
+<td style="text-align:right">64.48</td>
+</tr>
+<tr>
+<td style="text-align:left">ublock</td>
+<td style="text-align:right">78.05</td>
+</tr>
+<tr>
+<td style="text-align:left">haraka-tld</td>
+<td style="text-align:right">84.93</td>
+</tr>
+</tbody>
+</table>
+<p>Note that some libraries like <code>ublock</code> or <code>haraka-tld</code> perform some form of parsing
+of the rules at loading-time, which incurs an initial cost when importing the
+library.</p>
+<h1>Bundles</h1>
+<p>Comparison of bundle sizes, when applicable (not all libraries provide bundles):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Library</th>
+<th style="text-align:right">Normal</th>
+<th style="text-align:right">Minified</th>
+<th style="text-align:right">Gzipped</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>tldts-experimental</strong></td>
+<td style="text-align:right"><strong>100KB</strong></td>
+<td style="text-align:right"><strong>94KB</strong></td>
+<td style="text-align:right">38KB</td>
+</tr>
+<tr>
+<td style="text-align:left">tldts</td>
+<td style="text-align:right">140KB</td>
+<td style="text-align:right"><strong>95KB</strong></td>
+<td style="text-align:right">37KB</td>
+</tr>
+<tr>
+<td style="text-align:left">psl</td>
+<td style="text-align:right">138KB</td>
+<td style="text-align:right">122KB</td>
+<td style="text-align:right">39KB</td>
+</tr>
+<tr>
+<td style="text-align:left">tld.js</td>
+<td style="text-align:right">209KB</td>
+<td style="text-align:right">141KB</td>
+<td style="text-align:right">40KB</td>
+</tr>
+<tr>
+<td style="text-align:left">parse-domain</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">?</td>
+</tr>
+<tr>
+<td style="text-align:left">ublock</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">?</td>
+</tr>
+<tr>
+<td style="text-align:left">haraka-tld</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">?</td>
+</tr>
+</tbody>
+</table>
+<h1>Dependencies</h1>
+<p>Here is a comparison of dependencies for each library:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Library</th>
+<th style="text-align:left">Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>tldts</strong></td>
+<td style="text-align:left"><strong>(none)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left">psl</td>
+<td style="text-align:left">punycode</td>
+</tr>
+<tr>
+<td style="text-align:left">tld.js</td>
+<td style="text-align:left">punycode</td>
+</tr>
+<tr>
+<td style="text-align:left">ublock</td>
+<td style="text-align:left">punycode</td>
+</tr>
+<tr>
+<td style="text-align:left">haraka-tld</td>
+<td style="text-align:left">punycode</td>
+</tr>
+<tr>
+<td style="text-align:left">parse-domain</td>
+<td style="text-align:left">?</td>
+</tr>
+</tbody>
+</table>
+<h1>Conclusion</h1>
+<p>=&gt; <a href="https://github.com/remusao/tldts" target="_blank" rel="noopener noreferrer"><strong>Tldts GitHub repository</strong></a></p>
+<p>=&gt; <a href="https://www.npmjs.com/package/tldts" target="_blank" rel="noopener noreferrer"><strong>Tldts on NPM</strong></a></p>
+<pre class="code" data-lang="sh"><code>npm install tldts
+</code></pre>
+<p>If that sounds appealing to you, give it a shot and do not hesite to open
+issues for any feedback you might have!</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Debugging iptables rules]]></title>
         <id>https://remusao.github.io//posts/test-iptables-rules.html</id>
         <link href="https://remusao.github.io//posts/test-iptables-rules.html"/>
@@ -711,6 +2137,729 @@ i7-6600U (2,60-3,40 GHz) with 16GB of Ram, running Ubuntu 18.04.</p>
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Exploring etymology using Wiktionary data]]></title>
+        <id>https://remusao.github.io//posts/wiktionary-etymology-exploration.html</id>
+        <link href="https://remusao.github.io//posts/wiktionary-etymology-exploration.html"/>
+        <updated>2018-07-14T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>Etymology is a fascinating topic. Looking closer at the origin of words often
+yields surprising and interesting connections between languages and countries,
+forgotten stories or fun anecdotes. There are multiple sources for etymological
+data, and most of the time, using specialized books is a safe bet. The issue is
+that they are usually dedicated to one language, and it’s close to impossible to
+extract the data in a format which allows manipulation by programs.</p>
+<p>There is an alternative though: <a href="https://www.wiktionary.org/" target="_blank" rel="noopener noreferrer"><strong>Wiktionary</strong></a>. It is not perfect and suffers from the following drawbacks:</p>
+<ul>
+<li>Information about some words can be missing or incomplete</li>
+<li>Different editions offer various degrees of exhaustiveness</li>
+<li>It is still not trivial to extract the data in a nice format (more on that
+later)</li>
+</ul>
+<p>But it offers very nice benefits as well:</p>
+<ul>
+<li>It is possible to parse the dumps (although not as easy as it could)</li>
+<li>It is possible to combine multiple editions to get more complete etymological data (e.g.: French and English dumps)</li>
+<li>It is constantly evolving and freely accessible</li>
+</ul>
+<p>I often use Wiktinary from the website to get more insight about some words, but
+it is not always optimal: it can be time-consuming to follow the links,
+difficult to know if you missed anything, and hard to answer some questions. In
+particular:</p>
+<ol>
+<li>What is the “etymological” distance between two words, and how are they connected? (according to
+Wiktionary data)</li>
+<li>Given a word in a source language (e.g.: <code>Buch</code> from <em>German</em>), what is the
+closest word in another target language (e.g.: in <em>English</em> it would be <code>book</code>.)</li>
+<li>Can we identify the subset of words from a source language which is very
+closely connected to words from a target language? (e.g. by direct
+inheritance)?</li>
+<li>Could we visualize the graph of etymological connections from a source <em>word</em>
+until a given <em>distance</em>?</li>
+<li>etc.</li>
+</ol>
+<p>In the rest of this article, I’d like to present a work-in-progress project
+called <a href="https://github.com/remusao/wgraph" target="_blank" rel="noopener noreferrer"><em>wgraph</em></a>, which I have been
+developing recently. It allows to parse the content of Wiktionary dumps in
+multiple languages (currently French and English are well supported and more are
+on the way), to extract a graph of etymological relationships between words. Here
+are a few examples of possible connections:</p>
+<ul>
+<li>German word ‘Buch’ <em>cognates</em> with English word ‘book’</li>
+<li>English word ‘table’ <em>inherits</em> from Middle English words ‘table’, ‘tabel’,
+‘tabil’ and ‘tabul’</li>
+<li>French word ‘chaise’ is <em>borrowed</em> from Old French ‘chaiere’, and <em>cognates</em>
+with English word ‘chair’</li>
+</ul>
+<h2>Parsing the data</h2>
+<p>The parsing stage takes as input one or multiple
+<a href="https://dumps.wikimedia.org/backup-index.html" target="_blank" rel="noopener noreferrer">dumps</a>, and produces a
+mapping between <code>source</code> words, and multiple references as found in the
+specific pages from Wiktionary, in the <code>etymology</code> section. Using
+<code>wgraph</code>, this can be performed as follows:</p>
+<pre class="code" data-lang="sh"><code>$ parse enwiki-articles/enwiktionary-latest-pages-articles.xml
+</code></pre>
+<p>(Note that you can input a compressed version of the dumps as well, either in
+<code>.gz</code> or <code>.bz2</code> format)</p>
+<p>This will produce a file named <code>graph.tsv</code> containing one word per line,
+alongside its references. The first few lines look like:</p>
+<pre class="code" data-lang="sh"><code>lire  lira|etyl|  lira|borrowed|it  *lekʷs-|mention|ine-pro  lies|cognate|<span class="hljs-built_in">nl</span> ...
+encyclopédie  encyclique|lien|  encyclopaedia|etyl|  encyclopaedia|mention|la ...
+manga  漫|mention|ltc  manga|mention|pt  漫画|borrowed|ja  man + -ga|suffix|zza ...
+</code></pre>
+<p>Each line starts with the word (e.g.: <code>manga</code>) and then follows a tab-separated
+list of references. Each reference is a tuple of <code>word</code>, <code>kind</code> (kind of
+relationship with the origin word, e.g.: borrowed from, inherited from, etc.)
+and <code>origin</code> (optional, since not all origins are specified in the data).</p>
+<p>And this is all we need start exploring the data and answer interesting
+questions!</p>
+<h2>Etymological summary visualization</h2>
+<p>Once we have a graph of “etymological” connections between words, one of the
+simplest things we can do is to visualize the neighborhood of a given word. This
+can be performed using the <code>summary</code> command provided by <code>wgraph</code>:</p>
+<pre class="code" data-lang="sh"><code>$ summary graph.tsv Buch
+Graph written into: wgraph_Buch
+</code></pre>
+<figure>
+<a href="../images/wgraph_Buch_1.svg">
+<img src="../images/wgraph_Buch_1.svg" alt="Etymological neighborhood of 'Buch'" style="width:100.0%">
+</a>
+<figcaption>Etymological neighborhood of *Buch*</figcaption>
+</figure>
+<p>We can also look deeper in the graph:</p>
+<pre class="code" data-lang="sh"><code>$ summary graph.tsv candidate --max-depth 2
+Graph written into: wgraph_Buch
+</code></pre>
+<figure>
+<a href="../images/wgraph_candidate.svg">
+<img src="../images/wgraph_candidate.svg" alt="Etymological neighborhood of 'candidate'" style="width:100.0%">
+</a>
+<figcaption>Etymological neighborhood of *candidate*</figcaption>
+</figure>
+<p>Interestingly enough, the ‘candidates’ referred to
+the “Roman candidates wearing bleached white togas
+as a symbol of purity at a public forum” (source:
+<a href="https://en.wiktionary.org/wiki/candidate#Etymology" target="_blank" rel="noopener noreferrer">Wiktionary</a>). This
+explains why the word ‘candidate’ is related to ‘white’, ‘candide’,
+‘blank’ and even the ‘elves’.</p>
+<p>Note that by default, up to 50 words will be included in the graph, to not
+overload it too much.</p>
+<p>It is also possible to group the nodes by origin using the <code>--group-by-origin</code>
+argument:</p>
+<pre class="code" data-lang="sh"><code>$ summary graph.tsv petrol --max-depth 2 --group-by-origin
+Graph written into: wgraph_Buch
+</code></pre>
+<figure>
+<a href="../images/wgraph_petrol_2_groupped.svg">
+<img src="../images/wgraph_petrol_2_groupped.svg" alt="Etymological neighborhood of 'petrol'" style="width:100.0%">
+</a>
+<figcaption>Etymological neighborhood of *petrol*</figcaption>
+</figure>
+<p>Now we know that <em>pretrol</em> literally means “oil from stones”: <em>ol</em> + <em>petra</em>
+(the stone).</p>
+<p>As a last example, let’s explore the neighborhood of ‘truie’ a French word used
+to designate the female of the pork. This word has a curious origin…</p>
+<pre class="code" data-lang="sh"><code>$ summary graph.tsv truie --max-depth 2 --group-by-origin
+Graph written into: wgraph_Buch
+</code></pre>
+<figure>
+<a href="../images/wgraph_truie.svg">
+<img src="../images/wgraph_truie.svg" alt="Etymological neighborhood of 'truie'" style="width:100.0%">
+</a>
+<figcaption>Etymological neighborhood of *truie*</figcaption>
+</figure>
+<p>You can see mentions of the word “Troja”, the famous city, where the
+“Trojan Horse” was used as a subterfuge that the Greeks used to enter
+the city of Troy during the war. And this is where we think this ‘truie’
+comes from. The “Trojan Horse” gave its name to a way to prepare (or
+grill) the pork called: “Porka de Troja”, and they ‘truie’ in French.</p>
+<h2>Distance between two words</h2>
+<p>Another simple application of the graph is to compute the size of
+the shortest path between two words. This can be achieved using the
+<code>distance</code> command provided by <code>wgraph</code>:</p>
+<figure>
+<a href="../images/wgraph_distance_Buch_beech.svg">
+<img src="../images/wgraph_distance_Buch_beech.svg" alt="Etymological distance between 'Buch' and 'beech'" style="width:20.0%">
+</a>
+<figcaption>Etymological distance between *Buch* and *beech*</figcaption>
+</figure>
+<pre class="code" data-lang="sh"><code>$ distance graph.tsv Buch book
+Distance: 1
+Start: Buch
+&gt; Cognates with book (English)
+</code></pre>
+<pre class="code" data-lang="sh"><code>$ distance graph.tsv Buch beech
+Distance: 5
+Start: Buch
+&gt; Cognates with book (English)
+&gt; Cognates with boek (Dutch)
+&gt; Cognates with bog (Danish)
+&gt; Inherited from boc (Old Irish (to 900))
+&gt; Mention beech (English)
+</code></pre>
+<pre class="code" data-lang="sh"><code>$ distance graph.tsv camaraderie chambre
+Distance: 3
+Start: camaraderie
+&gt; Mention comrade (English)
+&gt; Mention chamber (English)
+&gt; Inherited from chambre (Middle English (1100-1500))
+</code></pre>
+<pre class="code" data-lang="sh"><code>$ distance graph.tsv camarade chambre
+Distance: 2
+Start: camarade
+&gt; None chambrée (French)
+&gt; None chambre (French)
+</code></pre>
+<p>You probably noticed that <code>origin</code> or <code>kind</code> are not always available. This is
+mainly caused by:</p>
+<ol>
+<li>Data in French dumps are not formatted in an easily parsable format, and most
+information needs to be extracted from links (e.g.: <code>''[[word]]''''</code>) as well
+as the context, and the parser from <code>wgraph</code> is not yet smart enough to do
+this in a lot of cases.</li>
+<li>Sometimes the information is not available at all.</li>
+</ol>
+<p>Also note that this command only finds <em>one possible path</em>, but it happens
+that multiple paths of the same length link two words of the graph. A possible
+improvement would be to find all possible paths between two words, which would
+probably gives some nice insight! (It could also be visualized as a graph!)</p>
+<h2>Closest word in a target language</h2>
+<p>Let’s say you are learning a new language (e.g.: German) and while learning a
+new word, you are looking for a way to “connect” it to some words you already
+know. One way we could leverage our graph of words is to find a close word in a
+language you already know! This is what the command <code>closest</code> is doing:</p>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv buchstabieren en
+Start: buchstabieren
+&gt; None Buchstabe (unknown origin)
+&gt; Mention bookstaff (English)
+</code></pre>
+<p>The German word “buchstabieren” (or “to spell” in English) literally
+means “to stab the letters on the Buch/book/beech”. The connection with
+“beech” comes from the fact that people used to use “beech” tree as a
+material to create the tablets to write.</p>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv hospital fr
+Start: hospital
+&gt; Cognates with hôpital (French)
+</code></pre>
+<p>This one was pretty easy…</p>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv therme en
+Start: therme
+&gt; Etymology θερμός (unknown origin)
+&gt; Cognates with wearm (Old English (ca. 450-1100))
+&gt; Cognates with formus (Latin)
+&gt; Cognates with warm (English)
+</code></pre>
+<p>Interesting to know that “therme” (name given to the ancient Roman baths)
+connects to “warm” in English (very indirectly, but we find this idea of “warm
+water”).</p>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv schön en
+Start: schön
+&gt; None sheen (unknown origin)
+&gt; Cognates with show (English)
+</code></pre>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv Welt fr
+Start: Welt
+&gt; Inherited from weralt (Old High German (ca. 750-1050))
+&gt; Mention world (English)
+&gt; Cognates with verd (Norwegian Nynorsk)
+&gt; Cognates with vert (French)
+</code></pre>
+<p>Some connections are pretty far-fetched, and we would need to dig in the
+original data to understand why! And this is where it can get exciting to do
+some manual research!</p>
+<h2>What are the easiest words to learn in a language?</h2>
+<p>As a final application, and as a result of our ability to compute the minimum
+distance between two words in different languages, we can try to identify the
+easiest sub-set of a language you can learn! This works as follows:</p>
+<ol>
+<li>Specify the target language (e.g.: German)</li>
+<li>Specify languages you already know (e.g.: French and English)</li>
+</ol>
+<p>Then the <code>easiest</code> command will try to find a set of German words which
+is very close from words in either English or French. These words should
+be easier to memorize because they will probably resemble words you
+already know.</p>
+<pre class="code" data-lang="sh"><code>$ easiest graph.tsv
+========================================
+&gt; 1
+========================================
+  * personell
+  * Republik
+  * munizipal
+  * Provokateur
+  * Strauß
+  * Beispiel
+  * Tupperware
+  * Karosserie
+  * maritim
+  * hypoallergen
+  * Etappe
+  * Finanzier
+  * Pansen
+  * bekommen
+  * Feuer
+  * blockieren
+  * robbe
+  * kidnappen
+  * Flakon
+  * lukrativ
+  * eskortieren
+  * universell
+  * Bravour
+  * Mittwoch
+  * grotesk
+  * jetzt
+  * positiv
+  ...
+</code></pre>
+<p>At the moment it is not possible to specify other languages than French, English
+and German, but it will probably be in the future.</p>
+<h2>Closing remarks</h2>
+<p>There is probably much more we can do using this data, and this is only
+the beginning, I already find the project useful to get insight about
+the origin of some words, but it is still rough around the edges. In the
+following weeks I intend to improve <code>wgraph</code> in the following ways:</p>
+<ol>
+<li>Improve information extraction from Wiktionary dumps (especially for the
+French edition), this should have a direct impact on the results of all
+sub-commands presented above.</li>
+<li>Support more editions to make the dataset more complete (German is next)</li>
+<li>Find more interesting applications and visualizations ideas!</li>
+</ol>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Synacor—Down the rabbit hole]]></title>
+        <id>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</id>
+        <link href="https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html"/>
+        <updated>2018-06-10T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>Last year I had the chance to participate in the 2017 edition of <a href="https://adventofcode.com/" target="_blank" rel="noopener noreferrer">Advent
+of Code</a>. That was the first time and I
+<em>really</em> enjoyed it. Having to solve an interesting problem, every
+day, made me learn a lot! It’s also a good occasion to practice some
+skills that might not be otherwise useful in your daily job (and more
+importantly: have fun!).</p>
+<p>While skimming through the discussions on Reddit about possible
+solutions to one of the AoC’s problems, someone mentioned “Synacor”… I
+never heard of it before, but from what I understood it was some kind of
+programming challenge. I did not need more to have a look:
+<a href="https://challenge.synacor.com" target="_blank" rel="noopener noreferrer">challenge.synacor.com</a>.</p>
+<h1>The Challenge</h1>
+<p>The challenge is briefly introduced, the competition took place during
+two conferences in the past and is now over. But you can still download
+the material of the challenge and try to solve it.</p>
+<p>After registering an email address and a password, I could download an
+archive <code>synacor-challenge.tgz</code>. Uncompressed, it contains two files :</p>
+<ol>
+<li><code>arch-spec</code></li>
+<li><code>challenge.bin</code></li>
+</ol>
+<p>The first one describes the challenge. It is about creating “a virtual
+machine capable of running the included binary [challenge.bin]”. It also
+mentions that some “codes” are to be found along the way. The rest of
+the document describes the architecture of the virtual machine:</p>
+<ul>
+<li>16 bits integers stored in little-endian format</li>
+<li>16 bits addressable memory (the program starts at address <code>0</code>)</li>
+<li>8 registers</li>
+<li>1 stack containing 16 bits numbers</li>
+<li>22 instructions: <code>halt</code>, <code>noop</code>, <code>set</code>, <code>push</code>, <code>jpm</code>, <code>add</code>, <code>mult</code>, etc.</li>
+</ul>
+<p>Each instruction is described in details: opcode, number of expected
+arguments and behavior when executed by the virtual machine. So
+far so good, this looks pretty classic. The implementation of such
+virtual machine is pretty straight forward. I choose <code>Haskell</code> for
+the implementation (because why not, and I already implemented some
+<a href="https://github.com/remusao/Hodor" target="_blank" rel="noopener noreferrer">Brainfuck interpreter/transpiler</a>
+before, so I thought I could reuse some learnings from there). Without
+going into too much details, I used the following data structures to
+represent the state of the VM:</p>
+<pre class="code" data-lang="haskell"><code><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Synacor</span> = <span class="hljs-type">Synacor</span></span>
+  { pos :: <span class="hljs-type">Int</span>
+  , mem :: <span class="hljs-type">Map</span> <span class="hljs-type">Register</span> <span class="hljs-type">Word16</span>
+  , stack :: [<span class="hljs-type">Word16</span>]
+  , program :: <span class="hljs-type">Vector</span> <span class="hljs-type">Word16</span>
+  }
+</code></pre>
+<h1>First Results</h1>
+<p>After implementing most of the instructions, I tried to run the program:</p>
+<blockquote>
+<p>Welcome to the Synacor Challenge! Please record your progress by
+putting codes like this one into the challenge website: XXXXXXXXXXX</p>
+<p>Executing self-test…</p>
+</blockquote>
+<p>Nice, so the program actually starts by <em>testing the virtual machine</em>,
+to make sure all instructions are implemented properly. It’s pretty
+cool. It means that you cannot proceed until your VM is fully functional
+(Using Haskell is a good start for that…). After a few iterations of
+trial, error, fix, I completed my implementation until…</p>
+<blockquote>
+<p>self-test complete, all tests pass
+The self-test completion code is: XXXXXXXXXXXX</p>
+</blockquote>
+<p>Youpi! All good… but, wait, something else was displayed on the terminal:</p>
+<p><strong>DISCLAIMER</strong>: The next section of this post contains spoilers and
+parts of solutions for the Synacor challenge. Please only proceed if you
+already solved the challenge, or do not intend to do so.</p>
+<p>…</p>
+<h1>Riddles in the Dark</h1>
+<blockquote>
+<p>== Foothills ==
+You find yourself standing at the base of an enormous mountain. At its
+base to the north, there is a massive doorway. A sign nearby reads
+“Keep out! Definitely no treasure within!”</p>
+<p>Things of interest here:</p>
+<ul>
+<li>tablet</li>
+</ul>
+<p>There are 2 exits:</p>
+<ul>
+<li>doorway</li>
+<li>south</li>
+</ul>
+<p>What do you do?</p>
+</blockquote>
+<p><em>Mind blown</em>. The program you are running is actually a terminal-based
+RPG! How cool is that? Well, very cool, and very smart. I clearly did
+not expect that from the challenge. It’s a bit like trying to open a
+chess (the chess is a program and the virtual machine is the key) and
+then you discover there is another riddle in the chess. So what’s next?
+Well play the game I guess…</p>
+<p>I played for a bit, and discovered one more code in the game (Did I
+already mention how cool all this is?). Which means some (all?) codes
+can be found by playing the game. But then, how do I know if all codes
+are in the game? How deep and rich can this game be? What if it takes 10
+hours to find the codes? I already under-estimated the challenge once,
+let’s not do the same mistake again.</p>
+<p>At this point I thought of two things that could be done:</p>
+<ol>
+<li>Try to extract all text from the file <code>challenge.bin</code> and see if it contains
+any code.</li>
+<li>Modify the VM so that it can play the game by itself, and explore all
+possible paths possible, some kind of depth-first search on the game itself
+in a way.</li>
+<li>Disassemble the program and try to understand its structure. The codes must
+be stored somewhere (or generated somehow), by understanding (and maybe
+changing a bit) the code, it must be possible to bypass the game completely.</li>
+</ol>
+<p>The first approach did not yield any result, which means that codes are
+probably encoded in some way to not be readable. I did not have too much hope
+anyways, but we never know.</p>
+<p>The second approach was the most promising and allowed me to discover a few more
+codes. Here is how it worked:</p>
+<p><strong>First step</strong> – I modified the virtual machine implementation so that it’s 100%
+pure code with no side-effect. The execution now consists in a function
+<code>execNextOpCode</code> which takes as input the state of the program, runs the
+next opcode of the program, then returns a “continuation” which can be
+one of:</p>
+<ul>
+<li><code>Halt</code> - program terminated successfully.</li>
+<li><code>Error String</code> - there was an exception while running the opcode (should
+never happen).</li>
+<li><code>PutChar Char</code> - we should print a character in the terminal.</li>
+<li><code>GetChar (Char -&gt; s)</code> - we should ask some user input, then continue the
+execution of the opcode using the function returned (<code>Char -&gt; s</code>).</li>
+<li><code>Ok</code> - opcode was executed correctly and we can continue running the program.</li>
+</ul>
+<p>The nice thing with this model, is that running an opcode does not alter
+the state of the virtual machine, but instead returns a new virtual
+machine (copy of the initial state). This might seem crazy, but it’s not as
+inefficient as it sounds (and pretty common in an immutable language like
+Haskell). This allows us to parallelize the execution of different branches of a
+program without having to care about controlling side-effects.</p>
+<p><strong>Second step</strong> – write a depth-first search for the game by changing the VM
+execution model in two ways:</p>
+<ol>
+<li>Each output <code>PutChar</code> from the program is stored in an accumulator so that we
+can inspect it later.</li>
+<li>Each time a user input is required by the <code>GetChar</code> continuation code, we
+<em>fork</em> our execution of the program and perform all possible user actions
+concurrently: <em>picking up objects</em>, <em>using objects</em>, <em>visit available
+places</em>.</li>
+<li>We need to detect loops to not explore forever (e.g.: when we come back to an
+already visited location). This is done by comparing the output (accumulated
+<code>PutChar</code> from the program) of a given branch to all previously explored
+branches. If we already generated the same output once, no need to do it
+again.</li>
+</ol>
+<p>This approach allowed me to discover a few more codes, <em>but not all</em>!
+This can mean two things: either not all codes can be discovered through
+the game (likely), or my exploration method is not working as well as it
+should! In both cases, it means I’m not done exploring the rabbit hole…</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[TIL—Python has a built-in persistent key-value store]]></title>
+        <id>https://remusao.github.io//posts/python-dbm-module.html</id>
+        <link href="https://remusao.github.io//posts/python-dbm-module.html"/>
+        <updated>2018-06-10T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>Python is, in a lot of ways, a very rich language. After years of using
+it, I still regularly discover new parts of the ecosystem, even in the
+standard library. In particular, there are a few modules which are not
+very well-known, but can be very useful in some situations. Today I
+discovered <code>dbm</code> a persistent key/value store:</p>
+<p>Quick start:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> dbm
+
+<span class="hljs-keyword">with</span> dbm.<span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;my_store&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>) <span class="hljs-keyword">as</span> db:
+  db[<span class="hljs-string">&#x27;key&#x27;</span>] = <span class="hljs-string">&#x27;value&#x27;</span>
+  <span class="hljs-built_in">print</span>(db.keys()) <span class="hljs-comment"># [&#x27;key&#x27;]</span>
+  <span class="hljs-built_in">print</span>(db[<span class="hljs-string">&#x27;key&#x27;</span>]) <span class="hljs-comment"># &#x27;value&#x27;</span>
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;key&#x27;</span> <span class="hljs-keyword">in</span> db) <span class="hljs-comment"># True</span>
+</code></pre>
+<p>It behaves a lot like a <code>dict</code> except:</p>
+<ul>
+<li>It persists its values on disk</li>
+<li>You can only use <code>str</code> or <code>bytes</code> as key and values</li>
+</ul>
+<p>The performance is also slower than a dictionary, but faster than <code>sqlite3</code>.</p>
+<p>The benchmark consists in performing <em>10k</em> writes and <em>10k</em> random reads:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> random
+<span class="hljs-keyword">import</span> time
+
+operations = <span class="hljs-number">10000</span>
+writes = [<span class="hljs-built_in">str</span>(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(operations)]
+reads = [<span class="hljs-built_in">str</span>(<span class="hljs-built_in">int</span>(random() * operations)) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(operations)]
+
+<span class="hljs-comment"># Create some records</span>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> writes:
+    db[i] = <span class="hljs-string">&#x27;x&#x27;</span>
+
+<span class="hljs-comment"># Read values in random order</span>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> reads:
+    x = db[i]
+</code></pre>
+<p>Here are the results:</p>
+<ul>
+<li><code>dict</code> – total: <em>0.002 seconds</em>, 0.23398 μs/record <strong>x 1</strong></li>
+<li><code>dbm</code> – total: 0.054 seconds, 5.35984 μs/record <strong>x 27</strong></li>
+<li><code>sqlite3</code> in-memory: total: 2.468 seconds, 246.84346 μs/record <strong>x 1234</strong></li>
+<li><code>sqlite3</code> file: total 42.407 seconds, 4240.69593 μs/record <strong>x 21207</strong></li>
+</ul>
+<p>Why is <code>sqlite3</code> so slow? Well, the benchmark is probably not representative of
+the typical workload for sqlite (lots of individual insertions and selections).
+If we perform the same operations using <code>executemany</code> and one <code>select</code> of all
+the keys at once, we get:</p>
+<ul>
+<li><code>:memory:</code> – total: 0.038 seconds, 3.81415 μs/record <strong>x 19</strong></li>
+<li><code>file</code> – total 0.071 seconds, 7.07369 μs/record <strong>x 35</strong></li>
+</ul>
+<p>It’s much better, but still not as fast as <code>dbm</code> (when we persist to
+a file). So, if you have a workload where keys and values are added
+and retrieved very often, are always <code>str</code> or <code>bytes</code> and need to be
+persisted on disk, <code>dbm</code> is a serious contender!</p>
+<p><em>The code used to benchmark can be found here:
+<a href="https://github.com/remusao/remusao.github.io/blob/d9b5a3088e4cae8452eabf90371f582c81569d88/snippets/dbm_bench.py" target="_blank" rel="noopener noreferrer">dbm_bench.py</a></em></p>
+<hr>
+<p><strong>Edit 06-11-2022</strong>: There was some great feedback on <a href="https://news.ycombinator.com/item?id=32849592" target="_blank" rel="noopener noreferrer">Hacker News</a> yesterday. I’d like to address some of it.</p>
+<ul>
+<li><em>Using a primary key</em>—It was suggested that adding a <code>PRIMARY KEY</code> when
+creating the table improves performance of SQLite3, so I’ve updated the
+benchmark accordingly. It does help with performance indeed (see below).</li>
+<li><em>Using WAL pragma</em>—It was suggested that using WAL journaling instead of
+default mode would also make more sense. I have updated the <a href="https://github.com/remusao/remusao.github.io/blob/42743be91b5ec4bf4233ffe25c3c7c90cf515627/snippets/dbm_bench.py" target="_blank" rel="noopener noreferrer">benchmarking
+script</a> accordingly.</li>
+<li><em>Using one INSERT at a time vs. <code>executemany</code></em>—It was called out that
+executing one INSERT command per key instead of batching the operations
+is less efficient. The benchmark measures both scenarios: one where single
+INSERTs are made (“sqlite3 (:memory:)” and “sqlite3 (file)”) and one where
+<code>executemany</code> is used to insert and read everything in one batch (“sqlite3
+(executemany)”). I’ve added one more benchmark for the use of <code>executemany</code>
+on a <code>:memory</code> SQLite3 database. The bottomline is that in all these cases,
+SQLite3 is still slower than DBM.</li>
+<li><em>Using an index with SQLite3</em>—In order to improve performances of SQLite3
+operations, creating an index can also be benefitial, and this was suggested
+in the comments. I’ve added two new entries to the <a href="https://github.com/remusao/remusao.github.io/blob/42743be91b5ec4bf4233ffe25c3c7c90cf515627/snippets/dbm_bench.py" target="_blank" rel="noopener noreferrer">benchmark</a> to show the
+performance when creating an index before insertions and also after
+insertions but before reading the values back.</li>
+<li><em>Which DBM implementation is used</em>—This is something that the initial
+blogpost missed. The results are about the GNU implementation of DBM, which
+the new benchmarking code now explicitely imports. The performance might vary
+vastely between implementations (worst case being if the <a href="https://docs.python.org/3/library/dbm.html#module-dbm.dumb" target="_blank" rel="noopener noreferrer">dbm.dumb</a> module is used).</li>
+</ul>
+<p>With all the above, I have updated the <a href="https://github.com/remusao/remusao.github.io/blob/42743be91b5ec4bf4233ffe25c3c7c90cf515627/snippets/dbm_bench.py" target="_blank" rel="noopener noreferrer">benchmarks</a> and here are the new results obtained with CPython 3.11.0, best of 5 runs:</p>
+<ul>
+<li><code>dict</code>—took 0.001 seconds, 0.11792 microseconds / record</li>
+<li><code>dbm</code>—took 0.009 seconds, 0.88954 microseconds / record</li>
+<li><code>sqlite3, executemany, :memory:</code>—took 0.029 seconds, 2.86062 microseconds / record</li>
+<li><code>sqlite3, executemany, file</code>—took 0.045 seconds, 4.52690 microseconds / record</li>
+<li><code>sqlite3, executemany, index after insertions</code>—took 0.044 seconds, 4.37975 microseconds / record</li>
+<li><code>sqlite3, executemany, index before insertions</code>—took 0.048 seconds, 4.84734 microseconds / record</li>
+<li><code>sqlite3, :memory:</code>—took 0.082 seconds, 8.19964 microseconds / record</li>
+<li><code>sqlite3, file</code> —took 4.661 seconds, 466.07621 microseconds / record</li>
+</ul>
+<p>With all optimizations brought to the SQLite3 version, <code>dbm.gnu</code> still has an
+edge on this very <em>synthetic benchmark</em>. And that is, I think, the bottom line
+of this article. It is only that, a synthetic benchmark and you should probably
+not read too much into it, unless  your particular use-case involves writing
+10,000 random values then reading them back and nothing else. As everything,
+you should first perform your own measurements based on your own use-case and
+constraints, then make a decision about what technology best serves your need.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Copy anything to clipboard in HTML and JavaScript]]></title>
+        <id>https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html</id>
+        <link href="https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html"/>
+        <updated>2018-06-09T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>Not long ago, I was looking for a way to copy the content of any HTML element on
+a page to clipboard. What I thought would be an easy task turned out to be more
+complicated than expected. In the end I had to use some trick which I will show
+here.</p>
+<p>The way this will work is as follows: when clicking an element on the page, its
+<code>innerText</code> will be copied to Clipboard. To achieve this we will need to:</p>
+<ul>
+<li>Attach an <code>onclick</code> event listener to our element (or to several elements)</li>
+<li>When a <code>click</code> event is received, emit a fake <code>copy</code> event</li>
+</ul>
+<pre class="code" data-lang="javascript"><code>  <span class="hljs-comment">// This variable will be used to store a reference to the</span>
+  <span class="hljs-comment">// latest element clicked.</span>
+  <span class="hljs-keyword">let</span> selected = <span class="hljs-literal">null</span>;
+
+  <span class="hljs-comment">// Attach our custom copy-to-clipboard-on-click trick to `elt`</span>
+  <span class="hljs-keyword">const</span> elt = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&#x27;...&#x27;</span>);
+  elt.<span class="hljs-property">onclick</span> = <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-comment">// Store reference to this element in the global `selected`</span>
+    selected = elt;
+    <span class="hljs-comment">// Emit fake `copy` event</span>
+    <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">execCommand</span>(<span class="hljs-string">&#x27;copy&#x27;</span>);
+    <span class="hljs-comment">// Remove reference from `selected` to allow normal copies</span>
+    <span class="hljs-comment">// to be performed on the page.</span>
+    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> { selected = <span class="hljs-literal">null</span>; }, <span class="hljs-number">1000</span>);
+  };
+</code></pre>
+<ul>
+<li>Listen to this <code>copy</code> event and copy the content of the latest element
+clicked to clipboard.</li>
+</ul>
+<pre class="code" data-lang="javascript"><code>  <span class="hljs-comment">// Intercept copy events</span>
+  <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;copy&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
+    <span class="hljs-keyword">if</span> (selected === <span class="hljs-literal">null</span>) {
+      <span class="hljs-comment">// No element was clicked</span>
+      <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-comment">// Copy content of clicked element to clipboard</span>
+    e.<span class="hljs-property">clipboardData</span>.<span class="hljs-title function_">setData</span>(
+      <span class="hljs-string">&#x27;text/plain&#x27;</span>,
+      selected.<span class="hljs-property">innerText</span>,
+    );
+
+    <span class="hljs-comment">// We want our data, not data from any selection,</span>
+    <span class="hljs-comment">// to be written to the clipboard</span>
+    e.<span class="hljs-title function_">preventDefault</span>();
+  });
+
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Packaging Node.js apps the easy way]]></title>
+        <id>https://remusao.github.io//posts/packaging-nodejs-apps.html</id>
+        <link href="https://remusao.github.io//posts/packaging-nodejs-apps.html"/>
+        <updated>2018-03-04T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p><em>TL;DR</em> in this article we demonstrate how to:</p>
+<ul>
+<li>Create a minified bundle for a Node.js application (using Webpack 4).</li>
+<li>Create a self-contained executable (using Nexe).</li>
+<li>Create a Docker containers to run the application.</li>
+</ul>
+<p>…without any configuration file!</p>
+<p>Packaging, bundling, deploying Node.js applications can get very tricky
+when you are faced with the diversity of tools that can be used. Even
+when tools have been chosen, configuration is often non-trivial.</p>
+<p>In this post we will see that packaging a Node.js application does not have to
+be difficult or confusing. By sticking to a minimal set of tools and using just
+the necessary configuration, we will be able to create the following artifacts:
+minified bundle, self-contained executable, Docker image.</p>
+<p>All the code from this article can be found <a href="https://github.com/remusao/node-app-packaging-template" target="_blank" rel="noopener noreferrer">on GitHub</a>.</p>
+<h2>The Application</h2>
+<p>Our demonstration application is performing a bandwidth test with
+<code>fast.com</code>, using <code>jsdom</code> to avoid having to resort to a headless
+browser. The output looks like the following:</p>
+<pre class="code" data-lang="js"><code>$ node index.<span class="hljs-property">js</span>
+<span class="hljs-title class_">Starting</span> bandwidth test...
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">0</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">7.9</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">35</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">60</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">60</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">64</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">65</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">67</span> <span class="hljs-title class_">Mbps</span>
+
+= <span class="hljs-title class_">Speed</span> <span class="hljs-number">66</span> <span class="hljs-title class_">Mbps</span>
+</code></pre>
+<p>The implementation details are not really relevant, but long story
+short; <code>jsdom</code> is loading the URL <code>https://fast.com</code>. We then display the
+bandwidth estimation every second until the test is completed.</p>
+<h2>Bundling with Webpack</h2>
+<p>In the past, I found Webpack to be a bit cumbersome to use, even for
+simple use-cases. With version 4, I was delighted to see that they now
+provide meaningful defaults and simple options. In our case, it is not
+even necessary to have a configuration file, which is great!</p>
+<p>Producing a minified bundle is as simple as:</p>
+<pre class="code" data-lang="sh"><code>$ webpack index.js --output bundle.min.js --mode production --target node
+</code></pre>
+<p>That’s it! This command will create a new file: <code>bundle.min.js</code> in the
+current directory. Since the <code>--target</code> is Node.js, we can invoke it
+directly: <code>node bundle.min.js</code>.</p>
+<p>If you want faster builds as well as a watch-mode, you can use the following
+variations of the previous command:</p>
+<pre class="code" data-lang="sh"><code>$ webpack index.js --output bundle.min.js --mode development --target node
+$ webpack index.js --output bundle.min.js --mode development --watch --target node
+</code></pre>
+<p>Yes, it’s <em>that easy</em>!</p>
+<h2>Compiling into a Single Executable</h2>
+<p>We could have stopped at our minified bundle, but what if we could get
+a self-contained executable packaging our application as well as all
+dependencies? And by dependencies, we really mean: Node.js itself and
+everything needed for the runtime.</p>
+<p>It’s possible thanks to <a href="https://github.com/nexe/nexe" target="_blank" rel="noopener noreferrer">Nexe</a>, which
+provides a way to <em>compile</em> your Javascript application along with a
+Node.js runtime in a single executable. Neat.</p>
+<p>With our already existing bundle <code>bundle.min.js</code>, a single command is needed to
+create the executable:</p>
+<pre class="code" data-lang="sh"><code>$ nexe bundle.min.js -t alpine-x64-8.9.3 -o app
+</code></pre>
+<p>What we’re saying here is that our <code>bundle.min.js</code> should be compiled with a
+Node.js runtime version 8.9.3 compiled for Alpine Linux x64 (which will be
+useful in a moment to create a Docker image). You can also check the <a href="https://github.com/nexe/nexe/releases/tag/v2.0.0-rc.17" target="_blank" rel="noopener noreferrer">exhaustive list of all
+possible targets</a></p>
+<p>You should now have a new executable in your current folder: <code>app</code>. It
+can be started by invoking it like any other command:</p>
+<pre class="code" data-lang="sh"><code>$ ./app
+</code></pre>
+<h2>Building Docker Images</h2>
+<p>And now the cherry on the cake! Although you can already easily ship your
+self-contained application created using Nexe, why not create a Docker
+container out of it? This can be achieved with the following <code>Dockerfile</code>:</p>
+<pre class="code" data-lang="sh"><code>FROM alpine:3.7
+COPY ./app .
+</code></pre>
+<p>Building:</p>
+<pre class="code" data-lang="sh"><code>$ docker build -t app .
+</code></pre>
+<p>The resulting image should weigh around 44MB. And here is how to run the
+application:</p>
+<pre class="code" data-lang="sh"><code>$ docker run app ./app
+Starting bandwidth <span class="hljs-built_in">test</span>...
+...
+
+= Speed 66 Mbps
+</code></pre>
+<h2>Final Thoughts</h2>
+<p>I will not pretend that the tools described here are able to handle
+all use-cases (or that they are the only possible tools; there are a
+plethora!), far from it. It is mostly restricted to simple Node.js
+applications (with dependencies). But this is probably a nice starting
+point for more complex situations, for which you might need to create a
+proper configuration file with more bells and whistles.</p>
+<p>The ease with which complex tasks can be handled with simple commands and
+almost no configuration also shows that the Node.js/Javascript ecosystem is
+maturing! Although there is still a lot of fragmentation, it’s really nice to
+observe and benefit from all these improvements.</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Monitoring your Internet bandwidth with a Raspberry Pi]]></title>
         <id>https://remusao.github.io//posts/raspberrypi-home-network-monitoring.html</id>
         <link href="https://remusao.github.io//posts/raspberrypi-home-network-monitoring.html"/>
@@ -786,6 +2935,85 @@ the channel or other settings would improve the situation.</li>
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[People in Cuba built their own Internet]]></title>
+        <id>https://remusao.github.io//posts/cuba-internet.html</id>
+        <link href="https://remusao.github.io//posts/cuba-internet.html"/>
+        <updated>2017-12-30T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>Today is the last day of 34c3 and this year was amazing. There is a
+lot to talk about, a lot of information to digest, and so many new
+ideas to experiment with. I plan on writing a review of the talks I
+preferred and outline the take aways in a future post, but for now
+I’d like to talk about one presentation in particular: “The Internet in Cuba:
+A Story of Community Resilience”. You can find the <a href="https://media.ccc.de/v/34c3-8740-the_internet_in_cuba_a_story_of_community_resilience" target="_blank" rel="noopener noreferrer">full video online</a>.
+This talk gave me a lot of hope, and I will tell you why, but
+first, let’s quickly summarize the situation in Cuba, regarding access
+to the Internet (most of the information is from the actual talk).</p>
+<p>The only way to access the Internet in Cuba is through hotspots accessible in
+each city. This is not ideal for several reasons:</p>
+<ol>
+<li>There are not so many hotspots (~500 in the country, according to a recent
+estimation), which means that you need to go there to get an access and it’s
+shared with many people: bandwidth is not great! (maximum 1 MB/s).</li>
+<li>It’s expansive, about 1 CUC/hour (~1 euro per hour).</li>
+</ol>
+<p>There are some alternatives, not sanctioned by the government:</p>
+<ol>
+<li><em>El Paquete</em>, which is basically an external drive you can buy once a week,
+containing data dumped from the internet: TV shows, movies, etc. You can
+check this website to know more about what it contains:
+<a href="http://paquetedecuba.com" target="_blank" rel="noopener noreferrer">paquetedecuba.com</a> (in <em>http</em> only!)</li>
+<li><em>WiFi sharing</em>, where someone shares his connection to a hotspot with other
+people and make them pay a smaller fee (e.g.: using Connectify).</li>
+<li>Isolated networks.</li>
+</ol>
+<p>This last point is the amazing one. There are multiple isolated networks such as
+Universities (and inter-Universities networks), but the most interesting are the
+ones called <em>SNET</em>, which stands for Street Network. In Havana alone, one such
+network connects more than 100k people. And it’s not something provided by an
+FAI, it has been built from the ground up by people! And multiple other cities
+have it too, except they are not connected with each other. And they are not
+connected to the Internet either. In fact, this is forbidden, as it would be
+illegal.</p>
+<p>It’s hard to imagine how it got to that scale, but it has not always
+been that way. In fact, it all started as a multitude of much smaller
+gaming LAN networks used to play multiplayer games. They then realized
+that they could connect with each other, across streets, allowing
+neighborhoods to play or communicate.</p>
+<p>Nowadays the organization is slightly more complex and is composed of different
+levels. For more details you can read directly the <a href="https://conferences.sigcomm.org/imc/2017/papers/imc17-final186.pdf" target="_blank" rel="noopener noreferrer">paper published at
+the Internet Measurement Conference</a>, November 2017 in London. But to
+put it simply, there are local <em>nodes</em> at the scale of neighborhoods,
+connecting up to 200 people. The connection at this scale is made of a
+mix of WiFi connections and Ethernet wires. Nodes are then connected to
+regional <em>pillars</em>, which in turn are connected to a few other pillars. In
+short, <em>SNET</em> is literally an Internet on its own.</p>
+<p>And what do people do on this SNET? Well, basically the same thing people do on
+the Internet:</p>
+<ul>
+<li>They have HTTP websites to serve content.</li>
+<li>Portals to discover more content.</li>
+<li>Gaming (the most popular usage).</li>
+<li>Forums (<em>WifiNet</em>, the biggest one, has 56k active users).</li>
+<li>Real time communications.</li>
+<li>Mirrors of Internet websites such as Wikipedia.</li>
+<li>Sub-communities, one of which is mostly working on open-source stuff; they
+setup their own instance of Gitlab and built their own search engine for
+<em>SNET</em>.</li>
+</ul>
+<p>Of course there are some pain points such as cost of the equipment, lack of
+emails, out-dated software, etc. But overall they are doing a fantastic job
+developing and maintaining such an infrastructure on their own.</p>
+<p>This seriously gives me hope for the future. Because it shows that it
+is possible to build alternative networks or internets at a large scale
+without multi-billion international companies. Of course it’s a lot of
+work, but it’s possible, with hardware that you can buy online today.</p>
+<p>This gives a bit of perspective after net neutrality was killed in the US a few
+days ago. The Cuba situation shows that starting from scratch, with no private
+support, people were able to invent and build the tools they needed to connect
+and communicate with each other.</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[AWS NVMe storage optimized instances]]></title>
         <id>https://remusao.github.io//posts/aws-nvme-storage-instance.html</id>
         <link href="https://remusao.github.io//posts/aws-nvme-storage-instance.html"/>
@@ -802,6 +3030,557 @@ format and mount it manually.</p>
 $ sudo mount -o rw /dev/nvme0n1 /ebs/
 $ <span class="hljs-built_in">cd</span> /ebs/
 </code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[simple-sanic—A blazing fast HTTP server using Sanic]]></title>
+        <id>https://remusao.github.io//posts/faster-http-server-sanic.html</id>
+        <link href="https://remusao.github.io//posts/faster-http-server-sanic.html"/>
+        <updated>2017-11-26T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>I recently <a href="/posts/simple-http-server-haskell.html" target="_blank" rel="noopener noreferrer">showed how</a> one can
+implement something equivalent to <code>http.server</code> from <code>Python</code> in <code>Haskell</code>. The
+solution turned out to be reasonably simple, and <em>surprisingly fast</em>.</p>
+<p>Unfortunately, we cannot say that <code>http.server</code> is fast… It works fine
+to serve simple files and is very convenient to use, but will quickly
+reach its limit when more files need to be served. To be clear, <em>you should not
+use</em> <code>sanic</code> or <code>http.server</code> in production to serve static files; <a href="https://www.nginx.com/resources/admin-guide/serving-static-content/" target="_blank" rel="noopener noreferrer">nginx</a>
+is a much more robust solution for that. But sometimes you need to work
+locally on some static files, and it makes sense to have a reasonably fast and
+easy way to achieve that!</p>
+<p>I decided to go with <a href="https://github.com/channelcat/sanic" target="_blank" rel="noopener noreferrer">sanic</a>, an “Async
+Python 3.5+ web server that’s written to go fast”. It can be configured to
+behave like <code>http.server</code>, except much faster…</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">from</span> sanic <span class="hljs-keyword">import</span> Sanic
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():
+    app = Sanic(__name__, log_config=<span class="hljs-literal">None</span>)
+    app.static(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-string">&#x27;./index.html&#x27;</span>)
+    app.static(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-string">&#x27;./&#x27;</span>)
+    app.run(host=<span class="hljs-string">&quot;0.0.0.0&quot;</span>)
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:
+    main()
+</code></pre>
+<p>To make it even easier to use, I bundled this code into a package: <a href="https://github.com/remusao/simple-sanic" target="_blank" rel="noopener noreferrer">simple-sanic</a>,
+which is a drop-in replacement for <code>http.server</code>. It allows to serve the content
+of the current directory over http with a single command:</p>
+<pre class="code" data-lang="sh"><code>$ python -m simple-sanic
+</code></pre>
+<p>The package is available on <a href="https://pypi.python.org/pypi/simple-sanic" target="_blank" rel="noopener noreferrer">Pypi</a>
+and <a href="https://github.com/remusao/simple-sanic" target="_blank" rel="noopener noreferrer">Github</a>. To install:</p>
+<pre class="code" data-lang="sh"><code>$ pip install simple-sanic
+</code></pre>
+<p>You can customize the <code>host</code> and <code>port</code> as well:</p>
+<pre class="code" data-lang="sh"><code>$ python -m simple-sanic --<span class="hljs-built_in">help</span>
+Usage:
+    simple-sanic [options]
+    simple-sanic -h | --<span class="hljs-built_in">help</span>
+
+Options:
+    -p --port PORT      Specify alternate port [default: 8000]
+    -b --<span class="hljs-built_in">bind</span> ADDRESS   Specify alternate <span class="hljs-built_in">bind</span> address [default: 0.0.0.0]
+    -h, --<span class="hljs-built_in">help</span>          Show this <span class="hljs-built_in">help</span> message and <span class="hljs-built_in">exit</span>.
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
+        <id>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</id>
+        <link href="https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html"/>
+        <updated>2017-11-25T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
+fast fuzzy matching and approximate set membership tests, I found myself in a
+situation where I needed more insight about what optimizations <code>V8</code> was
+performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
+compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
+consider!</p>
+<p>This article assumes you’re using
+<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
+extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
+During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
+very useful!</p>
+<h1>Building V8 From Source</h1>
+<h2>Installing depot_tools</h2>
+<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
+<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
+$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
+</code></pre>
+<h2>Compiling V8</h2>
+<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
+<pre class="code" data-lang="sh"><code>$ fetch v8
+</code></pre>
+<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
+version of the sources. It will also configure everything needed for the build.</p>
+<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
+$ ninja -C out.gn/x64.release
+</code></pre>
+<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
+intended by running the tests:</p>
+<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
+</code></pre>
+<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[The wrong way of benchmarking integer comparison functions]]></title>
+        <id>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</id>
+        <link href="https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html"/>
+        <updated>2017-11-25T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p><em>TL;DR</em>: Naive code can sometimes run faster than “clever” code. Compilers are
+usually designed to optimize for the most common code, and common code is not
+clever. Lessons learned; if you try to write clever code, benchmark it to make
+sure there is a benefit.</p>
+<p>I recently stumbled upon <a href="https://blogs.msdn.microsoft.com/oldnewthing/20171117-00/?p=97416" target="_blank" rel="noopener noreferrer">an article</a>,
+describing how trying to out-smart the compiler can result in bad
+performances compared to more naive code. The benchmark is about finding
+the most efficient way to write a comparison function between integers,
+to be used in conjunction with <code>sort</code> or binary search for example. The
+original post being about <code>c++</code>, I was curious to know if the results
+would transfer to JavaScript (in particular <code>V8</code>, using <code>Node.js</code>). This
+is what this post is about.</p>
+<p>Let see the contenders:</p>
+<ul>
+<li><em>Naive</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">compare1</span>(<span class="hljs-params">a, b</span>) {
+    <span class="hljs-keyword">if</span> (a &lt; b) <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+    <span class="hljs-keyword">if</span> (a &gt; b) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}
+</code></pre>
+<ul>
+<li><em>Clever</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">compare2</span>(<span class="hljs-params">a, b</span>) {
+    <span class="hljs-keyword">return</span> a - b;
+}
+</code></pre>
+<h2>Benchmarks</h2>
+<p>The original article has a very good point saying that to benchmark this
+code realistically, you need a real use-case. Just sorting the array and
+summing the numbers does not make any sense, no one would do it. But if
+instead you perform a binary search on the sorted array, it gets closer
+to something one might do in a real code-base.</p>
+<p>I took the liberty of converting the original <code>C++</code> implementation of the binary
+search into JavaScript, to stick closely to the article:</p>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">binarySearch</span>(<span class="hljs-params">array, first, last, key, compare</span>) {
+  <span class="hljs-keyword">var</span> length = last - first;
+  <span class="hljs-keyword">while</span> (length &gt; <span class="hljs-number">0</span>) {
+    <span class="hljs-keyword">var</span> step = (length / <span class="hljs-number">2</span>) | <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">var</span> middle = first + step;
+    <span class="hljs-keyword">var</span> result = <span class="hljs-title function_">compare</span>(array[middle], key);
+    <span class="hljs-keyword">if</span> (result &lt; <span class="hljs-number">0</span>) {
+      first = middle + <span class="hljs-number">1</span>;
+      length -= step + <span class="hljs-number">1</span>;
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (result === <span class="hljs-number">0</span>) {
+      <span class="hljs-keyword">return</span> middle;
+    } <span class="hljs-keyword">else</span> {
+      length = step;
+    }
+  }
+
+  <span class="hljs-keyword">return</span> last;
+}
+</code></pre>
+<p>Using the great <a href="https://www.npmjs.com/package/benchmark" target="_blank" rel="noopener noreferrer">benchmark</a>
+library, let’s evaluate the performance of each compare function:</p>
+<ul>
+<li><em>Setup</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">compare</span>) {
+  <span class="hljs-comment">// Create a sorted array</span>
+  <span class="hljs-keyword">var</span> array = [];
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">8192</span>; ++i) {
+    array.<span class="hljs-title function_">push</span>(i * <span class="hljs-number">2</span>);
+  }
+
+  <span class="hljs-keyword">var</span> found = <span class="hljs-number">0</span>;
+
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = -<span class="hljs-number">1</span>; j &lt; <span class="hljs-number">16383</span>; ++j) {
+    <span class="hljs-keyword">var</span> index = <span class="hljs-title function_">binarySearch</span>(
+      array,              <span class="hljs-comment">// sorted array</span>
+      <span class="hljs-number">0</span>,                  <span class="hljs-comment">// start index</span>
+      array.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>,   <span class="hljs-comment">// end index</span>
+      j,                  <span class="hljs-comment">// element we are looking for</span>
+      compare);           <span class="hljs-comment">// comparison function</span>
+
+    <span class="hljs-keyword">if</span> (index !== -<span class="hljs-number">1</span> &amp;&amp; array[index] === j) {
+      found += <span class="hljs-number">1</span>;
+    }
+  }
+
+  <span class="hljs-keyword">if</span> (found !== <span class="hljs-number">8191</span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">&#x27;Found bug&#x27;</span>, found);
+  }
+}
+</code></pre>
+<ul>
+<li><em>Benchmark</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">bench</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">var</span> <span class="hljs-title class_">Benchmark</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;benchmark&#x27;</span>);
+  <span class="hljs-keyword">var</span> suite = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Benchmark</span>.<span class="hljs-title class_">Suite</span>();
+
+  suite
+    .<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;compare1&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-title function_">run</span>(compare1);
+    })
+    .<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;compare2&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-title function_">run</span>(compare2);
+    })
+    .<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;cycle&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">String</span>(event.<span class="hljs-property">target</span>));
+    })
+    .<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;complete&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Fastest is &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">filter</span>(<span class="hljs-string">&#x27;fastest&#x27;</span>).<span class="hljs-title function_">map</span>(<span class="hljs-string">&#x27;name&#x27;</span>));
+    })
+    .<span class="hljs-title function_">run</span>({});
+}
+
+<span class="hljs-title function_">bench</span>();
+</code></pre>
+<p>And…</p>
+<blockquote>
+<pre class="code" data-lang="sh"><code>compare1 x 421 ops/sec ±0.51% (91 runs sampled)
+compare2 x 394 ops/sec ±0.39% (89 runs sampled)
+</code></pre>
+</blockquote>
+<p>It happens that the naive <code>compare1</code> is a bit faster than <code>compare2</code>.
+It’s not day and night, but the <em>naive</em>, more readable code is more
+efficient on V8 than the clever one.</p>
+<p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
+there</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Generating Ad-Blocker filters from whotracks.me data]]></title>
+        <id>https://remusao.github.io//posts/whotracksme-generate-adb-filters.html</id>
+        <link href="https://remusao.github.io//posts/whotracksme-generate-adb-filters.html"/>
+        <updated>2017-11-22T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p><strong>Disclaimer</strong>: This article has originally been written for, and published on
+<a href="https://whotracks.me/blog/generating_adblocker_filters.html" target="_blank" rel="noopener noreferrer">whotracks.me</a>.</p>
+<p><em>TL;DR</em>  In this post we see how to:</p>
+<ol>
+<li>Load the data from <a href="https://github.com/cliqz-oss/whotracks.me" target="_blank" rel="noopener noreferrer">whotracks.me</a> to get access to trackers’ information</li>
+<li>Create a mapping from tracking categories to list of domains</li>
+<li>Filter each domain based on the amount of tracking of each <em>app</em></li>
+<li>Generate a filter list for each category</li>
+</ol>
+<p>The full source code used in this article can be found on the <a href="https://github.com/cliqz-oss/whotracks.me/blob/master/contrib/generating_adblocker_filters.py" target="_blank" rel="noopener noreferrer">Github repository</a>.</p>
+<p>Most popular content blockers are using filter lists to decide what requests
+leaving the browser should be blocked. In this regard, filter lists act as a
+privacy <em>ground truth</em>: deciding what is safe, and what is not safe for users.
+It means that your privacy protection is only as good as the filters your are
+using. The community is doing an amazing job, but still there can be gaps in
+your protection; one such situation is when a new tracker appears.</p>
+<p>With the right data, updated regularly, we believe it is possible to
+build powerful tools to help increase users’ privacy. Knowing more about
+trackers, in real time, allows to provide better anti-tracking but can also
+<em>help</em> the tedious process of curating the filter lists.</p>
+<p>In this post we’d like to demonstrate how we can make use of the
+open-sourced <a href="https://whotracks.me" target="_blank" rel="noopener noreferrer">whotracks.me</a> data to automatically
+generate <em>up-to-date</em>, <em>per-category</em>, filter lists supported by the
+most popular ad-blockers out there. Leveraging this data can improve
+user experience and make maintaining the lists easier.</p>
+<p>In the future, we can imagine generating per-country lists as well,
+in the spirit of the different <a href="https://easylist.to/" target="_blank" rel="noopener noreferrer">easylists</a> already
+in existence:</p>
+<ul>
+<li><code>DEU: Pornvertising blocking Germany</code></li>
+<li><code>DEU: Site_Analytics blocking Germany</code></li>
+<li>…</li>
+<li><code>FR: Site_Analytics blocking France</code></li>
+</ul>
+<p>They could also be dispatched in the already existing lists such as
+<code>advertising</code>, <code>privacy</code>, etc. Another option could be to use this as a
+tool to assist maintainers to keep an eye on the ecosystem; allowing to
+learn about new trackers in real time.</p>
+<p>Let’s get started!</p>
+<h2>Loading the data</h2>
+<p>The first step is to install the <code>whotracksme</code> package, available on <a href="https://pypi.python.org/pypi/whotracksme" target="_blank" rel="noopener noreferrer">PyPI</a>
+and <a href="https://github.com/cliqz-oss/whotracks.me" target="_blank" rel="noopener noreferrer">Github</a>. You can get started by
+installing <code>whotracksme</code> with <code>pip</code>:</p>
+<pre class="code" data-lang="sh"><code>$ pip install whotracksme
+</code></pre>
+<p>We start by loading the tracker-related data from <a href="https://github.com/cliqz-oss/whotracks.me/blob/master/whotracksme/data/assets/trackerdb.sql" target="_blank" rel="noopener noreferrer">trackerdb.sql</a>, using the
+helper function found in the <code>whotracksme.data</code> module:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> defaultdict
+<span class="hljs-keyword">from</span> whotracksme.data <span class="hljs-keyword">import</span> load_tracker_db
+
+<span class="hljs-comment"># Categories to tracker domains</span>
+tracker_domains_per_category = defaultdict(<span class="hljs-built_in">list</span>)
+
+<span class="hljs-comment"># Keep track of normalized &quot;app&quot; name for each tracker domain. A given &quot;app&quot;</span>
+<span class="hljs-comment"># such as &quot;doubleclick&quot; can use several domains: 2mdn.net, doubleclick.net, etc.</span>
+tracker_domains_to_app = {}
+
+<span class="hljs-comment"># Load trackers and group them by category</span>
+sql_query = <span class="hljs-string">&quot;&quot;&quot;
+  SELECT categories.name, tracker, domain FROM tracker_domains
+  INNER JOIN trackers ON trackers.id = tracker_domains.tracker
+  INNER JOIN categories ON categories.id = trackers.category_id;
+&quot;&quot;&quot;</span>
+<span class="hljs-keyword">with</span> load_tracker_db() <span class="hljs-keyword">as</span> connection:
+    <span class="hljs-keyword">for</span> (category, tracker, domain) <span class="hljs-keyword">in</span> connection.execute(sql_query):
+        tracker_domains_per_category[category].append(domain)
+        tracker_domains_to_app[domain] = tracker
+</code></pre>
+<p>Here is a sample of what we get in <code>tracker_domains_per_category</code>. Note that if
+you run the same script, you might get slightly different results as the
+data is being constantly updated:</p>
+<blockquote>
+<pre class="code" data-lang="python"><code>defaultdict(<span class="hljs-built_in">list</span>, {
+  <span class="hljs-string">&#x27;advertising&#x27;</span>: [
+    <span class="hljs-string">&#x27;doubleclick.net&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;audio_video_player&#x27;</span>: [
+    <span class="hljs-string">&#x27;soundcloud.com&#x27;</span>
+    ...
+  ],
+  <span class="hljs-string">&#x27;cdn&#x27;</span>: [
+    <span class="hljs-string">&#x27;googleapis.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;comments&#x27;</span>: [
+    <span class="hljs-string">&#x27;disqus.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;customer_interaction&#x27;</span>: [
+    <span class="hljs-string">&#x27;zendesk.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;essential&#x27;</span>: [
+    <span class="hljs-string">&#x27;googletagmanager.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;extensions&#x27;</span>: [
+    <span class="hljs-string">&#x27;kaspersky-labs.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;hosting&#x27;</span>: [
+    <span class="hljs-string">&#x27;amazonaws.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;misc&#x27;</span>: [
+    <span class="hljs-string">&#x27;linkedin.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;pornvertising&#x27;</span>: [
+    <span class="hljs-string">&#x27;pornhub.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;site_analytics&#x27;</span>: [
+    <span class="hljs-string">&#x27;google-analytics.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;social_media&#x27;</span>: [
+    <span class="hljs-string">&#x27;twitter.com&#x27;</span>,
+    ...
+  ]
+]})
+</code></pre>
+</blockquote>
+<h2>Filtering based on tracking behavior</h2>
+<p>It is tempting to generate filters for each domain loaded so far, but it
+would be very aggressive. Indeed, some domains identified as potential
+trackers might in fact not send <a href="https://whotracks.me/blog/what_is_a_tracker.html" target="_blank" rel="noopener noreferrer">unsafe identifiers</a> (or not a lot). For example
+<a href="https://whotracks.me/trackers/createjs.html" target="_blank" rel="noopener noreferrer">createjs</a> is not using any
+<em>fingerprinting</em> and does not seem to be doing tracking via <em>cookies</em>,
+hence, it should not be blocked systematically.</p>
+<p>Fortunately, we can make use of the data from <a href="https://github.com/cliqz-oss/whotracks.me/blob/master/whotracksme/data/assets/apps.json" target="_blank" rel="noopener noreferrer">apps.json</a> to learn
+more about each tracker. An <em>app</em> is an entity which can contain several
+domains (e.g.: <em>doubleclick</em> is an <em>app</em> for which we identified three
+domains: <code>2mdn.net</code>, <code>invitemedia.com</code> and <code>doubleclick.net</code>). We also
+provide information about companies to which each app belongs, but we
+will leave the exploration of this data for another article.</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> json
+<span class="hljs-keyword">from</span> whotracksme.data <span class="hljs-keyword">import</span> load_apps
+
+apps = load_apps()
+</code></pre>
+<p><code>apps</code> is a dictionary with keys being <em>app ids</em> (e.g.: <code>google_analytics</code>)
+and values containing all we know about each <em>app</em>. Let’s take an example:</p>
+<pre class="code" data-lang="json"><code>apps<span class="hljs-punctuation">[</span><span class="hljs-string">&quot;google_analytics&quot;</span><span class="hljs-punctuation">]</span>
+
+<span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;overview&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;bad_qs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.4377430033329568</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;content_length&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">14771.492718357234</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;cookies&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.0015869678941083753</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;https&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.7507222054912428</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;google_analytics&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;reach&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.44292899275150094</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;requests&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3.834100333790446</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;requests_tracking&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1.202157901660253</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;site_reach&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.616005569531587</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;tracked&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.4383474801843971</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;history&quot;</span><span class="hljs-punctuation">:</span> ...<span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;rank&quot;</span><span class="hljs-punctuation">:</span> ...<span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;sites&quot;</span><span class="hljs-punctuation">:</span> ...
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>That’s a lot of data, and we plan to release a more complete
+documentation about what all this is about soon. For now let’s just say
+that everything is already made accessible on the website, in form of
+nice graphs and aggregations!</p>
+<p>For our use-case, we will only consider the field: <code>tracked</code>. It
+represents the proportion of page loads including <em>app</em>, identified as
+performing some form of tracking (using either identifying <em>cookies</em>
+or <em>fingerprinting</em>). In the case of <code>google_analytics</code>, it means that
+out of 100 page loads where <code>google_analytics</code> was present, tracking
+occurred 44 times.</p>
+<p>Before generating the filter list, let’s keep only <em>apps</em> tracking
+users more than <code>10%</code> of the time. Please note that finding the right
+threshold would require some finer analysis, and could depend on the
+application.</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">filter_domains</span>(<span class="hljs-params">domains</span>):
+    <span class="hljs-keyword">for</span> domain <span class="hljs-keyword">in</span> domains:
+        app_name = tracker_domains_to_app[domain]
+        <span class="hljs-keyword">if</span> app_name <span class="hljs-keyword">in</span> apps:
+            app = apps[tracker_domains_to_app[domain]]
+            tracked = app[<span class="hljs-string">&#x27;overview&#x27;</span>][<span class="hljs-string">&#x27;tracked&#x27;</span>]
+            <span class="hljs-keyword">if</span> tracked &gt;= <span class="hljs-number">0.1</span>:
+                <span class="hljs-keyword">yield</span> domain
+</code></pre>
+<p>We need to check if the <em>app</em> exists first because we currently only have the
+top 500 hosted on Github. We will host more in the future.</p>
+<h2>Generating the lists</h2>
+<p>We now proceed to generate the filter lists from these domains. They can take
+two forms:</p>
+<ul>
+<li>ADB compatible syntax: <code>||{domain}$third-party</code></li>
+<li>Hostname syntax: <code>127.0.0.1 {domain}</code></li>
+</ul>
+<p>Note that the second option will probably be too aggressive in a lot of
+cases, as it will also block the domain even if they are first-party (e.g.,
+<code>google.com</code> might get blocked by these rules).</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">generate_adb_filters</span>(<span class="hljs-params">domains</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Given a list of domains, generate filters using the
+    ADB syntax to be used in an adblocker&quot;&quot;&quot;</span>
+    <span class="hljs-keyword">for</span> domain <span class="hljs-keyword">in</span> domains:
+        <span class="hljs-keyword">yield</span> <span class="hljs-string">f&quot;||<span class="hljs-subst">{domain}</span>$third-party&quot;</span>
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">generate_hostname_filters</span>(<span class="hljs-params">domains</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Given a list of domains, generate filters using
+    the hostname syntax&quot;&quot;&quot;</span>
+    <span class="hljs-keyword">for</span> domain <span class="hljs-keyword">in</span> domains:
+        <span class="hljs-keyword">yield</span> <span class="hljs-string">f&quot;127.0.0.1 <span class="hljs-subst">{domain}</span>&quot;</span>
+
+<span class="hljs-comment"># Generate filters with *ADB* syntax</span>
+adb_filters = {
+    category: <span class="hljs-string">&#x27;\n&#x27;</span>.join(generate_adb_filters(filter_domains(domains)))
+    <span class="hljs-keyword">for</span> (category, domains) <span class="hljs-keyword">in</span> tracker_domains_per_category.items()
+}
+
+<span class="hljs-comment"># Generate filters with *hostname* syntax</span>
+hostname_filters = {
+    category: <span class="hljs-string">&#x27;\n&#x27;</span>.join(generate_hostname_filters(filter_domains(domains)))
+    <span class="hljs-keyword">for</span> (category, domains) <span class="hljs-keyword">in</span> tracker_domains_per_category.items()
+}
+</code></pre>
+<p>Each dictionary now contains a valid adblocking list for each category:</p>
+<pre class="code" data-lang="python"><code>hostname_filters.keys()
+</code></pre>
+<blockquote>
+<pre class="code" data-lang="python"><code>dict_keys([
+  <span class="hljs-string">&#x27;advertising&#x27;</span>,
+  <span class="hljs-string">&#x27;audio_video_player&#x27;</span>,
+  <span class="hljs-string">&#x27;cdn&#x27;</span>,
+  <span class="hljs-string">&#x27;comments&#x27;</span>,
+  <span class="hljs-string">&#x27;customer_interaction&#x27;</span>,
+  <span class="hljs-string">&#x27;essential&#x27;</span>,
+  <span class="hljs-string">&#x27;extensions&#x27;</span>,
+  <span class="hljs-string">&#x27;hosting&#x27;</span>,
+  <span class="hljs-string">&#x27;misc&#x27;</span>,
+  <span class="hljs-string">&#x27;pornvertising&#x27;</span>,
+  <span class="hljs-string">&#x27;site_analytics&#x27;</span>,
+  <span class="hljs-string">&#x27;social_media&#x27;</span>,
+  <span class="hljs-string">&#x27;unknown&#x27;</span>
+])
+</code></pre>
+</blockquote>
+<p>And here is what we get for example in the <code>advertising</code> category:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-built_in">print</span>(adb_filters[<span class="hljs-string">&#x27;advertising&#x27;</span>])
+</code></pre>
+<blockquote>
+<pre class="code" data-lang="sh"><code>||doubleclick.com<span class="hljs-variable">$third</span>-party
+||criteo.com<span class="hljs-variable">$third</span>-party
+...
+</code></pre>
+</blockquote>
+<p>And the same domains but as <code>hostname</code> filters:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-built_in">print</span>(hostname_filters[<span class="hljs-string">&#x27;advertising&#x27;</span>])
+</code></pre>
+<blockquote>
+<pre class="code" data-lang="sh"><code>127.0.0.1 doubleclick.com
+127.0.0.1 criteo.com
+...
+</code></pre>
+</blockquote>
+<p>To put it in a nutshell, here is what we just did:</p>
+<ol>
+<li>Load the data from <a href="https://github.com/cliqz-oss/whotracks.me" target="_blank" rel="noopener noreferrer">whotracks.me</a> to get access to trackers’ information</li>
+<li>Create a mapping from tracking categories to list of domains</li>
+<li>Filter each domain based on the amount of tracking of each <em>app</em></li>
+<li>Generate a filter list for each category</li>
+</ol>
+<p>There is so much more we can do with this database. At the moment the
+API to load the data is pretty-low level, but it will be improved over
+time.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Fully static comments]]></title>
+        <id>https://remusao.github.io//posts/static-comments.html</id>
+        <link href="https://remusao.github.io//posts/static-comments.html"/>
+        <updated>2017-11-19T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>I’d like to give a quick update about the comments
+on this blog. I already mentioned in a <a href="/posts/state-of-static-blogs.html" target="_blank" rel="noopener noreferrer">previous post</a>
+that I wanted to experiment with fully static comments for my blog. By
+fully static I mean that comments are directly integrated in the HTML of
+each page, at generation time. It requires to generate pages with new
+comments regularly but I think it’s a good trade-off.</p>
+<p>I’d like to give an overview of how it works, and how it looks in practice.</p>
+<h2>How does it Work?</h2>
+<ol>
+<li>Comments will be posted and hosted on <em>Github Issues</em>.</li>
+<li>Each <code>post</code>’s original <code>Markdown</code> document has an optional <code>issue</code>
+attribute in its metadata; when it is specified, the static blog
+generator will fetch the comments of the specified issue every time we
+build the site.</li>
+<li>Issues are directly integrated in the HTML of the page (at the bottom) and
+are collapsed by default.</li>
+</ol>
+<h2>Pros</h2>
+<p>I see several advantages with this system:</p>
+<ol>
+<li>It’s fast because it’s part of the page’s HTML.</li>
+<li>The look and feel of the page is consistent.</li>
+<li>It does not require any third-party Javascript to work (so no tracking…).</li>
+<li>It leverages Github, which is already used to host the blog anyway, so why
+not use the <code>issues</code> as well.</li>
+</ol>
+<h2>Cons</h2>
+<p>Obviously it’s not perfect because:</p>
+<ol>
+<li>People need a Github account to post comments: but I expect a lot of people
+do, and if they don’t, there are a lot of ways to discuss blog posts on the
+Internet: Reddit, HackerNews, Twitter; and they all have their sharing button
+at the bottom of the page!</li>
+<li>It takes a bit of time to refresh the comments (currently <code>Travis</code> will
+deploy the posts at least once a day + every time I do a commit), but they
+can always be seen in real time on the <code>issue</code> itself.</li>
+<li>It might not scale very well with a lot of comments, but I will be happy to
+figure out a solution for this problem when it happens with this blog!</li>
+</ol>
+<h2>How it Looks</h2>
+<p>This post is already equipped with the static comments. I created a few of them
+to demonstrate the look and feel. You can expend the comments by
+clicking the first link on the left <code>N comments</code>, or post a new one by clicking
+on <code>Leave a comment on Github</code> (you will be redirected on the correct <code>issue</code>).</p>
+<p>Feel free to add more! I’d love to get some feedback on this.</p>
 ]]></content>
     </entry>
     <entry>
@@ -830,6 +3609,187 @@ found a very simple (and efficient) solution:</p>
 </code></pre>
 <p>That’s it! And it’s using the super efficient <a href="http://www.aosabook.org/en/posa/warp.html" target="_blank" rel="noopener noreferrer">warp</a>
 HTTP server.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Getting the most out of SQLite3 with Python]]></title>
+        <id>https://remusao.github.io//posts/few-tips-sqlite-perf.html</id>
+        <link href="https://remusao.github.io//posts/few-tips-sqlite-perf.html"/>
+        <updated>2017-10-21T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>I’ve recently made heavy use of <code>sqlite3</code> for a project involving a lot of data
+and processing. My first attempt involved no database at all, and all data would
+be kept in memory and queries would consist in a mix of dictionary lookups,
+iteration, conditions, etc. This was nice, but there is only so much you can fit
+in memory, and re-generating/loading the data from disk to memory became a tedious
+and time consuming process.</p>
+<p>I decided to give <code>sqlite3</code> a try. This allowed an increase in the amount of
+data that could be processed, and reduced the loading time of the application to
+nothing, since only opening a connection to the database was needed. Moreover,
+I could replace a lot of Python logic by SQL queries.</p>
+<p>I’d like to share a few learnings and findings about this experience.</p>
+<p><strong>TL;DR</strong>:</p>
+<ol>
+<li>Use bulk operations (<em>a.k.a.</em> <code>executemany</code>).</li>
+<li>You don’t need <code>cursors</code> (most of the time).</li>
+<li>Cursors can be iterated upon.</li>
+<li>Use context managers.</li>
+<li>Use pragmas (when it makes sense).</li>
+<li>Postpone index creation.</li>
+<li>Use placeholders to interpolate python values.</li>
+</ol>
+<h2>Use Bulk Operations</h2>
+<p>If you need to insert a lot of rows at once in your database, you really
+should not use <code>execute</code>. The <code>sqlite3</code> module provides a way to bulk
+insertions: <code>executemany</code>.</p>
+<p>Instead of doing something like:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> iter_data():
+    connection.execute(<span class="hljs-string">&#x27;INSERT INTO my_table VALUES (?)&#x27;</span>, row)
+</code></pre>
+<p>You can leverage the fact that <code>executemany</code> accepts as argument a generator of
+<code>tuples</code>:</p>
+<pre class="code" data-lang="python"><code>connection.executemany(
+    <span class="hljs-string">&#x27;INSERT INTO my_table VALUE (?)&#x27;</span>,
+    iter_data()
+)
+</code></pre>
+<p>This is not only more concise, it’s also much more efficient. In fact, <code>sqlite3</code>
+implements <code>execute</code> using <code>executemany</code> behind the scene, but the former
+inserts a single row instead of many.</p>
+<p>I wrote a small benchmark which consists in inserting a million rows into an
+empty table (the database lives in memory):</p>
+<ul>
+<li><code>executemany</code>: <strong>1.6</strong> seconds</li>
+<li><code>execute</code>: 2.7 seconds</li>
+</ul>
+<h2>You Don’t Need Cursors</h2>
+<p>…<em>most of the time</em>.</p>
+<p>One thing I often found confusing at the beginning, was <code>cursor</code> management.
+Examples online and in the documentation often look like:</p>
+<pre class="code" data-lang="python"><code>connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
+cursor = connection.cursor()
+<span class="hljs-comment"># Do something with cursor</span>
+</code></pre>
+<p>But most of the time you don’t need a cursor at all, and you can directly use
+the <code>connection</code> object (it is mentioned at the
+<a href="https://docs.python.org/3.6/library/sqlite3.html#using-shortcut-methods" target="_blank" rel="noopener noreferrer">end of the documentation</a>).</p>
+<p>Operations such as <code>execute</code> and <code>executemany</code> can be called directly on the
+connection and <em>will return a cursor</em>. Here is an example to demonstrate that:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> sqlite3
+
+connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
+
+<span class="hljs-comment"># Create a table</span>
+connection.execute(<span class="hljs-string">&#x27;CREATE TABLE events(ts, msg)&#x27;</span>)
+
+<span class="hljs-comment"># Insert values</span>
+connection.executemany(
+    <span class="hljs-string">&#x27;INSERT INTO events VALUES (?,?)&#x27;</span>,
+    [
+        (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
+        (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;bar&#x27;</span>),
+        (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;baz&#x27;</span>)
+    ]
+)
+
+<span class="hljs-comment"># Print inserted rows</span>
+<span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
+    <span class="hljs-built_in">print</span>(row)
+</code></pre>
+<h2>Cursors Can Be Iterated Upon</h2>
+<p>You might often see examples making use of <code>fetchone</code> or <code>fetchall</code> on
+the result of a <code>SELECT</code> query. But I find that the most natural way to
+consume the results is to actually iterate on the cursor directly:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
+    <span class="hljs-built_in">print</span>(row)
+</code></pre>
+<p>This way, you can stop as soon as you got enough results and not waste
+resources. Of course, if you know beforehand how many results you want, you can
+use the <code>LIMIT</code> SQL statement instead, but Python generators are very handy and
+allow you to decouple data generation from data consumption.</p>
+<h2>Use Context Managers</h2>
+<p>Shit happens, even in the middle of a SQL transaction. To avoid having
+to deal manually with <code>rollback</code> or <code>commit</code>, you can simply use the
+<code>connection</code> object as a context manager. In the following example we
+create a table, and insert <em>by mistake</em> duplicated values:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> sqlite3
+connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
+
+<span class="hljs-keyword">with</span> connection:
+    connection.execute(
+        <span class="hljs-string">&#x27;CREATE TABLE events(ts, msg, PRIMARY KEY(ts, msg))&#x27;</span>)
+
+<span class="hljs-keyword">try</span>:
+    <span class="hljs-keyword">with</span> connection:
+        connection.executemany(<span class="hljs-string">&#x27;INSERT INTO events VALUES (?, ?)&#x27;</span>, [
+            (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
+            (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;bar&#x27;</span>),
+            (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;baz&#x27;</span>),
+            (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
+        ])
+<span class="hljs-keyword">except</span> (sqlite3.OperationalError, sqlite3.IntegrityError) <span class="hljs-keyword">as</span> e:
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Could not complete operation:&#x27;</span>, e)
+
+<span class="hljs-comment"># No row was inserted because transaction failed</span>
+<span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
+    <span class="hljs-built_in">print</span>(row)
+
+connection.close()
+</code></pre>
+<h2>Use Pragmas</h2>
+<p>…<em>when it makes sense</em></p>
+<p>There are a few <em>pragmas</em> you can use to tweak the behavior of <code>sqlite3</code> in your
+program. In particular, one that could improve the performance is <code>synchronous</code>:</p>
+<pre class="code" data-lang="python"><code>connection.execute(<span class="hljs-string">&#x27;PRAGMA synchronous = OFF&#x27;</span>)
+</code></pre>
+<p>You should be aware though that this can <em>be dangerous</em>. If the application
+crashes unexpectedly in the middle of a transaction, the database will probably
+be left in an inconsistent state. So use with care! But if you want to insert a
+lot of rows faster, that can be an option. A safer option is to use the
+<a href="https://www.sqlite.org/draft/wal.html" target="_blank" rel="noopener noreferrer"><code>WAL</code></a> option instead of disabling
+<code>synchronous</code> completely.</p>
+<pre class="code" data-lang="python"><code>connection.execute(<span class="hljs-string">&#x27;PRAGMA journal_mode = WAL&#x27;</span>)
+</code></pre>
+<h2>Postpone Index Creation</h2>
+<p>Let’s say you need a few indices on your database, and you also need to
+insert a lot of rows while creating them. Postponing the creation of the indices
+to after all rows have been inserted could result in a substantial performance
+improvement.</p>
+<h2>Use Placeholders to Interpolate Python Values</h2>
+<p>It is tempting to use Python string operations to include values into
+queries. <em>Do not</em>! This is highly insecure, and <code>sqlite3</code> gives you a
+better way to do it:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-comment"># Do not do this!</span>
+my_timestamp = <span class="hljs-number">1</span>
+c.execute(<span class="hljs-string">&quot;SELECT * FROM events WHERE ts = &#x27;%s&#x27;&quot;</span> % my_timestamp)
+
+<span class="hljs-comment"># Do this instead</span>
+my_timestamp = (<span class="hljs-number">1</span>,)
+c.execute(<span class="hljs-string">&#x27;SELECT * FROM events WHERE ts = ?&#x27;</span>, my_timestamp)
+</code></pre>
+<p>Also, string interpolation using Python <code>%s</code> (or format, or formatted string
+literals) does not go well with <code>executemany</code>. So there is really no point in
+trying!</p>
+<hr>
+<p>Keep in mind though that these tips might or might not give you a benefit,
+depending on your specific use-case. You should always try for yourself and
+decide if it’s worth it or not.</p>
+<p><em>Edit 28-12-2017</em>: Thanks for all the great feedback from <a href="https://www.reddit.com/r/Python/comments/781q18/getting_the_most_out_of_sqlite3_with_python/" target="_blank" rel="noopener noreferrer">Reddit</a>
+and <a href="https://news.ycombinator.com/item?id=15525715" target="_blank" rel="noopener noreferrer">Hacker News</a>.
+I took the liberty to amend the original article with a few of the suggestions.</p>
+<p>There are a few topics that were not mentioned in this article but are
+definitely worth reading:</p>
+<ul>
+<li><a href="https://docs.python.org/3.6/library/sqlite3.html#controlling-transactions" target="_blank" rel="noopener noreferrer">Using transactions</a>
+can dramatically improve the speed of your code if you need to run several
+SQL statements in a row (it should not be needed if you use <code>executemany</code>).</li>
+<li>If you don’t need to re-use your database across sessions, you can use an
+<a href="https://sqlite.org/inmemorydb.html" target="_blank" rel="noopener noreferrer"><em>in-memory</em></a> database by specifying
+<code>:memory:</code> as a location, which should give you a nice speed-up.</li>
+<li>You can <a href="https://docs.python.org/3.6/library/sqlite3.html#sqlite3.Connection.row_factory" target="_blank" rel="noopener noreferrer">customize <code>row_factory</code></a>
+to get something more useful than <code>tuple</code>s as results from <code>SELECT</code> queries.</li>
+<li>Consider changing <code>isolation_level</code> to <code>DEFERRED</code> or <code>IMMEDIATE</code>.</li>
+</ul>
+<p><em>Edit 30-05-2021</em>: Fixed a missing <code>.connect</code> in the “You Don’t Need Cursors” section. Thanks to <a href="https://github.com/Gelma" target="_blank" rel="noopener noreferrer">Gelma</a> for noticing.</p>
 ]]></content>
     </entry>
     <entry>
