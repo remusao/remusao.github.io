@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Fri, 15 Dec 2023 19:00:39 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 15 Dec 2023 20:00:46 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -3116,6 +3116,137 @@ intended by running the tests:</p>
 <pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
 </code></pre>
 <p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[The wrong way of benchmarking integer comparison functions]]></title>
+            <link>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</link>
+            <guid>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</guid>
+            <pubDate>Sat, 25 Nov 2017 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p><em>TL;DR</em>: Naive code can sometimes run faster than “clever” code. Compilers are
+usually designed to optimize for the most common code, and common code is not
+clever. Lessons learned; if you try to write clever code, benchmark it to make
+sure there is a benefit.</p>
+<p>I recently stumbled upon <a href="https://blogs.msdn.microsoft.com/oldnewthing/20171117-00/?p=97416" target="_blank" rel="noopener noreferrer">an article</a>,
+describing how trying to out-smart the compiler can result in bad
+performances compared to more naive code. The benchmark is about finding
+the most efficient way to write a comparison function between integers,
+to be used in conjunction with <code>sort</code> or binary search for example. The
+original post being about <code>c++</code>, I was curious to know if the results
+would transfer to JavaScript (in particular <code>V8</code>, using <code>Node.js</code>). This
+is what this post is about.</p>
+<p>Let see the contenders:</p>
+<ul>
+<li><em>Naive</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">compare1</span>(<span class="hljs-params">a, b</span>) {
+    <span class="hljs-keyword">if</span> (a &lt; b) <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+    <span class="hljs-keyword">if</span> (a &gt; b) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}
+</code></pre>
+<ul>
+<li><em>Clever</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">compare2</span>(<span class="hljs-params">a, b</span>) {
+    <span class="hljs-keyword">return</span> a - b;
+}
+</code></pre>
+<h2>Benchmarks</h2>
+<p>The original article has a very good point saying that to benchmark this
+code realistically, you need a real use-case. Just sorting the array and
+summing the numbers does not make any sense, no one would do it. But if
+instead you perform a binary search on the sorted array, it gets closer
+to something one might do in a real code-base.</p>
+<p>I took the liberty of converting the original <code>C++</code> implementation of the binary
+search into JavaScript, to stick closely to the article:</p>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">binarySearch</span>(<span class="hljs-params">array, first, last, key, compare</span>) {
+  <span class="hljs-keyword">var</span> length = last - first;
+  <span class="hljs-keyword">while</span> (length &gt; <span class="hljs-number">0</span>) {
+    <span class="hljs-keyword">var</span> step = (length / <span class="hljs-number">2</span>) | <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">var</span> middle = first + step;
+    <span class="hljs-keyword">var</span> result = <span class="hljs-title function_">compare</span>(array[middle], key);
+    <span class="hljs-keyword">if</span> (result &lt; <span class="hljs-number">0</span>) {
+      first = middle + <span class="hljs-number">1</span>;
+      length -= step + <span class="hljs-number">1</span>;
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (result === <span class="hljs-number">0</span>) {
+      <span class="hljs-keyword">return</span> middle;
+    } <span class="hljs-keyword">else</span> {
+      length = step;
+    }
+  }
+
+  <span class="hljs-keyword">return</span> last;
+}
+</code></pre>
+<p>Using the great <a href="https://www.npmjs.com/package/benchmark" target="_blank" rel="noopener noreferrer">benchmark</a>
+library, let’s evaluate the performance of each compare function:</p>
+<ul>
+<li><em>Setup</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">compare</span>) {
+  <span class="hljs-comment">// Create a sorted array</span>
+  <span class="hljs-keyword">var</span> array = [];
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">8192</span>; ++i) {
+    array.<span class="hljs-title function_">push</span>(i * <span class="hljs-number">2</span>);
+  }
+
+  <span class="hljs-keyword">var</span> found = <span class="hljs-number">0</span>;
+
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = -<span class="hljs-number">1</span>; j &lt; <span class="hljs-number">16383</span>; ++j) {
+    <span class="hljs-keyword">var</span> index = <span class="hljs-title function_">binarySearch</span>(
+      array,              <span class="hljs-comment">// sorted array</span>
+      <span class="hljs-number">0</span>,                  <span class="hljs-comment">// start index</span>
+      array.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>,   <span class="hljs-comment">// end index</span>
+      j,                  <span class="hljs-comment">// element we are looking for</span>
+      compare);           <span class="hljs-comment">// comparison function</span>
+
+    <span class="hljs-keyword">if</span> (index !== -<span class="hljs-number">1</span> &amp;&amp; array[index] === j) {
+      found += <span class="hljs-number">1</span>;
+    }
+  }
+
+  <span class="hljs-keyword">if</span> (found !== <span class="hljs-number">8191</span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">&#x27;Found bug&#x27;</span>, found);
+  }
+}
+</code></pre>
+<ul>
+<li><em>Benchmark</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">bench</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">var</span> <span class="hljs-title class_">Benchmark</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;benchmark&#x27;</span>);
+  <span class="hljs-keyword">var</span> suite = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Benchmark</span>.<span class="hljs-title class_">Suite</span>();
+
+  suite
+    .<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;compare1&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-title function_">run</span>(compare1);
+    })
+    .<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;compare2&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-title function_">run</span>(compare2);
+    })
+    .<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;cycle&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">String</span>(event.<span class="hljs-property">target</span>));
+    })
+    .<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;complete&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Fastest is &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">filter</span>(<span class="hljs-string">&#x27;fastest&#x27;</span>).<span class="hljs-title function_">map</span>(<span class="hljs-string">&#x27;name&#x27;</span>));
+    })
+    .<span class="hljs-title function_">run</span>({});
+}
+
+<span class="hljs-title function_">bench</span>();
+</code></pre>
+<p>And…</p>
+<blockquote>
+<pre class="code" data-lang="sh"><code>compare1 x 421 ops/sec ±0.51% (91 runs sampled)
+compare2 x 394 ops/sec ±0.39% (89 runs sampled)
+</code></pre>
+</blockquote>
+<p>It happens that the naive <code>compare1</code> is a bit faster than <code>compare2</code>.
+It’s not day and night, but the <em>naive</em>, more readable code is more
+efficient on V8 than the clever one.</p>
+<p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
+there</a></p>
 ]]></content:encoded>
         </item>
         <item>
