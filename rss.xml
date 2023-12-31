@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Sun, 31 Dec 2023 12:00:39 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 31 Dec 2023 13:02:01 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -432,6 +432,362 @@ the HTTPS Everywhere extension.</p>
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[Parsing Thunderbird filtering rules]]></title>
+            <link>https://remusao.github.io//posts/parsing-thunderbird-msg-filters.html</link>
+            <guid>https://remusao.github.io//posts/parsing-thunderbird-msg-filters.html</guid>
+            <pubDate>Sun, 24 Nov 2019 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<blockquote>
+<p><a href="https://www.thunderbird.net/" target="_blank" rel="noopener noreferrer">Thunderbird</a> is a free email application that’s
+easy to set up and customize - and it’s loaded with great features!</p>
+</blockquote>
+<p>I have been using Thunderbird as my email client of choice for many years, it
+is the hub which allows me to manage all the emails I get: work, multiple
+personal addresses, etc. As of today my combined mail folders are about <code>30GB</code>
+and counting. Still, Thunderbird has been running rock solid and I had no issue
+so far.</p>
+<p>I have to say that I make extensive use of folders, labels and <em>message
+filters</em>. These features combined allow to effortlessly manage a high volume of
+emails by filtering, sorting, tagging, dispatching emails; greatly reducing the
+amount of manual work needed to process then read them.</p>
+<p>As an example, I receive a lot of emails notifications from GitHub, both for work and personal
+OSS projects. I also tend to follow activity of repositories which I find
+interesting; but I do not want to have to go through all these notifications
+myself. A few years ago I adopted the following strategy:</p>
+<ol>
+<li>Create folders or subfolders for each repository:</li>
+</ol>
+<ul>
+<li><code>github/work/repo1</code>,</li>
+<li><code>github/work/repo2</code>,</li>
+<li><code>github/perso/repo3</code>,</li>
+<li>etc.</li>
+</ul>
+<ol start="2">
+<li>Create a first filter rule <em>for each repository</em> to automatically move
+GitHub notifications to their respective folders. This can be achieve by
+detecting <code>notifications@github.com</code> using a condition of the form <code>From is notifications@github.com</code> and adding a <code>Move Message to</code> action.</li>
+<li>Optionally, I create rules to automatically mark as read any
+message which is not directed to me specifically (e.g.: via direct mention
+of my GitHub handler, PR request, issue assigned, etc.); especially on very
+active repositories. This can be achieved by detecting things like
+<code>mention@noreply.github.com</code> or <code>assign@noreply.github.com</code> in the <code>Cc</code>
+field.</li>
+</ol>
+<p>GitHub has a <a href="https://help.github.com/en/github/receiving-notifications-about-activity-on-github/about-email-notifications" target="_blank" rel="noopener noreferrer">full page of documentation</a>
+describing all the values you can use to filter email notifications. This is
+<em>really useful</em>. For example I tag emails where I am directly mentioned in
+<strong>red</strong> but notifications about discussions that I was involved in but not
+directly mentioned with <strong>blue</strong>. This allows to filter at a glance what I
+really need to check, versus what I can check later. In practice, more than 90%
+of notifications do not need to be checked manually. This is huge!</p>
+<p>Unfortunately, as the number of filters grows, I found the built-in interface
+to not be very convenient. Finding or editing rules can become a pain.
+Fortunately, Thunderbird stores all the filters for a given account in a
+single, plain text file named: <code>msgFilterRules.dat</code>, located in your
+Thunderbird profile folder. So I decided to write <a href="https://github.com/remusao/thunderbird-msg-filters" target="_blank" rel="noopener noreferrer">a
+library</a> which allows to
+manipulate these rules through a minimal and type-safe API; in <em>TypeScript</em>.</p>
+<p>The goal of the project is to allow developing more high-level tooling to
+read, transform, extend, update the rules while not having to worry about the
+low-level parsing details. It would also be possible to store the rules in a
+nicer format then use the library to produce the final file which can be
+consumed by Thunderbird.</p>
+<p>To install the library: <code>npm install --save thunderbird-msg-filters</code>.</p>
+<p>You can then use it to parse a <code>msgFilterRules.dat</code> file which you can find in
+your Thunderbird folder (one per email account configured):</p>
+<pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { parse } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
+
+<span class="hljs-comment">// A typical `msgFilterRules.dat` could contain this raw value.</span>
+<span class="hljs-keyword">const</span> rules = <span class="hljs-title function_">parse</span>(<span class="hljs-string">`
+version=&quot;9&quot;
+logging=&quot;no&quot;
+name=&quot;rule 1&quot;
+enabled=&quot;yes&quot;
+type=&quot;17&quot;
+action=&quot;Mark flagged&quot;
+condition=&quot;OR (subject,contains,foo) OR (subject,contains,bar)&quot;
+name=&quot;rule 2&quot;
+enabled=&quot;yes&quot;
+type=&quot;17&quot;
+action=&quot;Mark read&quot;
+action=&quot;JunkScore&quot;
+actionValue=&quot;100&quot;
+condition=&quot;ALL&quot;
+`</span>);
+</code></pre>
+<p>You can also format rules to the same original format:</p>
+<pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { format } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
+
+<span class="hljs-keyword">const</span> rules = <span class="hljs-title function_">format</span>({
+  <span class="hljs-attr">version</span>: <span class="hljs-string">&#x27;9&#x27;</span>,
+  <span class="hljs-attr">logging</span>: <span class="hljs-string">&#x27;no&#x27;</span>,
+  <span class="hljs-attr">rules</span>: [
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 1&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [{ <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark flagged&#x27;</span>}],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;OR (subject,contains,foo) OR (subject,contains,bar)&#x27;</span>
+    },
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 2&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark read&#x27;</span> }
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;JunkScore&#x27;</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;100&#x27;</span> }
+      ],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;ALL&#x27;</span>
+    },
+  ]
+});
+</code></pre>
+<p>The library is currently very young and will probably contain bugs, so use at
+your own risks. Feel free to use it and <a href="https://github.com/remusao/thunderbird-msg-filters/issues/new" target="_blank" rel="noopener noreferrer">open an issue</a>
+for any feedback!</p>
+<p><strong>What’s next?</strong> I plan to use this library to store the message filters rules
+in a separate location and synchronize it potentially between multiple
+computers. The nice thing is that the rules can now be expressed in a typed
+language (TypeScript) which will give me more confidence about their validity.
+It is also much easier to manipulate them from a single file, in a familiar
+developer environment (i.e.: your editor of choice) than through the
+Thunderbird interface.</p>
+<p>GitHub repository: <a href="https://github.com/remusao/thunderbird-msg-filters/" target="_blank" rel="noopener noreferrer">https://github.com/remusao/thunderbird-msg-filters/</a></p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Installing Diablo II]]></title>
+            <link>https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html</link>
+            <guid>https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html</guid>
+            <pubDate>Sat, 02 Nov 2019 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<picture>
+  <source srcset="../images/diablo2-banner.webp" type="image/webp">
+  <source srcset="../images/diablo2-banner.png" type="image/png">
+  <img src="../images/diablo2-banner.png" alt="Diablo II banner" style="width:100%">
+</picture>
+<p>You might have heard the news: <em>Diablo IV</em> has been announced yesterday with a
+<a href="https://www.youtube.com/watch?v=9bRWIdOMfro" target="_blank" rel="noopener noreferrer">great cinematic</a>. What better
+time to install <s>Diablo III</s> <em>Diablo II</em> again and have some fun while
+waiting for the latest iteration of the franchise?</p>
+<p>But… it’s 2019 and it is not always easy to install a game first released
+back in June 2000 (yes, that’s 19 years ago. Yes, you’re old)! In this post I
+will show you how to install <em>Diablo II</em> with its extension <em>Lord of
+Destruction</em> on Windows, MacOS and Linux (Ubuntu in this case), using
+<a href="https://www.winehq.org" target="_blank" rel="noopener noreferrer"><em>Wine</em></a> as well as optional sandboxing using
+<a href="https://github.com/netblue30/firejail" target="_blank" rel="noopener noreferrer"><em>firejail</em></a>! Let’s get to it…</p>
+<p>If you are running <em>MacOS</em> or <em>Windows</em>, you’re in luck! The official game
+launcher already supports those platforms natively so you can install it and
+play straight away without extra hassle! Here are the links:</p>
+<ul>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Windows – Diablo II</a>.</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Windows – Lord of Destruction</a>.</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=MAC" target="_blank" rel="noopener noreferrer">MacOS – Diablo II</a>.</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=MAC" target="_blank" rel="noopener noreferrer">MacOS – Lord of Destruction</a>.</li>
+</ul>
+<h2>Get a License Key</h2>
+<p>First of, you will need a valid CD-Key for the game (both <em>Diablo II</em> and its
+extension <em>LOD</em>). You can get them on the <a href="https://www.blizzard.com" target="_blank" rel="noopener noreferrer">official website</a>
+for about <em>20 euros</em> from Blizzard (yes, that’s a shame, the game used to cost
+<em>15.99</em> euros a few years ago!), or by registering your old keys if you still
+have the box version (which is what I did).</p>
+<h2>Get the Launcher</h2>
+<p>The second step is to download the Windows launcher of the game which we will
+use in conjunction with Wine to make it work on Linux. You can find the links
+on <a href="https://www.blizzard.com/en-us/download/" target="_blank" rel="noopener noreferrer">Blizzard’s website</a>. Here they
+are if you want to save some time:</p>
+<ul>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Downloader_Diablo2_enUS.exe</a></li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Downloader_Diablo2_Lord_of_Destruction_enUS.exe</a></li>
+</ul>
+<h2>Installing Latest Wine</h2>
+<p>You could probably use the stock version of wine which ships with your Linux
+distribution but I always like to get the latest shiny version so here we go.
+If you use another distribution than Ubuntu, you can <em>skip this section
+completely</em>. From the <a href="https://wiki.winehq.org/Ubuntu" target="_blank" rel="noopener noreferrer">official wiki</a>:</p>
+<blockquote>
+<p>If your system is 64 bit, enable 32 bit architecture (if you haven’t already):</p>
+<pre class="code" data-lang="sh"><code>sudo dpkg --add-architecture i386
+</code></pre>
+<p>Download and add the repository key:</p>
+<pre class="code" data-lang="sh"><code>wget -nc https://dl.winehq.org/wine-builds/winehq.key
+sudo apt-key add winehq.key
+</code></pre>
+</blockquote>
+<p>Now you need to get the repository matching your release of Ubuntu. For me it
+was <code>bionic</code> (you can get yours using command <code>lsb_release -cs</code>), but check
+official instructions if that does not correspond to yours.</p>
+<blockquote>
+<pre class="code" data-lang="sh"><code>sudo apt-add-repository <span class="hljs-string">&#x27;deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main&#x27;</span>
+sudo apt install --install-recommends winehq-stable
+</code></pre>
+</blockquote>
+<p>Note that I could not install <code>winehq-stable</code> directly and had to first install
+one of its dependencies manually. If you encounter an error, then try to run
+the following command before installing <code>winehq-stable</code> again:</p>
+<pre class="code" data-lang="sh"><code>sudo apt install libasound2-plugins:i386
+</code></pre>
+<p>I am using <strong>version 4.0.2</strong> of <code>wine</code>.</p>
+<h2>[Optional] Installing Firejail</h2>
+<p>Firejail has a special place in my heart. It allows to sandbox any program
+running on Linux using kernel capabilities (some of them you might already know
+from Docker world). From the <a href="https://github.com/netblue30/firejail" target="_blank" rel="noopener noreferrer">official repository</a>:</p>
+<blockquote>
+<p>Firejail is a SUID sandbox program that reduces the risk of security breaches
+by restricting the running environment of untrusted applications using Linux
+namespaces, seccomp-bpf and Linux capabilities. It allows a process and all
+its descendants to have their own private view of the globally shared kernel
+resources, such as the network stack, process table, mount table. Firejail
+can work in a SELinux or AppArmor environment, and it is integrated with
+Linux Control Groups.</p>
+</blockquote>
+<p>There is an extra benefit in my opinion. You can specify a different directory
+to be used as the <code>~/</code> (home) folder of each program you run in a sandbox
+instead of your real home. This is great because it allows to keep files and
+folders of each app nicely isolated. For example I run <code>thunderbird</code>, <code>cliqz</code>
+and other programs in sandboxes and assign them different homes like
+<code>~/.sandboxes/thunderbird</code>, <code>~/.sandboxed/cliqz</code>, etc. This means that I can
+clean-up all files for each program by simply deleting their respective
+folders! That’s super convenient.</p>
+<p>Let’s get back to <em>Diablo II</em>! Install Firejail from your official Linux
+repositories (or <a href="https://github.com/netblue30/firejail#compile-and-install" target="_blank" rel="noopener noreferrer">compile it yourself</a> if that’s
+your thing… that’s what I did). I am currently running <strong>version 0.9.61</strong> but I
+assume this should work with other versions as well.</p>
+<p>Firejail comes with a preset for sandboxing wine which you can find at
+<code>/etc/firejail/wine.profile</code>. That’s the one we will be using!</p>
+<h2>Preparing Wine Home Folder</h2>
+<p>Let’s now prepare the <code>wine</code> folder that we will use in our Firejail sandbox:</p>
+<pre class="code" data-lang="sh"><code><span class="hljs-built_in">mkdir</span> -p ~/.sandboxes/wine
+</code></pre>
+<p>Copy the two downloaders into <code>~/.sandboxes/wine/</code>:</p>
+<ul>
+<li><code>~/.sandboxes/wine/Downloader_Diablo2_enUS.exe</code></li>
+<li><code>~/.sandboxes/wine/Downloader_Diablo2_Lord_of_Destruction_enUS.exe</code></li>
+</ul>
+<h2>Installing Diablo II</h2>
+<p>We can now proceed and install <em>Diablo II</em> base game:</p>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/Downloader_Diablo2_enUS.exe
+</code></pre>
+<p>Here are screenshots for each step of the installation process:</p>
+<figure>
+  <a href="../images/diablo2-install-1.png">
+    <picture>
+      <source srcset="../images/diablo2-install-1.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-1.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-1.png" alt="Press 'OK' to select default download folder." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Press 'OK' to select default download folder.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-2.png">
+    <picture>
+      <source srcset="../images/diablo2-install-2.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-2.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-2.png" alt="Enjoy the murloc view while downloading the game..." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Enjoy the murloc view while downloading the game...</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-3.png">
+    <picture>
+      <source srcset="../images/diablo2-install-3.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-3.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-3.png" alt="Press 'Install Diablo II'." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Press 'Install Diablo II'.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-7.png">
+    <picture>
+      <source srcset="../images/diablo2-install-7.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-7.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-7.png" alt="Accept license." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Accept license.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-6.png">
+    <picture>
+      <source srcset="../images/diablo2-install-6.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-6.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-6.png" alt="Enter you CD-Key." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Enter you CD-Key.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-5.png">
+    <picture>
+      <source srcset="../images/diablo2-install-5.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-5.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-5.png" alt="Press 'OK' to select default destination directory." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Press 'OK' to select default destination directory.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-4.png">
+    <picture>
+      <source srcset="../images/diablo2-install-4.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-4.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-4.png" alt="It's so fast that I don't know how I managed to make a screenshot!" style="width:100%">
+    </picture>
+  </a>
+  <figcaption>It's so fast that I don't know how I managed to make a screenshot!</figcaption>
+</figure>
+<p>Press <strong>Back</strong> then <strong>Exit Installer</strong>. Time to install the extension!</p>
+<h2>Installing Lord of Destruction</h2>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/Downloader_Diablo2_Lord_of_Destruction_enUS.exe
+</code></pre>
+<p>I will spare you all the screenshots since the procedure is identical to the
+base version of the game. When you are done, resist the damning temptation and
+<strong>exit the installer</strong>; there is one last thing we have to take care of…</p>
+<h2>Install Latest Patch</h2>
+<p>Before starting the game and finally start playing, you will want to install
+the latest patch for Diablo II: <strong>1.14d</strong>. Usually it can be done by accessing
+<a href="http://Battle.net" target="_blank" rel="noopener noreferrer">Battle.net</a> in-game but for some reason it failed in my case because of a corrupted
+file… Luckily, it’s possible to download and install the update manually. Get
+it from the following link:</p>
+<ul>
+<li><a href="http://ftp.blizzard.com/pub/diablo2exp/patches/PC/LODPatch_114d.exe" target="_blank" rel="noopener noreferrer">LODPatch_114d.exe</a></li>
+</ul>
+<p>Copy it into your <code>wine</code> home folder: <code>~/.sandboxes/wine/LODPatch_114d.exe</code>.
+Then start the update with:</p>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/LODPatch_114d.exe
+</code></pre>
+<h2>Let’s Play!</h2>
+<p>Finally, to launch the game you can use the following command:</p>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Diablo\ II/Diablo\ II.exe
+</code></pre>
+<p>Have fun!</p>
+<figure>
+  <a href="../images/diablo2-cows.jpg">
+    <picture>
+      <source srcset="../images/diablo2-cows.webp" type="image/webp">
+      <source srcset="../images/diablo2-cows.jpg" type="image/jpeg">
+      <img loading="lazy" src="../images/diablo2-cows.jpg" alt="There is no such thing as the 'Cow Level'." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>There is no such thing as the 'Cow Level'.</figcaption>
+</figure>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[Thoughts about unit and integration tests]]></title>
             <link>https://remusao.github.io//posts/unit-integration-tests.html</link>
             <guid>https://remusao.github.io//posts/unit-integration-tests.html</guid>
@@ -556,6 +912,67 @@ your code (although some <a href="https://blog.thecodewhisperer.com/permalink/in
 hold them both to high standards. Not doing so might lead to a situation where
 your tests become a liability and slow you down instead of empowering you to
 write better and more robust features.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[A static blog generator in TypeScript]]></title>
+            <link>https://remusao.github.io//posts/typescript-blog-generator.html</link>
+            <guid>https://remusao.github.io//posts/typescript-blog-generator.html</guid>
+            <pubDate>Fri, 19 Jul 2019 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<blockquote>
+<p>Oups, I did it again…</p>
+</blockquote>
+<p>A while ago I was joking with <a href="https://twitter.com/sebadzia" target="_blank" rel="noopener noreferrer">@sebadzia</a> about
+the fact that if you are not re-writting your blog generation mechanism from
+scratch every <em>N</em> posts, then you’re doing it wrong. It appears that I’m
+actually living by these words and have been re-implementing my own blog over
+and over again; maybe in the hope that it would motivate me to write more. This
+blog <em>became an end instead of a mean</em> to communicate things.</p>
+<p>Here are the 6 engines I’ve used over the years (and this does not even account
+for the different themes that I used with each of them):</p>
+<ul>
+<li><a href="https://wordpress.org/" target="_blank" rel="noopener noreferrer">WordPress</a></li>
+<li><a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a></li>
+<li><a href="https://blog.getpelican.com/" target="_blank" rel="noopener noreferrer">Pelican</a></li>
+<li><a href="https://jaspervdj.be/hakyll/" target="_blank" rel="noopener noreferrer">Hakyll</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy" target="_blank" rel="noopener noreferrer">Custom generator in Haskell</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy-ts" target="_blank" rel="noopener noreferrer"><strong>Custom generator in TypeScript</strong></a></li>
+</ul>
+<p>This means that the blog engine has been changed on average every <em>8.5</em> posts.
+Not too bad! Maybe the next one will be in Rust?</p>
+<p>I think what made me switch this time is the fact that I’m actually enjoying
+TypeScript very much lately (I find the type system super neat, and already
+liked JavaScript tooling a lot); and I was a bit fed up by the build time of
+the Haskell version. The way I did it was most probably sub-optimal as I am by
+no mean an experienced Haskell developer. Last but not least, I was on vacation
+and had some time to waste…</p>
+<p>The TypeScript generator is still rough around the edges but it’s working and
+allows me to build the site, watch changes, and serve locally in development
+mode.</p>
+<p>I rely on the following packages to do the heavy lifting:</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/@octokit/rest" target="_blank" rel="noopener noreferrer">@octokit/rest</a> to interact with GitHub APIs (used to fetch static comments)</li>
+<li><a href="https://www.npmjs.com/package/chokidar" target="_blank" rel="noopener noreferrer">chokidar</a> to watch for files changes</li>
+<li><a href="https://www.npmjs.com/package/express" target="_blank" rel="noopener noreferrer">express</a> to serve blog locally</li>
+<li><a href="https://www.npmjs.com/package/dompurify" target="_blank" rel="noopener noreferrer">dompurify</a> to sanitize final HTML</li>
+<li><a href="https://www.npmjs.com/package/highlight.js" target="_blank" rel="noopener noreferrer">highlight.js</a> to provide syntactic coloration for code blocks in posts</li>
+<li><a href="https://www.npmjs.com/package/html-minifier" target="_blank" rel="noopener noreferrer">html-minifier</a> to minimize HTML</li>
+<li><a href="https://www.npmjs.com/package/marked" target="_blank" rel="noopener noreferrer">marked</a> to convert markdown to HTML</li>
+</ul>
+<p>Overall I’m fairly happy with this setup. The generator currently fits into a
+single source file (which should probably be split at some point) and generation
+is pretty fast: <em>~50</em> seconds from scratch (which includes installing all npm
+dependencies, generating posts and fetching comments from GitHub). Generating
+posts only takes less than 10 seconds, and most of the time is spent waiting
+for comments to be fetched from GitHub issues.</p>
+<p>There are a few things I’d like to try or investigate in the future to improve:</p>
+<ul>
+<li>consider using JSX (with React in pure server-side rendering mode)</li>
+<li>consider writing CSS in TypeScript as well with typing</li>
+<li>add support for inlined math using KaTex (which I do not need at the moment)</li>
+<li>improve comments display with better rendering and support for reactions and emojis</li>
+</ul>
+<p>And of course, I will try my best to write more content here in the future!</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -1717,6 +2134,456 @@ i7-6600U (2,60-3,40 GHz) with 16GB of Ram, running Ubuntu 18.04.</p>
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[Exploring etymology using Wiktionary data]]></title>
+            <link>https://remusao.github.io//posts/wiktionary-etymology-exploration.html</link>
+            <guid>https://remusao.github.io//posts/wiktionary-etymology-exploration.html</guid>
+            <pubDate>Sat, 14 Jul 2018 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Etymology is a fascinating topic. Looking closer at the origin of words often
+yields surprising and interesting connections between languages and countries,
+forgotten stories or fun anecdotes. There are multiple sources for etymological
+data, and most of the time, using specialized books is a safe bet. The issue is
+that they are usually dedicated to one language, and it’s close to impossible to
+extract the data in a format which allows manipulation by programs.</p>
+<p>There is an alternative though: <a href="https://www.wiktionary.org/" target="_blank" rel="noopener noreferrer"><strong>Wiktionary</strong></a>. It is not perfect and suffers from the following drawbacks:</p>
+<ul>
+<li>Information about some words can be missing or incomplete</li>
+<li>Different editions offer various degrees of exhaustiveness</li>
+<li>It is still not trivial to extract the data in a nice format (more on that
+later)</li>
+</ul>
+<p>But it offers very nice benefits as well:</p>
+<ul>
+<li>It is possible to parse the dumps (although not as easy as it could)</li>
+<li>It is possible to combine multiple editions to get more complete etymological data (e.g.: French and English dumps)</li>
+<li>It is constantly evolving and freely accessible</li>
+</ul>
+<p>I often use Wiktinary from the website to get more insight about some words, but
+it is not always optimal: it can be time-consuming to follow the links,
+difficult to know if you missed anything, and hard to answer some questions. In
+particular:</p>
+<ol>
+<li>What is the “etymological” distance between two words, and how are they connected? (according to
+Wiktionary data)</li>
+<li>Given a word in a source language (e.g.: <code>Buch</code> from <em>German</em>), what is the
+closest word in another target language (e.g.: in <em>English</em> it would be <code>book</code>.)</li>
+<li>Can we identify the subset of words from a source language which is very
+closely connected to words from a target language? (e.g. by direct
+inheritance)?</li>
+<li>Could we visualize the graph of etymological connections from a source <em>word</em>
+until a given <em>distance</em>?</li>
+<li>etc.</li>
+</ol>
+<p>In the rest of this article, I’d like to present a work-in-progress project
+called <a href="https://github.com/remusao/wgraph" target="_blank" rel="noopener noreferrer"><em>wgraph</em></a>, which I have been
+developing recently. It allows to parse the content of Wiktionary dumps in
+multiple languages (currently French and English are well supported and more are
+on the way), to extract a graph of etymological relationships between words. Here
+are a few examples of possible connections:</p>
+<ul>
+<li>German word ‘Buch’ <em>cognates</em> with English word ‘book’</li>
+<li>English word ‘table’ <em>inherits</em> from Middle English words ‘table’, ‘tabel’,
+‘tabil’ and ‘tabul’</li>
+<li>French word ‘chaise’ is <em>borrowed</em> from Old French ‘chaiere’, and <em>cognates</em>
+with English word ‘chair’</li>
+</ul>
+<h2>Parsing the data</h2>
+<p>The parsing stage takes as input one or multiple
+<a href="https://dumps.wikimedia.org/backup-index.html" target="_blank" rel="noopener noreferrer">dumps</a>, and produces a
+mapping between <code>source</code> words, and multiple references as found in the
+specific pages from Wiktionary, in the <code>etymology</code> section. Using
+<code>wgraph</code>, this can be performed as follows:</p>
+<pre class="code" data-lang="sh"><code>$ parse enwiki-articles/enwiktionary-latest-pages-articles.xml
+</code></pre>
+<p>(Note that you can input a compressed version of the dumps as well, either in
+<code>.gz</code> or <code>.bz2</code> format)</p>
+<p>This will produce a file named <code>graph.tsv</code> containing one word per line,
+alongside its references. The first few lines look like:</p>
+<pre class="code" data-lang="sh"><code>lire  lira|etyl|  lira|borrowed|it  *lekʷs-|mention|ine-pro  lies|cognate|<span class="hljs-built_in">nl</span> ...
+encyclopédie  encyclique|lien|  encyclopaedia|etyl|  encyclopaedia|mention|la ...
+manga  漫|mention|ltc  manga|mention|pt  漫画|borrowed|ja  man + -ga|suffix|zza ...
+</code></pre>
+<p>Each line starts with the word (e.g.: <code>manga</code>) and then follows a tab-separated
+list of references. Each reference is a tuple of <code>word</code>, <code>kind</code> (kind of
+relationship with the origin word, e.g.: borrowed from, inherited from, etc.)
+and <code>origin</code> (optional, since not all origins are specified in the data).</p>
+<p>And this is all we need start exploring the data and answer interesting
+questions!</p>
+<h2>Etymological summary visualization</h2>
+<p>Once we have a graph of “etymological” connections between words, one of the
+simplest things we can do is to visualize the neighborhood of a given word. This
+can be performed using the <code>summary</code> command provided by <code>wgraph</code>:</p>
+<pre class="code" data-lang="sh"><code>$ summary graph.tsv Buch
+Graph written into: wgraph_Buch
+</code></pre>
+<figure>
+<a href="../images/wgraph_Buch_1.svg">
+<img src="../images/wgraph_Buch_1.svg" alt="Etymological neighborhood of 'Buch'" style="width:100.0%">
+</a>
+<figcaption>Etymological neighborhood of *Buch*</figcaption>
+</figure>
+<p>We can also look deeper in the graph:</p>
+<pre class="code" data-lang="sh"><code>$ summary graph.tsv candidate --max-depth 2
+Graph written into: wgraph_Buch
+</code></pre>
+<figure>
+<a href="../images/wgraph_candidate.svg">
+<img src="../images/wgraph_candidate.svg" alt="Etymological neighborhood of 'candidate'" style="width:100.0%">
+</a>
+<figcaption>Etymological neighborhood of *candidate*</figcaption>
+</figure>
+<p>Interestingly enough, the ‘candidates’ referred to
+the “Roman candidates wearing bleached white togas
+as a symbol of purity at a public forum” (source:
+<a href="https://en.wiktionary.org/wiki/candidate#Etymology" target="_blank" rel="noopener noreferrer">Wiktionary</a>). This
+explains why the word ‘candidate’ is related to ‘white’, ‘candide’,
+‘blank’ and even the ‘elves’.</p>
+<p>Note that by default, up to 50 words will be included in the graph, to not
+overload it too much.</p>
+<p>It is also possible to group the nodes by origin using the <code>--group-by-origin</code>
+argument:</p>
+<pre class="code" data-lang="sh"><code>$ summary graph.tsv petrol --max-depth 2 --group-by-origin
+Graph written into: wgraph_Buch
+</code></pre>
+<figure>
+<a href="../images/wgraph_petrol_2_groupped.svg">
+<img src="../images/wgraph_petrol_2_groupped.svg" alt="Etymological neighborhood of 'petrol'" style="width:100.0%">
+</a>
+<figcaption>Etymological neighborhood of *petrol*</figcaption>
+</figure>
+<p>Now we know that <em>pretrol</em> literally means “oil from stones”: <em>ol</em> + <em>petra</em>
+(the stone).</p>
+<p>As a last example, let’s explore the neighborhood of ‘truie’ a French word used
+to designate the female of the pork. This word has a curious origin…</p>
+<pre class="code" data-lang="sh"><code>$ summary graph.tsv truie --max-depth 2 --group-by-origin
+Graph written into: wgraph_Buch
+</code></pre>
+<figure>
+<a href="../images/wgraph_truie.svg">
+<img src="../images/wgraph_truie.svg" alt="Etymological neighborhood of 'truie'" style="width:100.0%">
+</a>
+<figcaption>Etymological neighborhood of *truie*</figcaption>
+</figure>
+<p>You can see mentions of the word “Troja”, the famous city, where the
+“Trojan Horse” was used as a subterfuge that the Greeks used to enter
+the city of Troy during the war. And this is where we think this ‘truie’
+comes from. The “Trojan Horse” gave its name to a way to prepare (or
+grill) the pork called: “Porka de Troja”, and they ‘truie’ in French.</p>
+<h2>Distance between two words</h2>
+<p>Another simple application of the graph is to compute the size of
+the shortest path between two words. This can be achieved using the
+<code>distance</code> command provided by <code>wgraph</code>:</p>
+<figure>
+<a href="../images/wgraph_distance_Buch_beech.svg">
+<img src="../images/wgraph_distance_Buch_beech.svg" alt="Etymological distance between 'Buch' and 'beech'" style="width:20.0%">
+</a>
+<figcaption>Etymological distance between *Buch* and *beech*</figcaption>
+</figure>
+<pre class="code" data-lang="sh"><code>$ distance graph.tsv Buch book
+Distance: 1
+Start: Buch
+&gt; Cognates with book (English)
+</code></pre>
+<pre class="code" data-lang="sh"><code>$ distance graph.tsv Buch beech
+Distance: 5
+Start: Buch
+&gt; Cognates with book (English)
+&gt; Cognates with boek (Dutch)
+&gt; Cognates with bog (Danish)
+&gt; Inherited from boc (Old Irish (to 900))
+&gt; Mention beech (English)
+</code></pre>
+<pre class="code" data-lang="sh"><code>$ distance graph.tsv camaraderie chambre
+Distance: 3
+Start: camaraderie
+&gt; Mention comrade (English)
+&gt; Mention chamber (English)
+&gt; Inherited from chambre (Middle English (1100-1500))
+</code></pre>
+<pre class="code" data-lang="sh"><code>$ distance graph.tsv camarade chambre
+Distance: 2
+Start: camarade
+&gt; None chambrée (French)
+&gt; None chambre (French)
+</code></pre>
+<p>You probably noticed that <code>origin</code> or <code>kind</code> are not always available. This is
+mainly caused by:</p>
+<ol>
+<li>Data in French dumps are not formatted in an easily parsable format, and most
+information needs to be extracted from links (e.g.: <code>''[[word]]''''</code>) as well
+as the context, and the parser from <code>wgraph</code> is not yet smart enough to do
+this in a lot of cases.</li>
+<li>Sometimes the information is not available at all.</li>
+</ol>
+<p>Also note that this command only finds <em>one possible path</em>, but it happens
+that multiple paths of the same length link two words of the graph. A possible
+improvement would be to find all possible paths between two words, which would
+probably gives some nice insight! (It could also be visualized as a graph!)</p>
+<h2>Closest word in a target language</h2>
+<p>Let’s say you are learning a new language (e.g.: German) and while learning a
+new word, you are looking for a way to “connect” it to some words you already
+know. One way we could leverage our graph of words is to find a close word in a
+language you already know! This is what the command <code>closest</code> is doing:</p>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv buchstabieren en
+Start: buchstabieren
+&gt; None Buchstabe (unknown origin)
+&gt; Mention bookstaff (English)
+</code></pre>
+<p>The German word “buchstabieren” (or “to spell” in English) literally
+means “to stab the letters on the Buch/book/beech”. The connection with
+“beech” comes from the fact that people used to use “beech” tree as a
+material to create the tablets to write.</p>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv hospital fr
+Start: hospital
+&gt; Cognates with hôpital (French)
+</code></pre>
+<p>This one was pretty easy…</p>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv therme en
+Start: therme
+&gt; Etymology θερμός (unknown origin)
+&gt; Cognates with wearm (Old English (ca. 450-1100))
+&gt; Cognates with formus (Latin)
+&gt; Cognates with warm (English)
+</code></pre>
+<p>Interesting to know that “therme” (name given to the ancient Roman baths)
+connects to “warm” in English (very indirectly, but we find this idea of “warm
+water”).</p>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv schön en
+Start: schön
+&gt; None sheen (unknown origin)
+&gt; Cognates with show (English)
+</code></pre>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv Welt fr
+Start: Welt
+&gt; Inherited from weralt (Old High German (ca. 750-1050))
+&gt; Mention world (English)
+&gt; Cognates with verd (Norwegian Nynorsk)
+&gt; Cognates with vert (French)
+</code></pre>
+<p>Some connections are pretty far-fetched, and we would need to dig in the
+original data to understand why! And this is where it can get exciting to do
+some manual research!</p>
+<h2>What are the easiest words to learn in a language?</h2>
+<p>As a final application, and as a result of our ability to compute the minimum
+distance between two words in different languages, we can try to identify the
+easiest sub-set of a language you can learn! This works as follows:</p>
+<ol>
+<li>Specify the target language (e.g.: German)</li>
+<li>Specify languages you already know (e.g.: French and English)</li>
+</ol>
+<p>Then the <code>easiest</code> command will try to find a set of German words which
+is very close from words in either English or French. These words should
+be easier to memorize because they will probably resemble words you
+already know.</p>
+<pre class="code" data-lang="sh"><code>$ easiest graph.tsv
+========================================
+&gt; 1
+========================================
+  * personell
+  * Republik
+  * munizipal
+  * Provokateur
+  * Strauß
+  * Beispiel
+  * Tupperware
+  * Karosserie
+  * maritim
+  * hypoallergen
+  * Etappe
+  * Finanzier
+  * Pansen
+  * bekommen
+  * Feuer
+  * blockieren
+  * robbe
+  * kidnappen
+  * Flakon
+  * lukrativ
+  * eskortieren
+  * universell
+  * Bravour
+  * Mittwoch
+  * grotesk
+  * jetzt
+  * positiv
+  ...
+</code></pre>
+<p>At the moment it is not possible to specify other languages than French, English
+and German, but it will probably be in the future.</p>
+<h2>Closing remarks</h2>
+<p>There is probably much more we can do using this data, and this is only
+the beginning, I already find the project useful to get insight about
+the origin of some words, but it is still rough around the edges. In the
+following weeks I intend to improve <code>wgraph</code> in the following ways:</p>
+<ol>
+<li>Improve information extraction from Wiktionary dumps (especially for the
+French edition), this should have a direct impact on the results of all
+sub-commands presented above.</li>
+<li>Support more editions to make the dataset more complete (German is next)</li>
+<li>Find more interesting applications and visualizations ideas!</li>
+</ol>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Synacor—Down the rabbit hole]]></title>
+            <link>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</link>
+            <guid>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</guid>
+            <pubDate>Sun, 10 Jun 2018 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Last year I had the chance to participate in the 2017 edition of <a href="https://adventofcode.com/" target="_blank" rel="noopener noreferrer">Advent
+of Code</a>. That was the first time and I
+<em>really</em> enjoyed it. Having to solve an interesting problem, every
+day, made me learn a lot! It’s also a good occasion to practice some
+skills that might not be otherwise useful in your daily job (and more
+importantly: have fun!).</p>
+<p>While skimming through the discussions on Reddit about possible
+solutions to one of the AoC’s problems, someone mentioned “Synacor”… I
+never heard of it before, but from what I understood it was some kind of
+programming challenge. I did not need more to have a look:
+<a href="https://challenge.synacor.com" target="_blank" rel="noopener noreferrer">challenge.synacor.com</a>.</p>
+<h1>The Challenge</h1>
+<p>The challenge is briefly introduced, the competition took place during
+two conferences in the past and is now over. But you can still download
+the material of the challenge and try to solve it.</p>
+<p>After registering an email address and a password, I could download an
+archive <code>synacor-challenge.tgz</code>. Uncompressed, it contains two files :</p>
+<ol>
+<li><code>arch-spec</code></li>
+<li><code>challenge.bin</code></li>
+</ol>
+<p>The first one describes the challenge. It is about creating “a virtual
+machine capable of running the included binary [challenge.bin]”. It also
+mentions that some “codes” are to be found along the way. The rest of
+the document describes the architecture of the virtual machine:</p>
+<ul>
+<li>16 bits integers stored in little-endian format</li>
+<li>16 bits addressable memory (the program starts at address <code>0</code>)</li>
+<li>8 registers</li>
+<li>1 stack containing 16 bits numbers</li>
+<li>22 instructions: <code>halt</code>, <code>noop</code>, <code>set</code>, <code>push</code>, <code>jpm</code>, <code>add</code>, <code>mult</code>, etc.</li>
+</ul>
+<p>Each instruction is described in details: opcode, number of expected
+arguments and behavior when executed by the virtual machine. So
+far so good, this looks pretty classic. The implementation of such
+virtual machine is pretty straight forward. I choose <code>Haskell</code> for
+the implementation (because why not, and I already implemented some
+<a href="https://github.com/remusao/Hodor" target="_blank" rel="noopener noreferrer">Brainfuck interpreter/transpiler</a>
+before, so I thought I could reuse some learnings from there). Without
+going into too much details, I used the following data structures to
+represent the state of the VM:</p>
+<pre class="code" data-lang="haskell"><code><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Synacor</span> = <span class="hljs-type">Synacor</span></span>
+  { pos :: <span class="hljs-type">Int</span>
+  , mem :: <span class="hljs-type">Map</span> <span class="hljs-type">Register</span> <span class="hljs-type">Word16</span>
+  , stack :: [<span class="hljs-type">Word16</span>]
+  , program :: <span class="hljs-type">Vector</span> <span class="hljs-type">Word16</span>
+  }
+</code></pre>
+<h1>First Results</h1>
+<p>After implementing most of the instructions, I tried to run the program:</p>
+<blockquote>
+<p>Welcome to the Synacor Challenge! Please record your progress by
+putting codes like this one into the challenge website: XXXXXXXXXXX</p>
+<p>Executing self-test…</p>
+</blockquote>
+<p>Nice, so the program actually starts by <em>testing the virtual machine</em>,
+to make sure all instructions are implemented properly. It’s pretty
+cool. It means that you cannot proceed until your VM is fully functional
+(Using Haskell is a good start for that…). After a few iterations of
+trial, error, fix, I completed my implementation until…</p>
+<blockquote>
+<p>self-test complete, all tests pass
+The self-test completion code is: XXXXXXXXXXXX</p>
+</blockquote>
+<p>Youpi! All good… but, wait, something else was displayed on the terminal:</p>
+<p><strong>DISCLAIMER</strong>: The next section of this post contains spoilers and
+parts of solutions for the Synacor challenge. Please only proceed if you
+already solved the challenge, or do not intend to do so.</p>
+<p>…</p>
+<h1>Riddles in the Dark</h1>
+<blockquote>
+<p>== Foothills ==
+You find yourself standing at the base of an enormous mountain. At its
+base to the north, there is a massive doorway. A sign nearby reads
+“Keep out! Definitely no treasure within!”</p>
+<p>Things of interest here:</p>
+<ul>
+<li>tablet</li>
+</ul>
+<p>There are 2 exits:</p>
+<ul>
+<li>doorway</li>
+<li>south</li>
+</ul>
+<p>What do you do?</p>
+</blockquote>
+<p><em>Mind blown</em>. The program you are running is actually a terminal-based
+RPG! How cool is that? Well, very cool, and very smart. I clearly did
+not expect that from the challenge. It’s a bit like trying to open a
+chess (the chess is a program and the virtual machine is the key) and
+then you discover there is another riddle in the chess. So what’s next?
+Well play the game I guess…</p>
+<p>I played for a bit, and discovered one more code in the game (Did I
+already mention how cool all this is?). Which means some (all?) codes
+can be found by playing the game. But then, how do I know if all codes
+are in the game? How deep and rich can this game be? What if it takes 10
+hours to find the codes? I already under-estimated the challenge once,
+let’s not do the same mistake again.</p>
+<p>At this point I thought of two things that could be done:</p>
+<ol>
+<li>Try to extract all text from the file <code>challenge.bin</code> and see if it contains
+any code.</li>
+<li>Modify the VM so that it can play the game by itself, and explore all
+possible paths possible, some kind of depth-first search on the game itself
+in a way.</li>
+<li>Disassemble the program and try to understand its structure. The codes must
+be stored somewhere (or generated somehow), by understanding (and maybe
+changing a bit) the code, it must be possible to bypass the game completely.</li>
+</ol>
+<p>The first approach did not yield any result, which means that codes are
+probably encoded in some way to not be readable. I did not have too much hope
+anyways, but we never know.</p>
+<p>The second approach was the most promising and allowed me to discover a few more
+codes. Here is how it worked:</p>
+<p><strong>First step</strong> – I modified the virtual machine implementation so that it’s 100%
+pure code with no side-effect. The execution now consists in a function
+<code>execNextOpCode</code> which takes as input the state of the program, runs the
+next opcode of the program, then returns a “continuation” which can be
+one of:</p>
+<ul>
+<li><code>Halt</code> - program terminated successfully.</li>
+<li><code>Error String</code> - there was an exception while running the opcode (should
+never happen).</li>
+<li><code>PutChar Char</code> - we should print a character in the terminal.</li>
+<li><code>GetChar (Char -&gt; s)</code> - we should ask some user input, then continue the
+execution of the opcode using the function returned (<code>Char -&gt; s</code>).</li>
+<li><code>Ok</code> - opcode was executed correctly and we can continue running the program.</li>
+</ul>
+<p>The nice thing with this model, is that running an opcode does not alter
+the state of the virtual machine, but instead returns a new virtual
+machine (copy of the initial state). This might seem crazy, but it’s not as
+inefficient as it sounds (and pretty common in an immutable language like
+Haskell). This allows us to parallelize the execution of different branches of a
+program without having to care about controlling side-effects.</p>
+<p><strong>Second step</strong> – write a depth-first search for the game by changing the VM
+execution model in two ways:</p>
+<ol>
+<li>Each output <code>PutChar</code> from the program is stored in an accumulator so that we
+can inspect it later.</li>
+<li>Each time a user input is required by the <code>GetChar</code> continuation code, we
+<em>fork</em> our execution of the program and perform all possible user actions
+concurrently: <em>picking up objects</em>, <em>using objects</em>, <em>visit available
+places</em>.</li>
+<li>We need to detect loops to not explore forever (e.g.: when we come back to an
+already visited location). This is done by comparing the output (accumulated
+<code>PutChar</code> from the program) of a given branch to all previously explored
+branches. If we already generated the same output once, no need to do it
+again.</li>
+</ol>
+<p>This approach allowed me to discover a few more codes, <em>but not all</em>!
+This can mean two things: either not all codes can be discovered through
+the game (likely), or my exploration method is not working as well as it
+should! In both cases, it means I’m not done exploring the rabbit hole…</p>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[TIL—Python has a built-in persistent key-value store]]></title>
             <link>https://remusao.github.io//posts/python-dbm-module.html</link>
             <guid>https://remusao.github.io//posts/python-dbm-module.html</guid>
@@ -1879,6 +2746,114 @@ clicked to clipboard.</li>
   });
 
 </code></pre>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Packaging Node.js apps the easy way]]></title>
+            <link>https://remusao.github.io//posts/packaging-nodejs-apps.html</link>
+            <guid>https://remusao.github.io//posts/packaging-nodejs-apps.html</guid>
+            <pubDate>Sun, 04 Mar 2018 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p><em>TL;DR</em> in this article we demonstrate how to:</p>
+<ul>
+<li>Create a minified bundle for a Node.js application (using Webpack 4).</li>
+<li>Create a self-contained executable (using Nexe).</li>
+<li>Create a Docker containers to run the application.</li>
+</ul>
+<p>…without any configuration file!</p>
+<p>Packaging, bundling, deploying Node.js applications can get very tricky
+when you are faced with the diversity of tools that can be used. Even
+when tools have been chosen, configuration is often non-trivial.</p>
+<p>In this post we will see that packaging a Node.js application does not have to
+be difficult or confusing. By sticking to a minimal set of tools and using just
+the necessary configuration, we will be able to create the following artifacts:
+minified bundle, self-contained executable, Docker image.</p>
+<p>All the code from this article can be found <a href="https://github.com/remusao/node-app-packaging-template" target="_blank" rel="noopener noreferrer">on GitHub</a>.</p>
+<h2>The Application</h2>
+<p>Our demonstration application is performing a bandwidth test with
+<code>fast.com</code>, using <code>jsdom</code> to avoid having to resort to a headless
+browser. The output looks like the following:</p>
+<pre class="code" data-lang="js"><code>$ node index.<span class="hljs-property">js</span>
+<span class="hljs-title class_">Starting</span> bandwidth test...
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">0</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">7.9</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">35</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">60</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">60</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">64</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">65</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">67</span> <span class="hljs-title class_">Mbps</span>
+
+= <span class="hljs-title class_">Speed</span> <span class="hljs-number">66</span> <span class="hljs-title class_">Mbps</span>
+</code></pre>
+<p>The implementation details are not really relevant, but long story
+short; <code>jsdom</code> is loading the URL <code>https://fast.com</code>. We then display the
+bandwidth estimation every second until the test is completed.</p>
+<h2>Bundling with Webpack</h2>
+<p>In the past, I found Webpack to be a bit cumbersome to use, even for
+simple use-cases. With version 4, I was delighted to see that they now
+provide meaningful defaults and simple options. In our case, it is not
+even necessary to have a configuration file, which is great!</p>
+<p>Producing a minified bundle is as simple as:</p>
+<pre class="code" data-lang="sh"><code>$ webpack index.js --output bundle.min.js --mode production --target node
+</code></pre>
+<p>That’s it! This command will create a new file: <code>bundle.min.js</code> in the
+current directory. Since the <code>--target</code> is Node.js, we can invoke it
+directly: <code>node bundle.min.js</code>.</p>
+<p>If you want faster builds as well as a watch-mode, you can use the following
+variations of the previous command:</p>
+<pre class="code" data-lang="sh"><code>$ webpack index.js --output bundle.min.js --mode development --target node
+$ webpack index.js --output bundle.min.js --mode development --watch --target node
+</code></pre>
+<p>Yes, it’s <em>that easy</em>!</p>
+<h2>Compiling into a Single Executable</h2>
+<p>We could have stopped at our minified bundle, but what if we could get
+a self-contained executable packaging our application as well as all
+dependencies? And by dependencies, we really mean: Node.js itself and
+everything needed for the runtime.</p>
+<p>It’s possible thanks to <a href="https://github.com/nexe/nexe" target="_blank" rel="noopener noreferrer">Nexe</a>, which
+provides a way to <em>compile</em> your Javascript application along with a
+Node.js runtime in a single executable. Neat.</p>
+<p>With our already existing bundle <code>bundle.min.js</code>, a single command is needed to
+create the executable:</p>
+<pre class="code" data-lang="sh"><code>$ nexe bundle.min.js -t alpine-x64-8.9.3 -o app
+</code></pre>
+<p>What we’re saying here is that our <code>bundle.min.js</code> should be compiled with a
+Node.js runtime version 8.9.3 compiled for Alpine Linux x64 (which will be
+useful in a moment to create a Docker image). You can also check the <a href="https://github.com/nexe/nexe/releases/tag/v2.0.0-rc.17" target="_blank" rel="noopener noreferrer">exhaustive list of all
+possible targets</a></p>
+<p>You should now have a new executable in your current folder: <code>app</code>. It
+can be started by invoking it like any other command:</p>
+<pre class="code" data-lang="sh"><code>$ ./app
+</code></pre>
+<h2>Building Docker Images</h2>
+<p>And now the cherry on the cake! Although you can already easily ship your
+self-contained application created using Nexe, why not create a Docker
+container out of it? This can be achieved with the following <code>Dockerfile</code>:</p>
+<pre class="code" data-lang="sh"><code>FROM alpine:3.7
+COPY ./app .
+</code></pre>
+<p>Building:</p>
+<pre class="code" data-lang="sh"><code>$ docker build -t app .
+</code></pre>
+<p>The resulting image should weigh around 44MB. And here is how to run the
+application:</p>
+<pre class="code" data-lang="sh"><code>$ docker run app ./app
+Starting bandwidth <span class="hljs-built_in">test</span>...
+...
+
+= Speed 66 Mbps
+</code></pre>
+<h2>Final Thoughts</h2>
+<p>I will not pretend that the tools described here are able to handle
+all use-cases (or that they are the only possible tools; there are a
+plethora!), far from it. It is mostly restricted to simple Node.js
+applications (with dependencies). But this is probably a nice starting
+point for more complex situations, for which you might need to create a
+proper configuration file with more bells and whistles.</p>
+<p>The ease with which complex tasks can be handled with simple commands and
+almost no configuration also shows that the Node.js/Javascript ecosystem is
+maturing! Although there is still a lot of fragmentation, it’s really nice to
+observe and benefit from all these improvements.</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -2103,6 +3078,44 @@ Options:
     -b --<span class="hljs-built_in">bind</span> ADDRESS   Specify alternate <span class="hljs-built_in">bind</span> address [default: 0.0.0.0]
     -h, --<span class="hljs-built_in">help</span>          Show this <span class="hljs-built_in">help</span> message and <span class="hljs-built_in">exit</span>.
 </code></pre>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
+            <link>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</link>
+            <guid>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</guid>
+            <pubDate>Sat, 25 Nov 2017 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
+fast fuzzy matching and approximate set membership tests, I found myself in a
+situation where I needed more insight about what optimizations <code>V8</code> was
+performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
+compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
+consider!</p>
+<p>This article assumes you’re using
+<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
+extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
+During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
+very useful!</p>
+<h1>Building V8 From Source</h1>
+<h2>Installing depot_tools</h2>
+<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
+<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
+$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
+</code></pre>
+<h2>Compiling V8</h2>
+<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
+<pre class="code" data-lang="sh"><code>$ fetch v8
+</code></pre>
+<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
+version of the sources. It will also configure everything needed for the build.</p>
+<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
+$ ninja -C out.gn/x64.release
+</code></pre>
+<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
+intended by running the tests:</p>
+<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
+</code></pre>
+<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
 ]]></content:encoded>
         </item>
         <item>
