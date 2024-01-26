@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Fri, 26 Jan 2024 19:00:45 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 26 Jan 2024 20:00:32 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -785,6 +785,194 @@ Then start the update with:</p>
   </a>
   <figcaption>There is no such thing as the 'Cow Level'.</figcaption>
 </figure>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Thoughts about unit and integration tests]]></title>
+            <link>https://remusao.github.io//posts/unit-integration-tests.html</link>
+            <guid>https://remusao.github.io//posts/unit-integration-tests.html</guid>
+            <pubDate>Sat, 26 Oct 2019 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<blockquote>
+<p>Do not feed the anti-patterns!</p>
+</blockquote>
+<p>I recently found myself working with tests—integration and unit—. This
+experience led to some frustration, which got me thinking… Where did the
+frustration come from? How could it be done differently? And ultimately, what
+makes a good test? This post is a collection of thoughts about testing, not an
+exhaustive guide.</p>
+<h2>Unit vs. Integration?</h2>
+<blockquote>
+<p>It does not matter which one you pick first, you might need both eventually…</p>
+</blockquote>
+<p>Before writing any test, you might be wondering <em>which kind of test</em> makes
+sense. Would it be better to cover your new feature with unit or integration
+tests? You might want to pause for a moment and think about the trade-offs of
+the different options.</p>
+<p>Often, <em>unit tests</em> will run in a more controlled environment, maybe with some
+dependencies <a href="https://en.wikipedia.org/wiki/Mock_object" target="_blank" rel="noopener noreferrer">mocked</a>, so that you
+can focus on a specific file, class or function. This means that unit tests are
+more targeted than integration tests. It also means that they might be easier
+to reason about, and quicker to iterate with. As an example, imagine testing a
+JavaScript library; unit tests could be running in Node.js instead of a
+full-blown browser.</p>
+<p>On the other hand, <em>integration tests</em> will potentially target multiple systems
+interacting with each other, running in an environment which is much closer to
+production conditions. Using the same example, your JavaScript library might now be tested
+in a handful of browsers (e.g.: Firefox, Chromium and Safari, with different
+versions of each), while interacting with other libraries. This means that you
+will most likely gain more confidence that the code works in production
+environment, at the cost of a more complex setup.</p>
+<h2>Non-regression Tests</h2>
+<blockquote>
+<p>Non-regression is not the same as <em>non-evolution</em>.</p>
+</blockquote>
+<p>It is desirable to consolidate APIs or components with non-regression tests,
+but be careful not to prevent future evolution! This might happen if you take
+the current production system and generate test-cases by feeding inputs,
+getting the results and writing high-level tests which ensure that the output
+is always the one that was expected <em>at the time test-cases were generated</em>.</p>
+<p>Although this might feel good at first—we have great test coverage after
+all!—, this approach has at least one major short-coming: <em>it’s very hard to
+make the tests evolve in the future</em>. It’s nice to “freeze” the capabilities of
+your system with numerous tests, but unless said system is not meant to evolve
+in the future, the assumptions about expected results will most likely evolve
+over time. This means that when writing tests you probably need to think not
+only about coverage and the expected behavior <em>right now</em>, but also how easy it
+will be to make the tests evolve in the future.</p>
+<p>Tests are tightly related to the code being tested and, if you are not careful,
+rigid tests might make changing the source code much more painful than it
+should be.</p>
+<h2>Your Tests are Code</h2>
+<blockquote>
+<p>Tests are not the destination, they are the starting point and the path.</p>
+</blockquote>
+<p>There is a misunderstanding at the root of all evils: you shall not <em>treat
+your tests differently than your source code</em>. Tests <strong>are</strong> code! To make
+things a bit more concrete, here is a list of assumptions which I think are
+reasonable when it comes to source code but are rarely accepted for tests:</p>
+<ul>
+<li>You expect to be able to <em>build</em> and <em>run</em> your code easily.</li>
+<li>You expect your code to be <em>efficient</em>.</li>
+<li>You expect your code to be <em>understandable</em>.</li>
+<li>You expect your code to be <em>documented</em>.</li>
+<li>You expect your code to be <em>cross-platform</em>.</li>
+<li>You expect your code to be <em>easy to delete</em>!</li>
+<li>You expect your code to <em>not be redundant and use abstractions</em>.</li>
+</ul>
+<p>Whenever one of the expectations holds for your code, try replacing <code>code</code> with
+<code>tests</code> and ask yourself if it is still true. Your code and the tests you write
+to ensure it behaves in a correct way will have to evolve side-by-side in the
+future. You do not want your tests to become a <em>liability</em>.</p>
+<h2>Future-Proof Tests?</h2>
+<blockquote>
+<p>No developer ever reads the same code twice. — Heraclitus</p>
+</blockquote>
+<p>When writing tests, try to express your intent and give cues to the future
+reader —that might be you in a few months!— regarding why a given assertion was
+needed, what behavior is being tested, etc. Alongside the usual features of a
+language such as <em>comments</em>, <em>good names</em> for variables and functions, etc.
+modern testing frameworks give many tools to ease this process: use things like
+<code>describe(...)</code>, <code>it(...)</code> and explicit assertions <code>expect(...).to.be</code>.</p>
+<p>Additionally, as a contributor to a project which has tests, it should be
+reasonnably straightforward to answer the following questions:</p>
+<ul>
+<li>when looking at code, where can I find the existing tests?</li>
+<li>when looking at tests, which code is being tested?</li>
+</ul>
+<p>There should be a clear path to modify both code and tests:</p>
+<ul>
+<li>when changing code, which tests need to be changed?</li>
+<li>when deleting code, which tests need to be deleted?</li>
+</ul>
+<p>A few tips can ease this process. <em>Naming conventions</em> for test files should be
+consistent and finding the tests for a given file or component should not
+involve any interpretation, it should be mechanical (e.g.: tests for <code>module.js</code>
+are always to be found in <code>tests/module.test.js</code>).</p>
+<p>Tests should be organized in a way that follows the code structure closely so
+that changes in the source can be reflected to the tests and <em>vice versa</em>. This
+also applies to the internal structure of the tests. It can be helpful to group
+assertions by behavior or assumptions. It is also helpful to be explicit about
+both success and failure of an assertion!</p>
+<p>This last point is important because if you can quickly grasp the intent while
+reading a test; it allows to decide if an assertion still holds after a change
+in the code, or if it should go away completely.</p>
+<p>Last but not least, avoid repetition in tests. If you see yourself writing the
+same assertions over and over again to tests similar components, it might be
+worth abstracting these away. You will thank yourself in the future when you
+need to amend the tests!</p>
+<h2>By Way of Conclusion</h2>
+<blockquote>
+<p>Always pick the right hammer for your nails…</p>
+</blockquote>
+<p>As mentioned previously, this is not about picking unit tests over integration
+tests. You will likely need both eventually because they are often
+complementary and give you a different kind of confidence in the correctness of
+your code (although some <a href="https://blog.thecodewhisperer.com/permalink/integrated-tests-are-a-scam" target="_blank" rel="noopener noreferrer">argue against integration tests</a>).</p>
+<p>As a take-away, treat your tests the same way you treat your source code and
+hold them both to high standards. Not doing so might lead to a situation where
+your tests become a liability and slow you down instead of empowering you to
+write better and more robust features.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[A static blog generator in TypeScript]]></title>
+            <link>https://remusao.github.io//posts/typescript-blog-generator.html</link>
+            <guid>https://remusao.github.io//posts/typescript-blog-generator.html</guid>
+            <pubDate>Fri, 19 Jul 2019 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<blockquote>
+<p>Oups, I did it again…</p>
+</blockquote>
+<p>A while ago I was joking with <a href="https://twitter.com/sebadzia" target="_blank" rel="noopener noreferrer">@sebadzia</a> about
+the fact that if you are not re-writting your blog generation mechanism from
+scratch every <em>N</em> posts, then you’re doing it wrong. It appears that I’m
+actually living by these words and have been re-implementing my own blog over
+and over again; maybe in the hope that it would motivate me to write more. This
+blog <em>became an end instead of a mean</em> to communicate things.</p>
+<p>Here are the 6 engines I’ve used over the years (and this does not even account
+for the different themes that I used with each of them):</p>
+<ul>
+<li><a href="https://wordpress.org/" target="_blank" rel="noopener noreferrer">WordPress</a></li>
+<li><a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a></li>
+<li><a href="https://blog.getpelican.com/" target="_blank" rel="noopener noreferrer">Pelican</a></li>
+<li><a href="https://jaspervdj.be/hakyll/" target="_blank" rel="noopener noreferrer">Hakyll</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy" target="_blank" rel="noopener noreferrer">Custom generator in Haskell</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy-ts" target="_blank" rel="noopener noreferrer"><strong>Custom generator in TypeScript</strong></a></li>
+</ul>
+<p>This means that the blog engine has been changed on average every <em>8.5</em> posts.
+Not too bad! Maybe the next one will be in Rust?</p>
+<p>I think what made me switch this time is the fact that I’m actually enjoying
+TypeScript very much lately (I find the type system super neat, and already
+liked JavaScript tooling a lot); and I was a bit fed up by the build time of
+the Haskell version. The way I did it was most probably sub-optimal as I am by
+no mean an experienced Haskell developer. Last but not least, I was on vacation
+and had some time to waste…</p>
+<p>The TypeScript generator is still rough around the edges but it’s working and
+allows me to build the site, watch changes, and serve locally in development
+mode.</p>
+<p>I rely on the following packages to do the heavy lifting:</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/@octokit/rest" target="_blank" rel="noopener noreferrer">@octokit/rest</a> to interact with GitHub APIs (used to fetch static comments)</li>
+<li><a href="https://www.npmjs.com/package/chokidar" target="_blank" rel="noopener noreferrer">chokidar</a> to watch for files changes</li>
+<li><a href="https://www.npmjs.com/package/express" target="_blank" rel="noopener noreferrer">express</a> to serve blog locally</li>
+<li><a href="https://www.npmjs.com/package/dompurify" target="_blank" rel="noopener noreferrer">dompurify</a> to sanitize final HTML</li>
+<li><a href="https://www.npmjs.com/package/highlight.js" target="_blank" rel="noopener noreferrer">highlight.js</a> to provide syntactic coloration for code blocks in posts</li>
+<li><a href="https://www.npmjs.com/package/html-minifier" target="_blank" rel="noopener noreferrer">html-minifier</a> to minimize HTML</li>
+<li><a href="https://www.npmjs.com/package/marked" target="_blank" rel="noopener noreferrer">marked</a> to convert markdown to HTML</li>
+</ul>
+<p>Overall I’m fairly happy with this setup. The generator currently fits into a
+single source file (which should probably be split at some point) and generation
+is pretty fast: <em>~50</em> seconds from scratch (which includes installing all npm
+dependencies, generating posts and fetching comments from GitHub). Generating
+posts only takes less than 10 seconds, and most of the time is spent waiting
+for comments to be fetched from GitHub issues.</p>
+<p>There are a few things I’d like to try or investigate in the future to improve:</p>
+<ul>
+<li>consider using JSX (with React in pure server-side rendering mode)</li>
+<li>consider writing CSS in TypeScript as well with typing</li>
+<li>add support for inlined math using KaTex (which I do not need at the moment)</li>
+<li>improve comments display with better rendering and support for reactions and emojis</li>
+</ul>
+<p>And of course, I will try my best to write more content here in the future!</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -1946,6 +2134,296 @@ i7-6600U (2,60-3,40 GHz) with 16GB of Ram, running Ubuntu 18.04.</p>
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[Exploring etymology using Wiktionary data]]></title>
+            <link>https://remusao.github.io//posts/wiktionary-etymology-exploration.html</link>
+            <guid>https://remusao.github.io//posts/wiktionary-etymology-exploration.html</guid>
+            <pubDate>Sat, 14 Jul 2018 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Etymology is a fascinating topic. Looking closer at the origin of words often
+yields surprising and interesting connections between languages and countries,
+forgotten stories or fun anecdotes. There are multiple sources for etymological
+data, and most of the time, using specialized books is a safe bet. The issue is
+that they are usually dedicated to one language, and it’s close to impossible to
+extract the data in a format which allows manipulation by programs.</p>
+<p>There is an alternative though: <a href="https://www.wiktionary.org/" target="_blank" rel="noopener noreferrer"><strong>Wiktionary</strong></a>. It is not perfect and suffers from the following drawbacks:</p>
+<ul>
+<li>Information about some words can be missing or incomplete</li>
+<li>Different editions offer various degrees of exhaustiveness</li>
+<li>It is still not trivial to extract the data in a nice format (more on that
+later)</li>
+</ul>
+<p>But it offers very nice benefits as well:</p>
+<ul>
+<li>It is possible to parse the dumps (although not as easy as it could)</li>
+<li>It is possible to combine multiple editions to get more complete etymological data (e.g.: French and English dumps)</li>
+<li>It is constantly evolving and freely accessible</li>
+</ul>
+<p>I often use Wiktinary from the website to get more insight about some words, but
+it is not always optimal: it can be time-consuming to follow the links,
+difficult to know if you missed anything, and hard to answer some questions. In
+particular:</p>
+<ol>
+<li>What is the “etymological” distance between two words, and how are they connected? (according to
+Wiktionary data)</li>
+<li>Given a word in a source language (e.g.: <code>Buch</code> from <em>German</em>), what is the
+closest word in another target language (e.g.: in <em>English</em> it would be <code>book</code>.)</li>
+<li>Can we identify the subset of words from a source language which is very
+closely connected to words from a target language? (e.g. by direct
+inheritance)?</li>
+<li>Could we visualize the graph of etymological connections from a source <em>word</em>
+until a given <em>distance</em>?</li>
+<li>etc.</li>
+</ol>
+<p>In the rest of this article, I’d like to present a work-in-progress project
+called <a href="https://github.com/remusao/wgraph" target="_blank" rel="noopener noreferrer"><em>wgraph</em></a>, which I have been
+developing recently. It allows to parse the content of Wiktionary dumps in
+multiple languages (currently French and English are well supported and more are
+on the way), to extract a graph of etymological relationships between words. Here
+are a few examples of possible connections:</p>
+<ul>
+<li>German word ‘Buch’ <em>cognates</em> with English word ‘book’</li>
+<li>English word ‘table’ <em>inherits</em> from Middle English words ‘table’, ‘tabel’,
+‘tabil’ and ‘tabul’</li>
+<li>French word ‘chaise’ is <em>borrowed</em> from Old French ‘chaiere’, and <em>cognates</em>
+with English word ‘chair’</li>
+</ul>
+<h2>Parsing the data</h2>
+<p>The parsing stage takes as input one or multiple
+<a href="https://dumps.wikimedia.org/backup-index.html" target="_blank" rel="noopener noreferrer">dumps</a>, and produces a
+mapping between <code>source</code> words, and multiple references as found in the
+specific pages from Wiktionary, in the <code>etymology</code> section. Using
+<code>wgraph</code>, this can be performed as follows:</p>
+<pre class="code" data-lang="sh"><code>$ parse enwiki-articles/enwiktionary-latest-pages-articles.xml
+</code></pre>
+<p>(Note that you can input a compressed version of the dumps as well, either in
+<code>.gz</code> or <code>.bz2</code> format)</p>
+<p>This will produce a file named <code>graph.tsv</code> containing one word per line,
+alongside its references. The first few lines look like:</p>
+<pre class="code" data-lang="sh"><code>lire  lira|etyl|  lira|borrowed|it  *lekʷs-|mention|ine-pro  lies|cognate|<span class="hljs-built_in">nl</span> ...
+encyclopédie  encyclique|lien|  encyclopaedia|etyl|  encyclopaedia|mention|la ...
+manga  漫|mention|ltc  manga|mention|pt  漫画|borrowed|ja  man + -ga|suffix|zza ...
+</code></pre>
+<p>Each line starts with the word (e.g.: <code>manga</code>) and then follows a tab-separated
+list of references. Each reference is a tuple of <code>word</code>, <code>kind</code> (kind of
+relationship with the origin word, e.g.: borrowed from, inherited from, etc.)
+and <code>origin</code> (optional, since not all origins are specified in the data).</p>
+<p>And this is all we need start exploring the data and answer interesting
+questions!</p>
+<h2>Etymological summary visualization</h2>
+<p>Once we have a graph of “etymological” connections between words, one of the
+simplest things we can do is to visualize the neighborhood of a given word. This
+can be performed using the <code>summary</code> command provided by <code>wgraph</code>:</p>
+<pre class="code" data-lang="sh"><code>$ summary graph.tsv Buch
+Graph written into: wgraph_Buch
+</code></pre>
+<figure>
+<a href="../images/wgraph_Buch_1.svg">
+<img src="../images/wgraph_Buch_1.svg" alt="Etymological neighborhood of 'Buch'" style="width:100.0%">
+</a>
+<figcaption>Etymological neighborhood of *Buch*</figcaption>
+</figure>
+<p>We can also look deeper in the graph:</p>
+<pre class="code" data-lang="sh"><code>$ summary graph.tsv candidate --max-depth 2
+Graph written into: wgraph_Buch
+</code></pre>
+<figure>
+<a href="../images/wgraph_candidate.svg">
+<img src="../images/wgraph_candidate.svg" alt="Etymological neighborhood of 'candidate'" style="width:100.0%">
+</a>
+<figcaption>Etymological neighborhood of *candidate*</figcaption>
+</figure>
+<p>Interestingly enough, the ‘candidates’ referred to
+the “Roman candidates wearing bleached white togas
+as a symbol of purity at a public forum” (source:
+<a href="https://en.wiktionary.org/wiki/candidate#Etymology" target="_blank" rel="noopener noreferrer">Wiktionary</a>). This
+explains why the word ‘candidate’ is related to ‘white’, ‘candide’,
+‘blank’ and even the ‘elves’.</p>
+<p>Note that by default, up to 50 words will be included in the graph, to not
+overload it too much.</p>
+<p>It is also possible to group the nodes by origin using the <code>--group-by-origin</code>
+argument:</p>
+<pre class="code" data-lang="sh"><code>$ summary graph.tsv petrol --max-depth 2 --group-by-origin
+Graph written into: wgraph_Buch
+</code></pre>
+<figure>
+<a href="../images/wgraph_petrol_2_groupped.svg">
+<img src="../images/wgraph_petrol_2_groupped.svg" alt="Etymological neighborhood of 'petrol'" style="width:100.0%">
+</a>
+<figcaption>Etymological neighborhood of *petrol*</figcaption>
+</figure>
+<p>Now we know that <em>pretrol</em> literally means “oil from stones”: <em>ol</em> + <em>petra</em>
+(the stone).</p>
+<p>As a last example, let’s explore the neighborhood of ‘truie’ a French word used
+to designate the female of the pork. This word has a curious origin…</p>
+<pre class="code" data-lang="sh"><code>$ summary graph.tsv truie --max-depth 2 --group-by-origin
+Graph written into: wgraph_Buch
+</code></pre>
+<figure>
+<a href="../images/wgraph_truie.svg">
+<img src="../images/wgraph_truie.svg" alt="Etymological neighborhood of 'truie'" style="width:100.0%">
+</a>
+<figcaption>Etymological neighborhood of *truie*</figcaption>
+</figure>
+<p>You can see mentions of the word “Troja”, the famous city, where the
+“Trojan Horse” was used as a subterfuge that the Greeks used to enter
+the city of Troy during the war. And this is where we think this ‘truie’
+comes from. The “Trojan Horse” gave its name to a way to prepare (or
+grill) the pork called: “Porka de Troja”, and they ‘truie’ in French.</p>
+<h2>Distance between two words</h2>
+<p>Another simple application of the graph is to compute the size of
+the shortest path between two words. This can be achieved using the
+<code>distance</code> command provided by <code>wgraph</code>:</p>
+<figure>
+<a href="../images/wgraph_distance_Buch_beech.svg">
+<img src="../images/wgraph_distance_Buch_beech.svg" alt="Etymological distance between 'Buch' and 'beech'" style="width:20.0%">
+</a>
+<figcaption>Etymological distance between *Buch* and *beech*</figcaption>
+</figure>
+<pre class="code" data-lang="sh"><code>$ distance graph.tsv Buch book
+Distance: 1
+Start: Buch
+&gt; Cognates with book (English)
+</code></pre>
+<pre class="code" data-lang="sh"><code>$ distance graph.tsv Buch beech
+Distance: 5
+Start: Buch
+&gt; Cognates with book (English)
+&gt; Cognates with boek (Dutch)
+&gt; Cognates with bog (Danish)
+&gt; Inherited from boc (Old Irish (to 900))
+&gt; Mention beech (English)
+</code></pre>
+<pre class="code" data-lang="sh"><code>$ distance graph.tsv camaraderie chambre
+Distance: 3
+Start: camaraderie
+&gt; Mention comrade (English)
+&gt; Mention chamber (English)
+&gt; Inherited from chambre (Middle English (1100-1500))
+</code></pre>
+<pre class="code" data-lang="sh"><code>$ distance graph.tsv camarade chambre
+Distance: 2
+Start: camarade
+&gt; None chambrée (French)
+&gt; None chambre (French)
+</code></pre>
+<p>You probably noticed that <code>origin</code> or <code>kind</code> are not always available. This is
+mainly caused by:</p>
+<ol>
+<li>Data in French dumps are not formatted in an easily parsable format, and most
+information needs to be extracted from links (e.g.: <code>''[[word]]''''</code>) as well
+as the context, and the parser from <code>wgraph</code> is not yet smart enough to do
+this in a lot of cases.</li>
+<li>Sometimes the information is not available at all.</li>
+</ol>
+<p>Also note that this command only finds <em>one possible path</em>, but it happens
+that multiple paths of the same length link two words of the graph. A possible
+improvement would be to find all possible paths between two words, which would
+probably gives some nice insight! (It could also be visualized as a graph!)</p>
+<h2>Closest word in a target language</h2>
+<p>Let’s say you are learning a new language (e.g.: German) and while learning a
+new word, you are looking for a way to “connect” it to some words you already
+know. One way we could leverage our graph of words is to find a close word in a
+language you already know! This is what the command <code>closest</code> is doing:</p>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv buchstabieren en
+Start: buchstabieren
+&gt; None Buchstabe (unknown origin)
+&gt; Mention bookstaff (English)
+</code></pre>
+<p>The German word “buchstabieren” (or “to spell” in English) literally
+means “to stab the letters on the Buch/book/beech”. The connection with
+“beech” comes from the fact that people used to use “beech” tree as a
+material to create the tablets to write.</p>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv hospital fr
+Start: hospital
+&gt; Cognates with hôpital (French)
+</code></pre>
+<p>This one was pretty easy…</p>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv therme en
+Start: therme
+&gt; Etymology θερμός (unknown origin)
+&gt; Cognates with wearm (Old English (ca. 450-1100))
+&gt; Cognates with formus (Latin)
+&gt; Cognates with warm (English)
+</code></pre>
+<p>Interesting to know that “therme” (name given to the ancient Roman baths)
+connects to “warm” in English (very indirectly, but we find this idea of “warm
+water”).</p>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv schön en
+Start: schön
+&gt; None sheen (unknown origin)
+&gt; Cognates with show (English)
+</code></pre>
+<pre class="code" data-lang="sh"><code>$ closest graph.tsv Welt fr
+Start: Welt
+&gt; Inherited from weralt (Old High German (ca. 750-1050))
+&gt; Mention world (English)
+&gt; Cognates with verd (Norwegian Nynorsk)
+&gt; Cognates with vert (French)
+</code></pre>
+<p>Some connections are pretty far-fetched, and we would need to dig in the
+original data to understand why! And this is where it can get exciting to do
+some manual research!</p>
+<h2>What are the easiest words to learn in a language?</h2>
+<p>As a final application, and as a result of our ability to compute the minimum
+distance between two words in different languages, we can try to identify the
+easiest sub-set of a language you can learn! This works as follows:</p>
+<ol>
+<li>Specify the target language (e.g.: German)</li>
+<li>Specify languages you already know (e.g.: French and English)</li>
+</ol>
+<p>Then the <code>easiest</code> command will try to find a set of German words which
+is very close from words in either English or French. These words should
+be easier to memorize because they will probably resemble words you
+already know.</p>
+<pre class="code" data-lang="sh"><code>$ easiest graph.tsv
+========================================
+&gt; 1
+========================================
+  * personell
+  * Republik
+  * munizipal
+  * Provokateur
+  * Strauß
+  * Beispiel
+  * Tupperware
+  * Karosserie
+  * maritim
+  * hypoallergen
+  * Etappe
+  * Finanzier
+  * Pansen
+  * bekommen
+  * Feuer
+  * blockieren
+  * robbe
+  * kidnappen
+  * Flakon
+  * lukrativ
+  * eskortieren
+  * universell
+  * Bravour
+  * Mittwoch
+  * grotesk
+  * jetzt
+  * positiv
+  ...
+</code></pre>
+<p>At the moment it is not possible to specify other languages than French, English
+and German, but it will probably be in the future.</p>
+<h2>Closing remarks</h2>
+<p>There is probably much more we can do using this data, and this is only
+the beginning, I already find the project useful to get insight about
+the origin of some words, but it is still rough around the edges. In the
+following weeks I intend to improve <code>wgraph</code> in the following ways:</p>
+<ol>
+<li>Improve information extraction from Wiktionary dumps (especially for the
+French edition), this should have a direct impact on the results of all
+sub-commands presented above.</li>
+<li>Support more editions to make the dataset more complete (German is next)</li>
+<li>Find more interesting applications and visualizations ideas!</li>
+</ol>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[Synacor—Down the rabbit hole]]></title>
             <link>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</link>
             <guid>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</guid>
@@ -2638,6 +3116,416 @@ intended by running the tests:</p>
 <pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
 </code></pre>
 <p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[The wrong way of benchmarking integer comparison functions]]></title>
+            <link>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</link>
+            <guid>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</guid>
+            <pubDate>Sat, 25 Nov 2017 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p><em>TL;DR</em>: Naive code can sometimes run faster than “clever” code. Compilers are
+usually designed to optimize for the most common code, and common code is not
+clever. Lessons learned; if you try to write clever code, benchmark it to make
+sure there is a benefit.</p>
+<p>I recently stumbled upon <a href="https://blogs.msdn.microsoft.com/oldnewthing/20171117-00/?p=97416" target="_blank" rel="noopener noreferrer">an article</a>,
+describing how trying to out-smart the compiler can result in bad
+performances compared to more naive code. The benchmark is about finding
+the most efficient way to write a comparison function between integers,
+to be used in conjunction with <code>sort</code> or binary search for example. The
+original post being about <code>c++</code>, I was curious to know if the results
+would transfer to JavaScript (in particular <code>V8</code>, using <code>Node.js</code>). This
+is what this post is about.</p>
+<p>Let see the contenders:</p>
+<ul>
+<li><em>Naive</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">compare1</span>(<span class="hljs-params">a, b</span>) {
+    <span class="hljs-keyword">if</span> (a &lt; b) <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+    <span class="hljs-keyword">if</span> (a &gt; b) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}
+</code></pre>
+<ul>
+<li><em>Clever</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">compare2</span>(<span class="hljs-params">a, b</span>) {
+    <span class="hljs-keyword">return</span> a - b;
+}
+</code></pre>
+<h2>Benchmarks</h2>
+<p>The original article has a very good point saying that to benchmark this
+code realistically, you need a real use-case. Just sorting the array and
+summing the numbers does not make any sense, no one would do it. But if
+instead you perform a binary search on the sorted array, it gets closer
+to something one might do in a real code-base.</p>
+<p>I took the liberty of converting the original <code>C++</code> implementation of the binary
+search into JavaScript, to stick closely to the article:</p>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">binarySearch</span>(<span class="hljs-params">array, first, last, key, compare</span>) {
+  <span class="hljs-keyword">var</span> length = last - first;
+  <span class="hljs-keyword">while</span> (length &gt; <span class="hljs-number">0</span>) {
+    <span class="hljs-keyword">var</span> step = (length / <span class="hljs-number">2</span>) | <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">var</span> middle = first + step;
+    <span class="hljs-keyword">var</span> result = <span class="hljs-title function_">compare</span>(array[middle], key);
+    <span class="hljs-keyword">if</span> (result &lt; <span class="hljs-number">0</span>) {
+      first = middle + <span class="hljs-number">1</span>;
+      length -= step + <span class="hljs-number">1</span>;
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (result === <span class="hljs-number">0</span>) {
+      <span class="hljs-keyword">return</span> middle;
+    } <span class="hljs-keyword">else</span> {
+      length = step;
+    }
+  }
+
+  <span class="hljs-keyword">return</span> last;
+}
+</code></pre>
+<p>Using the great <a href="https://www.npmjs.com/package/benchmark" target="_blank" rel="noopener noreferrer">benchmark</a>
+library, let’s evaluate the performance of each compare function:</p>
+<ul>
+<li><em>Setup</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">compare</span>) {
+  <span class="hljs-comment">// Create a sorted array</span>
+  <span class="hljs-keyword">var</span> array = [];
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">8192</span>; ++i) {
+    array.<span class="hljs-title function_">push</span>(i * <span class="hljs-number">2</span>);
+  }
+
+  <span class="hljs-keyword">var</span> found = <span class="hljs-number">0</span>;
+
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = -<span class="hljs-number">1</span>; j &lt; <span class="hljs-number">16383</span>; ++j) {
+    <span class="hljs-keyword">var</span> index = <span class="hljs-title function_">binarySearch</span>(
+      array,              <span class="hljs-comment">// sorted array</span>
+      <span class="hljs-number">0</span>,                  <span class="hljs-comment">// start index</span>
+      array.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>,   <span class="hljs-comment">// end index</span>
+      j,                  <span class="hljs-comment">// element we are looking for</span>
+      compare);           <span class="hljs-comment">// comparison function</span>
+
+    <span class="hljs-keyword">if</span> (index !== -<span class="hljs-number">1</span> &amp;&amp; array[index] === j) {
+      found += <span class="hljs-number">1</span>;
+    }
+  }
+
+  <span class="hljs-keyword">if</span> (found !== <span class="hljs-number">8191</span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">&#x27;Found bug&#x27;</span>, found);
+  }
+}
+</code></pre>
+<ul>
+<li><em>Benchmark</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">bench</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">var</span> <span class="hljs-title class_">Benchmark</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;benchmark&#x27;</span>);
+  <span class="hljs-keyword">var</span> suite = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Benchmark</span>.<span class="hljs-title class_">Suite</span>();
+
+  suite
+    .<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;compare1&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-title function_">run</span>(compare1);
+    })
+    .<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;compare2&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-title function_">run</span>(compare2);
+    })
+    .<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;cycle&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">String</span>(event.<span class="hljs-property">target</span>));
+    })
+    .<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;complete&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Fastest is &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">filter</span>(<span class="hljs-string">&#x27;fastest&#x27;</span>).<span class="hljs-title function_">map</span>(<span class="hljs-string">&#x27;name&#x27;</span>));
+    })
+    .<span class="hljs-title function_">run</span>({});
+}
+
+<span class="hljs-title function_">bench</span>();
+</code></pre>
+<p>And…</p>
+<blockquote>
+<pre class="code" data-lang="sh"><code>compare1 x 421 ops/sec ±0.51% (91 runs sampled)
+compare2 x 394 ops/sec ±0.39% (89 runs sampled)
+</code></pre>
+</blockquote>
+<p>It happens that the naive <code>compare1</code> is a bit faster than <code>compare2</code>.
+It’s not day and night, but the <em>naive</em>, more readable code is more
+efficient on V8 than the clever one.</p>
+<p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
+there</a></p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Generating Ad-Blocker filters from whotracks.me data]]></title>
+            <link>https://remusao.github.io//posts/whotracksme-generate-adb-filters.html</link>
+            <guid>https://remusao.github.io//posts/whotracksme-generate-adb-filters.html</guid>
+            <pubDate>Wed, 22 Nov 2017 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p><strong>Disclaimer</strong>: This article has originally been written for, and published on
+<a href="https://whotracks.me/blog/generating_adblocker_filters.html" target="_blank" rel="noopener noreferrer">whotracks.me</a>.</p>
+<p><em>TL;DR</em>  In this post we see how to:</p>
+<ol>
+<li>Load the data from <a href="https://github.com/cliqz-oss/whotracks.me" target="_blank" rel="noopener noreferrer">whotracks.me</a> to get access to trackers’ information</li>
+<li>Create a mapping from tracking categories to list of domains</li>
+<li>Filter each domain based on the amount of tracking of each <em>app</em></li>
+<li>Generate a filter list for each category</li>
+</ol>
+<p>The full source code used in this article can be found on the <a href="https://github.com/cliqz-oss/whotracks.me/blob/master/contrib/generating_adblocker_filters.py" target="_blank" rel="noopener noreferrer">Github repository</a>.</p>
+<p>Most popular content blockers are using filter lists to decide what requests
+leaving the browser should be blocked. In this regard, filter lists act as a
+privacy <em>ground truth</em>: deciding what is safe, and what is not safe for users.
+It means that your privacy protection is only as good as the filters your are
+using. The community is doing an amazing job, but still there can be gaps in
+your protection; one such situation is when a new tracker appears.</p>
+<p>With the right data, updated regularly, we believe it is possible to
+build powerful tools to help increase users’ privacy. Knowing more about
+trackers, in real time, allows to provide better anti-tracking but can also
+<em>help</em> the tedious process of curating the filter lists.</p>
+<p>In this post we’d like to demonstrate how we can make use of the
+open-sourced <a href="https://whotracks.me" target="_blank" rel="noopener noreferrer">whotracks.me</a> data to automatically
+generate <em>up-to-date</em>, <em>per-category</em>, filter lists supported by the
+most popular ad-blockers out there. Leveraging this data can improve
+user experience and make maintaining the lists easier.</p>
+<p>In the future, we can imagine generating per-country lists as well,
+in the spirit of the different <a href="https://easylist.to/" target="_blank" rel="noopener noreferrer">easylists</a> already
+in existence:</p>
+<ul>
+<li><code>DEU: Pornvertising blocking Germany</code></li>
+<li><code>DEU: Site_Analytics blocking Germany</code></li>
+<li>…</li>
+<li><code>FR: Site_Analytics blocking France</code></li>
+</ul>
+<p>They could also be dispatched in the already existing lists such as
+<code>advertising</code>, <code>privacy</code>, etc. Another option could be to use this as a
+tool to assist maintainers to keep an eye on the ecosystem; allowing to
+learn about new trackers in real time.</p>
+<p>Let’s get started!</p>
+<h2>Loading the data</h2>
+<p>The first step is to install the <code>whotracksme</code> package, available on <a href="https://pypi.python.org/pypi/whotracksme" target="_blank" rel="noopener noreferrer">PyPI</a>
+and <a href="https://github.com/cliqz-oss/whotracks.me" target="_blank" rel="noopener noreferrer">Github</a>. You can get started by
+installing <code>whotracksme</code> with <code>pip</code>:</p>
+<pre class="code" data-lang="sh"><code>$ pip install whotracksme
+</code></pre>
+<p>We start by loading the tracker-related data from <a href="https://github.com/cliqz-oss/whotracks.me/blob/master/whotracksme/data/assets/trackerdb.sql" target="_blank" rel="noopener noreferrer">trackerdb.sql</a>, using the
+helper function found in the <code>whotracksme.data</code> module:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> defaultdict
+<span class="hljs-keyword">from</span> whotracksme.data <span class="hljs-keyword">import</span> load_tracker_db
+
+<span class="hljs-comment"># Categories to tracker domains</span>
+tracker_domains_per_category = defaultdict(<span class="hljs-built_in">list</span>)
+
+<span class="hljs-comment"># Keep track of normalized &quot;app&quot; name for each tracker domain. A given &quot;app&quot;</span>
+<span class="hljs-comment"># such as &quot;doubleclick&quot; can use several domains: 2mdn.net, doubleclick.net, etc.</span>
+tracker_domains_to_app = {}
+
+<span class="hljs-comment"># Load trackers and group them by category</span>
+sql_query = <span class="hljs-string">&quot;&quot;&quot;
+  SELECT categories.name, tracker, domain FROM tracker_domains
+  INNER JOIN trackers ON trackers.id = tracker_domains.tracker
+  INNER JOIN categories ON categories.id = trackers.category_id;
+&quot;&quot;&quot;</span>
+<span class="hljs-keyword">with</span> load_tracker_db() <span class="hljs-keyword">as</span> connection:
+    <span class="hljs-keyword">for</span> (category, tracker, domain) <span class="hljs-keyword">in</span> connection.execute(sql_query):
+        tracker_domains_per_category[category].append(domain)
+        tracker_domains_to_app[domain] = tracker
+</code></pre>
+<p>Here is a sample of what we get in <code>tracker_domains_per_category</code>. Note that if
+you run the same script, you might get slightly different results as the
+data is being constantly updated:</p>
+<blockquote>
+<pre class="code" data-lang="python"><code>defaultdict(<span class="hljs-built_in">list</span>, {
+  <span class="hljs-string">&#x27;advertising&#x27;</span>: [
+    <span class="hljs-string">&#x27;doubleclick.net&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;audio_video_player&#x27;</span>: [
+    <span class="hljs-string">&#x27;soundcloud.com&#x27;</span>
+    ...
+  ],
+  <span class="hljs-string">&#x27;cdn&#x27;</span>: [
+    <span class="hljs-string">&#x27;googleapis.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;comments&#x27;</span>: [
+    <span class="hljs-string">&#x27;disqus.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;customer_interaction&#x27;</span>: [
+    <span class="hljs-string">&#x27;zendesk.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;essential&#x27;</span>: [
+    <span class="hljs-string">&#x27;googletagmanager.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;extensions&#x27;</span>: [
+    <span class="hljs-string">&#x27;kaspersky-labs.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;hosting&#x27;</span>: [
+    <span class="hljs-string">&#x27;amazonaws.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;misc&#x27;</span>: [
+    <span class="hljs-string">&#x27;linkedin.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;pornvertising&#x27;</span>: [
+    <span class="hljs-string">&#x27;pornhub.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;site_analytics&#x27;</span>: [
+    <span class="hljs-string">&#x27;google-analytics.com&#x27;</span>,
+    ...
+  ],
+  <span class="hljs-string">&#x27;social_media&#x27;</span>: [
+    <span class="hljs-string">&#x27;twitter.com&#x27;</span>,
+    ...
+  ]
+]})
+</code></pre>
+</blockquote>
+<h2>Filtering based on tracking behavior</h2>
+<p>It is tempting to generate filters for each domain loaded so far, but it
+would be very aggressive. Indeed, some domains identified as potential
+trackers might in fact not send <a href="https://whotracks.me/blog/what_is_a_tracker.html" target="_blank" rel="noopener noreferrer">unsafe identifiers</a> (or not a lot). For example
+<a href="https://whotracks.me/trackers/createjs.html" target="_blank" rel="noopener noreferrer">createjs</a> is not using any
+<em>fingerprinting</em> and does not seem to be doing tracking via <em>cookies</em>,
+hence, it should not be blocked systematically.</p>
+<p>Fortunately, we can make use of the data from <a href="https://github.com/cliqz-oss/whotracks.me/blob/master/whotracksme/data/assets/apps.json" target="_blank" rel="noopener noreferrer">apps.json</a> to learn
+more about each tracker. An <em>app</em> is an entity which can contain several
+domains (e.g.: <em>doubleclick</em> is an <em>app</em> for which we identified three
+domains: <code>2mdn.net</code>, <code>invitemedia.com</code> and <code>doubleclick.net</code>). We also
+provide information about companies to which each app belongs, but we
+will leave the exploration of this data for another article.</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> json
+<span class="hljs-keyword">from</span> whotracksme.data <span class="hljs-keyword">import</span> load_apps
+
+apps = load_apps()
+</code></pre>
+<p><code>apps</code> is a dictionary with keys being <em>app ids</em> (e.g.: <code>google_analytics</code>)
+and values containing all we know about each <em>app</em>. Let’s take an example:</p>
+<pre class="code" data-lang="json"><code>apps<span class="hljs-punctuation">[</span><span class="hljs-string">&quot;google_analytics&quot;</span><span class="hljs-punctuation">]</span>
+
+<span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;overview&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;bad_qs&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.4377430033329568</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;content_length&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">14771.492718357234</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;cookies&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.0015869678941083753</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;https&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.7507222054912428</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;google_analytics&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;reach&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.44292899275150094</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;requests&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3.834100333790446</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;requests_tracking&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1.202157901660253</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;site_reach&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.616005569531587</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;tracked&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0.4383474801843971</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;history&quot;</span><span class="hljs-punctuation">:</span> ...<span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;rank&quot;</span><span class="hljs-punctuation">:</span> ...<span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;sites&quot;</span><span class="hljs-punctuation">:</span> ...
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p>That’s a lot of data, and we plan to release a more complete
+documentation about what all this is about soon. For now let’s just say
+that everything is already made accessible on the website, in form of
+nice graphs and aggregations!</p>
+<p>For our use-case, we will only consider the field: <code>tracked</code>. It
+represents the proportion of page loads including <em>app</em>, identified as
+performing some form of tracking (using either identifying <em>cookies</em>
+or <em>fingerprinting</em>). In the case of <code>google_analytics</code>, it means that
+out of 100 page loads where <code>google_analytics</code> was present, tracking
+occurred 44 times.</p>
+<p>Before generating the filter list, let’s keep only <em>apps</em> tracking
+users more than <code>10%</code> of the time. Please note that finding the right
+threshold would require some finer analysis, and could depend on the
+application.</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">filter_domains</span>(<span class="hljs-params">domains</span>):
+    <span class="hljs-keyword">for</span> domain <span class="hljs-keyword">in</span> domains:
+        app_name = tracker_domains_to_app[domain]
+        <span class="hljs-keyword">if</span> app_name <span class="hljs-keyword">in</span> apps:
+            app = apps[tracker_domains_to_app[domain]]
+            tracked = app[<span class="hljs-string">&#x27;overview&#x27;</span>][<span class="hljs-string">&#x27;tracked&#x27;</span>]
+            <span class="hljs-keyword">if</span> tracked &gt;= <span class="hljs-number">0.1</span>:
+                <span class="hljs-keyword">yield</span> domain
+</code></pre>
+<p>We need to check if the <em>app</em> exists first because we currently only have the
+top 500 hosted on Github. We will host more in the future.</p>
+<h2>Generating the lists</h2>
+<p>We now proceed to generate the filter lists from these domains. They can take
+two forms:</p>
+<ul>
+<li>ADB compatible syntax: <code>||{domain}$third-party</code></li>
+<li>Hostname syntax: <code>127.0.0.1 {domain}</code></li>
+</ul>
+<p>Note that the second option will probably be too aggressive in a lot of
+cases, as it will also block the domain even if they are first-party (e.g.,
+<code>google.com</code> might get blocked by these rules).</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">generate_adb_filters</span>(<span class="hljs-params">domains</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Given a list of domains, generate filters using the
+    ADB syntax to be used in an adblocker&quot;&quot;&quot;</span>
+    <span class="hljs-keyword">for</span> domain <span class="hljs-keyword">in</span> domains:
+        <span class="hljs-keyword">yield</span> <span class="hljs-string">f&quot;||<span class="hljs-subst">{domain}</span>$third-party&quot;</span>
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">generate_hostname_filters</span>(<span class="hljs-params">domains</span>):
+    <span class="hljs-string">&quot;&quot;&quot;Given a list of domains, generate filters using
+    the hostname syntax&quot;&quot;&quot;</span>
+    <span class="hljs-keyword">for</span> domain <span class="hljs-keyword">in</span> domains:
+        <span class="hljs-keyword">yield</span> <span class="hljs-string">f&quot;127.0.0.1 <span class="hljs-subst">{domain}</span>&quot;</span>
+
+<span class="hljs-comment"># Generate filters with *ADB* syntax</span>
+adb_filters = {
+    category: <span class="hljs-string">&#x27;\n&#x27;</span>.join(generate_adb_filters(filter_domains(domains)))
+    <span class="hljs-keyword">for</span> (category, domains) <span class="hljs-keyword">in</span> tracker_domains_per_category.items()
+}
+
+<span class="hljs-comment"># Generate filters with *hostname* syntax</span>
+hostname_filters = {
+    category: <span class="hljs-string">&#x27;\n&#x27;</span>.join(generate_hostname_filters(filter_domains(domains)))
+    <span class="hljs-keyword">for</span> (category, domains) <span class="hljs-keyword">in</span> tracker_domains_per_category.items()
+}
+</code></pre>
+<p>Each dictionary now contains a valid adblocking list for each category:</p>
+<pre class="code" data-lang="python"><code>hostname_filters.keys()
+</code></pre>
+<blockquote>
+<pre class="code" data-lang="python"><code>dict_keys([
+  <span class="hljs-string">&#x27;advertising&#x27;</span>,
+  <span class="hljs-string">&#x27;audio_video_player&#x27;</span>,
+  <span class="hljs-string">&#x27;cdn&#x27;</span>,
+  <span class="hljs-string">&#x27;comments&#x27;</span>,
+  <span class="hljs-string">&#x27;customer_interaction&#x27;</span>,
+  <span class="hljs-string">&#x27;essential&#x27;</span>,
+  <span class="hljs-string">&#x27;extensions&#x27;</span>,
+  <span class="hljs-string">&#x27;hosting&#x27;</span>,
+  <span class="hljs-string">&#x27;misc&#x27;</span>,
+  <span class="hljs-string">&#x27;pornvertising&#x27;</span>,
+  <span class="hljs-string">&#x27;site_analytics&#x27;</span>,
+  <span class="hljs-string">&#x27;social_media&#x27;</span>,
+  <span class="hljs-string">&#x27;unknown&#x27;</span>
+])
+</code></pre>
+</blockquote>
+<p>And here is what we get for example in the <code>advertising</code> category:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-built_in">print</span>(adb_filters[<span class="hljs-string">&#x27;advertising&#x27;</span>])
+</code></pre>
+<blockquote>
+<pre class="code" data-lang="sh"><code>||doubleclick.com<span class="hljs-variable">$third</span>-party
+||criteo.com<span class="hljs-variable">$third</span>-party
+...
+</code></pre>
+</blockquote>
+<p>And the same domains but as <code>hostname</code> filters:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-built_in">print</span>(hostname_filters[<span class="hljs-string">&#x27;advertising&#x27;</span>])
+</code></pre>
+<blockquote>
+<pre class="code" data-lang="sh"><code>127.0.0.1 doubleclick.com
+127.0.0.1 criteo.com
+...
+</code></pre>
+</blockquote>
+<p>To put it in a nutshell, here is what we just did:</p>
+<ol>
+<li>Load the data from <a href="https://github.com/cliqz-oss/whotracks.me" target="_blank" rel="noopener noreferrer">whotracks.me</a> to get access to trackers’ information</li>
+<li>Create a mapping from tracking categories to list of domains</li>
+<li>Filter each domain based on the amount of tracking of each <em>app</em></li>
+<li>Generate a filter list for each category</li>
+</ol>
+<p>There is so much more we can do with this database. At the moment the
+API to load the data is pretty-low level, but it will be improved over
+time.</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -6296,52 +7184,6 @@ insoupçonnée :)</p>
 ]]></content:encoded>
         </item>
         <item>
-            <title><![CDATA[Python—Lister le contenu des répertoires]]></title>
-            <link>https://remusao.github.io//posts/python-list-directories.html</link>
-            <guid>https://remusao.github.io//posts/python-list-directories.html</guid>
-            <pubDate>Thu, 02 Feb 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p><strong>Disclaimer</strong> : Il est probablement plus simple d’utiliser la fonction
-<a href="https://docs.python.org/2/library/os.html#os.walk" target="_blank" rel="noopener noreferrer">os.walk</a> pour lister
-récursivement le contenu d’un dossier.</p>
-<p>Python est un langage très haut niveau qui permet de faire beaucoup de
-choses très facilement. Notamment, il est très facile de manipuler les
-fichiers et les dossiers grâce au module os. Les lecteurs connaissant
-le langage C remarqueront que les fonctions présentes dans ce module
-sont les mêmes que celles de la bibliothèque standard du C (exceptées
-certaines fonctions un peu plus « haut-niveau » qui sont seulement
-disponibles dans le module os de Python).</p>
-<p>Dans cet articles nous allons simplement voir comment lister
-récursivement le contenu des dossiers à partir de la position
-actuelle. Commençons tout d’abord par inclure le module os comme ceci :</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> os
-</code></pre>
-<p>Nous utiliserons ensuite les fonctions suivantes :</p>
-<ul>
-<li><code>os.listdir(dossier)</code> : Liste le contenu de <code>dossier</code> (fichiers et dossiers)</li>
-<li><code>os.chdir(dossier)</code> : On se déplace dans <code>dossier</code>.</li>
-<li><code>os.path.isdir(chemin)</code> : Détermine si le <code>chemin</code> donné en paramètre
-pointe vers un dossier ou un simple fichier.</li>
-<li><code>os.getcwd()</code> : Retourne une chaine de caractères représentant la
-position actuelle dans le système de fichiers (sous forme de chemin
-absolu).</li>
-</ul>
-<p>Avec ces quelques fonctions , on peu facilement lister le contenu des
-sous-dossiers à partir de la position courante comme ceci :</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>():
-  <span class="hljs-string">&quot;&quot;&quot;
-    Liste récursivement le contenu des sous-répertoires
-  &quot;&quot;&quot;</span>
-  <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> os.listdir(os.getcwd()):
-      <span class="hljs-keyword">if</span> os.path.isdir(f): <span class="hljs-comment"># si f est un dossier</span>
-        os.chdir(f) <span class="hljs-comment"># On va lister son contenu</span>
-        parse()
-        os.chdir(<span class="hljs-string">&#x27;../&#x27;</span>) <span class="hljs-comment"># On revient au répertoire précédent</span>
-      <span class="hljs-keyword">else</span>:
-        <span class="hljs-comment"># Traitement sur le fichier f</span>
-</code></pre>
-]]></content:encoded>
-        </item>
-        <item>
             <title><![CDATA[Python—Construction des listes]]></title>
             <link>https://remusao.github.io//posts/python-list-comprehension.html</link>
             <guid>https://remusao.github.io//posts/python-list-comprehension.html</guid>
@@ -6404,6 +7246,52 @@ constructions de liste :)</p>
 qu’il est possible d’utiliser n’importe quel générateur à la
 place, et même n’importe quelle structure de données itérable (par
 exemple : une liste, un set, etc…).</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Python—Lister le contenu des répertoires]]></title>
+            <link>https://remusao.github.io//posts/python-list-directories.html</link>
+            <guid>https://remusao.github.io//posts/python-list-directories.html</guid>
+            <pubDate>Thu, 02 Feb 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p><strong>Disclaimer</strong> : Il est probablement plus simple d’utiliser la fonction
+<a href="https://docs.python.org/2/library/os.html#os.walk" target="_blank" rel="noopener noreferrer">os.walk</a> pour lister
+récursivement le contenu d’un dossier.</p>
+<p>Python est un langage très haut niveau qui permet de faire beaucoup de
+choses très facilement. Notamment, il est très facile de manipuler les
+fichiers et les dossiers grâce au module os. Les lecteurs connaissant
+le langage C remarqueront que les fonctions présentes dans ce module
+sont les mêmes que celles de la bibliothèque standard du C (exceptées
+certaines fonctions un peu plus « haut-niveau » qui sont seulement
+disponibles dans le module os de Python).</p>
+<p>Dans cet articles nous allons simplement voir comment lister
+récursivement le contenu des dossiers à partir de la position
+actuelle. Commençons tout d’abord par inclure le module os comme ceci :</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> os
+</code></pre>
+<p>Nous utiliserons ensuite les fonctions suivantes :</p>
+<ul>
+<li><code>os.listdir(dossier)</code> : Liste le contenu de <code>dossier</code> (fichiers et dossiers)</li>
+<li><code>os.chdir(dossier)</code> : On se déplace dans <code>dossier</code>.</li>
+<li><code>os.path.isdir(chemin)</code> : Détermine si le <code>chemin</code> donné en paramètre
+pointe vers un dossier ou un simple fichier.</li>
+<li><code>os.getcwd()</code> : Retourne une chaine de caractères représentant la
+position actuelle dans le système de fichiers (sous forme de chemin
+absolu).</li>
+</ul>
+<p>Avec ces quelques fonctions , on peu facilement lister le contenu des
+sous-dossiers à partir de la position courante comme ceci :</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>():
+  <span class="hljs-string">&quot;&quot;&quot;
+    Liste récursivement le contenu des sous-répertoires
+  &quot;&quot;&quot;</span>
+  <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> os.listdir(os.getcwd()):
+      <span class="hljs-keyword">if</span> os.path.isdir(f): <span class="hljs-comment"># si f est un dossier</span>
+        os.chdir(f) <span class="hljs-comment"># On va lister son contenu</span>
+        parse()
+        os.chdir(<span class="hljs-string">&#x27;../&#x27;</span>) <span class="hljs-comment"># On revient au répertoire précédent</span>
+      <span class="hljs-keyword">else</span>:
+        <span class="hljs-comment"># Traitement sur le fichier f</span>
+</code></pre>
 ]]></content:encoded>
         </item>
         <item>
