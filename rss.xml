@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Wed, 14 Feb 2024 19:00:41 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 14 Feb 2024 20:01:03 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -432,6 +432,362 @@ the HTTPS Everywhere extension.</p>
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[Parsing Thunderbird filtering rules]]></title>
+            <link>https://remusao.github.io//posts/parsing-thunderbird-msg-filters.html</link>
+            <guid>https://remusao.github.io//posts/parsing-thunderbird-msg-filters.html</guid>
+            <pubDate>Sun, 24 Nov 2019 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<blockquote>
+<p><a href="https://www.thunderbird.net/" target="_blank" rel="noopener noreferrer">Thunderbird</a> is a free email application that’s
+easy to set up and customize - and it’s loaded with great features!</p>
+</blockquote>
+<p>I have been using Thunderbird as my email client of choice for many years, it
+is the hub which allows me to manage all the emails I get: work, multiple
+personal addresses, etc. As of today my combined mail folders are about <code>30GB</code>
+and counting. Still, Thunderbird has been running rock solid and I had no issue
+so far.</p>
+<p>I have to say that I make extensive use of folders, labels and <em>message
+filters</em>. These features combined allow to effortlessly manage a high volume of
+emails by filtering, sorting, tagging, dispatching emails; greatly reducing the
+amount of manual work needed to process then read them.</p>
+<p>As an example, I receive a lot of emails notifications from GitHub, both for work and personal
+OSS projects. I also tend to follow activity of repositories which I find
+interesting; but I do not want to have to go through all these notifications
+myself. A few years ago I adopted the following strategy:</p>
+<ol>
+<li>Create folders or subfolders for each repository:</li>
+</ol>
+<ul>
+<li><code>github/work/repo1</code>,</li>
+<li><code>github/work/repo2</code>,</li>
+<li><code>github/perso/repo3</code>,</li>
+<li>etc.</li>
+</ul>
+<ol start="2">
+<li>Create a first filter rule <em>for each repository</em> to automatically move
+GitHub notifications to their respective folders. This can be achieve by
+detecting <code>notifications@github.com</code> using a condition of the form <code>From is notifications@github.com</code> and adding a <code>Move Message to</code> action.</li>
+<li>Optionally, I create rules to automatically mark as read any
+message which is not directed to me specifically (e.g.: via direct mention
+of my GitHub handler, PR request, issue assigned, etc.); especially on very
+active repositories. This can be achieved by detecting things like
+<code>mention@noreply.github.com</code> or <code>assign@noreply.github.com</code> in the <code>Cc</code>
+field.</li>
+</ol>
+<p>GitHub has a <a href="https://help.github.com/en/github/receiving-notifications-about-activity-on-github/about-email-notifications" target="_blank" rel="noopener noreferrer">full page of documentation</a>
+describing all the values you can use to filter email notifications. This is
+<em>really useful</em>. For example I tag emails where I am directly mentioned in
+<strong>red</strong> but notifications about discussions that I was involved in but not
+directly mentioned with <strong>blue</strong>. This allows to filter at a glance what I
+really need to check, versus what I can check later. In practice, more than 90%
+of notifications do not need to be checked manually. This is huge!</p>
+<p>Unfortunately, as the number of filters grows, I found the built-in interface
+to not be very convenient. Finding or editing rules can become a pain.
+Fortunately, Thunderbird stores all the filters for a given account in a
+single, plain text file named: <code>msgFilterRules.dat</code>, located in your
+Thunderbird profile folder. So I decided to write <a href="https://github.com/remusao/thunderbird-msg-filters" target="_blank" rel="noopener noreferrer">a
+library</a> which allows to
+manipulate these rules through a minimal and type-safe API; in <em>TypeScript</em>.</p>
+<p>The goal of the project is to allow developing more high-level tooling to
+read, transform, extend, update the rules while not having to worry about the
+low-level parsing details. It would also be possible to store the rules in a
+nicer format then use the library to produce the final file which can be
+consumed by Thunderbird.</p>
+<p>To install the library: <code>npm install --save thunderbird-msg-filters</code>.</p>
+<p>You can then use it to parse a <code>msgFilterRules.dat</code> file which you can find in
+your Thunderbird folder (one per email account configured):</p>
+<pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { parse } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
+
+<span class="hljs-comment">// A typical `msgFilterRules.dat` could contain this raw value.</span>
+<span class="hljs-keyword">const</span> rules = <span class="hljs-title function_">parse</span>(<span class="hljs-string">`
+version=&quot;9&quot;
+logging=&quot;no&quot;
+name=&quot;rule 1&quot;
+enabled=&quot;yes&quot;
+type=&quot;17&quot;
+action=&quot;Mark flagged&quot;
+condition=&quot;OR (subject,contains,foo) OR (subject,contains,bar)&quot;
+name=&quot;rule 2&quot;
+enabled=&quot;yes&quot;
+type=&quot;17&quot;
+action=&quot;Mark read&quot;
+action=&quot;JunkScore&quot;
+actionValue=&quot;100&quot;
+condition=&quot;ALL&quot;
+`</span>);
+</code></pre>
+<p>You can also format rules to the same original format:</p>
+<pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { format } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
+
+<span class="hljs-keyword">const</span> rules = <span class="hljs-title function_">format</span>({
+  <span class="hljs-attr">version</span>: <span class="hljs-string">&#x27;9&#x27;</span>,
+  <span class="hljs-attr">logging</span>: <span class="hljs-string">&#x27;no&#x27;</span>,
+  <span class="hljs-attr">rules</span>: [
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 1&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [{ <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark flagged&#x27;</span>}],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;OR (subject,contains,foo) OR (subject,contains,bar)&#x27;</span>
+    },
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 2&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark read&#x27;</span> }
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;JunkScore&#x27;</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;100&#x27;</span> }
+      ],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;ALL&#x27;</span>
+    },
+  ]
+});
+</code></pre>
+<p>The library is currently very young and will probably contain bugs, so use at
+your own risks. Feel free to use it and <a href="https://github.com/remusao/thunderbird-msg-filters/issues/new" target="_blank" rel="noopener noreferrer">open an issue</a>
+for any feedback!</p>
+<p><strong>What’s next?</strong> I plan to use this library to store the message filters rules
+in a separate location and synchronize it potentially between multiple
+computers. The nice thing is that the rules can now be expressed in a typed
+language (TypeScript) which will give me more confidence about their validity.
+It is also much easier to manipulate them from a single file, in a familiar
+developer environment (i.e.: your editor of choice) than through the
+Thunderbird interface.</p>
+<p>GitHub repository: <a href="https://github.com/remusao/thunderbird-msg-filters/" target="_blank" rel="noopener noreferrer">https://github.com/remusao/thunderbird-msg-filters/</a></p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Installing Diablo II]]></title>
+            <link>https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html</link>
+            <guid>https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html</guid>
+            <pubDate>Sat, 02 Nov 2019 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<picture>
+  <source srcset="../images/diablo2-banner.webp" type="image/webp">
+  <source srcset="../images/diablo2-banner.png" type="image/png">
+  <img src="../images/diablo2-banner.png" alt="Diablo II banner" style="width:100%">
+</picture>
+<p>You might have heard the news: <em>Diablo IV</em> has been announced yesterday with a
+<a href="https://www.youtube.com/watch?v=9bRWIdOMfro" target="_blank" rel="noopener noreferrer">great cinematic</a>. What better
+time to install <s>Diablo III</s> <em>Diablo II</em> again and have some fun while
+waiting for the latest iteration of the franchise?</p>
+<p>But… it’s 2019 and it is not always easy to install a game first released
+back in June 2000 (yes, that’s 19 years ago. Yes, you’re old)! In this post I
+will show you how to install <em>Diablo II</em> with its extension <em>Lord of
+Destruction</em> on Windows, MacOS and Linux (Ubuntu in this case), using
+<a href="https://www.winehq.org" target="_blank" rel="noopener noreferrer"><em>Wine</em></a> as well as optional sandboxing using
+<a href="https://github.com/netblue30/firejail" target="_blank" rel="noopener noreferrer"><em>firejail</em></a>! Let’s get to it…</p>
+<p>If you are running <em>MacOS</em> or <em>Windows</em>, you’re in luck! The official game
+launcher already supports those platforms natively so you can install it and
+play straight away without extra hassle! Here are the links:</p>
+<ul>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Windows – Diablo II</a>.</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Windows – Lord of Destruction</a>.</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=MAC" target="_blank" rel="noopener noreferrer">MacOS – Diablo II</a>.</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=MAC" target="_blank" rel="noopener noreferrer">MacOS – Lord of Destruction</a>.</li>
+</ul>
+<h2>Get a License Key</h2>
+<p>First of, you will need a valid CD-Key for the game (both <em>Diablo II</em> and its
+extension <em>LOD</em>). You can get them on the <a href="https://www.blizzard.com" target="_blank" rel="noopener noreferrer">official website</a>
+for about <em>20 euros</em> from Blizzard (yes, that’s a shame, the game used to cost
+<em>15.99</em> euros a few years ago!), or by registering your old keys if you still
+have the box version (which is what I did).</p>
+<h2>Get the Launcher</h2>
+<p>The second step is to download the Windows launcher of the game which we will
+use in conjunction with Wine to make it work on Linux. You can find the links
+on <a href="https://www.blizzard.com/en-us/download/" target="_blank" rel="noopener noreferrer">Blizzard’s website</a>. Here they
+are if you want to save some time:</p>
+<ul>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Downloader_Diablo2_enUS.exe</a></li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Downloader_Diablo2_Lord_of_Destruction_enUS.exe</a></li>
+</ul>
+<h2>Installing Latest Wine</h2>
+<p>You could probably use the stock version of wine which ships with your Linux
+distribution but I always like to get the latest shiny version so here we go.
+If you use another distribution than Ubuntu, you can <em>skip this section
+completely</em>. From the <a href="https://wiki.winehq.org/Ubuntu" target="_blank" rel="noopener noreferrer">official wiki</a>:</p>
+<blockquote>
+<p>If your system is 64 bit, enable 32 bit architecture (if you haven’t already):</p>
+<pre class="code" data-lang="sh"><code>sudo dpkg --add-architecture i386
+</code></pre>
+<p>Download and add the repository key:</p>
+<pre class="code" data-lang="sh"><code>wget -nc https://dl.winehq.org/wine-builds/winehq.key
+sudo apt-key add winehq.key
+</code></pre>
+</blockquote>
+<p>Now you need to get the repository matching your release of Ubuntu. For me it
+was <code>bionic</code> (you can get yours using command <code>lsb_release -cs</code>), but check
+official instructions if that does not correspond to yours.</p>
+<blockquote>
+<pre class="code" data-lang="sh"><code>sudo apt-add-repository <span class="hljs-string">&#x27;deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main&#x27;</span>
+sudo apt install --install-recommends winehq-stable
+</code></pre>
+</blockquote>
+<p>Note that I could not install <code>winehq-stable</code> directly and had to first install
+one of its dependencies manually. If you encounter an error, then try to run
+the following command before installing <code>winehq-stable</code> again:</p>
+<pre class="code" data-lang="sh"><code>sudo apt install libasound2-plugins:i386
+</code></pre>
+<p>I am using <strong>version 4.0.2</strong> of <code>wine</code>.</p>
+<h2>[Optional] Installing Firejail</h2>
+<p>Firejail has a special place in my heart. It allows to sandbox any program
+running on Linux using kernel capabilities (some of them you might already know
+from Docker world). From the <a href="https://github.com/netblue30/firejail" target="_blank" rel="noopener noreferrer">official repository</a>:</p>
+<blockquote>
+<p>Firejail is a SUID sandbox program that reduces the risk of security breaches
+by restricting the running environment of untrusted applications using Linux
+namespaces, seccomp-bpf and Linux capabilities. It allows a process and all
+its descendants to have their own private view of the globally shared kernel
+resources, such as the network stack, process table, mount table. Firejail
+can work in a SELinux or AppArmor environment, and it is integrated with
+Linux Control Groups.</p>
+</blockquote>
+<p>There is an extra benefit in my opinion. You can specify a different directory
+to be used as the <code>~/</code> (home) folder of each program you run in a sandbox
+instead of your real home. This is great because it allows to keep files and
+folders of each app nicely isolated. For example I run <code>thunderbird</code>, <code>cliqz</code>
+and other programs in sandboxes and assign them different homes like
+<code>~/.sandboxes/thunderbird</code>, <code>~/.sandboxed/cliqz</code>, etc. This means that I can
+clean-up all files for each program by simply deleting their respective
+folders! That’s super convenient.</p>
+<p>Let’s get back to <em>Diablo II</em>! Install Firejail from your official Linux
+repositories (or <a href="https://github.com/netblue30/firejail#compile-and-install" target="_blank" rel="noopener noreferrer">compile it yourself</a> if that’s
+your thing… that’s what I did). I am currently running <strong>version 0.9.61</strong> but I
+assume this should work with other versions as well.</p>
+<p>Firejail comes with a preset for sandboxing wine which you can find at
+<code>/etc/firejail/wine.profile</code>. That’s the one we will be using!</p>
+<h2>Preparing Wine Home Folder</h2>
+<p>Let’s now prepare the <code>wine</code> folder that we will use in our Firejail sandbox:</p>
+<pre class="code" data-lang="sh"><code><span class="hljs-built_in">mkdir</span> -p ~/.sandboxes/wine
+</code></pre>
+<p>Copy the two downloaders into <code>~/.sandboxes/wine/</code>:</p>
+<ul>
+<li><code>~/.sandboxes/wine/Downloader_Diablo2_enUS.exe</code></li>
+<li><code>~/.sandboxes/wine/Downloader_Diablo2_Lord_of_Destruction_enUS.exe</code></li>
+</ul>
+<h2>Installing Diablo II</h2>
+<p>We can now proceed and install <em>Diablo II</em> base game:</p>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/Downloader_Diablo2_enUS.exe
+</code></pre>
+<p>Here are screenshots for each step of the installation process:</p>
+<figure>
+  <a href="../images/diablo2-install-1.png">
+    <picture>
+      <source srcset="../images/diablo2-install-1.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-1.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-1.png" alt="Press 'OK' to select default download folder." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Press 'OK' to select default download folder.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-2.png">
+    <picture>
+      <source srcset="../images/diablo2-install-2.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-2.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-2.png" alt="Enjoy the murloc view while downloading the game..." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Enjoy the murloc view while downloading the game...</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-3.png">
+    <picture>
+      <source srcset="../images/diablo2-install-3.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-3.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-3.png" alt="Press 'Install Diablo II'." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Press 'Install Diablo II'.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-7.png">
+    <picture>
+      <source srcset="../images/diablo2-install-7.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-7.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-7.png" alt="Accept license." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Accept license.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-6.png">
+    <picture>
+      <source srcset="../images/diablo2-install-6.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-6.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-6.png" alt="Enter you CD-Key." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Enter you CD-Key.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-5.png">
+    <picture>
+      <source srcset="../images/diablo2-install-5.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-5.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-5.png" alt="Press 'OK' to select default destination directory." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Press 'OK' to select default destination directory.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-4.png">
+    <picture>
+      <source srcset="../images/diablo2-install-4.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-4.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-4.png" alt="It's so fast that I don't know how I managed to make a screenshot!" style="width:100%">
+    </picture>
+  </a>
+  <figcaption>It's so fast that I don't know how I managed to make a screenshot!</figcaption>
+</figure>
+<p>Press <strong>Back</strong> then <strong>Exit Installer</strong>. Time to install the extension!</p>
+<h2>Installing Lord of Destruction</h2>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/Downloader_Diablo2_Lord_of_Destruction_enUS.exe
+</code></pre>
+<p>I will spare you all the screenshots since the procedure is identical to the
+base version of the game. When you are done, resist the damning temptation and
+<strong>exit the installer</strong>; there is one last thing we have to take care of…</p>
+<h2>Install Latest Patch</h2>
+<p>Before starting the game and finally start playing, you will want to install
+the latest patch for Diablo II: <strong>1.14d</strong>. Usually it can be done by accessing
+<a href="http://Battle.net" target="_blank" rel="noopener noreferrer">Battle.net</a> in-game but for some reason it failed in my case because of a corrupted
+file… Luckily, it’s possible to download and install the update manually. Get
+it from the following link:</p>
+<ul>
+<li><a href="http://ftp.blizzard.com/pub/diablo2exp/patches/PC/LODPatch_114d.exe" target="_blank" rel="noopener noreferrer">LODPatch_114d.exe</a></li>
+</ul>
+<p>Copy it into your <code>wine</code> home folder: <code>~/.sandboxes/wine/LODPatch_114d.exe</code>.
+Then start the update with:</p>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/LODPatch_114d.exe
+</code></pre>
+<h2>Let’s Play!</h2>
+<p>Finally, to launch the game you can use the following command:</p>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Diablo\ II/Diablo\ II.exe
+</code></pre>
+<p>Have fun!</p>
+<figure>
+  <a href="../images/diablo2-cows.jpg">
+    <picture>
+      <source srcset="../images/diablo2-cows.webp" type="image/webp">
+      <source srcset="../images/diablo2-cows.jpg" type="image/jpeg">
+      <img loading="lazy" src="../images/diablo2-cows.jpg" alt="There is no such thing as the 'Cow Level'." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>There is no such thing as the 'Cow Level'.</figcaption>
+</figure>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[Thoughts about unit and integration tests]]></title>
             <link>https://remusao.github.io//posts/unit-integration-tests.html</link>
             <guid>https://remusao.github.io//posts/unit-integration-tests.html</guid>
@@ -556,6 +912,67 @@ your code (although some <a href="https://blog.thecodewhisperer.com/permalink/in
 hold them both to high standards. Not doing so might lead to a situation where
 your tests become a liability and slow you down instead of empowering you to
 write better and more robust features.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[A static blog generator in TypeScript]]></title>
+            <link>https://remusao.github.io//posts/typescript-blog-generator.html</link>
+            <guid>https://remusao.github.io//posts/typescript-blog-generator.html</guid>
+            <pubDate>Fri, 19 Jul 2019 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<blockquote>
+<p>Oups, I did it again…</p>
+</blockquote>
+<p>A while ago I was joking with <a href="https://twitter.com/sebadzia" target="_blank" rel="noopener noreferrer">@sebadzia</a> about
+the fact that if you are not re-writting your blog generation mechanism from
+scratch every <em>N</em> posts, then you’re doing it wrong. It appears that I’m
+actually living by these words and have been re-implementing my own blog over
+and over again; maybe in the hope that it would motivate me to write more. This
+blog <em>became an end instead of a mean</em> to communicate things.</p>
+<p>Here are the 6 engines I’ve used over the years (and this does not even account
+for the different themes that I used with each of them):</p>
+<ul>
+<li><a href="https://wordpress.org/" target="_blank" rel="noopener noreferrer">WordPress</a></li>
+<li><a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a></li>
+<li><a href="https://blog.getpelican.com/" target="_blank" rel="noopener noreferrer">Pelican</a></li>
+<li><a href="https://jaspervdj.be/hakyll/" target="_blank" rel="noopener noreferrer">Hakyll</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy" target="_blank" rel="noopener noreferrer">Custom generator in Haskell</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy-ts" target="_blank" rel="noopener noreferrer"><strong>Custom generator in TypeScript</strong></a></li>
+</ul>
+<p>This means that the blog engine has been changed on average every <em>8.5</em> posts.
+Not too bad! Maybe the next one will be in Rust?</p>
+<p>I think what made me switch this time is the fact that I’m actually enjoying
+TypeScript very much lately (I find the type system super neat, and already
+liked JavaScript tooling a lot); and I was a bit fed up by the build time of
+the Haskell version. The way I did it was most probably sub-optimal as I am by
+no mean an experienced Haskell developer. Last but not least, I was on vacation
+and had some time to waste…</p>
+<p>The TypeScript generator is still rough around the edges but it’s working and
+allows me to build the site, watch changes, and serve locally in development
+mode.</p>
+<p>I rely on the following packages to do the heavy lifting:</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/@octokit/rest" target="_blank" rel="noopener noreferrer">@octokit/rest</a> to interact with GitHub APIs (used to fetch static comments)</li>
+<li><a href="https://www.npmjs.com/package/chokidar" target="_blank" rel="noopener noreferrer">chokidar</a> to watch for files changes</li>
+<li><a href="https://www.npmjs.com/package/express" target="_blank" rel="noopener noreferrer">express</a> to serve blog locally</li>
+<li><a href="https://www.npmjs.com/package/dompurify" target="_blank" rel="noopener noreferrer">dompurify</a> to sanitize final HTML</li>
+<li><a href="https://www.npmjs.com/package/highlight.js" target="_blank" rel="noopener noreferrer">highlight.js</a> to provide syntactic coloration for code blocks in posts</li>
+<li><a href="https://www.npmjs.com/package/html-minifier" target="_blank" rel="noopener noreferrer">html-minifier</a> to minimize HTML</li>
+<li><a href="https://www.npmjs.com/package/marked" target="_blank" rel="noopener noreferrer">marked</a> to convert markdown to HTML</li>
+</ul>
+<p>Overall I’m fairly happy with this setup. The generator currently fits into a
+single source file (which should probably be split at some point) and generation
+is pretty fast: <em>~50</em> seconds from scratch (which includes installing all npm
+dependencies, generating posts and fetching comments from GitHub). Generating
+posts only takes less than 10 seconds, and most of the time is spent waiting
+for comments to be fetched from GitHub issues.</p>
+<p>There are a few things I’d like to try or investigate in the future to improve:</p>
+<ul>
+<li>consider using JSX (with React in pure server-side rendering mode)</li>
+<li>consider writing CSS in TypeScript as well with typing</li>
+<li>add support for inlined math using KaTex (which I do not need at the moment)</li>
+<li>improve comments display with better rendering and support for reactions and emojis</li>
+</ul>
+<p>And of course, I will try my best to write more content here in the future!</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -2007,6 +2424,166 @@ sub-commands presented above.</li>
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[Synacor—Down the rabbit hole]]></title>
+            <link>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</link>
+            <guid>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</guid>
+            <pubDate>Sun, 10 Jun 2018 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Last year I had the chance to participate in the 2017 edition of <a href="https://adventofcode.com/" target="_blank" rel="noopener noreferrer">Advent
+of Code</a>. That was the first time and I
+<em>really</em> enjoyed it. Having to solve an interesting problem, every
+day, made me learn a lot! It’s also a good occasion to practice some
+skills that might not be otherwise useful in your daily job (and more
+importantly: have fun!).</p>
+<p>While skimming through the discussions on Reddit about possible
+solutions to one of the AoC’s problems, someone mentioned “Synacor”… I
+never heard of it before, but from what I understood it was some kind of
+programming challenge. I did not need more to have a look:
+<a href="https://challenge.synacor.com" target="_blank" rel="noopener noreferrer">challenge.synacor.com</a>.</p>
+<h1>The Challenge</h1>
+<p>The challenge is briefly introduced, the competition took place during
+two conferences in the past and is now over. But you can still download
+the material of the challenge and try to solve it.</p>
+<p>After registering an email address and a password, I could download an
+archive <code>synacor-challenge.tgz</code>. Uncompressed, it contains two files :</p>
+<ol>
+<li><code>arch-spec</code></li>
+<li><code>challenge.bin</code></li>
+</ol>
+<p>The first one describes the challenge. It is about creating “a virtual
+machine capable of running the included binary [challenge.bin]”. It also
+mentions that some “codes” are to be found along the way. The rest of
+the document describes the architecture of the virtual machine:</p>
+<ul>
+<li>16 bits integers stored in little-endian format</li>
+<li>16 bits addressable memory (the program starts at address <code>0</code>)</li>
+<li>8 registers</li>
+<li>1 stack containing 16 bits numbers</li>
+<li>22 instructions: <code>halt</code>, <code>noop</code>, <code>set</code>, <code>push</code>, <code>jpm</code>, <code>add</code>, <code>mult</code>, etc.</li>
+</ul>
+<p>Each instruction is described in details: opcode, number of expected
+arguments and behavior when executed by the virtual machine. So
+far so good, this looks pretty classic. The implementation of such
+virtual machine is pretty straight forward. I choose <code>Haskell</code> for
+the implementation (because why not, and I already implemented some
+<a href="https://github.com/remusao/Hodor" target="_blank" rel="noopener noreferrer">Brainfuck interpreter/transpiler</a>
+before, so I thought I could reuse some learnings from there). Without
+going into too much details, I used the following data structures to
+represent the state of the VM:</p>
+<pre class="code" data-lang="haskell"><code><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Synacor</span> = <span class="hljs-type">Synacor</span></span>
+  { pos :: <span class="hljs-type">Int</span>
+  , mem :: <span class="hljs-type">Map</span> <span class="hljs-type">Register</span> <span class="hljs-type">Word16</span>
+  , stack :: [<span class="hljs-type">Word16</span>]
+  , program :: <span class="hljs-type">Vector</span> <span class="hljs-type">Word16</span>
+  }
+</code></pre>
+<h1>First Results</h1>
+<p>After implementing most of the instructions, I tried to run the program:</p>
+<blockquote>
+<p>Welcome to the Synacor Challenge! Please record your progress by
+putting codes like this one into the challenge website: XXXXXXXXXXX</p>
+<p>Executing self-test…</p>
+</blockquote>
+<p>Nice, so the program actually starts by <em>testing the virtual machine</em>,
+to make sure all instructions are implemented properly. It’s pretty
+cool. It means that you cannot proceed until your VM is fully functional
+(Using Haskell is a good start for that…). After a few iterations of
+trial, error, fix, I completed my implementation until…</p>
+<blockquote>
+<p>self-test complete, all tests pass
+The self-test completion code is: XXXXXXXXXXXX</p>
+</blockquote>
+<p>Youpi! All good… but, wait, something else was displayed on the terminal:</p>
+<p><strong>DISCLAIMER</strong>: The next section of this post contains spoilers and
+parts of solutions for the Synacor challenge. Please only proceed if you
+already solved the challenge, or do not intend to do so.</p>
+<p>…</p>
+<h1>Riddles in the Dark</h1>
+<blockquote>
+<p>== Foothills ==
+You find yourself standing at the base of an enormous mountain. At its
+base to the north, there is a massive doorway. A sign nearby reads
+“Keep out! Definitely no treasure within!”</p>
+<p>Things of interest here:</p>
+<ul>
+<li>tablet</li>
+</ul>
+<p>There are 2 exits:</p>
+<ul>
+<li>doorway</li>
+<li>south</li>
+</ul>
+<p>What do you do?</p>
+</blockquote>
+<p><em>Mind blown</em>. The program you are running is actually a terminal-based
+RPG! How cool is that? Well, very cool, and very smart. I clearly did
+not expect that from the challenge. It’s a bit like trying to open a
+chess (the chess is a program and the virtual machine is the key) and
+then you discover there is another riddle in the chess. So what’s next?
+Well play the game I guess…</p>
+<p>I played for a bit, and discovered one more code in the game (Did I
+already mention how cool all this is?). Which means some (all?) codes
+can be found by playing the game. But then, how do I know if all codes
+are in the game? How deep and rich can this game be? What if it takes 10
+hours to find the codes? I already under-estimated the challenge once,
+let’s not do the same mistake again.</p>
+<p>At this point I thought of two things that could be done:</p>
+<ol>
+<li>Try to extract all text from the file <code>challenge.bin</code> and see if it contains
+any code.</li>
+<li>Modify the VM so that it can play the game by itself, and explore all
+possible paths possible, some kind of depth-first search on the game itself
+in a way.</li>
+<li>Disassemble the program and try to understand its structure. The codes must
+be stored somewhere (or generated somehow), by understanding (and maybe
+changing a bit) the code, it must be possible to bypass the game completely.</li>
+</ol>
+<p>The first approach did not yield any result, which means that codes are
+probably encoded in some way to not be readable. I did not have too much hope
+anyways, but we never know.</p>
+<p>The second approach was the most promising and allowed me to discover a few more
+codes. Here is how it worked:</p>
+<p><strong>First step</strong> – I modified the virtual machine implementation so that it’s 100%
+pure code with no side-effect. The execution now consists in a function
+<code>execNextOpCode</code> which takes as input the state of the program, runs the
+next opcode of the program, then returns a “continuation” which can be
+one of:</p>
+<ul>
+<li><code>Halt</code> - program terminated successfully.</li>
+<li><code>Error String</code> - there was an exception while running the opcode (should
+never happen).</li>
+<li><code>PutChar Char</code> - we should print a character in the terminal.</li>
+<li><code>GetChar (Char -&gt; s)</code> - we should ask some user input, then continue the
+execution of the opcode using the function returned (<code>Char -&gt; s</code>).</li>
+<li><code>Ok</code> - opcode was executed correctly and we can continue running the program.</li>
+</ul>
+<p>The nice thing with this model, is that running an opcode does not alter
+the state of the virtual machine, but instead returns a new virtual
+machine (copy of the initial state). This might seem crazy, but it’s not as
+inefficient as it sounds (and pretty common in an immutable language like
+Haskell). This allows us to parallelize the execution of different branches of a
+program without having to care about controlling side-effects.</p>
+<p><strong>Second step</strong> – write a depth-first search for the game by changing the VM
+execution model in two ways:</p>
+<ol>
+<li>Each output <code>PutChar</code> from the program is stored in an accumulator so that we
+can inspect it later.</li>
+<li>Each time a user input is required by the <code>GetChar</code> continuation code, we
+<em>fork</em> our execution of the program and perform all possible user actions
+concurrently: <em>picking up objects</em>, <em>using objects</em>, <em>visit available
+places</em>.</li>
+<li>We need to detect loops to not explore forever (e.g.: when we come back to an
+already visited location). This is done by comparing the output (accumulated
+<code>PutChar</code> from the program) of a given branch to all previously explored
+branches. If we already generated the same output once, no need to do it
+again.</li>
+</ol>
+<p>This approach allowed me to discover a few more codes, <em>but not all</em>!
+This can mean two things: either not all codes can be discovered through
+the game (likely), or my exploration method is not working as well as it
+should! In both cases, it means I’m not done exploring the rabbit hole…</p>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[TIL—Python has a built-in persistent key-value store]]></title>
             <link>https://remusao.github.io//posts/python-dbm-module.html</link>
             <guid>https://remusao.github.io//posts/python-dbm-module.html</guid>
@@ -2169,6 +2746,114 @@ clicked to clipboard.</li>
   });
 
 </code></pre>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Packaging Node.js apps the easy way]]></title>
+            <link>https://remusao.github.io//posts/packaging-nodejs-apps.html</link>
+            <guid>https://remusao.github.io//posts/packaging-nodejs-apps.html</guid>
+            <pubDate>Sun, 04 Mar 2018 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p><em>TL;DR</em> in this article we demonstrate how to:</p>
+<ul>
+<li>Create a minified bundle for a Node.js application (using Webpack 4).</li>
+<li>Create a self-contained executable (using Nexe).</li>
+<li>Create a Docker containers to run the application.</li>
+</ul>
+<p>…without any configuration file!</p>
+<p>Packaging, bundling, deploying Node.js applications can get very tricky
+when you are faced with the diversity of tools that can be used. Even
+when tools have been chosen, configuration is often non-trivial.</p>
+<p>In this post we will see that packaging a Node.js application does not have to
+be difficult or confusing. By sticking to a minimal set of tools and using just
+the necessary configuration, we will be able to create the following artifacts:
+minified bundle, self-contained executable, Docker image.</p>
+<p>All the code from this article can be found <a href="https://github.com/remusao/node-app-packaging-template" target="_blank" rel="noopener noreferrer">on GitHub</a>.</p>
+<h2>The Application</h2>
+<p>Our demonstration application is performing a bandwidth test with
+<code>fast.com</code>, using <code>jsdom</code> to avoid having to resort to a headless
+browser. The output looks like the following:</p>
+<pre class="code" data-lang="js"><code>$ node index.<span class="hljs-property">js</span>
+<span class="hljs-title class_">Starting</span> bandwidth test...
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">0</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">7.9</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">35</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">60</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">60</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">64</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">65</span> <span class="hljs-title class_">Mbps</span>
+~ <span class="hljs-title class_">Speed</span> <span class="hljs-number">67</span> <span class="hljs-title class_">Mbps</span>
+
+= <span class="hljs-title class_">Speed</span> <span class="hljs-number">66</span> <span class="hljs-title class_">Mbps</span>
+</code></pre>
+<p>The implementation details are not really relevant, but long story
+short; <code>jsdom</code> is loading the URL <code>https://fast.com</code>. We then display the
+bandwidth estimation every second until the test is completed.</p>
+<h2>Bundling with Webpack</h2>
+<p>In the past, I found Webpack to be a bit cumbersome to use, even for
+simple use-cases. With version 4, I was delighted to see that they now
+provide meaningful defaults and simple options. In our case, it is not
+even necessary to have a configuration file, which is great!</p>
+<p>Producing a minified bundle is as simple as:</p>
+<pre class="code" data-lang="sh"><code>$ webpack index.js --output bundle.min.js --mode production --target node
+</code></pre>
+<p>That’s it! This command will create a new file: <code>bundle.min.js</code> in the
+current directory. Since the <code>--target</code> is Node.js, we can invoke it
+directly: <code>node bundle.min.js</code>.</p>
+<p>If you want faster builds as well as a watch-mode, you can use the following
+variations of the previous command:</p>
+<pre class="code" data-lang="sh"><code>$ webpack index.js --output bundle.min.js --mode development --target node
+$ webpack index.js --output bundle.min.js --mode development --watch --target node
+</code></pre>
+<p>Yes, it’s <em>that easy</em>!</p>
+<h2>Compiling into a Single Executable</h2>
+<p>We could have stopped at our minified bundle, but what if we could get
+a self-contained executable packaging our application as well as all
+dependencies? And by dependencies, we really mean: Node.js itself and
+everything needed for the runtime.</p>
+<p>It’s possible thanks to <a href="https://github.com/nexe/nexe" target="_blank" rel="noopener noreferrer">Nexe</a>, which
+provides a way to <em>compile</em> your Javascript application along with a
+Node.js runtime in a single executable. Neat.</p>
+<p>With our already existing bundle <code>bundle.min.js</code>, a single command is needed to
+create the executable:</p>
+<pre class="code" data-lang="sh"><code>$ nexe bundle.min.js -t alpine-x64-8.9.3 -o app
+</code></pre>
+<p>What we’re saying here is that our <code>bundle.min.js</code> should be compiled with a
+Node.js runtime version 8.9.3 compiled for Alpine Linux x64 (which will be
+useful in a moment to create a Docker image). You can also check the <a href="https://github.com/nexe/nexe/releases/tag/v2.0.0-rc.17" target="_blank" rel="noopener noreferrer">exhaustive list of all
+possible targets</a></p>
+<p>You should now have a new executable in your current folder: <code>app</code>. It
+can be started by invoking it like any other command:</p>
+<pre class="code" data-lang="sh"><code>$ ./app
+</code></pre>
+<h2>Building Docker Images</h2>
+<p>And now the cherry on the cake! Although you can already easily ship your
+self-contained application created using Nexe, why not create a Docker
+container out of it? This can be achieved with the following <code>Dockerfile</code>:</p>
+<pre class="code" data-lang="sh"><code>FROM alpine:3.7
+COPY ./app .
+</code></pre>
+<p>Building:</p>
+<pre class="code" data-lang="sh"><code>$ docker build -t app .
+</code></pre>
+<p>The resulting image should weigh around 44MB. And here is how to run the
+application:</p>
+<pre class="code" data-lang="sh"><code>$ docker run app ./app
+Starting bandwidth <span class="hljs-built_in">test</span>...
+...
+
+= Speed 66 Mbps
+</code></pre>
+<h2>Final Thoughts</h2>
+<p>I will not pretend that the tools described here are able to handle
+all use-cases (or that they are the only possible tools; there are a
+plethora!), far from it. It is mostly restricted to simple Node.js
+applications (with dependencies). But this is probably a nice starting
+point for more complex situations, for which you might need to create a
+proper configuration file with more bells and whistles.</p>
+<p>The ease with which complex tasks can be handled with simple commands and
+almost no configuration also shows that the Node.js/Javascript ecosystem is
+maturing! Although there is still a lot of fragmentation, it’s really nice to
+observe and benefit from all these improvements.</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -2345,6 +3030,57 @@ $ <span class="hljs-built_in">cd</span> /ebs/
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[simple-sanic—A blazing fast HTTP server using Sanic]]></title>
+            <link>https://remusao.github.io//posts/faster-http-server-sanic.html</link>
+            <guid>https://remusao.github.io//posts/faster-http-server-sanic.html</guid>
+            <pubDate>Sun, 26 Nov 2017 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>I recently <a href="/posts/simple-http-server-haskell.html" target="_blank" rel="noopener noreferrer">showed how</a> one can
+implement something equivalent to <code>http.server</code> from <code>Python</code> in <code>Haskell</code>. The
+solution turned out to be reasonably simple, and <em>surprisingly fast</em>.</p>
+<p>Unfortunately, we cannot say that <code>http.server</code> is fast… It works fine
+to serve simple files and is very convenient to use, but will quickly
+reach its limit when more files need to be served. To be clear, <em>you should not
+use</em> <code>sanic</code> or <code>http.server</code> in production to serve static files; <a href="https://www.nginx.com/resources/admin-guide/serving-static-content/" target="_blank" rel="noopener noreferrer">nginx</a>
+is a much more robust solution for that. But sometimes you need to work
+locally on some static files, and it makes sense to have a reasonably fast and
+easy way to achieve that!</p>
+<p>I decided to go with <a href="https://github.com/channelcat/sanic" target="_blank" rel="noopener noreferrer">sanic</a>, an “Async
+Python 3.5+ web server that’s written to go fast”. It can be configured to
+behave like <code>http.server</code>, except much faster…</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">from</span> sanic <span class="hljs-keyword">import</span> Sanic
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():
+    app = Sanic(__name__, log_config=<span class="hljs-literal">None</span>)
+    app.static(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-string">&#x27;./index.html&#x27;</span>)
+    app.static(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-string">&#x27;./&#x27;</span>)
+    app.run(host=<span class="hljs-string">&quot;0.0.0.0&quot;</span>)
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:
+    main()
+</code></pre>
+<p>To make it even easier to use, I bundled this code into a package: <a href="https://github.com/remusao/simple-sanic" target="_blank" rel="noopener noreferrer">simple-sanic</a>,
+which is a drop-in replacement for <code>http.server</code>. It allows to serve the content
+of the current directory over http with a single command:</p>
+<pre class="code" data-lang="sh"><code>$ python -m simple-sanic
+</code></pre>
+<p>The package is available on <a href="https://pypi.python.org/pypi/simple-sanic" target="_blank" rel="noopener noreferrer">Pypi</a>
+and <a href="https://github.com/remusao/simple-sanic" target="_blank" rel="noopener noreferrer">Github</a>. To install:</p>
+<pre class="code" data-lang="sh"><code>$ pip install simple-sanic
+</code></pre>
+<p>You can customize the <code>host</code> and <code>port</code> as well:</p>
+<pre class="code" data-lang="sh"><code>$ python -m simple-sanic --<span class="hljs-built_in">help</span>
+Usage:
+    simple-sanic [options]
+    simple-sanic -h | --<span class="hljs-built_in">help</span>
+
+Options:
+    -p --port PORT      Specify alternate port [default: 8000]
+    -b --<span class="hljs-built_in">bind</span> ADDRESS   Specify alternate <span class="hljs-built_in">bind</span> address [default: 0.0.0.0]
+    -h, --<span class="hljs-built_in">help</span>          Show this <span class="hljs-built_in">help</span> message and <span class="hljs-built_in">exit</span>.
+</code></pre>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
             <link>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</link>
             <guid>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</guid>
@@ -2380,6 +3116,137 @@ intended by running the tests:</p>
 <pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
 </code></pre>
 <p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[The wrong way of benchmarking integer comparison functions]]></title>
+            <link>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</link>
+            <guid>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</guid>
+            <pubDate>Sat, 25 Nov 2017 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p><em>TL;DR</em>: Naive code can sometimes run faster than “clever” code. Compilers are
+usually designed to optimize for the most common code, and common code is not
+clever. Lessons learned; if you try to write clever code, benchmark it to make
+sure there is a benefit.</p>
+<p>I recently stumbled upon <a href="https://blogs.msdn.microsoft.com/oldnewthing/20171117-00/?p=97416" target="_blank" rel="noopener noreferrer">an article</a>,
+describing how trying to out-smart the compiler can result in bad
+performances compared to more naive code. The benchmark is about finding
+the most efficient way to write a comparison function between integers,
+to be used in conjunction with <code>sort</code> or binary search for example. The
+original post being about <code>c++</code>, I was curious to know if the results
+would transfer to JavaScript (in particular <code>V8</code>, using <code>Node.js</code>). This
+is what this post is about.</p>
+<p>Let see the contenders:</p>
+<ul>
+<li><em>Naive</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">compare1</span>(<span class="hljs-params">a, b</span>) {
+    <span class="hljs-keyword">if</span> (a &lt; b) <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+    <span class="hljs-keyword">if</span> (a &gt; b) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}
+</code></pre>
+<ul>
+<li><em>Clever</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">compare2</span>(<span class="hljs-params">a, b</span>) {
+    <span class="hljs-keyword">return</span> a - b;
+}
+</code></pre>
+<h2>Benchmarks</h2>
+<p>The original article has a very good point saying that to benchmark this
+code realistically, you need a real use-case. Just sorting the array and
+summing the numbers does not make any sense, no one would do it. But if
+instead you perform a binary search on the sorted array, it gets closer
+to something one might do in a real code-base.</p>
+<p>I took the liberty of converting the original <code>C++</code> implementation of the binary
+search into JavaScript, to stick closely to the article:</p>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">binarySearch</span>(<span class="hljs-params">array, first, last, key, compare</span>) {
+  <span class="hljs-keyword">var</span> length = last - first;
+  <span class="hljs-keyword">while</span> (length &gt; <span class="hljs-number">0</span>) {
+    <span class="hljs-keyword">var</span> step = (length / <span class="hljs-number">2</span>) | <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">var</span> middle = first + step;
+    <span class="hljs-keyword">var</span> result = <span class="hljs-title function_">compare</span>(array[middle], key);
+    <span class="hljs-keyword">if</span> (result &lt; <span class="hljs-number">0</span>) {
+      first = middle + <span class="hljs-number">1</span>;
+      length -= step + <span class="hljs-number">1</span>;
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (result === <span class="hljs-number">0</span>) {
+      <span class="hljs-keyword">return</span> middle;
+    } <span class="hljs-keyword">else</span> {
+      length = step;
+    }
+  }
+
+  <span class="hljs-keyword">return</span> last;
+}
+</code></pre>
+<p>Using the great <a href="https://www.npmjs.com/package/benchmark" target="_blank" rel="noopener noreferrer">benchmark</a>
+library, let’s evaluate the performance of each compare function:</p>
+<ul>
+<li><em>Setup</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">compare</span>) {
+  <span class="hljs-comment">// Create a sorted array</span>
+  <span class="hljs-keyword">var</span> array = [];
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">8192</span>; ++i) {
+    array.<span class="hljs-title function_">push</span>(i * <span class="hljs-number">2</span>);
+  }
+
+  <span class="hljs-keyword">var</span> found = <span class="hljs-number">0</span>;
+
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = -<span class="hljs-number">1</span>; j &lt; <span class="hljs-number">16383</span>; ++j) {
+    <span class="hljs-keyword">var</span> index = <span class="hljs-title function_">binarySearch</span>(
+      array,              <span class="hljs-comment">// sorted array</span>
+      <span class="hljs-number">0</span>,                  <span class="hljs-comment">// start index</span>
+      array.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>,   <span class="hljs-comment">// end index</span>
+      j,                  <span class="hljs-comment">// element we are looking for</span>
+      compare);           <span class="hljs-comment">// comparison function</span>
+
+    <span class="hljs-keyword">if</span> (index !== -<span class="hljs-number">1</span> &amp;&amp; array[index] === j) {
+      found += <span class="hljs-number">1</span>;
+    }
+  }
+
+  <span class="hljs-keyword">if</span> (found !== <span class="hljs-number">8191</span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">&#x27;Found bug&#x27;</span>, found);
+  }
+}
+</code></pre>
+<ul>
+<li><em>Benchmark</em></li>
+</ul>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">bench</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">var</span> <span class="hljs-title class_">Benchmark</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;benchmark&#x27;</span>);
+  <span class="hljs-keyword">var</span> suite = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Benchmark</span>.<span class="hljs-title class_">Suite</span>();
+
+  suite
+    .<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;compare1&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-title function_">run</span>(compare1);
+    })
+    .<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;compare2&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-title function_">run</span>(compare2);
+    })
+    .<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;cycle&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">String</span>(event.<span class="hljs-property">target</span>));
+    })
+    .<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;complete&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Fastest is &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">filter</span>(<span class="hljs-string">&#x27;fastest&#x27;</span>).<span class="hljs-title function_">map</span>(<span class="hljs-string">&#x27;name&#x27;</span>));
+    })
+    .<span class="hljs-title function_">run</span>({});
+}
+
+<span class="hljs-title function_">bench</span>();
+</code></pre>
+<p>And…</p>
+<blockquote>
+<pre class="code" data-lang="sh"><code>compare1 x 421 ops/sec ±0.51% (91 runs sampled)
+compare2 x 394 ops/sec ±0.39% (89 runs sampled)
+</code></pre>
+</blockquote>
+<p>It happens that the naive <code>compare1</code> is a bit faster than <code>compare2</code>.
+It’s not day and night, but the <em>naive</em>, more readable code is more
+efficient on V8 than the clever one.</p>
+<p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
+there</a></p>
 ]]></content:encoded>
         </item>
         <item>
@@ -2739,6 +3606,187 @@ found a very simple (and efficient) solution:</p>
 </code></pre>
 <p>That’s it! And it’s using the super efficient <a href="http://www.aosabook.org/en/posa/warp.html" target="_blank" rel="noopener noreferrer">warp</a>
 HTTP server.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Getting the most out of SQLite3 with Python]]></title>
+            <link>https://remusao.github.io//posts/few-tips-sqlite-perf.html</link>
+            <guid>https://remusao.github.io//posts/few-tips-sqlite-perf.html</guid>
+            <pubDate>Sat, 21 Oct 2017 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>I’ve recently made heavy use of <code>sqlite3</code> for a project involving a lot of data
+and processing. My first attempt involved no database at all, and all data would
+be kept in memory and queries would consist in a mix of dictionary lookups,
+iteration, conditions, etc. This was nice, but there is only so much you can fit
+in memory, and re-generating/loading the data from disk to memory became a tedious
+and time consuming process.</p>
+<p>I decided to give <code>sqlite3</code> a try. This allowed an increase in the amount of
+data that could be processed, and reduced the loading time of the application to
+nothing, since only opening a connection to the database was needed. Moreover,
+I could replace a lot of Python logic by SQL queries.</p>
+<p>I’d like to share a few learnings and findings about this experience.</p>
+<p><strong>TL;DR</strong>:</p>
+<ol>
+<li>Use bulk operations (<em>a.k.a.</em> <code>executemany</code>).</li>
+<li>You don’t need <code>cursors</code> (most of the time).</li>
+<li>Cursors can be iterated upon.</li>
+<li>Use context managers.</li>
+<li>Use pragmas (when it makes sense).</li>
+<li>Postpone index creation.</li>
+<li>Use placeholders to interpolate python values.</li>
+</ol>
+<h2>Use Bulk Operations</h2>
+<p>If you need to insert a lot of rows at once in your database, you really
+should not use <code>execute</code>. The <code>sqlite3</code> module provides a way to bulk
+insertions: <code>executemany</code>.</p>
+<p>Instead of doing something like:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> iter_data():
+    connection.execute(<span class="hljs-string">&#x27;INSERT INTO my_table VALUES (?)&#x27;</span>, row)
+</code></pre>
+<p>You can leverage the fact that <code>executemany</code> accepts as argument a generator of
+<code>tuples</code>:</p>
+<pre class="code" data-lang="python"><code>connection.executemany(
+    <span class="hljs-string">&#x27;INSERT INTO my_table VALUE (?)&#x27;</span>,
+    iter_data()
+)
+</code></pre>
+<p>This is not only more concise, it’s also much more efficient. In fact, <code>sqlite3</code>
+implements <code>execute</code> using <code>executemany</code> behind the scene, but the former
+inserts a single row instead of many.</p>
+<p>I wrote a small benchmark which consists in inserting a million rows into an
+empty table (the database lives in memory):</p>
+<ul>
+<li><code>executemany</code>: <strong>1.6</strong> seconds</li>
+<li><code>execute</code>: 2.7 seconds</li>
+</ul>
+<h2>You Don’t Need Cursors</h2>
+<p>…<em>most of the time</em>.</p>
+<p>One thing I often found confusing at the beginning, was <code>cursor</code> management.
+Examples online and in the documentation often look like:</p>
+<pre class="code" data-lang="python"><code>connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
+cursor = connection.cursor()
+<span class="hljs-comment"># Do something with cursor</span>
+</code></pre>
+<p>But most of the time you don’t need a cursor at all, and you can directly use
+the <code>connection</code> object (it is mentioned at the
+<a href="https://docs.python.org/3.6/library/sqlite3.html#using-shortcut-methods" target="_blank" rel="noopener noreferrer">end of the documentation</a>).</p>
+<p>Operations such as <code>execute</code> and <code>executemany</code> can be called directly on the
+connection and <em>will return a cursor</em>. Here is an example to demonstrate that:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> sqlite3
+
+connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
+
+<span class="hljs-comment"># Create a table</span>
+connection.execute(<span class="hljs-string">&#x27;CREATE TABLE events(ts, msg)&#x27;</span>)
+
+<span class="hljs-comment"># Insert values</span>
+connection.executemany(
+    <span class="hljs-string">&#x27;INSERT INTO events VALUES (?,?)&#x27;</span>,
+    [
+        (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
+        (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;bar&#x27;</span>),
+        (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;baz&#x27;</span>)
+    ]
+)
+
+<span class="hljs-comment"># Print inserted rows</span>
+<span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
+    <span class="hljs-built_in">print</span>(row)
+</code></pre>
+<h2>Cursors Can Be Iterated Upon</h2>
+<p>You might often see examples making use of <code>fetchone</code> or <code>fetchall</code> on
+the result of a <code>SELECT</code> query. But I find that the most natural way to
+consume the results is to actually iterate on the cursor directly:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
+    <span class="hljs-built_in">print</span>(row)
+</code></pre>
+<p>This way, you can stop as soon as you got enough results and not waste
+resources. Of course, if you know beforehand how many results you want, you can
+use the <code>LIMIT</code> SQL statement instead, but Python generators are very handy and
+allow you to decouple data generation from data consumption.</p>
+<h2>Use Context Managers</h2>
+<p>Shit happens, even in the middle of a SQL transaction. To avoid having
+to deal manually with <code>rollback</code> or <code>commit</code>, you can simply use the
+<code>connection</code> object as a context manager. In the following example we
+create a table, and insert <em>by mistake</em> duplicated values:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> sqlite3
+connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
+
+<span class="hljs-keyword">with</span> connection:
+    connection.execute(
+        <span class="hljs-string">&#x27;CREATE TABLE events(ts, msg, PRIMARY KEY(ts, msg))&#x27;</span>)
+
+<span class="hljs-keyword">try</span>:
+    <span class="hljs-keyword">with</span> connection:
+        connection.executemany(<span class="hljs-string">&#x27;INSERT INTO events VALUES (?, ?)&#x27;</span>, [
+            (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
+            (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;bar&#x27;</span>),
+            (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;baz&#x27;</span>),
+            (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
+        ])
+<span class="hljs-keyword">except</span> (sqlite3.OperationalError, sqlite3.IntegrityError) <span class="hljs-keyword">as</span> e:
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Could not complete operation:&#x27;</span>, e)
+
+<span class="hljs-comment"># No row was inserted because transaction failed</span>
+<span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
+    <span class="hljs-built_in">print</span>(row)
+
+connection.close()
+</code></pre>
+<h2>Use Pragmas</h2>
+<p>…<em>when it makes sense</em></p>
+<p>There are a few <em>pragmas</em> you can use to tweak the behavior of <code>sqlite3</code> in your
+program. In particular, one that could improve the performance is <code>synchronous</code>:</p>
+<pre class="code" data-lang="python"><code>connection.execute(<span class="hljs-string">&#x27;PRAGMA synchronous = OFF&#x27;</span>)
+</code></pre>
+<p>You should be aware though that this can <em>be dangerous</em>. If the application
+crashes unexpectedly in the middle of a transaction, the database will probably
+be left in an inconsistent state. So use with care! But if you want to insert a
+lot of rows faster, that can be an option. A safer option is to use the
+<a href="https://www.sqlite.org/draft/wal.html" target="_blank" rel="noopener noreferrer"><code>WAL</code></a> option instead of disabling
+<code>synchronous</code> completely.</p>
+<pre class="code" data-lang="python"><code>connection.execute(<span class="hljs-string">&#x27;PRAGMA journal_mode = WAL&#x27;</span>)
+</code></pre>
+<h2>Postpone Index Creation</h2>
+<p>Let’s say you need a few indices on your database, and you also need to
+insert a lot of rows while creating them. Postponing the creation of the indices
+to after all rows have been inserted could result in a substantial performance
+improvement.</p>
+<h2>Use Placeholders to Interpolate Python Values</h2>
+<p>It is tempting to use Python string operations to include values into
+queries. <em>Do not</em>! This is highly insecure, and <code>sqlite3</code> gives you a
+better way to do it:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-comment"># Do not do this!</span>
+my_timestamp = <span class="hljs-number">1</span>
+c.execute(<span class="hljs-string">&quot;SELECT * FROM events WHERE ts = &#x27;%s&#x27;&quot;</span> % my_timestamp)
+
+<span class="hljs-comment"># Do this instead</span>
+my_timestamp = (<span class="hljs-number">1</span>,)
+c.execute(<span class="hljs-string">&#x27;SELECT * FROM events WHERE ts = ?&#x27;</span>, my_timestamp)
+</code></pre>
+<p>Also, string interpolation using Python <code>%s</code> (or format, or formatted string
+literals) does not go well with <code>executemany</code>. So there is really no point in
+trying!</p>
+<hr>
+<p>Keep in mind though that these tips might or might not give you a benefit,
+depending on your specific use-case. You should always try for yourself and
+decide if it’s worth it or not.</p>
+<p><em>Edit 28-12-2017</em>: Thanks for all the great feedback from <a href="https://www.reddit.com/r/Python/comments/781q18/getting_the_most_out_of_sqlite3_with_python/" target="_blank" rel="noopener noreferrer">Reddit</a>
+and <a href="https://news.ycombinator.com/item?id=15525715" target="_blank" rel="noopener noreferrer">Hacker News</a>.
+I took the liberty to amend the original article with a few of the suggestions.</p>
+<p>There are a few topics that were not mentioned in this article but are
+definitely worth reading:</p>
+<ul>
+<li><a href="https://docs.python.org/3.6/library/sqlite3.html#controlling-transactions" target="_blank" rel="noopener noreferrer">Using transactions</a>
+can dramatically improve the speed of your code if you need to run several
+SQL statements in a row (it should not be needed if you use <code>executemany</code>).</li>
+<li>If you don’t need to re-use your database across sessions, you can use an
+<a href="https://sqlite.org/inmemorydb.html" target="_blank" rel="noopener noreferrer"><em>in-memory</em></a> database by specifying
+<code>:memory:</code> as a location, which should give you a nice speed-up.</li>
+<li>You can <a href="https://docs.python.org/3.6/library/sqlite3.html#sqlite3.Connection.row_factory" target="_blank" rel="noopener noreferrer">customize <code>row_factory</code></a>
+to get something more useful than <code>tuple</code>s as results from <code>SELECT</code> queries.</li>
+<li>Consider changing <code>isolation_level</code> to <code>DEFERRED</code> or <code>IMMEDIATE</code>.</li>
+</ul>
+<p><em>Edit 30-05-2021</em>: Fixed a missing <code>.connect</code> in the “You Don’t Need Cursors” section. Thanks to <a href="https://github.com/Gelma" target="_blank" rel="noopener noreferrer">Gelma</a> for noticing.</p>
 ]]></content:encoded>
         </item>
         <item>
