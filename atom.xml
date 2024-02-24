@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2024-02-24T00:01:01.245Z</updated>
+    <updated>2024-02-24T01:34:31.879Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -435,130 +435,420 @@ the HTTPS Everywhere extension.</p>
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Thoughts about unit and integration tests]]></title>
-        <id>https://remusao.github.io//posts/unit-integration-tests.html</id>
-        <link href="https://remusao.github.io//posts/unit-integration-tests.html"/>
-        <updated>2019-10-26T00:00:00.000Z</updated>
+        <title type="html"><![CDATA[Parsing Thunderbird filtering rules]]></title>
+        <id>https://remusao.github.io//posts/parsing-thunderbird-msg-filters.html</id>
+        <link href="https://remusao.github.io//posts/parsing-thunderbird-msg-filters.html"/>
+        <updated>2019-11-24T00:00:00.000Z</updated>
         <content type="html"><![CDATA[<blockquote>
-<p>Do not feed the anti-patterns!</p>
+<p><a href="https://www.thunderbird.net/" target="_blank" rel="noopener noreferrer">Thunderbird</a> is a free email application that’s
+easy to set up and customize - and it’s loaded with great features!</p>
 </blockquote>
-<p>I recently found myself working with tests—integration and unit—. This
-experience led to some frustration, which got me thinking… Where did the
-frustration come from? How could it be done differently? And ultimately, what
-makes a good test? This post is a collection of thoughts about testing, not an
-exhaustive guide.</p>
-<h2>Unit vs. Integration?</h2>
-<blockquote>
-<p>It does not matter which one you pick first, you might need both eventually…</p>
-</blockquote>
-<p>Before writing any test, you might be wondering <em>which kind of test</em> makes
-sense. Would it be better to cover your new feature with unit or integration
-tests? You might want to pause for a moment and think about the trade-offs of
-the different options.</p>
-<p>Often, <em>unit tests</em> will run in a more controlled environment, maybe with some
-dependencies <a href="https://en.wikipedia.org/wiki/Mock_object" target="_blank" rel="noopener noreferrer">mocked</a>, so that you
-can focus on a specific file, class or function. This means that unit tests are
-more targeted than integration tests. It also means that they might be easier
-to reason about, and quicker to iterate with. As an example, imagine testing a
-JavaScript library; unit tests could be running in Node.js instead of a
-full-blown browser.</p>
-<p>On the other hand, <em>integration tests</em> will potentially target multiple systems
-interacting with each other, running in an environment which is much closer to
-production conditions. Using the same example, your JavaScript library might now be tested
-in a handful of browsers (e.g.: Firefox, Chromium and Safari, with different
-versions of each), while interacting with other libraries. This means that you
-will most likely gain more confidence that the code works in production
-environment, at the cost of a more complex setup.</p>
-<h2>Non-regression Tests</h2>
-<blockquote>
-<p>Non-regression is not the same as <em>non-evolution</em>.</p>
-</blockquote>
-<p>It is desirable to consolidate APIs or components with non-regression tests,
-but be careful not to prevent future evolution! This might happen if you take
-the current production system and generate test-cases by feeding inputs,
-getting the results and writing high-level tests which ensure that the output
-is always the one that was expected <em>at the time test-cases were generated</em>.</p>
-<p>Although this might feel good at first—we have great test coverage after
-all!—, this approach has at least one major short-coming: <em>it’s very hard to
-make the tests evolve in the future</em>. It’s nice to “freeze” the capabilities of
-your system with numerous tests, but unless said system is not meant to evolve
-in the future, the assumptions about expected results will most likely evolve
-over time. This means that when writing tests you probably need to think not
-only about coverage and the expected behavior <em>right now</em>, but also how easy it
-will be to make the tests evolve in the future.</p>
-<p>Tests are tightly related to the code being tested and, if you are not careful,
-rigid tests might make changing the source code much more painful than it
-should be.</p>
-<h2>Your Tests are Code</h2>
-<blockquote>
-<p>Tests are not the destination, they are the starting point and the path.</p>
-</blockquote>
-<p>There is a misunderstanding at the root of all evils: you shall not <em>treat
-your tests differently than your source code</em>. Tests <strong>are</strong> code! To make
-things a bit more concrete, here is a list of assumptions which I think are
-reasonable when it comes to source code but are rarely accepted for tests:</p>
+<p>I have been using Thunderbird as my email client of choice for many years, it
+is the hub which allows me to manage all the emails I get: work, multiple
+personal addresses, etc. As of today my combined mail folders are about <code>30GB</code>
+and counting. Still, Thunderbird has been running rock solid and I had no issue
+so far.</p>
+<p>I have to say that I make extensive use of folders, labels and <em>message
+filters</em>. These features combined allow to effortlessly manage a high volume of
+emails by filtering, sorting, tagging, dispatching emails; greatly reducing the
+amount of manual work needed to process then read them.</p>
+<p>As an example, I receive a lot of emails notifications from GitHub, both for work and personal
+OSS projects. I also tend to follow activity of repositories which I find
+interesting; but I do not want to have to go through all these notifications
+myself. A few years ago I adopted the following strategy:</p>
+<ol>
+<li>Create folders or subfolders for each repository:</li>
+</ol>
 <ul>
-<li>You expect to be able to <em>build</em> and <em>run</em> your code easily.</li>
-<li>You expect your code to be <em>efficient</em>.</li>
-<li>You expect your code to be <em>understandable</em>.</li>
-<li>You expect your code to be <em>documented</em>.</li>
-<li>You expect your code to be <em>cross-platform</em>.</li>
-<li>You expect your code to be <em>easy to delete</em>!</li>
-<li>You expect your code to <em>not be redundant and use abstractions</em>.</li>
+<li><code>github/work/repo1</code>,</li>
+<li><code>github/work/repo2</code>,</li>
+<li><code>github/perso/repo3</code>,</li>
+<li>etc.</li>
 </ul>
-<p>Whenever one of the expectations holds for your code, try replacing <code>code</code> with
-<code>tests</code> and ask yourself if it is still true. Your code and the tests you write
-to ensure it behaves in a correct way will have to evolve side-by-side in the
-future. You do not want your tests to become a <em>liability</em>.</p>
-<h2>Future-Proof Tests?</h2>
-<blockquote>
-<p>No developer ever reads the same code twice. — Heraclitus</p>
-</blockquote>
-<p>When writing tests, try to express your intent and give cues to the future
-reader —that might be you in a few months!— regarding why a given assertion was
-needed, what behavior is being tested, etc. Alongside the usual features of a
-language such as <em>comments</em>, <em>good names</em> for variables and functions, etc.
-modern testing frameworks give many tools to ease this process: use things like
-<code>describe(...)</code>, <code>it(...)</code> and explicit assertions <code>expect(...).to.be</code>.</p>
-<p>Additionally, as a contributor to a project which has tests, it should be
-reasonnably straightforward to answer the following questions:</p>
+<ol start="2">
+<li>Create a first filter rule <em>for each repository</em> to automatically move
+GitHub notifications to their respective folders. This can be achieve by
+detecting <code>notifications@github.com</code> using a condition of the form <code>From is notifications@github.com</code> and adding a <code>Move Message to</code> action.</li>
+<li>Optionally, I create rules to automatically mark as read any
+message which is not directed to me specifically (e.g.: via direct mention
+of my GitHub handler, PR request, issue assigned, etc.); especially on very
+active repositories. This can be achieved by detecting things like
+<code>mention@noreply.github.com</code> or <code>assign@noreply.github.com</code> in the <code>Cc</code>
+field.</li>
+</ol>
+<p>GitHub has a <a href="https://help.github.com/en/github/receiving-notifications-about-activity-on-github/about-email-notifications" target="_blank" rel="noopener noreferrer">full page of documentation</a>
+describing all the values you can use to filter email notifications. This is
+<em>really useful</em>. For example I tag emails where I am directly mentioned in
+<strong>red</strong> but notifications about discussions that I was involved in but not
+directly mentioned with <strong>blue</strong>. This allows to filter at a glance what I
+really need to check, versus what I can check later. In practice, more than 90%
+of notifications do not need to be checked manually. This is huge!</p>
+<p>Unfortunately, as the number of filters grows, I found the built-in interface
+to not be very convenient. Finding or editing rules can become a pain.
+Fortunately, Thunderbird stores all the filters for a given account in a
+single, plain text file named: <code>msgFilterRules.dat</code>, located in your
+Thunderbird profile folder. So I decided to write <a href="https://github.com/remusao/thunderbird-msg-filters" target="_blank" rel="noopener noreferrer">a
+library</a> which allows to
+manipulate these rules through a minimal and type-safe API; in <em>TypeScript</em>.</p>
+<p>The goal of the project is to allow developing more high-level tooling to
+read, transform, extend, update the rules while not having to worry about the
+low-level parsing details. It would also be possible to store the rules in a
+nicer format then use the library to produce the final file which can be
+consumed by Thunderbird.</p>
+<p>To install the library: <code>npm install --save thunderbird-msg-filters</code>.</p>
+<p>You can then use it to parse a <code>msgFilterRules.dat</code> file which you can find in
+your Thunderbird folder (one per email account configured):</p>
+<pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { parse } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
+
+<span class="hljs-comment">// A typical `msgFilterRules.dat` could contain this raw value.</span>
+<span class="hljs-keyword">const</span> rules = <span class="hljs-title function_">parse</span>(<span class="hljs-string">`
+version=&quot;9&quot;
+logging=&quot;no&quot;
+name=&quot;rule 1&quot;
+enabled=&quot;yes&quot;
+type=&quot;17&quot;
+action=&quot;Mark flagged&quot;
+condition=&quot;OR (subject,contains,foo) OR (subject,contains,bar)&quot;
+name=&quot;rule 2&quot;
+enabled=&quot;yes&quot;
+type=&quot;17&quot;
+action=&quot;Mark read&quot;
+action=&quot;JunkScore&quot;
+actionValue=&quot;100&quot;
+condition=&quot;ALL&quot;
+`</span>);
+</code></pre>
+<p>You can also format rules to the same original format:</p>
+<pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { format } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
+
+<span class="hljs-keyword">const</span> rules = <span class="hljs-title function_">format</span>({
+  <span class="hljs-attr">version</span>: <span class="hljs-string">&#x27;9&#x27;</span>,
+  <span class="hljs-attr">logging</span>: <span class="hljs-string">&#x27;no&#x27;</span>,
+  <span class="hljs-attr">rules</span>: [
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 1&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [{ <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark flagged&#x27;</span>}],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;OR (subject,contains,foo) OR (subject,contains,bar)&#x27;</span>
+    },
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 2&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark read&#x27;</span> }
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;JunkScore&#x27;</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;100&#x27;</span> }
+      ],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;ALL&#x27;</span>
+    },
+  ]
+});
+</code></pre>
+<p>The library is currently very young and will probably contain bugs, so use at
+your own risks. Feel free to use it and <a href="https://github.com/remusao/thunderbird-msg-filters/issues/new" target="_blank" rel="noopener noreferrer">open an issue</a>
+for any feedback!</p>
+<p><strong>What’s next?</strong> I plan to use this library to store the message filters rules
+in a separate location and synchronize it potentially between multiple
+computers. The nice thing is that the rules can now be expressed in a typed
+language (TypeScript) which will give me more confidence about their validity.
+It is also much easier to manipulate them from a single file, in a familiar
+developer environment (i.e.: your editor of choice) than through the
+Thunderbird interface.</p>
+<p>GitHub repository: <a href="https://github.com/remusao/thunderbird-msg-filters/" target="_blank" rel="noopener noreferrer">https://github.com/remusao/thunderbird-msg-filters/</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Installing Diablo II]]></title>
+        <id>https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html</id>
+        <link href="https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html"/>
+        <updated>2019-11-02T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<picture>
+  <source srcset="../images/diablo2-banner.webp" type="image/webp">
+  <source srcset="../images/diablo2-banner.png" type="image/png">
+  <img src="../images/diablo2-banner.png" alt="Diablo II banner" style="width:100%">
+</picture>
+<p>You might have heard the news: <em>Diablo IV</em> has been announced yesterday with a
+<a href="https://www.youtube.com/watch?v=9bRWIdOMfro" target="_blank" rel="noopener noreferrer">great cinematic</a>. What better
+time to install <s>Diablo III</s> <em>Diablo II</em> again and have some fun while
+waiting for the latest iteration of the franchise?</p>
+<p>But… it’s 2019 and it is not always easy to install a game first released
+back in June 2000 (yes, that’s 19 years ago. Yes, you’re old)! In this post I
+will show you how to install <em>Diablo II</em> with its extension <em>Lord of
+Destruction</em> on Windows, MacOS and Linux (Ubuntu in this case), using
+<a href="https://www.winehq.org" target="_blank" rel="noopener noreferrer"><em>Wine</em></a> as well as optional sandboxing using
+<a href="https://github.com/netblue30/firejail" target="_blank" rel="noopener noreferrer"><em>firejail</em></a>! Let’s get to it…</p>
+<p>If you are running <em>MacOS</em> or <em>Windows</em>, you’re in luck! The official game
+launcher already supports those platforms natively so you can install it and
+play straight away without extra hassle! Here are the links:</p>
 <ul>
-<li>when looking at code, where can I find the existing tests?</li>
-<li>when looking at tests, which code is being tested?</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Windows – Diablo II</a>.</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Windows – Lord of Destruction</a>.</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=MAC" target="_blank" rel="noopener noreferrer">MacOS – Diablo II</a>.</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=MAC" target="_blank" rel="noopener noreferrer">MacOS – Lord of Destruction</a>.</li>
 </ul>
-<p>There should be a clear path to modify both code and tests:</p>
+<h2>Get a License Key</h2>
+<p>First of, you will need a valid CD-Key for the game (both <em>Diablo II</em> and its
+extension <em>LOD</em>). You can get them on the <a href="https://www.blizzard.com" target="_blank" rel="noopener noreferrer">official website</a>
+for about <em>20 euros</em> from Blizzard (yes, that’s a shame, the game used to cost
+<em>15.99</em> euros a few years ago!), or by registering your old keys if you still
+have the box version (which is what I did).</p>
+<h2>Get the Launcher</h2>
+<p>The second step is to download the Windows launcher of the game which we will
+use in conjunction with Wine to make it work on Linux. You can find the links
+on <a href="https://www.blizzard.com/en-us/download/" target="_blank" rel="noopener noreferrer">Blizzard’s website</a>. Here they
+are if you want to save some time:</p>
 <ul>
-<li>when changing code, which tests need to be changed?</li>
-<li>when deleting code, which tests need to be deleted?</li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Downloader_Diablo2_enUS.exe</a></li>
+<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Downloader_Diablo2_Lord_of_Destruction_enUS.exe</a></li>
 </ul>
-<p>A few tips can ease this process. <em>Naming conventions</em> for test files should be
-consistent and finding the tests for a given file or component should not
-involve any interpretation, it should be mechanical (e.g.: tests for <code>module.js</code>
-are always to be found in <code>tests/module.test.js</code>).</p>
-<p>Tests should be organized in a way that follows the code structure closely so
-that changes in the source can be reflected to the tests and <em>vice versa</em>. This
-also applies to the internal structure of the tests. It can be helpful to group
-assertions by behavior or assumptions. It is also helpful to be explicit about
-both success and failure of an assertion!</p>
-<p>This last point is important because if you can quickly grasp the intent while
-reading a test; it allows to decide if an assertion still holds after a change
-in the code, or if it should go away completely.</p>
-<p>Last but not least, avoid repetition in tests. If you see yourself writing the
-same assertions over and over again to tests similar components, it might be
-worth abstracting these away. You will thank yourself in the future when you
-need to amend the tests!</p>
-<h2>By Way of Conclusion</h2>
+<h2>Installing Latest Wine</h2>
+<p>You could probably use the stock version of wine which ships with your Linux
+distribution but I always like to get the latest shiny version so here we go.
+If you use another distribution than Ubuntu, you can <em>skip this section
+completely</em>. From the <a href="https://wiki.winehq.org/Ubuntu" target="_blank" rel="noopener noreferrer">official wiki</a>:</p>
 <blockquote>
-<p>Always pick the right hammer for your nails…</p>
+<p>If your system is 64 bit, enable 32 bit architecture (if you haven’t already):</p>
+<pre class="code" data-lang="sh"><code>sudo dpkg --add-architecture i386
+</code></pre>
+<p>Download and add the repository key:</p>
+<pre class="code" data-lang="sh"><code>wget -nc https://dl.winehq.org/wine-builds/winehq.key
+sudo apt-key add winehq.key
+</code></pre>
 </blockquote>
-<p>As mentioned previously, this is not about picking unit tests over integration
-tests. You will likely need both eventually because they are often
-complementary and give you a different kind of confidence in the correctness of
-your code (although some <a href="https://blog.thecodewhisperer.com/permalink/integrated-tests-are-a-scam" target="_blank" rel="noopener noreferrer">argue against integration tests</a>).</p>
-<p>As a take-away, treat your tests the same way you treat your source code and
-hold them both to high standards. Not doing so might lead to a situation where
-your tests become a liability and slow you down instead of empowering you to
-write better and more robust features.</p>
+<p>Now you need to get the repository matching your release of Ubuntu. For me it
+was <code>bionic</code> (you can get yours using command <code>lsb_release -cs</code>), but check
+official instructions if that does not correspond to yours.</p>
+<blockquote>
+<pre class="code" data-lang="sh"><code>sudo apt-add-repository <span class="hljs-string">&#x27;deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main&#x27;</span>
+sudo apt install --install-recommends winehq-stable
+</code></pre>
+</blockquote>
+<p>Note that I could not install <code>winehq-stable</code> directly and had to first install
+one of its dependencies manually. If you encounter an error, then try to run
+the following command before installing <code>winehq-stable</code> again:</p>
+<pre class="code" data-lang="sh"><code>sudo apt install libasound2-plugins:i386
+</code></pre>
+<p>I am using <strong>version 4.0.2</strong> of <code>wine</code>.</p>
+<h2>[Optional] Installing Firejail</h2>
+<p>Firejail has a special place in my heart. It allows to sandbox any program
+running on Linux using kernel capabilities (some of them you might already know
+from Docker world). From the <a href="https://github.com/netblue30/firejail" target="_blank" rel="noopener noreferrer">official repository</a>:</p>
+<blockquote>
+<p>Firejail is a SUID sandbox program that reduces the risk of security breaches
+by restricting the running environment of untrusted applications using Linux
+namespaces, seccomp-bpf and Linux capabilities. It allows a process and all
+its descendants to have their own private view of the globally shared kernel
+resources, such as the network stack, process table, mount table. Firejail
+can work in a SELinux or AppArmor environment, and it is integrated with
+Linux Control Groups.</p>
+</blockquote>
+<p>There is an extra benefit in my opinion. You can specify a different directory
+to be used as the <code>~/</code> (home) folder of each program you run in a sandbox
+instead of your real home. This is great because it allows to keep files and
+folders of each app nicely isolated. For example I run <code>thunderbird</code>, <code>cliqz</code>
+and other programs in sandboxes and assign them different homes like
+<code>~/.sandboxes/thunderbird</code>, <code>~/.sandboxed/cliqz</code>, etc. This means that I can
+clean-up all files for each program by simply deleting their respective
+folders! That’s super convenient.</p>
+<p>Let’s get back to <em>Diablo II</em>! Install Firejail from your official Linux
+repositories (or <a href="https://github.com/netblue30/firejail#compile-and-install" target="_blank" rel="noopener noreferrer">compile it yourself</a> if that’s
+your thing… that’s what I did). I am currently running <strong>version 0.9.61</strong> but I
+assume this should work with other versions as well.</p>
+<p>Firejail comes with a preset for sandboxing wine which you can find at
+<code>/etc/firejail/wine.profile</code>. That’s the one we will be using!</p>
+<h2>Preparing Wine Home Folder</h2>
+<p>Let’s now prepare the <code>wine</code> folder that we will use in our Firejail sandbox:</p>
+<pre class="code" data-lang="sh"><code><span class="hljs-built_in">mkdir</span> -p ~/.sandboxes/wine
+</code></pre>
+<p>Copy the two downloaders into <code>~/.sandboxes/wine/</code>:</p>
+<ul>
+<li><code>~/.sandboxes/wine/Downloader_Diablo2_enUS.exe</code></li>
+<li><code>~/.sandboxes/wine/Downloader_Diablo2_Lord_of_Destruction_enUS.exe</code></li>
+</ul>
+<h2>Installing Diablo II</h2>
+<p>We can now proceed and install <em>Diablo II</em> base game:</p>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/Downloader_Diablo2_enUS.exe
+</code></pre>
+<p>Here are screenshots for each step of the installation process:</p>
+<figure>
+  <a href="../images/diablo2-install-1.png">
+    <picture>
+      <source srcset="../images/diablo2-install-1.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-1.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-1.png" alt="Press 'OK' to select default download folder." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Press 'OK' to select default download folder.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-2.png">
+    <picture>
+      <source srcset="../images/diablo2-install-2.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-2.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-2.png" alt="Enjoy the murloc view while downloading the game..." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Enjoy the murloc view while downloading the game...</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-3.png">
+    <picture>
+      <source srcset="../images/diablo2-install-3.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-3.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-3.png" alt="Press 'Install Diablo II'." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Press 'Install Diablo II'.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-7.png">
+    <picture>
+      <source srcset="../images/diablo2-install-7.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-7.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-7.png" alt="Accept license." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Accept license.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-6.png">
+    <picture>
+      <source srcset="../images/diablo2-install-6.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-6.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-6.png" alt="Enter you CD-Key." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Enter you CD-Key.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-5.png">
+    <picture>
+      <source srcset="../images/diablo2-install-5.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-5.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-5.png" alt="Press 'OK' to select default destination directory." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>Press 'OK' to select default destination directory.</figcaption>
+</figure>
+<figure>
+  <a href="../images/diablo2-install-4.png">
+    <picture>
+      <source srcset="../images/diablo2-install-4.webp" type="image/webp">
+      <source srcset="../images/diablo2-install-4.png" type="image/png">
+      <img loading="lazy" src="../images/diablo2-install-4.png" alt="It's so fast that I don't know how I managed to make a screenshot!" style="width:100%">
+    </picture>
+  </a>
+  <figcaption>It's so fast that I don't know how I managed to make a screenshot!</figcaption>
+</figure>
+<p>Press <strong>Back</strong> then <strong>Exit Installer</strong>. Time to install the extension!</p>
+<h2>Installing Lord of Destruction</h2>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/Downloader_Diablo2_Lord_of_Destruction_enUS.exe
+</code></pre>
+<p>I will spare you all the screenshots since the procedure is identical to the
+base version of the game. When you are done, resist the damning temptation and
+<strong>exit the installer</strong>; there is one last thing we have to take care of…</p>
+<h2>Install Latest Patch</h2>
+<p>Before starting the game and finally start playing, you will want to install
+the latest patch for Diablo II: <strong>1.14d</strong>. Usually it can be done by accessing
+<a href="http://Battle.net" target="_blank" rel="noopener noreferrer">Battle.net</a> in-game but for some reason it failed in my case because of a corrupted
+file… Luckily, it’s possible to download and install the update manually. Get
+it from the following link:</p>
+<ul>
+<li><a href="http://ftp.blizzard.com/pub/diablo2exp/patches/PC/LODPatch_114d.exe" target="_blank" rel="noopener noreferrer">LODPatch_114d.exe</a></li>
+</ul>
+<p>Copy it into your <code>wine</code> home folder: <code>~/.sandboxes/wine/LODPatch_114d.exe</code>.
+Then start the update with:</p>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/LODPatch_114d.exe
+</code></pre>
+<h2>Let’s Play!</h2>
+<p>Finally, to launch the game you can use the following command:</p>
+<pre class="code" data-lang="sh"><code>firejail \
+  --profile=/etc/firejail/wine.profile \
+  --private=~/.sandboxes/wine \
+  wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Diablo\ II/Diablo\ II.exe
+</code></pre>
+<p>Have fun!</p>
+<figure>
+  <a href="../images/diablo2-cows.jpg">
+    <picture>
+      <source srcset="../images/diablo2-cows.webp" type="image/webp">
+      <source srcset="../images/diablo2-cows.jpg" type="image/jpeg">
+      <img loading="lazy" src="../images/diablo2-cows.jpg" alt="There is no such thing as the 'Cow Level'." style="width:100%">
+    </picture>
+  </a>
+  <figcaption>There is no such thing as the 'Cow Level'.</figcaption>
+</figure>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[A static blog generator in TypeScript]]></title>
+        <id>https://remusao.github.io//posts/typescript-blog-generator.html</id>
+        <link href="https://remusao.github.io//posts/typescript-blog-generator.html"/>
+        <updated>2019-07-19T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>Oups, I did it again…</p>
+</blockquote>
+<p>A while ago I was joking with <a href="https://twitter.com/sebadzia" target="_blank" rel="noopener noreferrer">@sebadzia</a> about
+the fact that if you are not re-writting your blog generation mechanism from
+scratch every <em>N</em> posts, then you’re doing it wrong. It appears that I’m
+actually living by these words and have been re-implementing my own blog over
+and over again; maybe in the hope that it would motivate me to write more. This
+blog <em>became an end instead of a mean</em> to communicate things.</p>
+<p>Here are the 6 engines I’ve used over the years (and this does not even account
+for the different themes that I used with each of them):</p>
+<ul>
+<li><a href="https://wordpress.org/" target="_blank" rel="noopener noreferrer">WordPress</a></li>
+<li><a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a></li>
+<li><a href="https://blog.getpelican.com/" target="_blank" rel="noopener noreferrer">Pelican</a></li>
+<li><a href="https://jaspervdj.be/hakyll/" target="_blank" rel="noopener noreferrer">Hakyll</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy" target="_blank" rel="noopener noreferrer">Custom generator in Haskell</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy-ts" target="_blank" rel="noopener noreferrer"><strong>Custom generator in TypeScript</strong></a></li>
+</ul>
+<p>This means that the blog engine has been changed on average every <em>8.5</em> posts.
+Not too bad! Maybe the next one will be in Rust?</p>
+<p>I think what made me switch this time is the fact that I’m actually enjoying
+TypeScript very much lately (I find the type system super neat, and already
+liked JavaScript tooling a lot); and I was a bit fed up by the build time of
+the Haskell version. The way I did it was most probably sub-optimal as I am by
+no mean an experienced Haskell developer. Last but not least, I was on vacation
+and had some time to waste…</p>
+<p>The TypeScript generator is still rough around the edges but it’s working and
+allows me to build the site, watch changes, and serve locally in development
+mode.</p>
+<p>I rely on the following packages to do the heavy lifting:</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/@octokit/rest" target="_blank" rel="noopener noreferrer">@octokit/rest</a> to interact with GitHub APIs (used to fetch static comments)</li>
+<li><a href="https://www.npmjs.com/package/chokidar" target="_blank" rel="noopener noreferrer">chokidar</a> to watch for files changes</li>
+<li><a href="https://www.npmjs.com/package/express" target="_blank" rel="noopener noreferrer">express</a> to serve blog locally</li>
+<li><a href="https://www.npmjs.com/package/dompurify" target="_blank" rel="noopener noreferrer">dompurify</a> to sanitize final HTML</li>
+<li><a href="https://www.npmjs.com/package/highlight.js" target="_blank" rel="noopener noreferrer">highlight.js</a> to provide syntactic coloration for code blocks in posts</li>
+<li><a href="https://www.npmjs.com/package/html-minifier" target="_blank" rel="noopener noreferrer">html-minifier</a> to minimize HTML</li>
+<li><a href="https://www.npmjs.com/package/marked" target="_blank" rel="noopener noreferrer">marked</a> to convert markdown to HTML</li>
+</ul>
+<p>Overall I’m fairly happy with this setup. The generator currently fits into a
+single source file (which should probably be split at some point) and generation
+is pretty fast: <em>~50</em> seconds from scratch (which includes installing all npm
+dependencies, generating posts and fetching comments from GitHub). Generating
+posts only takes less than 10 seconds, and most of the time is spent waiting
+for comments to be fetched from GitHub issues.</p>
+<p>There are a few things I’d like to try or investigate in the future to improve:</p>
+<ul>
+<li>consider using JSX (with React in pure server-side rendering mode)</li>
+<li>consider writing CSS in TypeScript as well with typing</li>
+<li>add support for inlined math using KaTex (which I do not need at the moment)</li>
+<li>improve comments display with better rendering and support for reactions and emojis</li>
+</ul>
+<p>And of course, I will try my best to write more content here in the future!</p>
 ]]></content>
     </entry>
     <entry>
@@ -2279,62 +2569,6 @@ constraints, then make a decision about what technology best serves your need.</
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Copy anything to clipboard in HTML and JavaScript]]></title>
-        <id>https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html</id>
-        <link href="https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html"/>
-        <updated>2018-06-09T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>Not long ago, I was looking for a way to copy the content of any HTML element on
-a page to clipboard. What I thought would be an easy task turned out to be more
-complicated than expected. In the end I had to use some trick which I will show
-here.</p>
-<p>The way this will work is as follows: when clicking an element on the page, its
-<code>innerText</code> will be copied to Clipboard. To achieve this we will need to:</p>
-<ul>
-<li>Attach an <code>onclick</code> event listener to our element (or to several elements)</li>
-<li>When a <code>click</code> event is received, emit a fake <code>copy</code> event</li>
-</ul>
-<pre class="code" data-lang="javascript"><code>  <span class="hljs-comment">// This variable will be used to store a reference to the</span>
-  <span class="hljs-comment">// latest element clicked.</span>
-  <span class="hljs-keyword">let</span> selected = <span class="hljs-literal">null</span>;
-
-  <span class="hljs-comment">// Attach our custom copy-to-clipboard-on-click trick to `elt`</span>
-  <span class="hljs-keyword">const</span> elt = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&#x27;...&#x27;</span>);
-  elt.<span class="hljs-property">onclick</span> = <span class="hljs-function">() =&gt;</span> {
-    <span class="hljs-comment">// Store reference to this element in the global `selected`</span>
-    selected = elt;
-    <span class="hljs-comment">// Emit fake `copy` event</span>
-    <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">execCommand</span>(<span class="hljs-string">&#x27;copy&#x27;</span>);
-    <span class="hljs-comment">// Remove reference from `selected` to allow normal copies</span>
-    <span class="hljs-comment">// to be performed on the page.</span>
-    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> { selected = <span class="hljs-literal">null</span>; }, <span class="hljs-number">1000</span>);
-  };
-</code></pre>
-<ul>
-<li>Listen to this <code>copy</code> event and copy the content of the latest element
-clicked to clipboard.</li>
-</ul>
-<pre class="code" data-lang="javascript"><code>  <span class="hljs-comment">// Intercept copy events</span>
-  <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;copy&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
-    <span class="hljs-keyword">if</span> (selected === <span class="hljs-literal">null</span>) {
-      <span class="hljs-comment">// No element was clicked</span>
-      <span class="hljs-keyword">return</span>;
-    }
-
-    <span class="hljs-comment">// Copy content of clicked element to clipboard</span>
-    e.<span class="hljs-property">clipboardData</span>.<span class="hljs-title function_">setData</span>(
-      <span class="hljs-string">&#x27;text/plain&#x27;</span>,
-      selected.<span class="hljs-property">innerText</span>,
-    );
-
-    <span class="hljs-comment">// We want our data, not data from any selection,</span>
-    <span class="hljs-comment">// to be written to the clipboard</span>
-    e.<span class="hljs-title function_">preventDefault</span>();
-  });
-
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[Packaging Node.js apps the easy way]]></title>
         <id>https://remusao.github.io//posts/packaging-nodejs-apps.html</id>
         <link href="https://remusao.github.io//posts/packaging-nodejs-apps.html"/>
@@ -2702,137 +2936,6 @@ intended by running the tests:</p>
 <pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
 </code></pre>
 <p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[The wrong way of benchmarking integer comparison functions]]></title>
-        <id>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</id>
-        <link href="https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html"/>
-        <updated>2017-11-25T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p><em>TL;DR</em>: Naive code can sometimes run faster than “clever” code. Compilers are
-usually designed to optimize for the most common code, and common code is not
-clever. Lessons learned; if you try to write clever code, benchmark it to make
-sure there is a benefit.</p>
-<p>I recently stumbled upon <a href="https://blogs.msdn.microsoft.com/oldnewthing/20171117-00/?p=97416" target="_blank" rel="noopener noreferrer">an article</a>,
-describing how trying to out-smart the compiler can result in bad
-performances compared to more naive code. The benchmark is about finding
-the most efficient way to write a comparison function between integers,
-to be used in conjunction with <code>sort</code> or binary search for example. The
-original post being about <code>c++</code>, I was curious to know if the results
-would transfer to JavaScript (in particular <code>V8</code>, using <code>Node.js</code>). This
-is what this post is about.</p>
-<p>Let see the contenders:</p>
-<ul>
-<li><em>Naive</em></li>
-</ul>
-<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">compare1</span>(<span class="hljs-params">a, b</span>) {
-    <span class="hljs-keyword">if</span> (a &lt; b) <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
-    <span class="hljs-keyword">if</span> (a &gt; b) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
-    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
-}
-</code></pre>
-<ul>
-<li><em>Clever</em></li>
-</ul>
-<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">compare2</span>(<span class="hljs-params">a, b</span>) {
-    <span class="hljs-keyword">return</span> a - b;
-}
-</code></pre>
-<h2>Benchmarks</h2>
-<p>The original article has a very good point saying that to benchmark this
-code realistically, you need a real use-case. Just sorting the array and
-summing the numbers does not make any sense, no one would do it. But if
-instead you perform a binary search on the sorted array, it gets closer
-to something one might do in a real code-base.</p>
-<p>I took the liberty of converting the original <code>C++</code> implementation of the binary
-search into JavaScript, to stick closely to the article:</p>
-<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">binarySearch</span>(<span class="hljs-params">array, first, last, key, compare</span>) {
-  <span class="hljs-keyword">var</span> length = last - first;
-  <span class="hljs-keyword">while</span> (length &gt; <span class="hljs-number">0</span>) {
-    <span class="hljs-keyword">var</span> step = (length / <span class="hljs-number">2</span>) | <span class="hljs-number">0</span>;
-    <span class="hljs-keyword">var</span> middle = first + step;
-    <span class="hljs-keyword">var</span> result = <span class="hljs-title function_">compare</span>(array[middle], key);
-    <span class="hljs-keyword">if</span> (result &lt; <span class="hljs-number">0</span>) {
-      first = middle + <span class="hljs-number">1</span>;
-      length -= step + <span class="hljs-number">1</span>;
-    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (result === <span class="hljs-number">0</span>) {
-      <span class="hljs-keyword">return</span> middle;
-    } <span class="hljs-keyword">else</span> {
-      length = step;
-    }
-  }
-
-  <span class="hljs-keyword">return</span> last;
-}
-</code></pre>
-<p>Using the great <a href="https://www.npmjs.com/package/benchmark" target="_blank" rel="noopener noreferrer">benchmark</a>
-library, let’s evaluate the performance of each compare function:</p>
-<ul>
-<li><em>Setup</em></li>
-</ul>
-<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">compare</span>) {
-  <span class="hljs-comment">// Create a sorted array</span>
-  <span class="hljs-keyword">var</span> array = [];
-  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">8192</span>; ++i) {
-    array.<span class="hljs-title function_">push</span>(i * <span class="hljs-number">2</span>);
-  }
-
-  <span class="hljs-keyword">var</span> found = <span class="hljs-number">0</span>;
-
-  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = -<span class="hljs-number">1</span>; j &lt; <span class="hljs-number">16383</span>; ++j) {
-    <span class="hljs-keyword">var</span> index = <span class="hljs-title function_">binarySearch</span>(
-      array,              <span class="hljs-comment">// sorted array</span>
-      <span class="hljs-number">0</span>,                  <span class="hljs-comment">// start index</span>
-      array.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>,   <span class="hljs-comment">// end index</span>
-      j,                  <span class="hljs-comment">// element we are looking for</span>
-      compare);           <span class="hljs-comment">// comparison function</span>
-
-    <span class="hljs-keyword">if</span> (index !== -<span class="hljs-number">1</span> &amp;&amp; array[index] === j) {
-      found += <span class="hljs-number">1</span>;
-    }
-  }
-
-  <span class="hljs-keyword">if</span> (found !== <span class="hljs-number">8191</span>) {
-    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">&#x27;Found bug&#x27;</span>, found);
-  }
-}
-</code></pre>
-<ul>
-<li><em>Benchmark</em></li>
-</ul>
-<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">function</span> <span class="hljs-title function_">bench</span>(<span class="hljs-params"></span>) {
-  <span class="hljs-keyword">var</span> <span class="hljs-title class_">Benchmark</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;benchmark&#x27;</span>);
-  <span class="hljs-keyword">var</span> suite = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Benchmark</span>.<span class="hljs-title class_">Suite</span>();
-
-  suite
-    .<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;compare1&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
-      <span class="hljs-title function_">run</span>(compare1);
-    })
-    .<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;compare2&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
-      <span class="hljs-title function_">run</span>(compare2);
-    })
-    .<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;cycle&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) {
-      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">String</span>(event.<span class="hljs-property">target</span>));
-    })
-    .<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;complete&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
-      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Fastest is &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">filter</span>(<span class="hljs-string">&#x27;fastest&#x27;</span>).<span class="hljs-title function_">map</span>(<span class="hljs-string">&#x27;name&#x27;</span>));
-    })
-    .<span class="hljs-title function_">run</span>({});
-}
-
-<span class="hljs-title function_">bench</span>();
-</code></pre>
-<p>And…</p>
-<blockquote>
-<pre class="code" data-lang="sh"><code>compare1 x 421 ops/sec ±0.51% (91 runs sampled)
-compare2 x 394 ops/sec ±0.39% (89 runs sampled)
-</code></pre>
-</blockquote>
-<p>It happens that the naive <code>compare1</code> is a bit faster than <code>compare2</code>.
-It’s not day and night, but the <em>naive</em>, more readable code is more
-efficient on V8 than the clever one.</p>
-<p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
-there</a></p>
 ]]></content>
     </entry>
     <entry>
