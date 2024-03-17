@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Sun, 17 Mar 2024 02:14:15 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 17 Mar 2024 03:00:52 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -2424,115 +2424,6 @@ sub-commands presented above.</li>
 ]]></content:encoded>
         </item>
         <item>
-            <title><![CDATA[TIL—Python has a built-in persistent key-value store]]></title>
-            <link>https://remusao.github.io//posts/python-dbm-module.html</link>
-            <guid>https://remusao.github.io//posts/python-dbm-module.html</guid>
-            <pubDate>Sun, 10 Jun 2018 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Python is, in a lot of ways, a very rich language. After years of using
-it, I still regularly discover new parts of the ecosystem, even in the
-standard library. In particular, there are a few modules which are not
-very well-known, but can be very useful in some situations. Today I
-discovered <code>dbm</code> a persistent key/value store:</p>
-<p>Quick start:</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> dbm
-
-<span class="hljs-keyword">with</span> dbm.<span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;my_store&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>) <span class="hljs-keyword">as</span> db:
-  db[<span class="hljs-string">&#x27;key&#x27;</span>] = <span class="hljs-string">&#x27;value&#x27;</span>
-  <span class="hljs-built_in">print</span>(db.keys()) <span class="hljs-comment"># [&#x27;key&#x27;]</span>
-  <span class="hljs-built_in">print</span>(db[<span class="hljs-string">&#x27;key&#x27;</span>]) <span class="hljs-comment"># &#x27;value&#x27;</span>
-  <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;key&#x27;</span> <span class="hljs-keyword">in</span> db) <span class="hljs-comment"># True</span>
-</code></pre>
-<p>It behaves a lot like a <code>dict</code> except:</p>
-<ul>
-<li>It persists its values on disk</li>
-<li>You can only use <code>str</code> or <code>bytes</code> as key and values</li>
-</ul>
-<p>The performance is also slower than a dictionary, but faster than <code>sqlite3</code>.</p>
-<p>The benchmark consists in performing <em>10k</em> writes and <em>10k</em> random reads:</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> random
-<span class="hljs-keyword">import</span> time
-
-operations = <span class="hljs-number">10000</span>
-writes = [<span class="hljs-built_in">str</span>(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(operations)]
-reads = [<span class="hljs-built_in">str</span>(<span class="hljs-built_in">int</span>(random() * operations)) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(operations)]
-
-<span class="hljs-comment"># Create some records</span>
-<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> writes:
-    db[i] = <span class="hljs-string">&#x27;x&#x27;</span>
-
-<span class="hljs-comment"># Read values in random order</span>
-<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> reads:
-    x = db[i]
-</code></pre>
-<p>Here are the results:</p>
-<ul>
-<li><code>dict</code> – total: <em>0.002 seconds</em>, 0.23398 μs/record <strong>x 1</strong></li>
-<li><code>dbm</code> – total: 0.054 seconds, 5.35984 μs/record <strong>x 27</strong></li>
-<li><code>sqlite3</code> in-memory: total: 2.468 seconds, 246.84346 μs/record <strong>x 1234</strong></li>
-<li><code>sqlite3</code> file: total 42.407 seconds, 4240.69593 μs/record <strong>x 21207</strong></li>
-</ul>
-<p>Why is <code>sqlite3</code> so slow? Well, the benchmark is probably not representative of
-the typical workload for sqlite (lots of individual insertions and selections).
-If we perform the same operations using <code>executemany</code> and one <code>select</code> of all
-the keys at once, we get:</p>
-<ul>
-<li><code>:memory:</code> – total: 0.038 seconds, 3.81415 μs/record <strong>x 19</strong></li>
-<li><code>file</code> – total 0.071 seconds, 7.07369 μs/record <strong>x 35</strong></li>
-</ul>
-<p>It’s much better, but still not as fast as <code>dbm</code> (when we persist to
-a file). So, if you have a workload where keys and values are added
-and retrieved very often, are always <code>str</code> or <code>bytes</code> and need to be
-persisted on disk, <code>dbm</code> is a serious contender!</p>
-<p><em>The code used to benchmark can be found here:
-<a href="https://github.com/remusao/remusao.github.io/blob/d9b5a3088e4cae8452eabf90371f582c81569d88/snippets/dbm_bench.py" target="_blank" rel="noopener noreferrer">dbm_bench.py</a></em></p>
-<hr>
-<p><strong>Edit 06-11-2022</strong>: There was some great feedback on <a href="https://news.ycombinator.com/item?id=32849592" target="_blank" rel="noopener noreferrer">Hacker News</a> yesterday. I’d like to address some of it.</p>
-<ul>
-<li><em>Using a primary key</em>—It was suggested that adding a <code>PRIMARY KEY</code> when
-creating the table improves performance of SQLite3, so I’ve updated the
-benchmark accordingly. It does help with performance indeed (see below).</li>
-<li><em>Using WAL pragma</em>—It was suggested that using WAL journaling instead of
-default mode would also make more sense. I have updated the <a href="https://github.com/remusao/remusao.github.io/blob/42743be91b5ec4bf4233ffe25c3c7c90cf515627/snippets/dbm_bench.py" target="_blank" rel="noopener noreferrer">benchmarking
-script</a> accordingly.</li>
-<li><em>Using one INSERT at a time vs. <code>executemany</code></em>—It was called out that
-executing one INSERT command per key instead of batching the operations
-is less efficient. The benchmark measures both scenarios: one where single
-INSERTs are made (“sqlite3 (:memory:)” and “sqlite3 (file)”) and one where
-<code>executemany</code> is used to insert and read everything in one batch (“sqlite3
-(executemany)”). I’ve added one more benchmark for the use of <code>executemany</code>
-on a <code>:memory</code> SQLite3 database. The bottomline is that in all these cases,
-SQLite3 is still slower than DBM.</li>
-<li><em>Using an index with SQLite3</em>—In order to improve performances of SQLite3
-operations, creating an index can also be benefitial, and this was suggested
-in the comments. I’ve added two new entries to the <a href="https://github.com/remusao/remusao.github.io/blob/42743be91b5ec4bf4233ffe25c3c7c90cf515627/snippets/dbm_bench.py" target="_blank" rel="noopener noreferrer">benchmark</a> to show the
-performance when creating an index before insertions and also after
-insertions but before reading the values back.</li>
-<li><em>Which DBM implementation is used</em>—This is something that the initial
-blogpost missed. The results are about the GNU implementation of DBM, which
-the new benchmarking code now explicitely imports. The performance might vary
-vastely between implementations (worst case being if the <a href="https://docs.python.org/3/library/dbm.html#module-dbm.dumb" target="_blank" rel="noopener noreferrer">dbm.dumb</a> module is used).</li>
-</ul>
-<p>With all the above, I have updated the <a href="https://github.com/remusao/remusao.github.io/blob/42743be91b5ec4bf4233ffe25c3c7c90cf515627/snippets/dbm_bench.py" target="_blank" rel="noopener noreferrer">benchmarks</a> and here are the new results obtained with CPython 3.11.0, best of 5 runs:</p>
-<ul>
-<li><code>dict</code>—took 0.001 seconds, 0.11792 microseconds / record</li>
-<li><code>dbm</code>—took 0.009 seconds, 0.88954 microseconds / record</li>
-<li><code>sqlite3, executemany, :memory:</code>—took 0.029 seconds, 2.86062 microseconds / record</li>
-<li><code>sqlite3, executemany, file</code>—took 0.045 seconds, 4.52690 microseconds / record</li>
-<li><code>sqlite3, executemany, index after insertions</code>—took 0.044 seconds, 4.37975 microseconds / record</li>
-<li><code>sqlite3, executemany, index before insertions</code>—took 0.048 seconds, 4.84734 microseconds / record</li>
-<li><code>sqlite3, :memory:</code>—took 0.082 seconds, 8.19964 microseconds / record</li>
-<li><code>sqlite3, file</code> —took 4.661 seconds, 466.07621 microseconds / record</li>
-</ul>
-<p>With all optimizations brought to the SQLite3 version, <code>dbm.gnu</code> still has an
-edge on this very <em>synthetic benchmark</em>. And that is, I think, the bottom line
-of this article. It is only that, a synthetic benchmark and you should probably
-not read too much into it, unless  your particular use-case involves writing
-10,000 random values then reading them back and nothing else. As everything,
-you should first perform your own measurements based on your own use-case and
-constraints, then make a decision about what technology best serves your need.</p>
-]]></content:encoded>
-        </item>
-        <item>
             <title><![CDATA[Synacor—Down the rabbit hole]]></title>
             <link>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</link>
             <guid>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</guid>
@@ -2690,6 +2581,115 @@ again.</li>
 This can mean two things: either not all codes can be discovered through
 the game (likely), or my exploration method is not working as well as it
 should! In both cases, it means I’m not done exploring the rabbit hole…</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[TIL—Python has a built-in persistent key-value store]]></title>
+            <link>https://remusao.github.io//posts/python-dbm-module.html</link>
+            <guid>https://remusao.github.io//posts/python-dbm-module.html</guid>
+            <pubDate>Sun, 10 Jun 2018 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Python is, in a lot of ways, a very rich language. After years of using
+it, I still regularly discover new parts of the ecosystem, even in the
+standard library. In particular, there are a few modules which are not
+very well-known, but can be very useful in some situations. Today I
+discovered <code>dbm</code> a persistent key/value store:</p>
+<p>Quick start:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> dbm
+
+<span class="hljs-keyword">with</span> dbm.<span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;my_store&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>) <span class="hljs-keyword">as</span> db:
+  db[<span class="hljs-string">&#x27;key&#x27;</span>] = <span class="hljs-string">&#x27;value&#x27;</span>
+  <span class="hljs-built_in">print</span>(db.keys()) <span class="hljs-comment"># [&#x27;key&#x27;]</span>
+  <span class="hljs-built_in">print</span>(db[<span class="hljs-string">&#x27;key&#x27;</span>]) <span class="hljs-comment"># &#x27;value&#x27;</span>
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;key&#x27;</span> <span class="hljs-keyword">in</span> db) <span class="hljs-comment"># True</span>
+</code></pre>
+<p>It behaves a lot like a <code>dict</code> except:</p>
+<ul>
+<li>It persists its values on disk</li>
+<li>You can only use <code>str</code> or <code>bytes</code> as key and values</li>
+</ul>
+<p>The performance is also slower than a dictionary, but faster than <code>sqlite3</code>.</p>
+<p>The benchmark consists in performing <em>10k</em> writes and <em>10k</em> random reads:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> random
+<span class="hljs-keyword">import</span> time
+
+operations = <span class="hljs-number">10000</span>
+writes = [<span class="hljs-built_in">str</span>(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(operations)]
+reads = [<span class="hljs-built_in">str</span>(<span class="hljs-built_in">int</span>(random() * operations)) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(operations)]
+
+<span class="hljs-comment"># Create some records</span>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> writes:
+    db[i] = <span class="hljs-string">&#x27;x&#x27;</span>
+
+<span class="hljs-comment"># Read values in random order</span>
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> reads:
+    x = db[i]
+</code></pre>
+<p>Here are the results:</p>
+<ul>
+<li><code>dict</code> – total: <em>0.002 seconds</em>, 0.23398 μs/record <strong>x 1</strong></li>
+<li><code>dbm</code> – total: 0.054 seconds, 5.35984 μs/record <strong>x 27</strong></li>
+<li><code>sqlite3</code> in-memory: total: 2.468 seconds, 246.84346 μs/record <strong>x 1234</strong></li>
+<li><code>sqlite3</code> file: total 42.407 seconds, 4240.69593 μs/record <strong>x 21207</strong></li>
+</ul>
+<p>Why is <code>sqlite3</code> so slow? Well, the benchmark is probably not representative of
+the typical workload for sqlite (lots of individual insertions and selections).
+If we perform the same operations using <code>executemany</code> and one <code>select</code> of all
+the keys at once, we get:</p>
+<ul>
+<li><code>:memory:</code> – total: 0.038 seconds, 3.81415 μs/record <strong>x 19</strong></li>
+<li><code>file</code> – total 0.071 seconds, 7.07369 μs/record <strong>x 35</strong></li>
+</ul>
+<p>It’s much better, but still not as fast as <code>dbm</code> (when we persist to
+a file). So, if you have a workload where keys and values are added
+and retrieved very often, are always <code>str</code> or <code>bytes</code> and need to be
+persisted on disk, <code>dbm</code> is a serious contender!</p>
+<p><em>The code used to benchmark can be found here:
+<a href="https://github.com/remusao/remusao.github.io/blob/d9b5a3088e4cae8452eabf90371f582c81569d88/snippets/dbm_bench.py" target="_blank" rel="noopener noreferrer">dbm_bench.py</a></em></p>
+<hr>
+<p><strong>Edit 06-11-2022</strong>: There was some great feedback on <a href="https://news.ycombinator.com/item?id=32849592" target="_blank" rel="noopener noreferrer">Hacker News</a> yesterday. I’d like to address some of it.</p>
+<ul>
+<li><em>Using a primary key</em>—It was suggested that adding a <code>PRIMARY KEY</code> when
+creating the table improves performance of SQLite3, so I’ve updated the
+benchmark accordingly. It does help with performance indeed (see below).</li>
+<li><em>Using WAL pragma</em>—It was suggested that using WAL journaling instead of
+default mode would also make more sense. I have updated the <a href="https://github.com/remusao/remusao.github.io/blob/42743be91b5ec4bf4233ffe25c3c7c90cf515627/snippets/dbm_bench.py" target="_blank" rel="noopener noreferrer">benchmarking
+script</a> accordingly.</li>
+<li><em>Using one INSERT at a time vs. <code>executemany</code></em>—It was called out that
+executing one INSERT command per key instead of batching the operations
+is less efficient. The benchmark measures both scenarios: one where single
+INSERTs are made (“sqlite3 (:memory:)” and “sqlite3 (file)”) and one where
+<code>executemany</code> is used to insert and read everything in one batch (“sqlite3
+(executemany)”). I’ve added one more benchmark for the use of <code>executemany</code>
+on a <code>:memory</code> SQLite3 database. The bottomline is that in all these cases,
+SQLite3 is still slower than DBM.</li>
+<li><em>Using an index with SQLite3</em>—In order to improve performances of SQLite3
+operations, creating an index can also be benefitial, and this was suggested
+in the comments. I’ve added two new entries to the <a href="https://github.com/remusao/remusao.github.io/blob/42743be91b5ec4bf4233ffe25c3c7c90cf515627/snippets/dbm_bench.py" target="_blank" rel="noopener noreferrer">benchmark</a> to show the
+performance when creating an index before insertions and also after
+insertions but before reading the values back.</li>
+<li><em>Which DBM implementation is used</em>—This is something that the initial
+blogpost missed. The results are about the GNU implementation of DBM, which
+the new benchmarking code now explicitely imports. The performance might vary
+vastely between implementations (worst case being if the <a href="https://docs.python.org/3/library/dbm.html#module-dbm.dumb" target="_blank" rel="noopener noreferrer">dbm.dumb</a> module is used).</li>
+</ul>
+<p>With all the above, I have updated the <a href="https://github.com/remusao/remusao.github.io/blob/42743be91b5ec4bf4233ffe25c3c7c90cf515627/snippets/dbm_bench.py" target="_blank" rel="noopener noreferrer">benchmarks</a> and here are the new results obtained with CPython 3.11.0, best of 5 runs:</p>
+<ul>
+<li><code>dict</code>—took 0.001 seconds, 0.11792 microseconds / record</li>
+<li><code>dbm</code>—took 0.009 seconds, 0.88954 microseconds / record</li>
+<li><code>sqlite3, executemany, :memory:</code>—took 0.029 seconds, 2.86062 microseconds / record</li>
+<li><code>sqlite3, executemany, file</code>—took 0.045 seconds, 4.52690 microseconds / record</li>
+<li><code>sqlite3, executemany, index after insertions</code>—took 0.044 seconds, 4.37975 microseconds / record</li>
+<li><code>sqlite3, executemany, index before insertions</code>—took 0.048 seconds, 4.84734 microseconds / record</li>
+<li><code>sqlite3, :memory:</code>—took 0.082 seconds, 8.19964 microseconds / record</li>
+<li><code>sqlite3, file</code> —took 4.661 seconds, 466.07621 microseconds / record</li>
+</ul>
+<p>With all optimizations brought to the SQLite3 version, <code>dbm.gnu</code> still has an
+edge on this very <em>synthetic benchmark</em>. And that is, I think, the bottom line
+of this article. It is only that, a synthetic benchmark and you should probably
+not read too much into it, unless  your particular use-case involves writing
+10,000 random values then reading them back and nothing else. As everything,
+you should first perform your own measurements based on your own use-case and
+constraints, then make a decision about what technology best serves your need.</p>
 ]]></content:encoded>
         </item>
         <item>
