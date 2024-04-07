@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2024-04-07T10:00:32.293Z</updated>
+    <updated>2024-04-07T11:00:38.016Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -7187,52 +7187,6 @@ insoupçonnée :)</p>
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Python—Lister le contenu des répertoires]]></title>
-        <id>https://remusao.github.io//posts/python-list-directories.html</id>
-        <link href="https://remusao.github.io//posts/python-list-directories.html"/>
-        <updated>2012-02-02T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p><strong>Disclaimer</strong> : Il est probablement plus simple d’utiliser la fonction
-<a href="https://docs.python.org/2/library/os.html#os.walk" target="_blank" rel="noopener noreferrer">os.walk</a> pour lister
-récursivement le contenu d’un dossier.</p>
-<p>Python est un langage très haut niveau qui permet de faire beaucoup de
-choses très facilement. Notamment, il est très facile de manipuler les
-fichiers et les dossiers grâce au module os. Les lecteurs connaissant
-le langage C remarqueront que les fonctions présentes dans ce module
-sont les mêmes que celles de la bibliothèque standard du C (exceptées
-certaines fonctions un peu plus « haut-niveau » qui sont seulement
-disponibles dans le module os de Python).</p>
-<p>Dans cet articles nous allons simplement voir comment lister
-récursivement le contenu des dossiers à partir de la position
-actuelle. Commençons tout d’abord par inclure le module os comme ceci :</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> os
-</code></pre>
-<p>Nous utiliserons ensuite les fonctions suivantes :</p>
-<ul>
-<li><code>os.listdir(dossier)</code> : Liste le contenu de <code>dossier</code> (fichiers et dossiers)</li>
-<li><code>os.chdir(dossier)</code> : On se déplace dans <code>dossier</code>.</li>
-<li><code>os.path.isdir(chemin)</code> : Détermine si le <code>chemin</code> donné en paramètre
-pointe vers un dossier ou un simple fichier.</li>
-<li><code>os.getcwd()</code> : Retourne une chaine de caractères représentant la
-position actuelle dans le système de fichiers (sous forme de chemin
-absolu).</li>
-</ul>
-<p>Avec ces quelques fonctions , on peu facilement lister le contenu des
-sous-dossiers à partir de la position courante comme ceci :</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>():
-  <span class="hljs-string">&quot;&quot;&quot;
-    Liste récursivement le contenu des sous-répertoires
-  &quot;&quot;&quot;</span>
-  <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> os.listdir(os.getcwd()):
-      <span class="hljs-keyword">if</span> os.path.isdir(f): <span class="hljs-comment"># si f est un dossier</span>
-        os.chdir(f) <span class="hljs-comment"># On va lister son contenu</span>
-        parse()
-        os.chdir(<span class="hljs-string">&#x27;../&#x27;</span>) <span class="hljs-comment"># On revient au répertoire précédent</span>
-      <span class="hljs-keyword">else</span>:
-        <span class="hljs-comment"># Traitement sur le fichier f</span>
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[Python—Construction des listes]]></title>
         <id>https://remusao.github.io//posts/python-list-comprehension.html</id>
         <link href="https://remusao.github.io//posts/python-list-comprehension.html"/>
@@ -7295,6 +7249,52 @@ constructions de liste :)</p>
 qu’il est possible d’utiliser n’importe quel générateur à la
 place, et même n’importe quelle structure de données itérable (par
 exemple : une liste, un set, etc…).</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Python—Lister le contenu des répertoires]]></title>
+        <id>https://remusao.github.io//posts/python-list-directories.html</id>
+        <link href="https://remusao.github.io//posts/python-list-directories.html"/>
+        <updated>2012-02-02T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p><strong>Disclaimer</strong> : Il est probablement plus simple d’utiliser la fonction
+<a href="https://docs.python.org/2/library/os.html#os.walk" target="_blank" rel="noopener noreferrer">os.walk</a> pour lister
+récursivement le contenu d’un dossier.</p>
+<p>Python est un langage très haut niveau qui permet de faire beaucoup de
+choses très facilement. Notamment, il est très facile de manipuler les
+fichiers et les dossiers grâce au module os. Les lecteurs connaissant
+le langage C remarqueront que les fonctions présentes dans ce module
+sont les mêmes que celles de la bibliothèque standard du C (exceptées
+certaines fonctions un peu plus « haut-niveau » qui sont seulement
+disponibles dans le module os de Python).</p>
+<p>Dans cet articles nous allons simplement voir comment lister
+récursivement le contenu des dossiers à partir de la position
+actuelle. Commençons tout d’abord par inclure le module os comme ceci :</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> os
+</code></pre>
+<p>Nous utiliserons ensuite les fonctions suivantes :</p>
+<ul>
+<li><code>os.listdir(dossier)</code> : Liste le contenu de <code>dossier</code> (fichiers et dossiers)</li>
+<li><code>os.chdir(dossier)</code> : On se déplace dans <code>dossier</code>.</li>
+<li><code>os.path.isdir(chemin)</code> : Détermine si le <code>chemin</code> donné en paramètre
+pointe vers un dossier ou un simple fichier.</li>
+<li><code>os.getcwd()</code> : Retourne une chaine de caractères représentant la
+position actuelle dans le système de fichiers (sous forme de chemin
+absolu).</li>
+</ul>
+<p>Avec ces quelques fonctions , on peu facilement lister le contenu des
+sous-dossiers à partir de la position courante comme ceci :</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>():
+  <span class="hljs-string">&quot;&quot;&quot;
+    Liste récursivement le contenu des sous-répertoires
+  &quot;&quot;&quot;</span>
+  <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> os.listdir(os.getcwd()):
+      <span class="hljs-keyword">if</span> os.path.isdir(f): <span class="hljs-comment"># si f est un dossier</span>
+        os.chdir(f) <span class="hljs-comment"># On va lister son contenu</span>
+        parse()
+        os.chdir(<span class="hljs-string">&#x27;../&#x27;</span>) <span class="hljs-comment"># On revient au répertoire précédent</span>
+      <span class="hljs-keyword">else</span>:
+        <span class="hljs-comment"># Traitement sur le fichier f</span>
+</code></pre>
 ]]></content>
     </entry>
     <entry>
