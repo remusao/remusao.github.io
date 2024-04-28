@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Sun, 28 Apr 2024 12:00:43 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 28 Apr 2024 13:02:24 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -6850,43 +6850,6 @@ pas le pattern-matching en Hash table lorsque c’est possible.</p>
 ]]></content:encoded>
         </item>
         <item>
-            <title><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
-            <link>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</link>
-            <guid>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</guid>
-            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
-j’ai reçu récemment je me suis heurté à quelques problèmes
-puisque la version dans les dépots de Archlinux ne compilait pas et
-aucun paquet précompilé pour Arm n’était disponible. Je vais donc
-exposer une solution pour pouvoir le compiler et l’installer. Mais
-tout d’abord une petite description du logiciel trouvée sur le site
-des créateurs :</p>
-<blockquote>
-<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
-</blockquote>
-<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
-il suffit de télécharger un patch supplémentaire et de remplacer le
-PKGBUILD fourni par un autre que je vais vous donner. Voici comment
-faire :</p>
-<ol>
-<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
-<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
-<li>Exécutez les commandes suivantes :</li>
-</ol>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
-$ yaourt -G mediatomb
-$ <span class="hljs-built_in">cd</span> mediatomb
-[Copier le patch ici]
-[Copier le fichier PKGBUILD ici]
-$ makepkg -si
-</code></pre>
-<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
-vaut le coup. J’espère que ça servira à certains le temps que les
-paquets dans les dépôts d’archlinux soient de nouveau compilables
-sans modification.</p>
-]]></content:encoded>
-        </item>
-        <item>
             <title><![CDATA[Ma vision des mathématiques]]></title>
             <link>https://remusao.github.io//posts/mathematiques-vision.html</link>
             <guid>https://remusao.github.io//posts/mathematiques-vision.html</guid>
@@ -7014,6 +6977,43 @@ d’évoluer dans ces univers abstraits, de visualiser et de comprendre
 les œuvres laissées par d’illustres mathématiciens avant nous,
 et de bâtir de nouveaux édifices avec les outils qu’ils nous ont
 légués.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
+            <link>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</link>
+            <guid>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</guid>
+            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
+j’ai reçu récemment je me suis heurté à quelques problèmes
+puisque la version dans les dépots de Archlinux ne compilait pas et
+aucun paquet précompilé pour Arm n’était disponible. Je vais donc
+exposer une solution pour pouvoir le compiler et l’installer. Mais
+tout d’abord une petite description du logiciel trouvée sur le site
+des créateurs :</p>
+<blockquote>
+<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
+</blockquote>
+<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
+il suffit de télécharger un patch supplémentaire et de remplacer le
+PKGBUILD fourni par un autre que je vais vous donner. Voici comment
+faire :</p>
+<ol>
+<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
+<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
+<li>Exécutez les commandes suivantes :</li>
+</ol>
+<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
+$ yaourt -G mediatomb
+$ <span class="hljs-built_in">cd</span> mediatomb
+[Copier le patch ici]
+[Copier le fichier PKGBUILD ici]
+$ makepkg -si
+</code></pre>
+<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
+vaut le coup. J’espère que ça servira à certains le temps que les
+paquets dans les dépôts d’archlinux soient de nouveau compilables
+sans modification.</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -7184,52 +7184,6 @@ insoupçonnée :)</p>
 ]]></content:encoded>
         </item>
         <item>
-            <title><![CDATA[Python—Lister le contenu des répertoires]]></title>
-            <link>https://remusao.github.io//posts/python-list-directories.html</link>
-            <guid>https://remusao.github.io//posts/python-list-directories.html</guid>
-            <pubDate>Thu, 02 Feb 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p><strong>Disclaimer</strong> : Il est probablement plus simple d’utiliser la fonction
-<a href="https://docs.python.org/2/library/os.html#os.walk" target="_blank" rel="noopener noreferrer">os.walk</a> pour lister
-récursivement le contenu d’un dossier.</p>
-<p>Python est un langage très haut niveau qui permet de faire beaucoup de
-choses très facilement. Notamment, il est très facile de manipuler les
-fichiers et les dossiers grâce au module os. Les lecteurs connaissant
-le langage C remarqueront que les fonctions présentes dans ce module
-sont les mêmes que celles de la bibliothèque standard du C (exceptées
-certaines fonctions un peu plus « haut-niveau » qui sont seulement
-disponibles dans le module os de Python).</p>
-<p>Dans cet articles nous allons simplement voir comment lister
-récursivement le contenu des dossiers à partir de la position
-actuelle. Commençons tout d’abord par inclure le module os comme ceci :</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> os
-</code></pre>
-<p>Nous utiliserons ensuite les fonctions suivantes :</p>
-<ul>
-<li><code>os.listdir(dossier)</code> : Liste le contenu de <code>dossier</code> (fichiers et dossiers)</li>
-<li><code>os.chdir(dossier)</code> : On se déplace dans <code>dossier</code>.</li>
-<li><code>os.path.isdir(chemin)</code> : Détermine si le <code>chemin</code> donné en paramètre
-pointe vers un dossier ou un simple fichier.</li>
-<li><code>os.getcwd()</code> : Retourne une chaine de caractères représentant la
-position actuelle dans le système de fichiers (sous forme de chemin
-absolu).</li>
-</ul>
-<p>Avec ces quelques fonctions , on peu facilement lister le contenu des
-sous-dossiers à partir de la position courante comme ceci :</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>():
-  <span class="hljs-string">&quot;&quot;&quot;
-    Liste récursivement le contenu des sous-répertoires
-  &quot;&quot;&quot;</span>
-  <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> os.listdir(os.getcwd()):
-      <span class="hljs-keyword">if</span> os.path.isdir(f): <span class="hljs-comment"># si f est un dossier</span>
-        os.chdir(f) <span class="hljs-comment"># On va lister son contenu</span>
-        parse()
-        os.chdir(<span class="hljs-string">&#x27;../&#x27;</span>) <span class="hljs-comment"># On revient au répertoire précédent</span>
-      <span class="hljs-keyword">else</span>:
-        <span class="hljs-comment"># Traitement sur le fichier f</span>
-</code></pre>
-]]></content:encoded>
-        </item>
-        <item>
             <title><![CDATA[Python—Construction des listes]]></title>
             <link>https://remusao.github.io//posts/python-list-comprehension.html</link>
             <guid>https://remusao.github.io//posts/python-list-comprehension.html</guid>
@@ -7292,6 +7246,52 @@ constructions de liste :)</p>
 qu’il est possible d’utiliser n’importe quel générateur à la
 place, et même n’importe quelle structure de données itérable (par
 exemple : une liste, un set, etc…).</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Python—Lister le contenu des répertoires]]></title>
+            <link>https://remusao.github.io//posts/python-list-directories.html</link>
+            <guid>https://remusao.github.io//posts/python-list-directories.html</guid>
+            <pubDate>Thu, 02 Feb 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p><strong>Disclaimer</strong> : Il est probablement plus simple d’utiliser la fonction
+<a href="https://docs.python.org/2/library/os.html#os.walk" target="_blank" rel="noopener noreferrer">os.walk</a> pour lister
+récursivement le contenu d’un dossier.</p>
+<p>Python est un langage très haut niveau qui permet de faire beaucoup de
+choses très facilement. Notamment, il est très facile de manipuler les
+fichiers et les dossiers grâce au module os. Les lecteurs connaissant
+le langage C remarqueront que les fonctions présentes dans ce module
+sont les mêmes que celles de la bibliothèque standard du C (exceptées
+certaines fonctions un peu plus « haut-niveau » qui sont seulement
+disponibles dans le module os de Python).</p>
+<p>Dans cet articles nous allons simplement voir comment lister
+récursivement le contenu des dossiers à partir de la position
+actuelle. Commençons tout d’abord par inclure le module os comme ceci :</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> os
+</code></pre>
+<p>Nous utiliserons ensuite les fonctions suivantes :</p>
+<ul>
+<li><code>os.listdir(dossier)</code> : Liste le contenu de <code>dossier</code> (fichiers et dossiers)</li>
+<li><code>os.chdir(dossier)</code> : On se déplace dans <code>dossier</code>.</li>
+<li><code>os.path.isdir(chemin)</code> : Détermine si le <code>chemin</code> donné en paramètre
+pointe vers un dossier ou un simple fichier.</li>
+<li><code>os.getcwd()</code> : Retourne une chaine de caractères représentant la
+position actuelle dans le système de fichiers (sous forme de chemin
+absolu).</li>
+</ul>
+<p>Avec ces quelques fonctions , on peu facilement lister le contenu des
+sous-dossiers à partir de la position courante comme ceci :</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>():
+  <span class="hljs-string">&quot;&quot;&quot;
+    Liste récursivement le contenu des sous-répertoires
+  &quot;&quot;&quot;</span>
+  <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> os.listdir(os.getcwd()):
+      <span class="hljs-keyword">if</span> os.path.isdir(f): <span class="hljs-comment"># si f est un dossier</span>
+        os.chdir(f) <span class="hljs-comment"># On va lister son contenu</span>
+        parse()
+        os.chdir(<span class="hljs-string">&#x27;../&#x27;</span>) <span class="hljs-comment"># On revient au répertoire précédent</span>
+      <span class="hljs-keyword">else</span>:
+        <span class="hljs-comment"># Traitement sur le fichier f</span>
+</code></pre>
 ]]></content:encoded>
         </item>
         <item>
