@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Mon, 20 May 2024 20:00:42 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 20 May 2024 21:00:47 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -2690,62 +2690,6 @@ not read too much into it, unless  your particular use-case involves writing
 10,000 random values then reading them back and nothing else. As everything,
 you should first perform your own measurements based on your own use-case and
 constraints, then make a decision about what technology best serves your need.</p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Copy anything to clipboard in HTML and JavaScript]]></title>
-            <link>https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html</link>
-            <guid>https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html</guid>
-            <pubDate>Sat, 09 Jun 2018 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Not long ago, I was looking for a way to copy the content of any HTML element on
-a page to clipboard. What I thought would be an easy task turned out to be more
-complicated than expected. In the end I had to use some trick which I will show
-here.</p>
-<p>The way this will work is as follows: when clicking an element on the page, its
-<code>innerText</code> will be copied to Clipboard. To achieve this we will need to:</p>
-<ul>
-<li>Attach an <code>onclick</code> event listener to our element (or to several elements)</li>
-<li>When a <code>click</code> event is received, emit a fake <code>copy</code> event</li>
-</ul>
-<pre class="code" data-lang="javascript"><code>  <span class="hljs-comment">// This variable will be used to store a reference to the</span>
-  <span class="hljs-comment">// latest element clicked.</span>
-  <span class="hljs-keyword">let</span> selected = <span class="hljs-literal">null</span>;
-
-  <span class="hljs-comment">// Attach our custom copy-to-clipboard-on-click trick to `elt`</span>
-  <span class="hljs-keyword">const</span> elt = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&#x27;...&#x27;</span>);
-  elt.<span class="hljs-property">onclick</span> = <span class="hljs-function">() =&gt;</span> {
-    <span class="hljs-comment">// Store reference to this element in the global `selected`</span>
-    selected = elt;
-    <span class="hljs-comment">// Emit fake `copy` event</span>
-    <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">execCommand</span>(<span class="hljs-string">&#x27;copy&#x27;</span>);
-    <span class="hljs-comment">// Remove reference from `selected` to allow normal copies</span>
-    <span class="hljs-comment">// to be performed on the page.</span>
-    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> { selected = <span class="hljs-literal">null</span>; }, <span class="hljs-number">1000</span>);
-  };
-</code></pre>
-<ul>
-<li>Listen to this <code>copy</code> event and copy the content of the latest element
-clicked to clipboard.</li>
-</ul>
-<pre class="code" data-lang="javascript"><code>  <span class="hljs-comment">// Intercept copy events</span>
-  <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;copy&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
-    <span class="hljs-keyword">if</span> (selected === <span class="hljs-literal">null</span>) {
-      <span class="hljs-comment">// No element was clicked</span>
-      <span class="hljs-keyword">return</span>;
-    }
-
-    <span class="hljs-comment">// Copy content of clicked element to clipboard</span>
-    e.<span class="hljs-property">clipboardData</span>.<span class="hljs-title function_">setData</span>(
-      <span class="hljs-string">&#x27;text/plain&#x27;</span>,
-      selected.<span class="hljs-property">innerText</span>,
-    );
-
-    <span class="hljs-comment">// We want our data, not data from any selection,</span>
-    <span class="hljs-comment">// to be written to the clipboard</span>
-    e.<span class="hljs-title function_">preventDefault</span>();
-  });
-
-</code></pre>
 ]]></content:encoded>
         </item>
         <item>
