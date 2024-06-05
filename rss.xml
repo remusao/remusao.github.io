@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Wed, 05 Jun 2024 08:00:36 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 05 Jun 2024 09:00:55 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -3609,187 +3609,6 @@ HTTP server.</p>
 ]]></content:encoded>
         </item>
         <item>
-            <title><![CDATA[Getting the most out of SQLite3 with Python]]></title>
-            <link>https://remusao.github.io//posts/few-tips-sqlite-perf.html</link>
-            <guid>https://remusao.github.io//posts/few-tips-sqlite-perf.html</guid>
-            <pubDate>Sat, 21 Oct 2017 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>I’ve recently made heavy use of <code>sqlite3</code> for a project involving a lot of data
-and processing. My first attempt involved no database at all, and all data would
-be kept in memory and queries would consist in a mix of dictionary lookups,
-iteration, conditions, etc. This was nice, but there is only so much you can fit
-in memory, and re-generating/loading the data from disk to memory became a tedious
-and time consuming process.</p>
-<p>I decided to give <code>sqlite3</code> a try. This allowed an increase in the amount of
-data that could be processed, and reduced the loading time of the application to
-nothing, since only opening a connection to the database was needed. Moreover,
-I could replace a lot of Python logic by SQL queries.</p>
-<p>I’d like to share a few learnings and findings about this experience.</p>
-<p><strong>TL;DR</strong>:</p>
-<ol>
-<li>Use bulk operations (<em>a.k.a.</em> <code>executemany</code>).</li>
-<li>You don’t need <code>cursors</code> (most of the time).</li>
-<li>Cursors can be iterated upon.</li>
-<li>Use context managers.</li>
-<li>Use pragmas (when it makes sense).</li>
-<li>Postpone index creation.</li>
-<li>Use placeholders to interpolate python values.</li>
-</ol>
-<h2>Use Bulk Operations</h2>
-<p>If you need to insert a lot of rows at once in your database, you really
-should not use <code>execute</code>. The <code>sqlite3</code> module provides a way to bulk
-insertions: <code>executemany</code>.</p>
-<p>Instead of doing something like:</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> iter_data():
-    connection.execute(<span class="hljs-string">&#x27;INSERT INTO my_table VALUES (?)&#x27;</span>, row)
-</code></pre>
-<p>You can leverage the fact that <code>executemany</code> accepts as argument a generator of
-<code>tuples</code>:</p>
-<pre class="code" data-lang="python"><code>connection.executemany(
-    <span class="hljs-string">&#x27;INSERT INTO my_table VALUE (?)&#x27;</span>,
-    iter_data()
-)
-</code></pre>
-<p>This is not only more concise, it’s also much more efficient. In fact, <code>sqlite3</code>
-implements <code>execute</code> using <code>executemany</code> behind the scene, but the former
-inserts a single row instead of many.</p>
-<p>I wrote a small benchmark which consists in inserting a million rows into an
-empty table (the database lives in memory):</p>
-<ul>
-<li><code>executemany</code>: <strong>1.6</strong> seconds</li>
-<li><code>execute</code>: 2.7 seconds</li>
-</ul>
-<h2>You Don’t Need Cursors</h2>
-<p>…<em>most of the time</em>.</p>
-<p>One thing I often found confusing at the beginning, was <code>cursor</code> management.
-Examples online and in the documentation often look like:</p>
-<pre class="code" data-lang="python"><code>connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
-cursor = connection.cursor()
-<span class="hljs-comment"># Do something with cursor</span>
-</code></pre>
-<p>But most of the time you don’t need a cursor at all, and you can directly use
-the <code>connection</code> object (it is mentioned at the
-<a href="https://docs.python.org/3.6/library/sqlite3.html#using-shortcut-methods" target="_blank" rel="noopener noreferrer">end of the documentation</a>).</p>
-<p>Operations such as <code>execute</code> and <code>executemany</code> can be called directly on the
-connection and <em>will return a cursor</em>. Here is an example to demonstrate that:</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> sqlite3
-
-connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
-
-<span class="hljs-comment"># Create a table</span>
-connection.execute(<span class="hljs-string">&#x27;CREATE TABLE events(ts, msg)&#x27;</span>)
-
-<span class="hljs-comment"># Insert values</span>
-connection.executemany(
-    <span class="hljs-string">&#x27;INSERT INTO events VALUES (?,?)&#x27;</span>,
-    [
-        (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
-        (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;bar&#x27;</span>),
-        (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;baz&#x27;</span>)
-    ]
-)
-
-<span class="hljs-comment"># Print inserted rows</span>
-<span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
-    <span class="hljs-built_in">print</span>(row)
-</code></pre>
-<h2>Cursors Can Be Iterated Upon</h2>
-<p>You might often see examples making use of <code>fetchone</code> or <code>fetchall</code> on
-the result of a <code>SELECT</code> query. But I find that the most natural way to
-consume the results is to actually iterate on the cursor directly:</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
-    <span class="hljs-built_in">print</span>(row)
-</code></pre>
-<p>This way, you can stop as soon as you got enough results and not waste
-resources. Of course, if you know beforehand how many results you want, you can
-use the <code>LIMIT</code> SQL statement instead, but Python generators are very handy and
-allow you to decouple data generation from data consumption.</p>
-<h2>Use Context Managers</h2>
-<p>Shit happens, even in the middle of a SQL transaction. To avoid having
-to deal manually with <code>rollback</code> or <code>commit</code>, you can simply use the
-<code>connection</code> object as a context manager. In the following example we
-create a table, and insert <em>by mistake</em> duplicated values:</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> sqlite3
-connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
-
-<span class="hljs-keyword">with</span> connection:
-    connection.execute(
-        <span class="hljs-string">&#x27;CREATE TABLE events(ts, msg, PRIMARY KEY(ts, msg))&#x27;</span>)
-
-<span class="hljs-keyword">try</span>:
-    <span class="hljs-keyword">with</span> connection:
-        connection.executemany(<span class="hljs-string">&#x27;INSERT INTO events VALUES (?, ?)&#x27;</span>, [
-            (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
-            (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;bar&#x27;</span>),
-            (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;baz&#x27;</span>),
-            (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
-        ])
-<span class="hljs-keyword">except</span> (sqlite3.OperationalError, sqlite3.IntegrityError) <span class="hljs-keyword">as</span> e:
-    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Could not complete operation:&#x27;</span>, e)
-
-<span class="hljs-comment"># No row was inserted because transaction failed</span>
-<span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
-    <span class="hljs-built_in">print</span>(row)
-
-connection.close()
-</code></pre>
-<h2>Use Pragmas</h2>
-<p>…<em>when it makes sense</em></p>
-<p>There are a few <em>pragmas</em> you can use to tweak the behavior of <code>sqlite3</code> in your
-program. In particular, one that could improve the performance is <code>synchronous</code>:</p>
-<pre class="code" data-lang="python"><code>connection.execute(<span class="hljs-string">&#x27;PRAGMA synchronous = OFF&#x27;</span>)
-</code></pre>
-<p>You should be aware though that this can <em>be dangerous</em>. If the application
-crashes unexpectedly in the middle of a transaction, the database will probably
-be left in an inconsistent state. So use with care! But if you want to insert a
-lot of rows faster, that can be an option. A safer option is to use the
-<a href="https://www.sqlite.org/draft/wal.html" target="_blank" rel="noopener noreferrer"><code>WAL</code></a> option instead of disabling
-<code>synchronous</code> completely.</p>
-<pre class="code" data-lang="python"><code>connection.execute(<span class="hljs-string">&#x27;PRAGMA journal_mode = WAL&#x27;</span>)
-</code></pre>
-<h2>Postpone Index Creation</h2>
-<p>Let’s say you need a few indices on your database, and you also need to
-insert a lot of rows while creating them. Postponing the creation of the indices
-to after all rows have been inserted could result in a substantial performance
-improvement.</p>
-<h2>Use Placeholders to Interpolate Python Values</h2>
-<p>It is tempting to use Python string operations to include values into
-queries. <em>Do not</em>! This is highly insecure, and <code>sqlite3</code> gives you a
-better way to do it:</p>
-<pre class="code" data-lang="python"><code><span class="hljs-comment"># Do not do this!</span>
-my_timestamp = <span class="hljs-number">1</span>
-c.execute(<span class="hljs-string">&quot;SELECT * FROM events WHERE ts = &#x27;%s&#x27;&quot;</span> % my_timestamp)
-
-<span class="hljs-comment"># Do this instead</span>
-my_timestamp = (<span class="hljs-number">1</span>,)
-c.execute(<span class="hljs-string">&#x27;SELECT * FROM events WHERE ts = ?&#x27;</span>, my_timestamp)
-</code></pre>
-<p>Also, string interpolation using Python <code>%s</code> (or format, or formatted string
-literals) does not go well with <code>executemany</code>. So there is really no point in
-trying!</p>
-<hr>
-<p>Keep in mind though that these tips might or might not give you a benefit,
-depending on your specific use-case. You should always try for yourself and
-decide if it’s worth it or not.</p>
-<p><em>Edit 28-12-2017</em>: Thanks for all the great feedback from <a href="https://www.reddit.com/r/Python/comments/781q18/getting_the_most_out_of_sqlite3_with_python/" target="_blank" rel="noopener noreferrer">Reddit</a>
-and <a href="https://news.ycombinator.com/item?id=15525715" target="_blank" rel="noopener noreferrer">Hacker News</a>.
-I took the liberty to amend the original article with a few of the suggestions.</p>
-<p>There are a few topics that were not mentioned in this article but are
-definitely worth reading:</p>
-<ul>
-<li><a href="https://docs.python.org/3.6/library/sqlite3.html#controlling-transactions" target="_blank" rel="noopener noreferrer">Using transactions</a>
-can dramatically improve the speed of your code if you need to run several
-SQL statements in a row (it should not be needed if you use <code>executemany</code>).</li>
-<li>If you don’t need to re-use your database across sessions, you can use an
-<a href="https://sqlite.org/inmemorydb.html" target="_blank" rel="noopener noreferrer"><em>in-memory</em></a> database by specifying
-<code>:memory:</code> as a location, which should give you a nice speed-up.</li>
-<li>You can <a href="https://docs.python.org/3.6/library/sqlite3.html#sqlite3.Connection.row_factory" target="_blank" rel="noopener noreferrer">customize <code>row_factory</code></a>
-to get something more useful than <code>tuple</code>s as results from <code>SELECT</code> queries.</li>
-<li>Consider changing <code>isolation_level</code> to <code>DEFERRED</code> or <code>IMMEDIATE</code>.</li>
-</ul>
-<p><em>Edit 30-05-2021</em>: Fixed a missing <code>.connect</code> in the “You Don’t Need Cursors” section. Thanks to <a href="https://github.com/Gelma" target="_blank" rel="noopener noreferrer">Gelma</a> for noticing.</p>
-]]></content:encoded>
-        </item>
-        <item>
             <title><![CDATA[State of privacy in statically generated blogs]]></title>
             <link>https://remusao.github.io//posts/state-of-static-blogs.html</link>
             <guid>https://remusao.github.io//posts/state-of-static-blogs.html</guid>
@@ -7184,6 +7003,52 @@ insoupçonnée :)</p>
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[Python—Lister le contenu des répertoires]]></title>
+            <link>https://remusao.github.io//posts/python-list-directories.html</link>
+            <guid>https://remusao.github.io//posts/python-list-directories.html</guid>
+            <pubDate>Thu, 02 Feb 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p><strong>Disclaimer</strong> : Il est probablement plus simple d’utiliser la fonction
+<a href="https://docs.python.org/2/library/os.html#os.walk" target="_blank" rel="noopener noreferrer">os.walk</a> pour lister
+récursivement le contenu d’un dossier.</p>
+<p>Python est un langage très haut niveau qui permet de faire beaucoup de
+choses très facilement. Notamment, il est très facile de manipuler les
+fichiers et les dossiers grâce au module os. Les lecteurs connaissant
+le langage C remarqueront que les fonctions présentes dans ce module
+sont les mêmes que celles de la bibliothèque standard du C (exceptées
+certaines fonctions un peu plus « haut-niveau » qui sont seulement
+disponibles dans le module os de Python).</p>
+<p>Dans cet articles nous allons simplement voir comment lister
+récursivement le contenu des dossiers à partir de la position
+actuelle. Commençons tout d’abord par inclure le module os comme ceci :</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> os
+</code></pre>
+<p>Nous utiliserons ensuite les fonctions suivantes :</p>
+<ul>
+<li><code>os.listdir(dossier)</code> : Liste le contenu de <code>dossier</code> (fichiers et dossiers)</li>
+<li><code>os.chdir(dossier)</code> : On se déplace dans <code>dossier</code>.</li>
+<li><code>os.path.isdir(chemin)</code> : Détermine si le <code>chemin</code> donné en paramètre
+pointe vers un dossier ou un simple fichier.</li>
+<li><code>os.getcwd()</code> : Retourne une chaine de caractères représentant la
+position actuelle dans le système de fichiers (sous forme de chemin
+absolu).</li>
+</ul>
+<p>Avec ces quelques fonctions , on peu facilement lister le contenu des
+sous-dossiers à partir de la position courante comme ceci :</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>():
+  <span class="hljs-string">&quot;&quot;&quot;
+    Liste récursivement le contenu des sous-répertoires
+  &quot;&quot;&quot;</span>
+  <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> os.listdir(os.getcwd()):
+      <span class="hljs-keyword">if</span> os.path.isdir(f): <span class="hljs-comment"># si f est un dossier</span>
+        os.chdir(f) <span class="hljs-comment"># On va lister son contenu</span>
+        parse()
+        os.chdir(<span class="hljs-string">&#x27;../&#x27;</span>) <span class="hljs-comment"># On revient au répertoire précédent</span>
+      <span class="hljs-keyword">else</span>:
+        <span class="hljs-comment"># Traitement sur le fichier f</span>
+</code></pre>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[Python—Construction des listes]]></title>
             <link>https://remusao.github.io//posts/python-list-comprehension.html</link>
             <guid>https://remusao.github.io//posts/python-list-comprehension.html</guid>
@@ -7246,52 +7111,6 @@ constructions de liste :)</p>
 qu’il est possible d’utiliser n’importe quel générateur à la
 place, et même n’importe quelle structure de données itérable (par
 exemple : une liste, un set, etc…).</p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Python—Lister le contenu des répertoires]]></title>
-            <link>https://remusao.github.io//posts/python-list-directories.html</link>
-            <guid>https://remusao.github.io//posts/python-list-directories.html</guid>
-            <pubDate>Thu, 02 Feb 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p><strong>Disclaimer</strong> : Il est probablement plus simple d’utiliser la fonction
-<a href="https://docs.python.org/2/library/os.html#os.walk" target="_blank" rel="noopener noreferrer">os.walk</a> pour lister
-récursivement le contenu d’un dossier.</p>
-<p>Python est un langage très haut niveau qui permet de faire beaucoup de
-choses très facilement. Notamment, il est très facile de manipuler les
-fichiers et les dossiers grâce au module os. Les lecteurs connaissant
-le langage C remarqueront que les fonctions présentes dans ce module
-sont les mêmes que celles de la bibliothèque standard du C (exceptées
-certaines fonctions un peu plus « haut-niveau » qui sont seulement
-disponibles dans le module os de Python).</p>
-<p>Dans cet articles nous allons simplement voir comment lister
-récursivement le contenu des dossiers à partir de la position
-actuelle. Commençons tout d’abord par inclure le module os comme ceci :</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> os
-</code></pre>
-<p>Nous utiliserons ensuite les fonctions suivantes :</p>
-<ul>
-<li><code>os.listdir(dossier)</code> : Liste le contenu de <code>dossier</code> (fichiers et dossiers)</li>
-<li><code>os.chdir(dossier)</code> : On se déplace dans <code>dossier</code>.</li>
-<li><code>os.path.isdir(chemin)</code> : Détermine si le <code>chemin</code> donné en paramètre
-pointe vers un dossier ou un simple fichier.</li>
-<li><code>os.getcwd()</code> : Retourne une chaine de caractères représentant la
-position actuelle dans le système de fichiers (sous forme de chemin
-absolu).</li>
-</ul>
-<p>Avec ces quelques fonctions , on peu facilement lister le contenu des
-sous-dossiers à partir de la position courante comme ceci :</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse</span>():
-  <span class="hljs-string">&quot;&quot;&quot;
-    Liste récursivement le contenu des sous-répertoires
-  &quot;&quot;&quot;</span>
-  <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> os.listdir(os.getcwd()):
-      <span class="hljs-keyword">if</span> os.path.isdir(f): <span class="hljs-comment"># si f est un dossier</span>
-        os.chdir(f) <span class="hljs-comment"># On va lister son contenu</span>
-        parse()
-        os.chdir(<span class="hljs-string">&#x27;../&#x27;</span>) <span class="hljs-comment"># On revient au répertoire précédent</span>
-      <span class="hljs-keyword">else</span>:
-        <span class="hljs-comment"># Traitement sur le fichier f</span>
-</code></pre>
 ]]></content:encoded>
         </item>
         <item>
