@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2024-06-05T02:23:41.825Z</updated>
+    <updated>2024-06-05T03:01:00.321Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -6853,43 +6853,6 @@ pas le pattern-matching en Hash table lorsque c’est possible.</p>
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
-        <id>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</id>
-        <link href="https://remusao.github.io//posts/mediatomb-arm-archlinux.html"/>
-        <updated>2012-07-31T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
-j’ai reçu récemment je me suis heurté à quelques problèmes
-puisque la version dans les dépots de Archlinux ne compilait pas et
-aucun paquet précompilé pour Arm n’était disponible. Je vais donc
-exposer une solution pour pouvoir le compiler et l’installer. Mais
-tout d’abord une petite description du logiciel trouvée sur le site
-des créateurs :</p>
-<blockquote>
-<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
-</blockquote>
-<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
-il suffit de télécharger un patch supplémentaire et de remplacer le
-PKGBUILD fourni par un autre que je vais vous donner. Voici comment
-faire :</p>
-<ol>
-<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
-<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
-<li>Exécutez les commandes suivantes :</li>
-</ol>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
-$ yaourt -G mediatomb
-$ <span class="hljs-built_in">cd</span> mediatomb
-[Copier le patch ici]
-[Copier le fichier PKGBUILD ici]
-$ makepkg -si
-</code></pre>
-<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
-vaut le coup. J’espère que ça servira à certains le temps que les
-paquets dans les dépôts d’archlinux soient de nouveau compilables
-sans modification.</p>
-]]></content>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[Ma vision des mathématiques]]></title>
         <id>https://remusao.github.io//posts/mathematiques-vision.html</id>
         <link href="https://remusao.github.io//posts/mathematiques-vision.html"/>
@@ -7017,6 +6980,43 @@ d’évoluer dans ces univers abstraits, de visualiser et de comprendre
 les œuvres laissées par d’illustres mathématiciens avant nous,
 et de bâtir de nouveaux édifices avec les outils qu’ils nous ont
 légués.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
+        <id>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</id>
+        <link href="https://remusao.github.io//posts/mediatomb-arm-archlinux.html"/>
+        <updated>2012-07-31T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
+j’ai reçu récemment je me suis heurté à quelques problèmes
+puisque la version dans les dépots de Archlinux ne compilait pas et
+aucun paquet précompilé pour Arm n’était disponible. Je vais donc
+exposer une solution pour pouvoir le compiler et l’installer. Mais
+tout d’abord une petite description du logiciel trouvée sur le site
+des créateurs :</p>
+<blockquote>
+<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
+</blockquote>
+<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
+il suffit de télécharger un patch supplémentaire et de remplacer le
+PKGBUILD fourni par un autre que je vais vous donner. Voici comment
+faire :</p>
+<ol>
+<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
+<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
+<li>Exécutez les commandes suivantes :</li>
+</ol>
+<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
+$ yaourt -G mediatomb
+$ <span class="hljs-built_in">cd</span> mediatomb
+[Copier le patch ici]
+[Copier le fichier PKGBUILD ici]
+$ makepkg -si
+</code></pre>
+<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
+vaut le coup. J’espère que ça servira à certains le temps que les
+paquets dans les dépôts d’archlinux soient de nouveau compilables
+sans modification.</p>
 ]]></content>
     </entry>
     <entry>
