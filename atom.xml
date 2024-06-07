@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2024-06-07T16:00:40.506Z</updated>
+    <updated>2024-06-07T17:00:37.896Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -6750,6 +6750,38 @@ le monde dans lequel nous vivons.</p>
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Ascii—Astuces]]></title>
+        <id>https://remusao.github.io//posts/ascii-astuces.html</id>
+        <link href="https://remusao.github.io//posts/ascii-astuces.html"/>
+        <updated>2012-12-25T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>Voici quelques petites astuces afin de manipuler plus simplement des
+caractères encodés en ASCII.</p>
+<h2>Changer la casse</h2>
+<p>Cette astuce est indiquée dans le page de <code>man(1)</code> ascii, mais je l’ai
+découverte très récemment car je n’avais pas eu le réflexe de lire
+les paragraphes se trouvant à la suite de la table ASCII sur cette
+page. Afin de changer la casse d’une lettre (c’est à dire
+passer de minuscule à majuscule, ou l’inverse), il suffit de changer
+le 5ième bit. Celui-ci est à 1 pour les minuscules et à 0 pour les
+majuscules. Donc en effectuant un <code>XOR 32</code> avec une lettre on change sa
+casse. C’est tout de même pratique !</p>
+<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;A&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;a&#x27;</span>
+<span class="hljs-string">&#x27;a&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;A&#x27;</span>
+</code></pre>
+<h2>Manipuler les chiffres</h2>
+<p>Afin de convertir un entier entre 0 et 9 en son équivalent en
+caractère ASCII (‘0’ à ‘9’), on ajoute (ou soustrait selon le
+sens de la conversion) la valeur de ‘0’. On peut aussi remarquer
+qu’entre un entier et son équivalent en ASCII seuls 2 bits changent.
+Il s’agit donc de mettre les 6ième et 5ième bits à 1 (ou 0 si on
+désire passer d’un caractère à un entier). Il suffit donc d’un
+simple <code>XOR 48</code>, comme ceci :</p>
+<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;9&#x27;</span> ^ <span class="hljs-number">48</span> == <span class="hljs-number">9</span>
+</code></pre>
+<p>Ces deux astuces sont assez basiques, mais cela peut toujours servir !</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[C++—Taille d'un tableau static en temps constant]]></title>
         <id>https://remusao.github.io//posts/cpp-static-array-size.html</id>
         <link href="https://remusao.github.io//posts/cpp-static-array-size.html"/>
@@ -6783,38 +6815,6 @@ Si notre fonction <code>size</code> avait simplement pris un pointeur en argumen
 ça n’aurait pas marché puisque le compilateur ne garde pas
 l’information de la taille, et considère l’argument comme un simple
 pointeur.</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Ascii—Astuces]]></title>
-        <id>https://remusao.github.io//posts/ascii-astuces.html</id>
-        <link href="https://remusao.github.io//posts/ascii-astuces.html"/>
-        <updated>2012-12-25T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>Voici quelques petites astuces afin de manipuler plus simplement des
-caractères encodés en ASCII.</p>
-<h2>Changer la casse</h2>
-<p>Cette astuce est indiquée dans le page de <code>man(1)</code> ascii, mais je l’ai
-découverte très récemment car je n’avais pas eu le réflexe de lire
-les paragraphes se trouvant à la suite de la table ASCII sur cette
-page. Afin de changer la casse d’une lettre (c’est à dire
-passer de minuscule à majuscule, ou l’inverse), il suffit de changer
-le 5ième bit. Celui-ci est à 1 pour les minuscules et à 0 pour les
-majuscules. Donc en effectuant un <code>XOR 32</code> avec une lettre on change sa
-casse. C’est tout de même pratique !</p>
-<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;A&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;a&#x27;</span>
-<span class="hljs-string">&#x27;a&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;A&#x27;</span>
-</code></pre>
-<h2>Manipuler les chiffres</h2>
-<p>Afin de convertir un entier entre 0 et 9 en son équivalent en
-caractère ASCII (‘0’ à ‘9’), on ajoute (ou soustrait selon le
-sens de la conversion) la valeur de ‘0’. On peut aussi remarquer
-qu’entre un entier et son équivalent en ASCII seuls 2 bits changent.
-Il s’agit donc de mettre les 6ième et 5ième bits à 1 (ou 0 si on
-désire passer d’un caractère à un entier). Il suffit donc d’un
-simple <code>XOR 48</code>, comme ceci :</p>
-<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;9&#x27;</span> ^ <span class="hljs-number">48</span> == <span class="hljs-number">9</span>
-</code></pre>
-<p>Ces deux astuces sont assez basiques, mais cela peut toujours servir !</p>
 ]]></content>
     </entry>
     <entry>
