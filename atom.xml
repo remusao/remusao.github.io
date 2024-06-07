@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2024-06-07T00:28:05.065Z</updated>
+    <updated>2024-06-07T01:53:09.218Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -3084,44 +3084,6 @@ Options:
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
-        <id>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</id>
-        <link href="https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html"/>
-        <updated>2017-11-25T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
-fast fuzzy matching and approximate set membership tests, I found myself in a
-situation where I needed more insight about what optimizations <code>V8</code> was
-performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
-compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
-consider!</p>
-<p>This article assumes you’re using
-<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
-extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
-During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
-very useful!</p>
-<h1>Building V8 From Source</h1>
-<h2>Installing depot_tools</h2>
-<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
-<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
-$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
-</code></pre>
-<h2>Compiling V8</h2>
-<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
-<pre class="code" data-lang="sh"><code>$ fetch v8
-</code></pre>
-<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
-version of the sources. It will also configure everything needed for the build.</p>
-<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
-$ ninja -C out.gn/x64.release
-</code></pre>
-<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
-intended by running the tests:</p>
-<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
-</code></pre>
-<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
-]]></content>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[The wrong way of benchmarking integer comparison functions]]></title>
         <id>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</id>
         <link href="https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html"/>
@@ -3250,6 +3212,44 @@ It’s not day and night, but the <em>naive</em>, more readable code is more
 efficient on V8 than the clever one.</p>
 <p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
 there</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
+        <id>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</id>
+        <link href="https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html"/>
+        <updated>2017-11-25T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
+fast fuzzy matching and approximate set membership tests, I found myself in a
+situation where I needed more insight about what optimizations <code>V8</code> was
+performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
+compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
+consider!</p>
+<p>This article assumes you’re using
+<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
+extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
+During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
+very useful!</p>
+<h1>Building V8 From Source</h1>
+<h2>Installing depot_tools</h2>
+<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
+<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
+$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
+</code></pre>
+<h2>Compiling V8</h2>
+<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
+<pre class="code" data-lang="sh"><code>$ fetch v8
+</code></pre>
+<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
+version of the sources. It will also configure everything needed for the build.</p>
+<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
+$ ninja -C out.gn/x64.release
+</code></pre>
+<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
+intended by running the tests:</p>
+<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
+</code></pre>
+<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
 ]]></content>
     </entry>
     <entry>
@@ -6750,6 +6750,38 @@ le monde dans lequel nous vivons.</p>
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Ascii—Astuces]]></title>
+        <id>https://remusao.github.io//posts/ascii-astuces.html</id>
+        <link href="https://remusao.github.io//posts/ascii-astuces.html"/>
+        <updated>2012-12-25T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>Voici quelques petites astuces afin de manipuler plus simplement des
+caractères encodés en ASCII.</p>
+<h2>Changer la casse</h2>
+<p>Cette astuce est indiquée dans le page de <code>man(1)</code> ascii, mais je l’ai
+découverte très récemment car je n’avais pas eu le réflexe de lire
+les paragraphes se trouvant à la suite de la table ASCII sur cette
+page. Afin de changer la casse d’une lettre (c’est à dire
+passer de minuscule à majuscule, ou l’inverse), il suffit de changer
+le 5ième bit. Celui-ci est à 1 pour les minuscules et à 0 pour les
+majuscules. Donc en effectuant un <code>XOR 32</code> avec une lettre on change sa
+casse. C’est tout de même pratique !</p>
+<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;A&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;a&#x27;</span>
+<span class="hljs-string">&#x27;a&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;A&#x27;</span>
+</code></pre>
+<h2>Manipuler les chiffres</h2>
+<p>Afin de convertir un entier entre 0 et 9 en son équivalent en
+caractère ASCII (‘0’ à ‘9’), on ajoute (ou soustrait selon le
+sens de la conversion) la valeur de ‘0’. On peut aussi remarquer
+qu’entre un entier et son équivalent en ASCII seuls 2 bits changent.
+Il s’agit donc de mettre les 6ième et 5ième bits à 1 (ou 0 si on
+désire passer d’un caractère à un entier). Il suffit donc d’un
+simple <code>XOR 48</code>, comme ceci :</p>
+<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;9&#x27;</span> ^ <span class="hljs-number">48</span> == <span class="hljs-number">9</span>
+</code></pre>
+<p>Ces deux astuces sont assez basiques, mais cela peut toujours servir !</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[C++—Taille d'un tableau static en temps constant]]></title>
         <id>https://remusao.github.io//posts/cpp-static-array-size.html</id>
         <link href="https://remusao.github.io//posts/cpp-static-array-size.html"/>
@@ -6783,38 +6815,6 @@ Si notre fonction <code>size</code> avait simplement pris un pointeur en argumen
 ça n’aurait pas marché puisque le compilateur ne garde pas
 l’information de la taille, et considère l’argument comme un simple
 pointeur.</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Ascii—Astuces]]></title>
-        <id>https://remusao.github.io//posts/ascii-astuces.html</id>
-        <link href="https://remusao.github.io//posts/ascii-astuces.html"/>
-        <updated>2012-12-25T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>Voici quelques petites astuces afin de manipuler plus simplement des
-caractères encodés en ASCII.</p>
-<h2>Changer la casse</h2>
-<p>Cette astuce est indiquée dans le page de <code>man(1)</code> ascii, mais je l’ai
-découverte très récemment car je n’avais pas eu le réflexe de lire
-les paragraphes se trouvant à la suite de la table ASCII sur cette
-page. Afin de changer la casse d’une lettre (c’est à dire
-passer de minuscule à majuscule, ou l’inverse), il suffit de changer
-le 5ième bit. Celui-ci est à 1 pour les minuscules et à 0 pour les
-majuscules. Donc en effectuant un <code>XOR 32</code> avec une lettre on change sa
-casse. C’est tout de même pratique !</p>
-<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;A&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;a&#x27;</span>
-<span class="hljs-string">&#x27;a&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;A&#x27;</span>
-</code></pre>
-<h2>Manipuler les chiffres</h2>
-<p>Afin de convertir un entier entre 0 et 9 en son équivalent en
-caractère ASCII (‘0’ à ‘9’), on ajoute (ou soustrait selon le
-sens de la conversion) la valeur de ‘0’. On peut aussi remarquer
-qu’entre un entier et son équivalent en ASCII seuls 2 bits changent.
-Il s’agit donc de mettre les 6ième et 5ième bits à 1 (ou 0 si on
-désire passer d’un caractère à un entier). Il suffit donc d’un
-simple <code>XOR 48</code>, comme ceci :</p>
-<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;9&#x27;</span> ^ <span class="hljs-number">48</span> == <span class="hljs-number">9</span>
-</code></pre>
-<p>Ces deux astuces sont assez basiques, mais cela peut toujours servir !</p>
 ]]></content>
     </entry>
     <entry>
@@ -7298,129 +7298,6 @@ sous-dossiers à partir de la position courante comme ceci :</p>
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[The Sieve—Even faster!]]></title>
-        <id>https://remusao.github.io//posts/sieve-even-faster.html</id>
-        <link href="https://remusao.github.io//posts/sieve-even-faster.html"/>
-        <updated>2011-12-27T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p><strong>Disclaimer</strong>: This is an old article and information may be out-dated. You can
-find one of the (if not <em>the</em>) fastest implementation there: <a href="http://primesieve.org/" target="_blank" rel="noopener noreferrer">http://primesieve.org/</a></p>
-<p>It has been a while since I posted my last article on the blog, my
-studies didn’t leave me enough time for writing. But during Christmas
-holidays I found some time to share with you some discoveries and
-developments that I made recently on the Sieve of Eratosthenes.
-This article follows the previous article on the Sieve and aim to
-present some optimizations and an attempt to determine the complexity of
-the algorithm.</p>
-<h2>Last optimizations</h2>
-<p>Optimizations that follow are the result of several comments on the
-above implementations:</p>
-<ul>
-<li>Could we not reduce the memory footprint of the program by working
-only on arrays of bits instead of chars ? (We could divide the memory
-used by 8).</li>
-<li>In the main loop, our variable i ranges from 1 in 1, and values
-are not always prime numbers, so there is no need to eliminate their
-multiples.</li>
-</ul>
-<p>For the second optimization, we just have to get the next number that
-has not yet been eliminated. With a simple loop. We then gain precious
-seconds at runtime.</p>
-<p>Regarding the first optimization, it turns out that it’s not easy
-to work directly on the bits in C, except with bit fields, but this
-is complicated in the case of the Sieve of Eratosthenes. So I decided
-to implement the algorithm in C++, which offers the type bool, which
-takes only one bit in memory as well as Bitset, which are nothing more
-than arrays of bits, provided with various operations. Thanks to a
-std::vector (or a simple array) of bool the memory usage of the program
-is reduced by 8, which is pretty good. But it’s possible to use a data
-structure more efficient. You certainly heard about Boost, a library
-which provide many very powerful tools for C++, and among this tools
-is the Bitset (it also exists in STD, but it is less efficient). Using
-Bitset, we gain a little in runtime.</p>
-<p>Note that Boost Bitset are initialized to 0 by default, so we must
-consider that a number is prime if the value associated in the array is
-0 (and not 1 as in a previous implementations).</p>
-<pre class="code" data-lang="c++"><code><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cmath&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/dynamic_bitset.hpp&gt;</span></span>
-
-<span class="hljs-function"><span class="hljs-type">void</span>
-<span class="hljs-title">print_tab</span> <span class="hljs-params">(boost::dynamic_bitset&lt;&gt;&amp; tab)</span>
-</span>{
-  std::cout &lt;&lt; <span class="hljs-number">2</span> &lt;&lt; std::endl;
-  <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> i = <span class="hljs-number">1</span>; i &lt; tab.<span class="hljs-built_in">size</span> (); i++)
-    <span class="hljs-keyword">if</span> (!tab[i])
-      std::cout &lt;&lt; <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span> &lt;&lt; std::endl;
-}
-
-<span class="hljs-function"><span class="hljs-type">void</span>
-<span class="hljs-title">erato</span> <span class="hljs-params">(boost::dynamic_bitset&lt;&gt;&amp; tab)</span>
-</span>{
-  <span class="hljs-type">unsigned</span> i = <span class="hljs-number">0</span>;
-  <span class="hljs-type">unsigned</span> j, step, borne = <span class="hljs-built_in">sqrt</span> (tab.<span class="hljs-built_in">size</span> ());
-
-  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; borne; i++)
-  {
-    step = <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span>;
-    <span class="hljs-keyword">for</span> (j = i + step; j &lt; tab.<span class="hljs-built_in">size</span> (); j += step)
-      tab[j] = <span class="hljs-number">1</span>;
-
-    <span class="hljs-keyword">while</span> (tab[i])
-      i++;
-  }
-}
-
-<span class="hljs-function"><span class="hljs-type">int</span>
-<span class="hljs-title">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> **argv)</span>
-</span>{
-  <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>)
-  {
-    std::cout &lt;&lt; <span class="hljs-string">&quot;Please, you must give a number as argument.&quot;</span> &lt;&lt; std::endl;
-    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
-  }
-
-  <span class="hljs-type">unsigned</span> size = <span class="hljs-number">0</span>;
-  <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> i = <span class="hljs-number">0</span>; argv[<span class="hljs-number">1</span>][i]; i++)
-    size = size * <span class="hljs-number">10</span> + (argv[<span class="hljs-number">1</span>][i] - <span class="hljs-string">&#x27;0&#x27;</span>);
-
-  boost::dynamic_bitset&lt;&gt;* tab = <span class="hljs-keyword">new</span> boost::dynamic_bitset&lt;&gt; (size / <span class="hljs-number">2</span>);
-
-  <span class="hljs-built_in">erato</span> (*tab);
-  <span class="hljs-comment">//print_tab (*tab);</span>
-}
-</code></pre>
-<p>With this algorithm we get much better performance than with the
-previous implementation.</p>
-<h2>Complexity approximation</h2>
-<p>The complexity of an algorithm is used to express the number of
-operations needed to execution depending on the size of the input (in
-our case it will be the limit up to which we want to calculate the prime
-numbers).</p>
-<p>Soon I will post a more accurate approximation of the complexity of this
-algorithm, but my initial investigations suggest that the complexity is
-linear (3xN?).</p>
-<h2>The last words</h2>
-<p>After presenting a number of optimizations to the algorithm of the
-Sieve of Eratosthenes, we saw that it is always possible to improve
-a program, and this, in two lines of research. First, one can often
-optimize the algorithm itself, by choosing appropriate data structures,
-trying to reduce the memory footprint or by reducing the number of
-calculations needed to compute the result, etc. … One can also optimize
-the implementation of the algorithm, it’s often the last step, during
-which we will try to find tips, related to language itself, that allow
-us to make our program faster by changing the compiler flags (-O,
--march, etc. …), etc. …</p>
-<p>The last implementation presented in this article is far from being the
-most optimized, we could still find ways to improve performances, for
-exemple by eliminating multiples of 3, 5 and 7 at the initialization
-of the array or by using bit masks to eliminate several multiples at a
-time. However, keep in mind that it is difficult to keep the compactness
-and readability of our algorithm with such optimizations.</p>
-<p>If you know other optimizations, or have any comments on this article,
-feel free to contact me or leave a comment below.</p>
-]]></content>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[Arithmetic lexer]]></title>
         <id>https://remusao.github.io//posts/arithmetic-lexer.html</id>
         <link href="https://remusao.github.io//posts/arithmetic-lexer.html"/>
@@ -7632,6 +7509,129 @@ will be presented in this variable.</p>
 we will use it like this. Later, during the profiling phase, if it turns
 out that this is part of the program is the slowest, we could optimize
 it.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[The Sieve—Even faster!]]></title>
+        <id>https://remusao.github.io//posts/sieve-even-faster.html</id>
+        <link href="https://remusao.github.io//posts/sieve-even-faster.html"/>
+        <updated>2011-12-27T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p><strong>Disclaimer</strong>: This is an old article and information may be out-dated. You can
+find one of the (if not <em>the</em>) fastest implementation there: <a href="http://primesieve.org/" target="_blank" rel="noopener noreferrer">http://primesieve.org/</a></p>
+<p>It has been a while since I posted my last article on the blog, my
+studies didn’t leave me enough time for writing. But during Christmas
+holidays I found some time to share with you some discoveries and
+developments that I made recently on the Sieve of Eratosthenes.
+This article follows the previous article on the Sieve and aim to
+present some optimizations and an attempt to determine the complexity of
+the algorithm.</p>
+<h2>Last optimizations</h2>
+<p>Optimizations that follow are the result of several comments on the
+above implementations:</p>
+<ul>
+<li>Could we not reduce the memory footprint of the program by working
+only on arrays of bits instead of chars ? (We could divide the memory
+used by 8).</li>
+<li>In the main loop, our variable i ranges from 1 in 1, and values
+are not always prime numbers, so there is no need to eliminate their
+multiples.</li>
+</ul>
+<p>For the second optimization, we just have to get the next number that
+has not yet been eliminated. With a simple loop. We then gain precious
+seconds at runtime.</p>
+<p>Regarding the first optimization, it turns out that it’s not easy
+to work directly on the bits in C, except with bit fields, but this
+is complicated in the case of the Sieve of Eratosthenes. So I decided
+to implement the algorithm in C++, which offers the type bool, which
+takes only one bit in memory as well as Bitset, which are nothing more
+than arrays of bits, provided with various operations. Thanks to a
+std::vector (or a simple array) of bool the memory usage of the program
+is reduced by 8, which is pretty good. But it’s possible to use a data
+structure more efficient. You certainly heard about Boost, a library
+which provide many very powerful tools for C++, and among this tools
+is the Bitset (it also exists in STD, but it is less efficient). Using
+Bitset, we gain a little in runtime.</p>
+<p>Note that Boost Bitset are initialized to 0 by default, so we must
+consider that a number is prime if the value associated in the array is
+0 (and not 1 as in a previous implementations).</p>
+<pre class="code" data-lang="c++"><code><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cmath&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/dynamic_bitset.hpp&gt;</span></span>
+
+<span class="hljs-function"><span class="hljs-type">void</span>
+<span class="hljs-title">print_tab</span> <span class="hljs-params">(boost::dynamic_bitset&lt;&gt;&amp; tab)</span>
+</span>{
+  std::cout &lt;&lt; <span class="hljs-number">2</span> &lt;&lt; std::endl;
+  <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> i = <span class="hljs-number">1</span>; i &lt; tab.<span class="hljs-built_in">size</span> (); i++)
+    <span class="hljs-keyword">if</span> (!tab[i])
+      std::cout &lt;&lt; <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span> &lt;&lt; std::endl;
+}
+
+<span class="hljs-function"><span class="hljs-type">void</span>
+<span class="hljs-title">erato</span> <span class="hljs-params">(boost::dynamic_bitset&lt;&gt;&amp; tab)</span>
+</span>{
+  <span class="hljs-type">unsigned</span> i = <span class="hljs-number">0</span>;
+  <span class="hljs-type">unsigned</span> j, step, borne = <span class="hljs-built_in">sqrt</span> (tab.<span class="hljs-built_in">size</span> ());
+
+  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; borne; i++)
+  {
+    step = <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (j = i + step; j &lt; tab.<span class="hljs-built_in">size</span> (); j += step)
+      tab[j] = <span class="hljs-number">1</span>;
+
+    <span class="hljs-keyword">while</span> (tab[i])
+      i++;
+  }
+}
+
+<span class="hljs-function"><span class="hljs-type">int</span>
+<span class="hljs-title">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> **argv)</span>
+</span>{
+  <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>)
+  {
+    std::cout &lt;&lt; <span class="hljs-string">&quot;Please, you must give a number as argument.&quot;</span> &lt;&lt; std::endl;
+    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+  }
+
+  <span class="hljs-type">unsigned</span> size = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> i = <span class="hljs-number">0</span>; argv[<span class="hljs-number">1</span>][i]; i++)
+    size = size * <span class="hljs-number">10</span> + (argv[<span class="hljs-number">1</span>][i] - <span class="hljs-string">&#x27;0&#x27;</span>);
+
+  boost::dynamic_bitset&lt;&gt;* tab = <span class="hljs-keyword">new</span> boost::dynamic_bitset&lt;&gt; (size / <span class="hljs-number">2</span>);
+
+  <span class="hljs-built_in">erato</span> (*tab);
+  <span class="hljs-comment">//print_tab (*tab);</span>
+}
+</code></pre>
+<p>With this algorithm we get much better performance than with the
+previous implementation.</p>
+<h2>Complexity approximation</h2>
+<p>The complexity of an algorithm is used to express the number of
+operations needed to execution depending on the size of the input (in
+our case it will be the limit up to which we want to calculate the prime
+numbers).</p>
+<p>Soon I will post a more accurate approximation of the complexity of this
+algorithm, but my initial investigations suggest that the complexity is
+linear (3xN?).</p>
+<h2>The last words</h2>
+<p>After presenting a number of optimizations to the algorithm of the
+Sieve of Eratosthenes, we saw that it is always possible to improve
+a program, and this, in two lines of research. First, one can often
+optimize the algorithm itself, by choosing appropriate data structures,
+trying to reduce the memory footprint or by reducing the number of
+calculations needed to compute the result, etc. … One can also optimize
+the implementation of the algorithm, it’s often the last step, during
+which we will try to find tips, related to language itself, that allow
+us to make our program faster by changing the compiler flags (-O,
+-march, etc. …), etc. …</p>
+<p>The last implementation presented in this article is far from being the
+most optimized, we could still find ways to improve performances, for
+exemple by eliminating multiples of 3, 5 and 7 at the initialization
+of the array or by using bit masks to eliminate several multiples at a
+time. However, keep in mind that it is difficult to keep the compactness
+and readability of our algorithm with such optimizations.</p>
+<p>If you know other optimizations, or have any comments on this article,
+feel free to contact me or leave a comment below.</p>
 ]]></content>
     </entry>
     <entry>
