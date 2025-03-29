@@ -77,5 +77,4 @@ The following information was derived from ongoing work aiming at adding support
 
 ### Conclusion
 
-**Conclusion**  
 *Qwen3* (and *Qwen3MoE*) appear to be successors to the [Qwen2.5 family of models](https://qwenlm.github.io/blog/qwen2.5/), aiming for extensive context handling (at least 32k tokens) and improved efficiency via sliding-window attention or MoE routing. The primary *Qwen3* version is sized around 8B parameters, while *Qwen3MoE* is reportedly 15B (2B active parameters), leveraging 128 experts and specialized routing. Both variants incorporate rotary position embeddings, RMSNorm, and an optional QK-norm step in attention. Although official performance metrics and training data details remain undisclosed, these architectural choices suggest strong capabilities for text generation, classification, and QA across large-scale language tasks.
