@@ -32,15 +32,15 @@ The following information was derived from ongoing work aiming at adding support
    - Each layer consists of self-attention plus an MLP feed-forward block, with the MoE variant swapping in MoE blocks for some layers.
 
 3. **Default Hyperparameters (Base Qwen3)**
-   - *Vocabulary size*: 151,936
-   - *Hidden dimension*: 4096
-   - *Intermediate dimension*: 22,016
-   - *Number of layers*: 32
-   - *Attention heads*: 32, each head dimension at 128
-   - *Max position embeddings*: up to 32,768 tokens
-   - *RoPE base*: 10,000.0
+   - *Vocabulary size*: `151,936`
+   - *Hidden dimension*: `4096`
+   - *Intermediate dimension*: `22,016`
+   - *Number of layers*: `32`
+   - *Attention heads*: `32`, each head dimension at `128`
+   - *Max position embeddings*: up to `32,768` tokens
+   - *RoPE base*: `10,000.0`
    - Typically no bias in the Q, K, or V projections, with an option for attention bias if desired.
-   - “Sliding window” attention can optionally be configured in lower layers (usually 4096 tokens in the “window”).
+   - “Sliding window” attention can optionally be configured in lower layers (usually `4096` tokens in the “window”).
 
 4. **MoE-Specific Attributes (Qwen3MoE)**
    - Substitutes certain MLP blocks with MoE layers.
