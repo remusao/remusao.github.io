@@ -6,6 +6,7 @@ lang: en
 ---
 
 **Disclaimer**: This article was written with the help of an LLM.
+
 **Last update**: Saturday 29th of March 2025
 
 The following information was derived from ongoing work aiming at adding support for soon-to-be-released Qwen3 to various projects:
@@ -16,28 +17,28 @@ The following information was derived from ongoing work aiming at adding support
 
 # What We Know About Qwen3 So Far
 
-**Qwen3** is a next-generation large language model in the Qwen family, offering a standard Transformer decoder design with the potential for long-context processing. Below, we present both confirmed information and some logical inferences about what `Qwen3` (and its MoE counterpart, `Qwen3MoE`) might bring to the table.
+**Qwen3** is a next-generation large language model in the Qwen family, offering a standard Transformer decoder design with the potential for long-context processing. Below, we present both confirmed information as well as some deductions and open questions about what `Qwen3` (and its MoE counterpart, `Qwen3MoE`) might bring to the table.
 
 ## 1) Confirmed Information About Qwen3
 
-1. **Model Identity & Variants**
-   - The primary model name is **Qwen3**, with a Mixture-of-Experts variant: **Qwen3MoE**.
-   - Documentation mentions an **8B** model size for Qwen3 and a **15B** size for Qwen3MoE.
+1. **Model & Variants**
+   - The primary model name is `Qwen3`, with a Mixture-of-Experts variant: `Qwen3MoE`.
+   - Documentation mentions an *8B* model size for Qwen3 and a *15B* size for Qwen3MoE (with 2B active parameters).
 
 2. **Core Architecture**
-   - Qwen3 uses a **decoder-only Transformer** structure, suggesting it functions similarly to GPT-like or Llama-like designs.
-   - It employs **rotary position embeddings (RoPE)** to encode positions.
-   - **RMSNorm** is used instead of the more common LayerNorm, and there is also an applied **QK-norm** step to the query/key projections.
+   - Qwen3 uses a *decoder-only Transformer* structure.
+   - It employs *rotary position embeddings (RoPE)* to encode positions.
+   - *RMSNorm* is used instead of the more common LayerNorm, and there is also an applied *QK-norm* step to the query/key projections.
    - Each layer consists of self-attention plus an MLP feed-forward block, with the MoE variant swapping in MoE blocks for some layers.
 
 3. **Default Hyperparameters (Base Qwen3)**
-   - **Vocabulary size**: 151,936
-   - **Hidden dimension**: 4096
-   - **Intermediate dimension**: 22,016
-   - **Number of layers**: 32
-   - **Attention heads**: 32, each head dimension at 128
-   - **Max position embeddings**: up to 32,768 tokens
-   - **RoPE base**: 10,000.0
+   - *Vocabulary size*: 151,936
+   - *Hidden dimension*: 4096
+   - *Intermediate dimension*: 22,016
+   - *Number of layers*: 32
+   - *Attention heads*: 32, each head dimension at 128
+   - *Max position embeddings*: up to 32,768 tokens
+   - *RoPE base*: 10,000.0
    - Typically no bias in the Q, K, or V projections, with an option for attention bias if desired.
    - “Sliding window” attention can optionally be configured in lower layers (usually 4096 tokens in the “window”).
 
@@ -76,5 +77,5 @@ The following information was derived from ongoing work aiming at adding support
 
 ### Conclusion
 
-So far, **Qwen3** (and **Qwen3MoE**) appears to be a modern Transformer-based LLM family aimed at longer contexts, advanced feed-forward capacity, and flexible mixture-of-experts features in the MoE variant. The combination of RMSNorm, QK-norm, RoPE, optional sliding-window attention, and specialized MoE routing points to a design geared for large-scale language capabilities. Further announcements are expected to clarify release timelines, performance benchmarks, and official training details.
-
+**Conclusion**  
+*Qwen3* (and *Qwen3MoE*) appear to be successors to the [Qwen2.5 family of models](https://qwenlm.github.io/blog/qwen2.5/), aiming for extensive context handling (at least 32k tokens) and improved efficiency via sliding-window attention or MoE routing. The primary *Qwen3* version is sized around 8B parameters, while *Qwen3MoE* is reportedly 15B (2B active parameters), leveraging 128 experts and specialized routing. Both variants incorporate rotary position embeddings, RMSNorm, and an optional QK-norm step in attention. Although official performance metrics and training data details remain undisclosed, these architectural choices suggest strong capabilities for text generation, classification, and QA across large-scale language tasks.
