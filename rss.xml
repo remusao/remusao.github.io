@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Sat, 29 Mar 2025 13:06:36 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 29 Mar 2025 13:07:44 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -46,15 +46,15 @@
 <li>
 <p><strong>Default Hyperparameters (Base Qwen3)</strong></p>
 <ul>
-<li><em>Vocabulary size</em>: 151,936</li>
-<li><em>Hidden dimension</em>: 4096</li>
-<li><em>Intermediate dimension</em>: 22,016</li>
-<li><em>Number of layers</em>: 32</li>
-<li><em>Attention heads</em>: 32, each head dimension at 128</li>
-<li><em>Max position embeddings</em>: up to 32,768 tokens</li>
-<li><em>RoPE base</em>: 10,000.0</li>
+<li><em>Vocabulary size</em>: <code>151,936</code></li>
+<li><em>Hidden dimension</em>: <code>4096</code></li>
+<li><em>Intermediate dimension</em>: <code>22,016</code></li>
+<li><em>Number of layers</em>: <code>32</code></li>
+<li><em>Attention heads</em>: <code>32</code>, each head dimension at <code>128</code></li>
+<li><em>Max position embeddings</em>: up to <code>32,768</code> tokens</li>
+<li><em>RoPE base</em>: <code>10,000.0</code></li>
 <li>Typically no bias in the Q, K, or V projections, with an option for attention bias if desired.</li>
-<li>“Sliding window” attention can optionally be configured in lower layers (usually 4096 tokens in the “window”).</li>
+<li>“Sliding window” attention can optionally be configured in lower layers (usually <code>4096</code> tokens in the “window”).</li>
 </ul>
 </li>
 <li>
