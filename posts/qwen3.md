@@ -27,7 +27,7 @@ The following information was derived from ongoing work aiming at adding support
 2. **Core Architecture**
    - Qwen3 uses a **decoder-only Transformer** structure, suggesting it functions similarly to GPT-like or Llama-like designs.
    - It employs **rotary position embeddings (RoPE)** to encode positions.
-   - **RMSNorm** is used instead of the more common LayerNorm.
+   - **RMSNorm** is used instead of the more common LayerNorm, and there is also an applied **QK-norm** step to the query/key projections.
    - Each layer consists of self-attention plus an MLP feed-forward block, with the MoE variant swapping in MoE blocks for some layers.
 
 3. **Default Hyperparameters (Base Qwen3)**
@@ -35,19 +35,20 @@ The following information was derived from ongoing work aiming at adding support
    - **Hidden dimension**: 4096
    - **Intermediate dimension**: 22,016
    - **Number of layers**: 32
-   - **Attention heads**: 32, with each head dimension at 128
+   - **Attention heads**: 32, each head dimension at 128
    - **Max position embeddings**: up to 32,768 tokens
    - **RoPE base**: 10,000.0
-   - Typically no bias in Q, K, or V projections, with an option for “sliding window” attention in lower layers.
+   - Typically no bias in the Q, K, or V projections, with an option for attention bias if desired.
+   - “Sliding window” attention can optionally be configured in lower layers (usually 4096 tokens in the “window”).
 
 4. **MoE-Specific Attributes (Qwen3MoE)**
    - Substitutes certain MLP blocks with MoE layers.
-   - Additional hyperparameters include the number of experts (128), top-k per-token routing (8), a router loss factor (0.001), and more.
-   - Potential to output gating information (`router_logits`) that indicates token routing among experts.
+   - Additional hyperparameters include the number of experts (128), top-k per-token routing (8), and a router loss factor (0.001), among others.
+   - Can optionally output gating information (`router_logits`) that indicates token routing among experts.
 
 5. **Extended Context Handling**
    - The maximum sequence length is set to 32k tokens, suggesting large-context capabilities.
-   - “Sliding window” attention can be configured for some layers, indicating a goal of more efficient attention for extended sequences.
+   - A “sliding window” mode can be turned on for some layers, indicating a goal of more efficient attention for extended sequences.
 
 6. **Multiple Task Heads**
    - Qwen3 supports a causal language modeling head for text generation, as well as heads for sequence classification, token classification, and QA tasks.
@@ -59,7 +60,7 @@ The following information was derived from ongoing work aiming at adding support
 ## 2) Additional Deductions (Not Fully Confirmed)
 
 1. **Parameter Counts**
-   - The code references 8B for Qwen3 and ~15B for Qwen3MoE, but there may be other configurations or final parameter counts beyond these documented examples.
+   - The code references 8B parameters for Qwen3 and ~15B for Qwen3MoE, but there may be other configurations or final parameter counts beyond these documented examples.
 
 2. **Performance and Training Data**
    - The data used, training schedule, and final performance are not yet public. No training steps or official evaluations have been confirmed.
@@ -75,4 +76,5 @@ The following information was derived from ongoing work aiming at adding support
 
 ### Conclusion
 
-So far, **Qwen3** (and **Qwen3MoE**) appears to be a modern Transformer-based LLM family aimed at longer contexts and advanced feed-forward capacity. The combination of RMSNorm, RoPE, optional sliding-window attention, and mixture-of-experts features suggests a flexible approach to building large-scale language capabilities. Further announcements are expected to clarify release timelines, performance benchmarks, and official training details.
+So far, **Qwen3** (and **Qwen3MoE**) appears to be a modern Transformer-based LLM family aimed at longer contexts, advanced feed-forward capacity, and flexible mixture-of-experts features in the MoE variant. The combination of RMSNorm, QK-norm, RoPE, optional sliding-window attention, and specialized MoE routing points to a design geared for large-scale language capabilities. Further announcements are expected to clarify release timelines, performance benchmarks, and official training details.
+
