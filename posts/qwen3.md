@@ -23,7 +23,7 @@ The following information was derived from ongoing work aiming at adding support
 
 1. **Model & Variants**
    - The primary model name is `Qwen3`, with a Mixture-of-Experts variant: `Qwen3MoE`.
-   - Documentation mentions an *8B* model size for Qwen3 and a *15B* size for Qwen3MoE (with 2B active parameters).
+   - Documentation mentions an `8B` model size for `Qwen3` and a `15B` size for `Qwen3MoE` (with `2B` active parameters).
 
 2. **Core Architecture**
    - Qwen3 uses a *decoder-only Transformer* structure.
@@ -44,7 +44,7 @@ The following information was derived from ongoing work aiming at adding support
 
 4. **MoE-Specific Attributes (Qwen3MoE)**
    - Substitutes certain MLP blocks with MoE layers.
-   - Additional hyperparameters include the number of experts (128), top-k per-token routing (8), and a router loss factor (0.001), among others.
+   - Additional hyperparameters include the number of experts (`128`), top-k per-token routing (`8`), and a router loss factor (`0.001`), among others.
    - Can optionally output gating information (`router_logits`) that indicates token routing among experts.
 
 5. **Extended Context Handling**
