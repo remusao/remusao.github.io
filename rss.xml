@@ -4,11 +4,125 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Sun, 24 Nov 2024 20:00:45 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 29 Mar 2025 12:19:08 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
         <atom:link href="https://remusao.github.io/rss.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[What we know about Qwen3 so far]]></title>
+            <link>https://remusao.github.io//posts/qwen3.html</link>
+            <guid>https://remusao.github.io//posts/qwen3.html</guid>
+            <pubDate>Sat, 29 Mar 2025 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p><strong>Disclaimer</strong>: This article was written with the help of an LLM.
+<strong>Last update</strong>: Saturday 29th of March 2025</p>
+<p>The following information was derived from ongoing work aiming at adding support for soon-to-be-released Qwen3 to various projects:</p>
+<ul>
+<li><a href="https://github.com/huggingface/transformers/pull/36878" target="_blank" rel="noopener noreferrer">https://github.com/huggingface/transformers/pull/36878</a></li>
+<li><a href="https://github.com/vllm-project/vllm/pull/15289" target="_blank" rel="noopener noreferrer">https://github.com/vllm-project/vllm/pull/15289</a></li>
+<li><a href="https://github.com/InternLM/lmdeploy/pull/3305" target="_blank" rel="noopener noreferrer">https://github.com/InternLM/lmdeploy/pull/3305</a></li>
+<li><a href="https://github.com/sgl-project/sglang/pull/4693" target="_blank" rel="noopener noreferrer">https://github.com/sgl-project/sglang/pull/4693</a></li>
+</ul>
+<h1>What We Know About Qwen3 So Far</h1>
+<p><strong>Qwen3</strong> is a next-generation large language model in the Qwen family, offering a standard Transformer decoder design with the potential for long-context processing. Below, we present both confirmed information and some logical inferences about what <code>Qwen3</code> (and its MoE counterpart, <code>Qwen3MoE</code>) might bring to the table.</p>
+<h2>1) Confirmed Information About Qwen3</h2>
+<ol>
+<li>
+<p><strong>Model Identity &amp; Variants</strong></p>
+<ul>
+<li>The primary model name is <strong>Qwen3</strong>, with a Mixture-of-Experts variant: <strong>Qwen3MoE</strong>.</li>
+<li>Documentation mentions an <strong>8B</strong> model size for Qwen3 and a <strong>15B</strong> size for Qwen3MoE.</li>
+</ul>
+</li>
+<li>
+<p><strong>Core Architecture</strong></p>
+<ul>
+<li>Qwen3 uses a <strong>decoder-only Transformer</strong> structure, suggesting it functions similarly to GPT-like or Llama-like designs.</li>
+<li>It employs <strong>rotary position embeddings (RoPE)</strong> to encode positions.</li>
+<li><strong>RMSNorm</strong> is used instead of the more common LayerNorm, and there is also an applied <strong>QK-norm</strong> step to the query/key projections.</li>
+<li>Each layer consists of self-attention plus an MLP feed-forward block, with the MoE variant swapping in MoE blocks for some layers.</li>
+</ul>
+</li>
+<li>
+<p><strong>Default Hyperparameters (Base Qwen3)</strong></p>
+<ul>
+<li><strong>Vocabulary size</strong>: 151,936</li>
+<li><strong>Hidden dimension</strong>: 4096</li>
+<li><strong>Intermediate dimension</strong>: 22,016</li>
+<li><strong>Number of layers</strong>: 32</li>
+<li><strong>Attention heads</strong>: 32, each head dimension at 128</li>
+<li><strong>Max position embeddings</strong>: up to 32,768 tokens</li>
+<li><strong>RoPE base</strong>: 10,000.0</li>
+<li>Typically no bias in the Q, K, or V projections, with an option for attention bias if desired.</li>
+<li>“Sliding window” attention can optionally be configured in lower layers (usually 4096 tokens in the “window”).</li>
+</ul>
+</li>
+<li>
+<p><strong>MoE-Specific Attributes (Qwen3MoE)</strong></p>
+<ul>
+<li>Substitutes certain MLP blocks with MoE layers.</li>
+<li>Additional hyperparameters include the number of experts (128), top-k per-token routing (8), and a router loss factor (0.001), among others.</li>
+<li>Can optionally output gating information (<code>router_logits</code>) that indicates token routing among experts.</li>
+</ul>
+</li>
+<li>
+<p><strong>Extended Context Handling</strong></p>
+<ul>
+<li>The maximum sequence length is set to 32k tokens, suggesting large-context capabilities.</li>
+<li>A “sliding window” mode can be turned on for some layers, indicating a goal of more efficient attention for extended sequences.</li>
+</ul>
+</li>
+<li>
+<p><strong>Multiple Task Heads</strong></p>
+<ul>
+<li>Qwen3 supports a causal language modeling head for text generation, as well as heads for sequence classification, token classification, and QA tasks.</li>
+</ul>
+</li>
+<li>
+<p><strong>Licensing &amp; Release Notes</strong></p>
+<ul>
+<li>Operates under the <strong>Apache 2.0 License</strong>.</li>
+<li>Official usage guidelines, pretrained weights, and final performance claims are not yet included, with placeholders indicating a future public release.</li>
+</ul>
+</li>
+</ol>
+<h2>2) Additional Deductions (Not Fully Confirmed)</h2>
+<ol>
+<li>
+<p><strong>Parameter Counts</strong></p>
+<ul>
+<li>The code references 8B parameters for Qwen3 and ~15B for Qwen3MoE, but there may be other configurations or final parameter counts beyond these documented examples.</li>
+</ul>
+</li>
+<li>
+<p><strong>Performance and Training Data</strong></p>
+<ul>
+<li>The data used, training schedule, and final performance are not yet public. No training steps or official evaluations have been confirmed.</li>
+</ul>
+</li>
+<li>
+<p><strong>Release Timeline</strong></p>
+<ul>
+<li>While mention is made of an upcoming model launch, no definitive timeline or final usage documentation is yet available.</li>
+</ul>
+</li>
+<li>
+<p><strong>Tokenizer &amp; Vocabulary</strong></p>
+<ul>
+<li>Qwen3 apparently leverages a large vocabulary of over 150k tokens, likely similar to a previous iteration. Full details on backward compatibility or merges remain unspecified.</li>
+</ul>
+</li>
+<li>
+<p><strong>Use Cases</strong></p>
+<ul>
+<li>The architecture supports classification, QA, and generative tasks, but real-world usage details, recommended domain coverage, or specialized fine-tuning steps remain unknown.</li>
+</ul>
+</li>
+</ol>
+<h3>Conclusion</h3>
+<p>So far, <strong>Qwen3</strong> (and <strong>Qwen3MoE</strong>) appears to be a modern Transformer-based LLM family aimed at longer contexts, advanced feed-forward capacity, and flexible mixture-of-experts features in the MoE variant. The combination of RMSNorm, QK-norm, RoPE, optional sliding-window attention, and specialized MoE routing points to a design geared for large-scale language capabilities. Further announcements are expected to clarify release timelines, performance benchmarks, and official training details.</p>
+]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[A more efficient matching engine for HTTPS Everywhere RuleSets]]></title>
             <link>https://remusao.github.io//posts/efficient-https-everywhere-engine.html</link>
@@ -606,25 +720,25 @@ If you use another distribution than Ubuntu, you can <em>skip this section
 completely</em>. From the <a href="https://wiki.winehq.org/Ubuntu" target="_blank" rel="noopener noreferrer">official wiki</a>:</p>
 <blockquote>
 <p>If your system is 64 bit, enable 32 bit architecture (if you haven’t already):</p>
-<pre class="code" data-lang="sh"><code><span class="hljs-built_in">sudo</span> dpkg --add-architecture i386
+<pre class="code" data-lang="sh"><code>sudo dpkg --add-architecture i386
 </code></pre>
 <p>Download and add the repository key:</p>
 <pre class="code" data-lang="sh"><code>wget -nc https://dl.winehq.org/wine-builds/winehq.key
-<span class="hljs-built_in">sudo</span> apt-key add winehq.key
+sudo apt-key add winehq.key
 </code></pre>
 </blockquote>
 <p>Now you need to get the repository matching your release of Ubuntu. For me it
 was <code>bionic</code> (you can get yours using command <code>lsb_release -cs</code>), but check
 official instructions if that does not correspond to yours.</p>
 <blockquote>
-<pre class="code" data-lang="sh"><code><span class="hljs-built_in">sudo</span> apt-add-repository <span class="hljs-string">&#x27;deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main&#x27;</span>
-<span class="hljs-built_in">sudo</span> apt install --install-recommends winehq-stable
+<pre class="code" data-lang="sh"><code>sudo apt-add-repository <span class="hljs-string">&#x27;deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main&#x27;</span>
+sudo apt install --install-recommends winehq-stable
 </code></pre>
 </blockquote>
 <p>Note that I could not install <code>winehq-stable</code> directly and had to first install
 one of its dependencies manually. If you encounter an error, then try to run
 the following command before installing <code>winehq-stable</code> again:</p>
-<pre class="code" data-lang="sh"><code><span class="hljs-built_in">sudo</span> apt install libasound2-plugins:i386
+<pre class="code" data-lang="sh"><code>sudo apt install libasound2-plugins:i386
 </code></pre>
 <p>I am using <strong>version 4.0.2</strong> of <code>wine</code>.</p>
 <h2>[Optional] Installing Firejail</h2>
@@ -3020,11 +3134,11 @@ try to their “NVMe Storage Optimized” instances. I was a bit surprised thoug
 that the drive was not accessible straight away. To make it work, you need to
 format and mount it manually.</p>
 <p>Formatting the drive found at <code>/dev/nvme0n1</code>:</p>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">sudo</span> mkfs -t ext4 /dev/nvme0n1
+<pre class="code" data-lang="sh"><code>$ sudo mkfs -t ext4 /dev/nvme0n1
 </code></pre>
 <p>Mounting to <code>/ebs/</code>:</p>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">sudo</span> <span class="hljs-built_in">mkdir</span> /ebs
-$ <span class="hljs-built_in">sudo</span> mount -o rw /dev/nvme0n1 /ebs/
+<pre class="code" data-lang="sh"><code>$ sudo <span class="hljs-built_in">mkdir</span> /ebs
+$ sudo mount -o rw /dev/nvme0n1 /ebs/
 $ <span class="hljs-built_in">cd</span> /ebs/
 </code></pre>
 ]]></content:encoded>
@@ -3078,44 +3192,6 @@ Options:
     -b --<span class="hljs-built_in">bind</span> ADDRESS   Specify alternate <span class="hljs-built_in">bind</span> address [default: 0.0.0.0]
     -h, --<span class="hljs-built_in">help</span>          Show this <span class="hljs-built_in">help</span> message and <span class="hljs-built_in">exit</span>.
 </code></pre>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
-            <link>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</link>
-            <guid>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</guid>
-            <pubDate>Sat, 25 Nov 2017 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
-fast fuzzy matching and approximate set membership tests, I found myself in a
-situation where I needed more insight about what optimizations <code>V8</code> was
-performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
-compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
-consider!</p>
-<p>This article assumes you’re using
-<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
-extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
-During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
-very useful!</p>
-<h1>Building V8 From Source</h1>
-<h2>Installing depot_tools</h2>
-<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
-<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
-$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
-</code></pre>
-<h2>Compiling V8</h2>
-<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
-<pre class="code" data-lang="sh"><code>$ fetch v8
-</code></pre>
-<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
-version of the sources. It will also configure everything needed for the build.</p>
-<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
-$ ninja -C out.gn/x64.release
-</code></pre>
-<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
-intended by running the tests:</p>
-<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
-</code></pre>
-<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -3247,6 +3323,44 @@ It’s not day and night, but the <em>naive</em>, more readable code is more
 efficient on V8 than the clever one.</p>
 <p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
 there</a></p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
+            <link>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</link>
+            <guid>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</guid>
+            <pubDate>Sat, 25 Nov 2017 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
+fast fuzzy matching and approximate set membership tests, I found myself in a
+situation where I needed more insight about what optimizations <code>V8</code> was
+performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
+compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
+consider!</p>
+<p>This article assumes you’re using
+<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
+extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
+During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
+very useful!</p>
+<h1>Building V8 From Source</h1>
+<h2>Installing depot_tools</h2>
+<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
+<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
+$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
+</code></pre>
+<h2>Compiling V8</h2>
+<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
+<pre class="code" data-lang="sh"><code>$ fetch v8
+</code></pre>
+<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
+version of the sources. It will also configure everything needed for the build.</p>
+<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
+$ ninja -C out.gn/x64.release
+</code></pre>
+<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
+intended by running the tests:</p>
+<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
+</code></pre>
+<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -3947,7 +4061,7 @@ The following tutorial is only meant for those who want IHaskell to run locally.
 <h2>Install Stack</h2>
 <p>Compared to Ubuntu 14.04, it is now easier to install <code>stack</code> thanks to the
 <code>haskell-stack</code> package:</p>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">sudo</span> apt-get install haskell-stack
+<pre class="code" data-lang="sh"><code>$ sudo apt-get install haskell-stack
 </code></pre>
 <p>Now let’s make sure we have the latest version of stack, as well as the latest
 snapshot from <a href="stackage.org/lts" target="_blank" rel="noopener noreferrer">stackage</a>:</p>
@@ -3958,7 +4072,7 @@ $ stack setup
 <h2>Dependencies</h2>
 <p>Some <a href="https://github.com/gibiansky/IHaskell#linux" target="_blank" rel="noopener noreferrer">dependencies</a> are
 required before building the IHaskell kernel, let’s install them:</p>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">sudo</span> apt-get install -y   \
+<pre class="code" data-lang="sh"><code>$ sudo apt-get install -y   \
     git                     \
     libtinfo-dev            \
     libzmq3-dev             \
@@ -3981,7 +4095,7 @@ it ourselves. There are several options:</p>
 using <code>sudo pip</code>, and prefer to create a fresh <a href="https://virtualenv.pypa.io/en/stable/" target="_blank" rel="noopener noreferrer"><code>virtualenv</code></a> for each project.
 Let’s proceed!</p>
 <p>If you’re on a fresh install, we need to install virtualenv first:</p>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">sudo</span> apt-get install virtualenv python3-dev ncurses-base
+<pre class="code" data-lang="sh"><code>$ sudo apt-get install virtualenv python3-dev ncurses-base
 </code></pre>
 <p>Then let’s install <code>jupyter</code> inside of our virtualenv <code>virtualenv</code>:</p>
 <pre class="code" data-lang="sh"><code>$ virtualenv venv-ihaskell -p /usr/bin/python3 <span class="hljs-comment"># Create a virtualenv</span>
@@ -5549,10 +5663,10 @@ will simplify the whole process, and how to get all the dependencies
 right!</p>
 <h2>Install Stack</h2>
 <p>From <em>Stack</em> official <a href="http://docs.haskellstack.org/en/stable/install_and_upgrade.html" target="_blank" rel="noopener noreferrer">documentation</a>, for Ubuntu 14.04:</p>
-<pre class="code" data-lang="sh"><code><span class="hljs-built_in">sudo</span> apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442
+<pre class="code" data-lang="sh"><code>sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442
 <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;deb http://download.fpcomplete.com/ubuntu trusty main&#x27;</span> \
-    |<span class="hljs-built_in">sudo</span> <span class="hljs-built_in">tee</span> /etc/apt/sources.list.d/fpco.list
-<span class="hljs-built_in">sudo</span> apt-get update &amp;&amp; <span class="hljs-built_in">sudo</span> apt-get install stack -y
+    |sudo <span class="hljs-built_in">tee</span> /etc/apt/sources.list.d/fpco.list
+sudo apt-get update &amp;&amp; sudo apt-get install stack -y
 </code></pre>
 <p>You should now be able to run the <code>stack</code> executable in a shell:</p>
 <pre class="code" data-lang="sh"><code>stack --<span class="hljs-built_in">help</span>
@@ -5578,8 +5692,8 @@ right!</p>
 git <span class="hljs-built_in">clone</span> git@github.com:zeromq/zeromq4-x.git libzmq
 <span class="hljs-built_in">cd</span> libzmq
 ./autogen.sh &amp;&amp; ./configure &amp;&amp; make
-<span class="hljs-built_in">sudo</span> make install
-<span class="hljs-built_in">sudo</span> ldconfig
+sudo make install
+sudo ldconfig
 </code></pre>
 <p>That will do the trick! If you don’t like to install packages in global scope, feel free to install it in a user folder (Add the <code>--prefix=LOCATION</code> directive to <code>./configure</code>, and change <code>LD_LIBRARY_PATH</code> and <code>PATH</code> in your shell configuration accordingly).</p>
 <h2>Install Jupyter</h2>
