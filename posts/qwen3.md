@@ -3,6 +3,7 @@ title: What we know about Qwen3 so far
 date: 2025-03-29
 logo: qwen
 lang: en
+issue: 1103
 ---
 
 **Disclaimer**: This article was written with the help of an LLM.
