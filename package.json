@@ -57,7 +57,7 @@
     "html-minifier": "^4.0.0",
     "jsdom": "^20.0.2",
     "markdown-it": "^13.0.1",
-    "markdown-it-attrs": "^4.1.4",
+    "markdown-it-attrs": "^4.3.1",
     "markdown-it-footnote": "^3.0.3",
     "markdown-it-implicit-figures": "^0.10.0",
     "markdown-it-link-attributes": "^4.0.1",
