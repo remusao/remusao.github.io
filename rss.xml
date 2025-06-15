@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Sun, 15 Jun 2025 07:00:25 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 15 Jun 2025 08:00:28 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -6964,6 +6964,114 @@ pas le pattern-matching en Hash table lorsque c’est possible.</p>
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
+            <link>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</link>
+            <guid>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</guid>
+            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
+j’ai reçu récemment je me suis heurté à quelques problèmes
+puisque la version dans les dépots de Archlinux ne compilait pas et
+aucun paquet précompilé pour Arm n’était disponible. Je vais donc
+exposer une solution pour pouvoir le compiler et l’installer. Mais
+tout d’abord une petite description du logiciel trouvée sur le site
+des créateurs :</p>
+<blockquote>
+<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
+</blockquote>
+<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
+il suffit de télécharger un patch supplémentaire et de remplacer le
+PKGBUILD fourni par un autre que je vais vous donner. Voici comment
+faire :</p>
+<ol>
+<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
+<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
+<li>Exécutez les commandes suivantes :</li>
+</ol>
+<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
+$ yaourt -G mediatomb
+$ <span class="hljs-built_in">cd</span> mediatomb
+[Copier le patch ici]
+[Copier le fichier PKGBUILD ici]
+$ makepkg -si
+</code></pre>
+<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
+vaut le coup. J’espère que ça servira à certains le temps que les
+paquets dans les dépôts d’archlinux soient de nouveau compilables
+sans modification.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Raspberry Pi]]></title>
+            <link>https://remusao.github.io//posts/raspberry-pi.html</link>
+            <guid>https://remusao.github.io//posts/raspberry-pi.html</guid>
+            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>J’ai reçu il y a quelques jours le Raspberry Pi que j’avais
+commandé sur le site Element 14. Voici une description que j’ai
+honteusement recopiée depuis le site d’archlinux pour architecture
+arm :</p>
+<blockquote>
+<p>The Raspberry Pi is a credit-card sized computer that plugs into
+your TV and a keyboard. It’s a capable little PC which can be used
+for many of the things that your desktop PC does, like spreadsheets,
+word-processing and games. It also plays high-definition video.</p>
+</blockquote>
+<blockquote>
+<p>The Raspberry Pi measures 85.60mm x 53.98mm x 17mm, with a little
+overlap for the SD card and connectors which project over the edges. The
+SoC is a Broadcom BCM2835. This contains an ARM1176JZFS with floating
+point running at 700Mhz, and a Videocore 4 GPU. The GPU is capable of
+BluRay quality playback, using H.264 at 40MBits/s.</p>
+</blockquote>
+<p>C’est donc assez rigolo de bidouiller sur une ordinateur au format de
+poche. Sa puissance limitée n’est pas faite pour tous les usages,
+mais puisqu’il ne prend pas beaucoup de place, ne fait aucun bruit et
+ne consomme pas beaucoup d’énergie, il est tout à fait adapté pour
+servir de lecteur multimédia (avec mediatomb par exemple).</p>
+<p>Comme vous vous en doutez j’ai installé archlinux (la version arm
+dédiée au raspberry pi que vous pouvez télécharger gratuitement
+ici : archlinux – arm). L’avantage c’est qu’ils fournissent
+une image que vous avez juste à installer sur votre carte SD, et vous
+n’avez pas à passer par la procédure d’installation classique des
+distributions linux. J’ai donc pu me connecter directement en SSH
+après avoir lancé mon raspberry Pi. Ce qui était plutôt pratique
+puisque je n’avais pas de clavier usb sous la main.</p>
+<p>Par contre, prévoyez au moins une carte SD de 4 Go pour faire tourner
+votre système. J’en utilise une de 2 Go et en ayant installé
+quelques paquets elle est pleine à 94%. Je l’utilise actuellement
+pour streamer du contenu présent sur un de mes disques durs externe via
+Mediatomb. Cela permet d’accéder à vos vidéos, photos, musiques
+depuis n’importe quel périphérique supportant la technologie uPnP.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Visualiser la structure d’un projet python]]></title>
+            <link>https://remusao.github.io//posts/visualize-project-structure-python.html</link>
+            <guid>https://remusao.github.io//posts/visualize-project-structure-python.html</guid>
+            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Lors d’une de mes dernières contributions à un projet écrit en
+Python, j’ai voulu trouver un moyen de rapidement pouvoir visualiser
+la structure d’un projet selon plusieurs critères (dépendances
+entres les modules, héritages entre les objets, etc.). J’ai donc
+écris un script Python qui permet de générer un graphe à partir de
+différentes données.</p>
+<p><a href="https://github.com/remusao/PyProjectViewer" target="_blank" rel="noopener noreferrer">Project sur GitHub</a></p>
+<p>J’ai essayé de faire en sorte de rentre le projet flexible afin de
+pouvoir scanner d’autres types de données à l’avenir (et pourquoi
+pas d’autres langages). Pour le moment on peut générer le graphe des
+importations ainsi que le graphe de l’héritage.</p>
+<p>Le projet est divisé en deux parties :</p>
+<ol>
+<li>Les fichiers Scan, qui doivent respecter l’interface d’un scanner.</li>
+<li>Un objet modelViewer qui s’occupe de parcourir tout votre projet et d’appeler son scanner sur chaque fichier.</li>
+</ol>
+<p>Ainsi on peut tout à fait rajouter des Scanners à volonté. Pour
+finir, voici un graphe de dépendance d’un de mes projets en Python.
+Le graphe est coloré et chaque module (chaque dossier) possède sa
+propre couleur.</p>
+<p>N’hésitez pas à faire des remarques ou à proposer des améliorations !</p>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[Ma vision des mathématiques]]></title>
             <link>https://remusao.github.io//posts/mathematiques-vision.html</link>
             <guid>https://remusao.github.io//posts/mathematiques-vision.html</guid>
@@ -7091,114 +7199,6 @@ d’évoluer dans ces univers abstraits, de visualiser et de comprendre
 les œuvres laissées par d’illustres mathématiciens avant nous,
 et de bâtir de nouveaux édifices avec les outils qu’ils nous ont
 légués.</p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
-            <link>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</link>
-            <guid>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</guid>
-            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
-j’ai reçu récemment je me suis heurté à quelques problèmes
-puisque la version dans les dépots de Archlinux ne compilait pas et
-aucun paquet précompilé pour Arm n’était disponible. Je vais donc
-exposer une solution pour pouvoir le compiler et l’installer. Mais
-tout d’abord une petite description du logiciel trouvée sur le site
-des créateurs :</p>
-<blockquote>
-<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
-</blockquote>
-<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
-il suffit de télécharger un patch supplémentaire et de remplacer le
-PKGBUILD fourni par un autre que je vais vous donner. Voici comment
-faire :</p>
-<ol>
-<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
-<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
-<li>Exécutez les commandes suivantes :</li>
-</ol>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
-$ yaourt -G mediatomb
-$ <span class="hljs-built_in">cd</span> mediatomb
-[Copier le patch ici]
-[Copier le fichier PKGBUILD ici]
-$ makepkg -si
-</code></pre>
-<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
-vaut le coup. J’espère que ça servira à certains le temps que les
-paquets dans les dépôts d’archlinux soient de nouveau compilables
-sans modification.</p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Raspberry Pi]]></title>
-            <link>https://remusao.github.io//posts/raspberry-pi.html</link>
-            <guid>https://remusao.github.io//posts/raspberry-pi.html</guid>
-            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>J’ai reçu il y a quelques jours le Raspberry Pi que j’avais
-commandé sur le site Element 14. Voici une description que j’ai
-honteusement recopiée depuis le site d’archlinux pour architecture
-arm :</p>
-<blockquote>
-<p>The Raspberry Pi is a credit-card sized computer that plugs into
-your TV and a keyboard. It’s a capable little PC which can be used
-for many of the things that your desktop PC does, like spreadsheets,
-word-processing and games. It also plays high-definition video.</p>
-</blockquote>
-<blockquote>
-<p>The Raspberry Pi measures 85.60mm x 53.98mm x 17mm, with a little
-overlap for the SD card and connectors which project over the edges. The
-SoC is a Broadcom BCM2835. This contains an ARM1176JZFS with floating
-point running at 700Mhz, and a Videocore 4 GPU. The GPU is capable of
-BluRay quality playback, using H.264 at 40MBits/s.</p>
-</blockquote>
-<p>C’est donc assez rigolo de bidouiller sur une ordinateur au format de
-poche. Sa puissance limitée n’est pas faite pour tous les usages,
-mais puisqu’il ne prend pas beaucoup de place, ne fait aucun bruit et
-ne consomme pas beaucoup d’énergie, il est tout à fait adapté pour
-servir de lecteur multimédia (avec mediatomb par exemple).</p>
-<p>Comme vous vous en doutez j’ai installé archlinux (la version arm
-dédiée au raspberry pi que vous pouvez télécharger gratuitement
-ici : archlinux – arm). L’avantage c’est qu’ils fournissent
-une image que vous avez juste à installer sur votre carte SD, et vous
-n’avez pas à passer par la procédure d’installation classique des
-distributions linux. J’ai donc pu me connecter directement en SSH
-après avoir lancé mon raspberry Pi. Ce qui était plutôt pratique
-puisque je n’avais pas de clavier usb sous la main.</p>
-<p>Par contre, prévoyez au moins une carte SD de 4 Go pour faire tourner
-votre système. J’en utilise une de 2 Go et en ayant installé
-quelques paquets elle est pleine à 94%. Je l’utilise actuellement
-pour streamer du contenu présent sur un de mes disques durs externe via
-Mediatomb. Cela permet d’accéder à vos vidéos, photos, musiques
-depuis n’importe quel périphérique supportant la technologie uPnP.</p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Visualiser la structure d’un projet python]]></title>
-            <link>https://remusao.github.io//posts/visualize-project-structure-python.html</link>
-            <guid>https://remusao.github.io//posts/visualize-project-structure-python.html</guid>
-            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Lors d’une de mes dernières contributions à un projet écrit en
-Python, j’ai voulu trouver un moyen de rapidement pouvoir visualiser
-la structure d’un projet selon plusieurs critères (dépendances
-entres les modules, héritages entre les objets, etc.). J’ai donc
-écris un script Python qui permet de générer un graphe à partir de
-différentes données.</p>
-<p><a href="https://github.com/remusao/PyProjectViewer" target="_blank" rel="noopener noreferrer">Project sur GitHub</a></p>
-<p>J’ai essayé de faire en sorte de rentre le projet flexible afin de
-pouvoir scanner d’autres types de données à l’avenir (et pourquoi
-pas d’autres langages). Pour le moment on peut générer le graphe des
-importations ainsi que le graphe de l’héritage.</p>
-<p>Le projet est divisé en deux parties :</p>
-<ol>
-<li>Les fichiers Scan, qui doivent respecter l’interface d’un scanner.</li>
-<li>Un objet modelViewer qui s’occupe de parcourir tout votre projet et d’appeler son scanner sur chaque fichier.</li>
-</ol>
-<p>Ainsi on peut tout à fait rajouter des Scanners à volonté. Pour
-finir, voici un graphe de dépendance d’un de mes projets en Python.
-Le graphe est coloré et chaque module (chaque dossier) possède sa
-propre couleur.</p>
-<p>N’hésitez pas à faire des remarques ou à proposer des améliorations !</p>
 ]]></content:encoded>
         </item>
         <item>
