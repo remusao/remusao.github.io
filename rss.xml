@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Fri, 18 Jul 2025 14:09:45 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 18 Jul 2025 15:00:23 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -899,6 +899,133 @@ Then start the update with:</p>
   </a>
   <figcaption>There is no such thing as the 'Cow Level'.</figcaption>
 </figure>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Thoughts about unit and integration tests]]></title>
+            <link>https://remusao.github.io//posts/unit-integration-tests.html</link>
+            <guid>https://remusao.github.io//posts/unit-integration-tests.html</guid>
+            <pubDate>Sat, 26 Oct 2019 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<blockquote>
+<p>Do not feed the anti-patterns!</p>
+</blockquote>
+<p>I recently found myself working with tests—integration and unit—. This
+experience led to some frustration, which got me thinking… Where did the
+frustration come from? How could it be done differently? And ultimately, what
+makes a good test? This post is a collection of thoughts about testing, not an
+exhaustive guide.</p>
+<h2>Unit vs. Integration?</h2>
+<blockquote>
+<p>It does not matter which one you pick first, you might need both eventually…</p>
+</blockquote>
+<p>Before writing any test, you might be wondering <em>which kind of test</em> makes
+sense. Would it be better to cover your new feature with unit or integration
+tests? You might want to pause for a moment and think about the trade-offs of
+the different options.</p>
+<p>Often, <em>unit tests</em> will run in a more controlled environment, maybe with some
+dependencies <a href="https://en.wikipedia.org/wiki/Mock_object" target="_blank" rel="noopener noreferrer">mocked</a>, so that you
+can focus on a specific file, class or function. This means that unit tests are
+more targeted than integration tests. It also means that they might be easier
+to reason about, and quicker to iterate with. As an example, imagine testing a
+JavaScript library; unit tests could be running in Node.js instead of a
+full-blown browser.</p>
+<p>On the other hand, <em>integration tests</em> will potentially target multiple systems
+interacting with each other, running in an environment which is much closer to
+production conditions. Using the same example, your JavaScript library might now be tested
+in a handful of browsers (e.g.: Firefox, Chromium and Safari, with different
+versions of each), while interacting with other libraries. This means that you
+will most likely gain more confidence that the code works in production
+environment, at the cost of a more complex setup.</p>
+<h2>Non-regression Tests</h2>
+<blockquote>
+<p>Non-regression is not the same as <em>non-evolution</em>.</p>
+</blockquote>
+<p>It is desirable to consolidate APIs or components with non-regression tests,
+but be careful not to prevent future evolution! This might happen if you take
+the current production system and generate test-cases by feeding inputs,
+getting the results and writing high-level tests which ensure that the output
+is always the one that was expected <em>at the time test-cases were generated</em>.</p>
+<p>Although this might feel good at first—we have great test coverage after
+all!—, this approach has at least one major short-coming: <em>it’s very hard to
+make the tests evolve in the future</em>. It’s nice to “freeze” the capabilities of
+your system with numerous tests, but unless said system is not meant to evolve
+in the future, the assumptions about expected results will most likely evolve
+over time. This means that when writing tests you probably need to think not
+only about coverage and the expected behavior <em>right now</em>, but also how easy it
+will be to make the tests evolve in the future.</p>
+<p>Tests are tightly related to the code being tested and, if you are not careful,
+rigid tests might make changing the source code much more painful than it
+should be.</p>
+<h2>Your Tests are Code</h2>
+<blockquote>
+<p>Tests are not the destination, they are the starting point and the path.</p>
+</blockquote>
+<p>There is a misunderstanding at the root of all evils: you shall not <em>treat
+your tests differently than your source code</em>. Tests <strong>are</strong> code! To make
+things a bit more concrete, here is a list of assumptions which I think are
+reasonable when it comes to source code but are rarely accepted for tests:</p>
+<ul>
+<li>You expect to be able to <em>build</em> and <em>run</em> your code easily.</li>
+<li>You expect your code to be <em>efficient</em>.</li>
+<li>You expect your code to be <em>understandable</em>.</li>
+<li>You expect your code to be <em>documented</em>.</li>
+<li>You expect your code to be <em>cross-platform</em>.</li>
+<li>You expect your code to be <em>easy to delete</em>!</li>
+<li>You expect your code to <em>not be redundant and use abstractions</em>.</li>
+</ul>
+<p>Whenever one of the expectations holds for your code, try replacing <code>code</code> with
+<code>tests</code> and ask yourself if it is still true. Your code and the tests you write
+to ensure it behaves in a correct way will have to evolve side-by-side in the
+future. You do not want your tests to become a <em>liability</em>.</p>
+<h2>Future-Proof Tests?</h2>
+<blockquote>
+<p>No developer ever reads the same code twice. — Heraclitus</p>
+</blockquote>
+<p>When writing tests, try to express your intent and give cues to the future
+reader —that might be you in a few months!— regarding why a given assertion was
+needed, what behavior is being tested, etc. Alongside the usual features of a
+language such as <em>comments</em>, <em>good names</em> for variables and functions, etc.
+modern testing frameworks give many tools to ease this process: use things like
+<code>describe(...)</code>, <code>it(...)</code> and explicit assertions <code>expect(...).to.be</code>.</p>
+<p>Additionally, as a contributor to a project which has tests, it should be
+reasonnably straightforward to answer the following questions:</p>
+<ul>
+<li>when looking at code, where can I find the existing tests?</li>
+<li>when looking at tests, which code is being tested?</li>
+</ul>
+<p>There should be a clear path to modify both code and tests:</p>
+<ul>
+<li>when changing code, which tests need to be changed?</li>
+<li>when deleting code, which tests need to be deleted?</li>
+</ul>
+<p>A few tips can ease this process. <em>Naming conventions</em> for test files should be
+consistent and finding the tests for a given file or component should not
+involve any interpretation, it should be mechanical (e.g.: tests for <code>module.js</code>
+are always to be found in <code>tests/module.test.js</code>).</p>
+<p>Tests should be organized in a way that follows the code structure closely so
+that changes in the source can be reflected to the tests and <em>vice versa</em>. This
+also applies to the internal structure of the tests. It can be helpful to group
+assertions by behavior or assumptions. It is also helpful to be explicit about
+both success and failure of an assertion!</p>
+<p>This last point is important because if you can quickly grasp the intent while
+reading a test; it allows to decide if an assertion still holds after a change
+in the code, or if it should go away completely.</p>
+<p>Last but not least, avoid repetition in tests. If you see yourself writing the
+same assertions over and over again to tests similar components, it might be
+worth abstracting these away. You will thank yourself in the future when you
+need to amend the tests!</p>
+<h2>By Way of Conclusion</h2>
+<blockquote>
+<p>Always pick the right hammer for your nails…</p>
+</blockquote>
+<p>As mentioned previously, this is not about picking unit tests over integration
+tests. You will likely need both eventually because they are often
+complementary and give you a different kind of confidence in the correctness of
+your code (although some <a href="https://blog.thecodewhisperer.com/permalink/integrated-tests-are-a-scam" target="_blank" rel="noopener noreferrer">argue against integration tests</a>).</p>
+<p>As a take-away, treat your tests the same way you treat your source code and
+hold them both to high standards. Not doing so might lead to a situation where
+your tests become a liability and slow you down instead of empowering you to
+write better and more robust features.</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -2408,6 +2535,166 @@ sub-commands presented above.</li>
 <li>Support more editions to make the dataset more complete (German is next)</li>
 <li>Find more interesting applications and visualizations ideas!</li>
 </ol>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Synacor—Down the rabbit hole]]></title>
+            <link>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</link>
+            <guid>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</guid>
+            <pubDate>Sun, 10 Jun 2018 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Last year I had the chance to participate in the 2017 edition of <a href="https://adventofcode.com/" target="_blank" rel="noopener noreferrer">Advent
+of Code</a>. That was the first time and I
+<em>really</em> enjoyed it. Having to solve an interesting problem, every
+day, made me learn a lot! It’s also a good occasion to practice some
+skills that might not be otherwise useful in your daily job (and more
+importantly: have fun!).</p>
+<p>While skimming through the discussions on Reddit about possible
+solutions to one of the AoC’s problems, someone mentioned “Synacor”… I
+never heard of it before, but from what I understood it was some kind of
+programming challenge. I did not need more to have a look:
+<a href="https://challenge.synacor.com" target="_blank" rel="noopener noreferrer">challenge.synacor.com</a>.</p>
+<h1>The Challenge</h1>
+<p>The challenge is briefly introduced, the competition took place during
+two conferences in the past and is now over. But you can still download
+the material of the challenge and try to solve it.</p>
+<p>After registering an email address and a password, I could download an
+archive <code>synacor-challenge.tgz</code>. Uncompressed, it contains two files :</p>
+<ol>
+<li><code>arch-spec</code></li>
+<li><code>challenge.bin</code></li>
+</ol>
+<p>The first one describes the challenge. It is about creating “a virtual
+machine capable of running the included binary [challenge.bin]”. It also
+mentions that some “codes” are to be found along the way. The rest of
+the document describes the architecture of the virtual machine:</p>
+<ul>
+<li>16 bits integers stored in little-endian format</li>
+<li>16 bits addressable memory (the program starts at address <code>0</code>)</li>
+<li>8 registers</li>
+<li>1 stack containing 16 bits numbers</li>
+<li>22 instructions: <code>halt</code>, <code>noop</code>, <code>set</code>, <code>push</code>, <code>jpm</code>, <code>add</code>, <code>mult</code>, etc.</li>
+</ul>
+<p>Each instruction is described in details: opcode, number of expected
+arguments and behavior when executed by the virtual machine. So
+far so good, this looks pretty classic. The implementation of such
+virtual machine is pretty straight forward. I choose <code>Haskell</code> for
+the implementation (because why not, and I already implemented some
+<a href="https://github.com/remusao/Hodor" target="_blank" rel="noopener noreferrer">Brainfuck interpreter/transpiler</a>
+before, so I thought I could reuse some learnings from there). Without
+going into too much details, I used the following data structures to
+represent the state of the VM:</p>
+<pre class="code" data-lang="haskell"><code><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Synacor</span> = <span class="hljs-type">Synacor</span></span>
+  { pos :: <span class="hljs-type">Int</span>
+  , mem :: <span class="hljs-type">Map</span> <span class="hljs-type">Register</span> <span class="hljs-type">Word16</span>
+  , stack :: [<span class="hljs-type">Word16</span>]
+  , program :: <span class="hljs-type">Vector</span> <span class="hljs-type">Word16</span>
+  }
+</code></pre>
+<h1>First Results</h1>
+<p>After implementing most of the instructions, I tried to run the program:</p>
+<blockquote>
+<p>Welcome to the Synacor Challenge! Please record your progress by
+putting codes like this one into the challenge website: XXXXXXXXXXX</p>
+<p>Executing self-test…</p>
+</blockquote>
+<p>Nice, so the program actually starts by <em>testing the virtual machine</em>,
+to make sure all instructions are implemented properly. It’s pretty
+cool. It means that you cannot proceed until your VM is fully functional
+(Using Haskell is a good start for that…). After a few iterations of
+trial, error, fix, I completed my implementation until…</p>
+<blockquote>
+<p>self-test complete, all tests pass
+The self-test completion code is: XXXXXXXXXXXX</p>
+</blockquote>
+<p>Youpi! All good… but, wait, something else was displayed on the terminal:</p>
+<p><strong>DISCLAIMER</strong>: The next section of this post contains spoilers and
+parts of solutions for the Synacor challenge. Please only proceed if you
+already solved the challenge, or do not intend to do so.</p>
+<p>…</p>
+<h1>Riddles in the Dark</h1>
+<blockquote>
+<p>== Foothills ==
+You find yourself standing at the base of an enormous mountain. At its
+base to the north, there is a massive doorway. A sign nearby reads
+“Keep out! Definitely no treasure within!”</p>
+<p>Things of interest here:</p>
+<ul>
+<li>tablet</li>
+</ul>
+<p>There are 2 exits:</p>
+<ul>
+<li>doorway</li>
+<li>south</li>
+</ul>
+<p>What do you do?</p>
+</blockquote>
+<p><em>Mind blown</em>. The program you are running is actually a terminal-based
+RPG! How cool is that? Well, very cool, and very smart. I clearly did
+not expect that from the challenge. It’s a bit like trying to open a
+chess (the chess is a program and the virtual machine is the key) and
+then you discover there is another riddle in the chess. So what’s next?
+Well play the game I guess…</p>
+<p>I played for a bit, and discovered one more code in the game (Did I
+already mention how cool all this is?). Which means some (all?) codes
+can be found by playing the game. But then, how do I know if all codes
+are in the game? How deep and rich can this game be? What if it takes 10
+hours to find the codes? I already under-estimated the challenge once,
+let’s not do the same mistake again.</p>
+<p>At this point I thought of two things that could be done:</p>
+<ol>
+<li>Try to extract all text from the file <code>challenge.bin</code> and see if it contains
+any code.</li>
+<li>Modify the VM so that it can play the game by itself, and explore all
+possible paths possible, some kind of depth-first search on the game itself
+in a way.</li>
+<li>Disassemble the program and try to understand its structure. The codes must
+be stored somewhere (or generated somehow), by understanding (and maybe
+changing a bit) the code, it must be possible to bypass the game completely.</li>
+</ol>
+<p>The first approach did not yield any result, which means that codes are
+probably encoded in some way to not be readable. I did not have too much hope
+anyways, but we never know.</p>
+<p>The second approach was the most promising and allowed me to discover a few more
+codes. Here is how it worked:</p>
+<p><strong>First step</strong> – I modified the virtual machine implementation so that it’s 100%
+pure code with no side-effect. The execution now consists in a function
+<code>execNextOpCode</code> which takes as input the state of the program, runs the
+next opcode of the program, then returns a “continuation” which can be
+one of:</p>
+<ul>
+<li><code>Halt</code> - program terminated successfully.</li>
+<li><code>Error String</code> - there was an exception while running the opcode (should
+never happen).</li>
+<li><code>PutChar Char</code> - we should print a character in the terminal.</li>
+<li><code>GetChar (Char -&gt; s)</code> - we should ask some user input, then continue the
+execution of the opcode using the function returned (<code>Char -&gt; s</code>).</li>
+<li><code>Ok</code> - opcode was executed correctly and we can continue running the program.</li>
+</ul>
+<p>The nice thing with this model, is that running an opcode does not alter
+the state of the virtual machine, but instead returns a new virtual
+machine (copy of the initial state). This might seem crazy, but it’s not as
+inefficient as it sounds (and pretty common in an immutable language like
+Haskell). This allows us to parallelize the execution of different branches of a
+program without having to care about controlling side-effects.</p>
+<p><strong>Second step</strong> – write a depth-first search for the game by changing the VM
+execution model in two ways:</p>
+<ol>
+<li>Each output <code>PutChar</code> from the program is stored in an accumulator so that we
+can inspect it later.</li>
+<li>Each time a user input is required by the <code>GetChar</code> continuation code, we
+<em>fork</em> our execution of the program and perform all possible user actions
+concurrently: <em>picking up objects</em>, <em>using objects</em>, <em>visit available
+places</em>.</li>
+<li>We need to detect loops to not explore forever (e.g.: when we come back to an
+already visited location). This is done by comparing the output (accumulated
+<code>PutChar</code> from the program) of a given branch to all previously explored
+branches. If we already generated the same output once, no need to do it
+again.</li>
+</ol>
+<p>This approach allowed me to discover a few more codes, <em>but not all</em>!
+This can mean two things: either not all codes can be discovered through
+the game (likely), or my exploration method is not working as well as it
+should! In both cases, it means I’m not done exploring the rabbit hole…</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -6677,43 +6964,6 @@ pas le pattern-matching en Hash table lorsque c’est possible.</p>
 ]]></content:encoded>
         </item>
         <item>
-            <title><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
-            <link>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</link>
-            <guid>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</guid>
-            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
-j’ai reçu récemment je me suis heurté à quelques problèmes
-puisque la version dans les dépots de Archlinux ne compilait pas et
-aucun paquet précompilé pour Arm n’était disponible. Je vais donc
-exposer une solution pour pouvoir le compiler et l’installer. Mais
-tout d’abord une petite description du logiciel trouvée sur le site
-des créateurs :</p>
-<blockquote>
-<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
-</blockquote>
-<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
-il suffit de télécharger un patch supplémentaire et de remplacer le
-PKGBUILD fourni par un autre que je vais vous donner. Voici comment
-faire :</p>
-<ol>
-<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
-<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
-<li>Exécutez les commandes suivantes :</li>
-</ol>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
-$ yaourt -G mediatomb
-$ <span class="hljs-built_in">cd</span> mediatomb
-[Copier le patch ici]
-[Copier le fichier PKGBUILD ici]
-$ makepkg -si
-</code></pre>
-<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
-vaut le coup. J’espère que ça servira à certains le temps que les
-paquets dans les dépôts d’archlinux soient de nouveau compilables
-sans modification.</p>
-]]></content:encoded>
-        </item>
-        <item>
             <title><![CDATA[Ma vision des mathématiques]]></title>
             <link>https://remusao.github.io//posts/mathematiques-vision.html</link>
             <guid>https://remusao.github.io//posts/mathematiques-vision.html</guid>
@@ -6841,6 +7091,43 @@ d’évoluer dans ces univers abstraits, de visualiser et de comprendre
 les œuvres laissées par d’illustres mathématiciens avant nous,
 et de bâtir de nouveaux édifices avec les outils qu’ils nous ont
 légués.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
+            <link>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</link>
+            <guid>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</guid>
+            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
+j’ai reçu récemment je me suis heurté à quelques problèmes
+puisque la version dans les dépots de Archlinux ne compilait pas et
+aucun paquet précompilé pour Arm n’était disponible. Je vais donc
+exposer une solution pour pouvoir le compiler et l’installer. Mais
+tout d’abord une petite description du logiciel trouvée sur le site
+des créateurs :</p>
+<blockquote>
+<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
+</blockquote>
+<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
+il suffit de télécharger un patch supplémentaire et de remplacer le
+PKGBUILD fourni par un autre que je vais vous donner. Voici comment
+faire :</p>
+<ol>
+<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
+<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
+<li>Exécutez les commandes suivantes :</li>
+</ol>
+<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
+$ yaourt -G mediatomb
+$ <span class="hljs-built_in">cd</span> mediatomb
+[Copier le patch ici]
+[Copier le fichier PKGBUILD ici]
+$ makepkg -si
+</code></pre>
+<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
+vaut le coup. J’espère que ça servira à certains le temps que les
+paquets dans les dépôts d’archlinux soient de nouveau compilables
+sans modification.</p>
 ]]></content:encoded>
         </item>
         <item>
