@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Mon, 22 Dec 2025 19:08:18 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 22 Dec 2025 20:00:37 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -1029,6 +1029,67 @@ write better and more robust features.</p>
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[A static blog generator in TypeScript]]></title>
+            <link>https://remusao.github.io//posts/typescript-blog-generator.html</link>
+            <guid>https://remusao.github.io//posts/typescript-blog-generator.html</guid>
+            <pubDate>Fri, 19 Jul 2019 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<blockquote>
+<p>Oups, I did it again…</p>
+</blockquote>
+<p>A while ago I was joking with <a href="https://twitter.com/sebadzia" target="_blank" rel="noopener noreferrer">@sebadzia</a> about
+the fact that if you are not re-writting your blog generation mechanism from
+scratch every <em>N</em> posts, then you’re doing it wrong. It appears that I’m
+actually living by these words and have been re-implementing my own blog over
+and over again; maybe in the hope that it would motivate me to write more. This
+blog <em>became an end instead of a mean</em> to communicate things.</p>
+<p>Here are the 6 engines I’ve used over the years (and this does not even account
+for the different themes that I used with each of them):</p>
+<ul>
+<li><a href="https://wordpress.org/" target="_blank" rel="noopener noreferrer">WordPress</a></li>
+<li><a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a></li>
+<li><a href="https://blog.getpelican.com/" target="_blank" rel="noopener noreferrer">Pelican</a></li>
+<li><a href="https://jaspervdj.be/hakyll/" target="_blank" rel="noopener noreferrer">Hakyll</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy" target="_blank" rel="noopener noreferrer">Custom generator in Haskell</a></li>
+<li><a href="https://github.com/remusao/remusao.github.io/tree/diy-ts" target="_blank" rel="noopener noreferrer"><strong>Custom generator in TypeScript</strong></a></li>
+</ul>
+<p>This means that the blog engine has been changed on average every <em>8.5</em> posts.
+Not too bad! Maybe the next one will be in Rust?</p>
+<p>I think what made me switch this time is the fact that I’m actually enjoying
+TypeScript very much lately (I find the type system super neat, and already
+liked JavaScript tooling a lot); and I was a bit fed up by the build time of
+the Haskell version. The way I did it was most probably sub-optimal as I am by
+no mean an experienced Haskell developer. Last but not least, I was on vacation
+and had some time to waste…</p>
+<p>The TypeScript generator is still rough around the edges but it’s working and
+allows me to build the site, watch changes, and serve locally in development
+mode.</p>
+<p>I rely on the following packages to do the heavy lifting:</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/@octokit/rest" target="_blank" rel="noopener noreferrer">@octokit/rest</a> to interact with GitHub APIs (used to fetch static comments)</li>
+<li><a href="https://www.npmjs.com/package/chokidar" target="_blank" rel="noopener noreferrer">chokidar</a> to watch for files changes</li>
+<li><a href="https://www.npmjs.com/package/express" target="_blank" rel="noopener noreferrer">express</a> to serve blog locally</li>
+<li><a href="https://www.npmjs.com/package/dompurify" target="_blank" rel="noopener noreferrer">dompurify</a> to sanitize final HTML</li>
+<li><a href="https://www.npmjs.com/package/highlight.js" target="_blank" rel="noopener noreferrer">highlight.js</a> to provide syntactic coloration for code blocks in posts</li>
+<li><a href="https://www.npmjs.com/package/html-minifier" target="_blank" rel="noopener noreferrer">html-minifier</a> to minimize HTML</li>
+<li><a href="https://www.npmjs.com/package/marked" target="_blank" rel="noopener noreferrer">marked</a> to convert markdown to HTML</li>
+</ul>
+<p>Overall I’m fairly happy with this setup. The generator currently fits into a
+single source file (which should probably be split at some point) and generation
+is pretty fast: <em>~50</em> seconds from scratch (which includes installing all npm
+dependencies, generating posts and fetching comments from GitHub). Generating
+posts only takes less than 10 seconds, and most of the time is spent waiting
+for comments to be fetched from GitHub issues.</p>
+<p>There are a few things I’d like to try or investigate in the future to improve:</p>
+<ul>
+<li>consider using JSX (with React in pure server-side rendering mode)</li>
+<li>consider writing CSS in TypeScript as well with typing</li>
+<li>add support for inlined math using KaTex (which I do not need at the moment)</li>
+<li>improve comments display with better rendering and support for reactions and emojis</li>
+</ul>
+<p>And of course, I will try my best to write more content here in the future!</p>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[What's exciting in Cliqz 1.35]]></title>
             <link>https://remusao.github.io//posts/cliqz-1.35-notes.html</link>
             <guid>https://remusao.github.io//posts/cliqz-1.35-notes.html</guid>
@@ -1571,6 +1632,466 @@ or better across all dimensions, often surpassing other libraries.</p>
 developers to measure their own progress against other popular libraries;
 benefiting all users, no matter which extension they use, as the efficiency of
 content-blockers improves.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Fast domains and URLs parsing with tldts]]></title>
+            <link>https://remusao.github.io//posts/tldts-benchmarks.html</link>
+            <guid>https://remusao.github.io//posts/tldts-benchmarks.html</guid>
+            <pubDate>Sat, 02 Feb 2019 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>For quite some time now I’ve been working on
+<a href="https://github.com/remusao/tldts/" target="_blank" rel="noopener noreferrer"><strong>tldts</strong></a> (<a href="https://www.npmjs.com/package/tldts" target="_blank" rel="noopener noreferrer"><strong>npm</strong></a>), an <em>extemely fast</em>,
+<em>feature-full</em>, <em>battle-tested</em> JavaScript library for domain parsing. It
+allows to answer questions such has:</p>
+<ul>
+<li>What’s the hostname of an URL?</li>
+<li>What’s the registrable domain of an URL, a hostname or an email address?</li>
+<li>What’s the sub-domain of a domain?</li>
+<li>etc.</li>
+</ul>
+<p>What puts <a href="https://github.com/remusao/tldts/" target="_blank" rel="noopener noreferrer"><strong>tldts</strong></a> appart from other libraries is:</p>
+<ul>
+<li>It is <strong>much faster</strong> than alternatives, allowing to parse between
+<strong>1 and 2 million</strong> domains per second (that’s <strong>up to 1000 times</strong> faster
+than other popular libraries).</li>
+<li>It is more feature-full, supporting <em>IPs detection</em>, <em>domain validation</em> and <em>complex URLs parsing</em>.</li>
+<li>It offers the smallest bundles, in both <code>cjs</code>, <code>esm</code> and <code>umd</code> formats; it runs <em>anywhere</em>.</li>
+<li>It is written in <em>TypeScript</em> and benefits from 100% test coverage.</li>
+</ul>
+<p>Most of the features are made possible by the <a href="https://publicsuffix.org/" target="_blank" rel="noopener noreferrer">public suffix
+list</a> project. But
+<a href="https://github.com/remusao/tldts/" target="_blank" rel="noopener noreferrer"><strong>tldts</strong></a> offers some bells and whistles on
+top. One of the goals is to be <em>conveniant</em> to use and as fast as it gets. Some
+libraries require you to provide already-valid hostnames, but
+<a href="https://github.com/remusao/tldts/" target="_blank" rel="noopener noreferrer"><strong>tldts</strong></a> has no such constraints and will
+happily parse complex URLs, as well as already-extracted hostnames. The best
+part is that this does not come with any over-head!</p>
+<pre class="code" data-lang="javascript"><code><span class="hljs-keyword">const</span> tldts = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;tldts&#x27;</span>);
+
+<span class="hljs-comment">// Retrieving hostname related informations of a given URL</span>
+tldts.<span class="hljs-title function_">parse</span>(<span class="hljs-string">&#x27;https://remusao.github.io/posts/tldts-benchmarks.html&#x27;</span>);
+<span class="hljs-comment">// { domain: &#x27;github.io&#x27;,</span>
+<span class="hljs-comment">//   hostname: &#x27;remusao.github.io&#x27;,</span>
+<span class="hljs-comment">//   isIcann: true,</span>
+<span class="hljs-comment">//   isIp: false,</span>
+<span class="hljs-comment">//   isPrivate: false,</span>
+<span class="hljs-comment">//   publicSuffix: &#x27;io&#x27;,</span>
+<span class="hljs-comment">//   subdomain: &#x27;remusao&#x27; }</span>
+</code></pre>
+<p>In this post I’d like to share some results of a performance comparison against
+other available JavaScript libraries offering the same kind of features. We
+will see that they vary greatly in terms of performance, ease of use or
+features. In fact, we observed that <code>tldts</code> is up to <strong>1000 times</strong> faster than
+some of the other libraries!</p>
+<p>Before presenting the results, a few words about the instrumentation and what
+was measured. We aim at comparing the libraries in the following aspects:</p>
+<ol>
+<li>Features</li>
+<li>Performance (in terms of operations per second)</li>
+<li>Loading time (time it took V8 to load the bundle)</li>
+<li>Memory used</li>
+</ol>
+<p>All the measurements were performed in the following environment:</p>
+<ul>
+<li><code>Node.js</code> version <strong>11.6.0</strong></li>
+<li>Hardware: X1 Carbon 4th with i7-6600U CPU and 16GB of RAM</li>
+</ul>
+<p>And now the list of the contenders:</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/tldts" target="_blank" rel="noopener noreferrer"><strong>tldts</strong></a></li>
+<li><a href="https://www.npmjs.com/package/psl" target="_blank" rel="noopener noreferrer">psl</a></li>
+<li><a href="https://www.npmjs.com/package/tldjs" target="_blank" rel="noopener noreferrer">tld.js</a></li>
+<li><a href="https://www.npmjs.com/package/parse-domain" target="_blank" rel="noopener noreferrer">parse-domain</a></li>
+<li><a href="https://www.npmjs.com/package/haraka-tld" target="_blank" rel="noopener noreferrer">haraka-tld</a></li>
+<li><a href="https://github.com/gorhill/uBlock/blob/master/src/lib/publicsuffixlist.js" target="_blank" rel="noopener noreferrer">uBlock’s publicsuffixlist.js</a></li>
+</ul>
+<p>In the results you will also see <code>tldts-experimental</code> mentioned. It is a
+probabilistic data-structure implementing the exact same features as <code>tldts</code>
+but using <em>much less memory</em>, <em>loading instantly</em> and offering <em>even higher
+performances</em>. It can be used in contexts with very constrained hardware
+capabilities such as mobiles.</p>
+<p>Now let’s now dig into the results!</p>
+<h2>Feature Matrix</h2>
+<p>The following features are considered:</p>
+<ul>
+<li>Is there <code>IDNA</code> support? Does the library support inputs with unicode such as <em>中国</em>?</li>
+<li>Does the library accept complex <code>URLs</code> as input, or is it necessary to extract the hostname before-hand?</li>
+<li>Is the library able to detect if the given input is an <code>IP</code> address? This is important, otherwise <code>getPublicSuffix('192.168.0.1')</code> would return <code>1</code>!</li>
+<li>Does the library allow you to extract <code>domain</code> and <code>public suffix</code>?</li>
+<li>Does the library support ICANN/Private sections of the public suffix list? Can they be disabled individually?</li>
+<li>Will the public suffix rules be <code>shipped</code> with the library, or do they need to be fetched separately?</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Library</th>
+<th style="text-align:center">IDNA</th>
+<th style="text-align:center">URLs</th>
+<th style="text-align:center">IPs</th>
+<th style="text-align:center">getDomain</th>
+<th style="text-align:center">getPublicSuffix</th>
+<th style="text-align:center">ICANN/Private</th>
+<th style="text-align:center">Ships lists</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><strong>tldts</strong></td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+</tr>
+<tr>
+<td style="text-align:center">tld.js</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+</tr>
+<tr>
+<td style="text-align:center">psl</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">X</td>
+</tr>
+<tr>
+<td style="text-align:center">parse-domain</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+</tr>
+<tr>
+<td style="text-align:center">haraka-tld</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">X</td>
+</tr>
+<tr>
+<td style="text-align:center">uBlock publicsuffixlist</td>
+<td style="text-align:center">?</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+<h1>Performance</h1>
+<p>Here we measure the performance of three common operations offered by domain
+parsing library: <em>getting the public suffix</em> of a hostname, <em>getting the
+domain</em> (tld + sld) and <em>getting the subdomain</em>.</p>
+<p>A few notes about this benchmark:</p>
+<ul>
+<li>The inputs used are always already valid hostnames (no URLs, although some
+libraries like tldts support it). You can find the list of inputs there:</li>
+<li>The selection of hostnames can be seen in <a href="https://github.com/remusao/tldts/blob/master/comparison/bench_performance.js#L12" target="_blank" rel="noopener noreferrer">bench_performance.js</a>
+and was selected to contain a mix of non-existing suffixes, ICANN rules,
+private rules as well as wildcards and exceptions.</li>
+<li>All hostnames were ASCII (puny-encoded if needed before-hand)</li>
+<li>All libraries were used in their default setup (no option given, with the
+exception of <code>tldts-no-parse</code> which runs <code>tldts</code> disabling the parsing phase
+and assuming that the input is already a valid hostname, to match the
+behavior of other libraries).</li>
+</ul>
+<p>The results are expressed in terms of operations per second (where each
+operation is calling the function once on a hostname).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Library</th>
+<th style="text-align:right">getPublicSuffix</th>
+<th style="text-align:right">getDomain</th>
+<th style="text-align:right">getSubdomain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>tldts-experimental</strong></td>
+<td style="text-align:right">1 898 446</td>
+<td style="text-align:right">1 690 572</td>
+<td style="text-align:right">1 615 166</td>
+</tr>
+<tr>
+<td style="text-align:left">tldts no parsing</td>
+<td style="text-align:right">1 780 469</td>
+<td style="text-align:right">1 515 703</td>
+<td style="text-align:right">1 502 692</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>tldts</strong></td>
+<td style="text-align:right"><strong>1 280 063</strong></td>
+<td style="text-align:right"><strong>1 134 956</strong></td>
+<td style="text-align:right">1 125 362</td>
+</tr>
+<tr>
+<td style="text-align:left">tld.js</td>
+<td style="text-align:right">1 141 414</td>
+<td style="text-align:right">1 049 180</td>
+<td style="text-align:right">1 125 362</td>
+</tr>
+<tr>
+<td style="text-align:left">ublock publicsuffix</td>
+<td style="text-align:right">620 816</td>
+<td style="text-align:right">567 664</td>
+<td style="text-align:right">?</td>
+</tr>
+<tr>
+<td style="text-align:left">parse-domain</td>
+<td style="text-align:right">554 355</td>
+<td style="text-align:right">528 217</td>
+<td style="text-align:right">551 008</td>
+</tr>
+<tr>
+<td style="text-align:left">haraka-tld</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">105 321</td>
+<td style="text-align:right">?</td>
+</tr>
+<tr>
+<td style="text-align:left">psl</td>
+<td style="text-align:right">1 654</td>
+<td style="text-align:right">1 693</td>
+<td style="text-align:right">1 673</td>
+</tr>
+</tbody>
+</table>
+<p>Here we see that the performance varies a lot between libraries, for the same
+operations. <code>tldts</code> is <strong>1000</strong> faster than <code>psl</code>, which is the most popular
+library.</p>
+<h1>Memory Usage</h1>
+<p>Here we estimate the memory used by each library. The measurements are done
+using the <a href="https://github.com/remusao/tldts/blob/master/comparison/bench_memory.js" target="_blank" rel="noopener noreferrer">bench_memory.js</a>
+script, which loads each file ten times and measure the average memory usage
+before and after GC using <code>process.memoryUsage()</code>. The result are then compared
+to a reference memory usage computed in the same way using <code>noop_test.js</code> which
+does not import anything.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Library</th>
+<th style="text-align:right">Before GC</th>
+<th style="text-align:right">After GC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>tldts-experimental</strong></td>
+<td style="text-align:right"><strong>461KB</strong></td>
+<td style="text-align:right"><strong>229 KB</strong></td>
+</tr>
+<tr>
+<td style="text-align:left">parse-domain</td>
+<td style="text-align:right">2.579 MB</td>
+<td style="text-align:right">1.310MB</td>
+</tr>
+<tr>
+<td style="text-align:left">psl</td>
+<td style="text-align:right">2.199 MB</td>
+<td style="text-align:right">1.537MB</td>
+</tr>
+<tr>
+<td style="text-align:left">tldjs</td>
+<td style="text-align:right">2.621 MB</td>
+<td style="text-align:right">1.714MB</td>
+</tr>
+<tr>
+<td style="text-align:left">tldts</td>
+<td style="text-align:right">3.094 MB</td>
+<td style="text-align:right">1.792MB</td>
+</tr>
+<tr>
+<td style="text-align:left">UBlock publicsuffix</td>
+<td style="text-align:right">4.529 MB*</td>
+<td style="text-align:right">2.399MB</td>
+</tr>
+<tr>
+<td style="text-align:left">haraka-tld</td>
+<td style="text-align:right">4.405 MB</td>
+<td style="text-align:right">2.595MB</td>
+</tr>
+</tbody>
+</table>
+<p>(*) The memory of uBlock cannot be estimated correctly as for this
+benchmarks the lists were inlined in the source code, which is not how
+it’s used in production.</p>
+<h1>Loading Time</h1>
+<p>One point of comparison which can make a difference in some contexts (e.g.:
+mobile or if the library is embedded in a website) is the loading time of the
+bundle itself (or time it takes to parse the code and initialize it). It can
+have a big impact if you use the library on very slow devices (like mobiles)
+and here again, not all the libraries are equal.</p>
+<p>The benchmark code can be found in <a href="https://github.com/remusao/tldts/blob/master/comparison/bench_startup.sh" target="_blank" rel="noopener noreferrer">bench_startup.sh</a>.
+It measures the time it takes to import each of the libraries. The measurements
+are performed using the <a href="https://hackage.haskell.org/package/bench" target="_blank" rel="noopener noreferrer">bench</a> CLI,
+looking at the <code>mean</code> time returned for each.</p>
+<p>Note that this benchmark was performed using the cjs bundle. The performance
+might be different in another environment or different bundle (e.g.: UMD in a
+browser).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Library</th>
+<th style="text-align:right">Mean (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Ref (no <code>require</code>)</td>
+<td style="text-align:right">48.21</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>tldts-experimental</strong></td>
+<td style="text-align:right"><strong>47.93</strong></td>
+</tr>
+<tr>
+<td style="text-align:left">psl</td>
+<td style="text-align:right">53.77</td>
+</tr>
+<tr>
+<td style="text-align:left">tld.js</td>
+<td style="text-align:right">58.74</td>
+</tr>
+<tr>
+<td style="text-align:left">parse-domain</td>
+<td style="text-align:right">61.96</td>
+</tr>
+<tr>
+<td style="text-align:left">tldts</td>
+<td style="text-align:right">64.48</td>
+</tr>
+<tr>
+<td style="text-align:left">ublock</td>
+<td style="text-align:right">78.05</td>
+</tr>
+<tr>
+<td style="text-align:left">haraka-tld</td>
+<td style="text-align:right">84.93</td>
+</tr>
+</tbody>
+</table>
+<p>Note that some libraries like <code>ublock</code> or <code>haraka-tld</code> perform some form of parsing
+of the rules at loading-time, which incurs an initial cost when importing the
+library.</p>
+<h1>Bundles</h1>
+<p>Comparison of bundle sizes, when applicable (not all libraries provide bundles):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Library</th>
+<th style="text-align:right">Normal</th>
+<th style="text-align:right">Minified</th>
+<th style="text-align:right">Gzipped</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>tldts-experimental</strong></td>
+<td style="text-align:right"><strong>100KB</strong></td>
+<td style="text-align:right"><strong>94KB</strong></td>
+<td style="text-align:right">38KB</td>
+</tr>
+<tr>
+<td style="text-align:left">tldts</td>
+<td style="text-align:right">140KB</td>
+<td style="text-align:right"><strong>95KB</strong></td>
+<td style="text-align:right">37KB</td>
+</tr>
+<tr>
+<td style="text-align:left">psl</td>
+<td style="text-align:right">138KB</td>
+<td style="text-align:right">122KB</td>
+<td style="text-align:right">39KB</td>
+</tr>
+<tr>
+<td style="text-align:left">tld.js</td>
+<td style="text-align:right">209KB</td>
+<td style="text-align:right">141KB</td>
+<td style="text-align:right">40KB</td>
+</tr>
+<tr>
+<td style="text-align:left">parse-domain</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">?</td>
+</tr>
+<tr>
+<td style="text-align:left">ublock</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">?</td>
+</tr>
+<tr>
+<td style="text-align:left">haraka-tld</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">?</td>
+<td style="text-align:right">?</td>
+</tr>
+</tbody>
+</table>
+<h1>Dependencies</h1>
+<p>Here is a comparison of dependencies for each library:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Library</th>
+<th style="text-align:left">Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>tldts</strong></td>
+<td style="text-align:left"><strong>(none)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left">psl</td>
+<td style="text-align:left">punycode</td>
+</tr>
+<tr>
+<td style="text-align:left">tld.js</td>
+<td style="text-align:left">punycode</td>
+</tr>
+<tr>
+<td style="text-align:left">ublock</td>
+<td style="text-align:left">punycode</td>
+</tr>
+<tr>
+<td style="text-align:left">haraka-tld</td>
+<td style="text-align:left">punycode</td>
+</tr>
+<tr>
+<td style="text-align:left">parse-domain</td>
+<td style="text-align:left">?</td>
+</tr>
+</tbody>
+</table>
+<h1>Conclusion</h1>
+<p>=&gt; <a href="https://github.com/remusao/tldts" target="_blank" rel="noopener noreferrer"><strong>Tldts GitHub repository</strong></a></p>
+<p>=&gt; <a href="https://www.npmjs.com/package/tldts" target="_blank" rel="noopener noreferrer"><strong>Tldts on NPM</strong></a></p>
+<pre class="code" data-lang="sh"><code>npm install tldts
+</code></pre>
+<p>If that sounds appealing to you, give it a shot and do not hesite to open
+issues for any feedback you might have!</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -2522,6 +3043,85 @@ bandwidth and artificially increases the bandwidth for those?</li>
 <li>My Wi-Fi setup might not be optimal, and I need to investigate if changing
 the channel or other settings would improve the situation.</li>
 </ol>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[People in Cuba built their own Internet]]></title>
+            <link>https://remusao.github.io//posts/cuba-internet.html</link>
+            <guid>https://remusao.github.io//posts/cuba-internet.html</guid>
+            <pubDate>Sat, 30 Dec 2017 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Today is the last day of 34c3 and this year was amazing. There is a
+lot to talk about, a lot of information to digest, and so many new
+ideas to experiment with. I plan on writing a review of the talks I
+preferred and outline the take aways in a future post, but for now
+I’d like to talk about one presentation in particular: “The Internet in Cuba:
+A Story of Community Resilience”. You can find the <a href="https://media.ccc.de/v/34c3-8740-the_internet_in_cuba_a_story_of_community_resilience" target="_blank" rel="noopener noreferrer">full video online</a>.
+This talk gave me a lot of hope, and I will tell you why, but
+first, let’s quickly summarize the situation in Cuba, regarding access
+to the Internet (most of the information is from the actual talk).</p>
+<p>The only way to access the Internet in Cuba is through hotspots accessible in
+each city. This is not ideal for several reasons:</p>
+<ol>
+<li>There are not so many hotspots (~500 in the country, according to a recent
+estimation), which means that you need to go there to get an access and it’s
+shared with many people: bandwidth is not great! (maximum 1 MB/s).</li>
+<li>It’s expansive, about 1 CUC/hour (~1 euro per hour).</li>
+</ol>
+<p>There are some alternatives, not sanctioned by the government:</p>
+<ol>
+<li><em>El Paquete</em>, which is basically an external drive you can buy once a week,
+containing data dumped from the internet: TV shows, movies, etc. You can
+check this website to know more about what it contains:
+<a href="http://paquetedecuba.com" target="_blank" rel="noopener noreferrer">paquetedecuba.com</a> (in <em>http</em> only!)</li>
+<li><em>WiFi sharing</em>, where someone shares his connection to a hotspot with other
+people and make them pay a smaller fee (e.g.: using Connectify).</li>
+<li>Isolated networks.</li>
+</ol>
+<p>This last point is the amazing one. There are multiple isolated networks such as
+Universities (and inter-Universities networks), but the most interesting are the
+ones called <em>SNET</em>, which stands for Street Network. In Havana alone, one such
+network connects more than 100k people. And it’s not something provided by an
+FAI, it has been built from the ground up by people! And multiple other cities
+have it too, except they are not connected with each other. And they are not
+connected to the Internet either. In fact, this is forbidden, as it would be
+illegal.</p>
+<p>It’s hard to imagine how it got to that scale, but it has not always
+been that way. In fact, it all started as a multitude of much smaller
+gaming LAN networks used to play multiplayer games. They then realized
+that they could connect with each other, across streets, allowing
+neighborhoods to play or communicate.</p>
+<p>Nowadays the organization is slightly more complex and is composed of different
+levels. For more details you can read directly the <a href="https://conferences.sigcomm.org/imc/2017/papers/imc17-final186.pdf" target="_blank" rel="noopener noreferrer">paper published at
+the Internet Measurement Conference</a>, November 2017 in London. But to
+put it simply, there are local <em>nodes</em> at the scale of neighborhoods,
+connecting up to 200 people. The connection at this scale is made of a
+mix of WiFi connections and Ethernet wires. Nodes are then connected to
+regional <em>pillars</em>, which in turn are connected to a few other pillars. In
+short, <em>SNET</em> is literally an Internet on its own.</p>
+<p>And what do people do on this SNET? Well, basically the same thing people do on
+the Internet:</p>
+<ul>
+<li>They have HTTP websites to serve content.</li>
+<li>Portals to discover more content.</li>
+<li>Gaming (the most popular usage).</li>
+<li>Forums (<em>WifiNet</em>, the biggest one, has 56k active users).</li>
+<li>Real time communications.</li>
+<li>Mirrors of Internet websites such as Wikipedia.</li>
+<li>Sub-communities, one of which is mostly working on open-source stuff; they
+setup their own instance of Gitlab and built their own search engine for
+<em>SNET</em>.</li>
+</ul>
+<p>Of course there are some pain points such as cost of the equipment, lack of
+emails, out-dated software, etc. But overall they are doing a fantastic job
+developing and maintaining such an infrastructure on their own.</p>
+<p>This seriously gives me hope for the future. Because it shows that it
+is possible to build alternative networks or internets at a large scale
+without multi-billion international companies. Of course it’s a lot of
+work, but it’s possible, with hardware that you can buy online today.</p>
+<p>This gives a bit of perspective after net neutrality was killed in the US a few
+days ago. The Cuba situation shows that starting from scratch, with no private
+support, people were able to invent and build the tools they needed to connect
+and communicate with each other.</p>
 ]]></content:encoded>
         </item>
         <item>
