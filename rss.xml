@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Tue, 23 Dec 2025 02:46:23 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 23 Dec 2025 03:52:47 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -667,238 +667,6 @@ It is also much easier to manipulate them from a single file, in a familiar
 developer environment (i.e.: your editor of choice) than through the
 Thunderbird interface.</p>
 <p>GitHub repository: <a href="https://github.com/remusao/thunderbird-msg-filters/" target="_blank" rel="noopener noreferrer">https://github.com/remusao/thunderbird-msg-filters/</a></p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Installing Diablo II]]></title>
-            <link>https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html</link>
-            <guid>https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html</guid>
-            <pubDate>Sat, 02 Nov 2019 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<picture>
-  <source srcset="../images/diablo2-banner.webp" type="image/webp">
-  <source srcset="../images/diablo2-banner.png" type="image/png">
-  <img src="../images/diablo2-banner.png" alt="Diablo II banner" style="width:100%">
-</picture>
-<p>You might have heard the news: <em>Diablo IV</em> has been announced yesterday with a
-<a href="https://www.youtube.com/watch?v=9bRWIdOMfro" target="_blank" rel="noopener noreferrer">great cinematic</a>. What better
-time to install <s>Diablo III</s> <em>Diablo II</em> again and have some fun while
-waiting for the latest iteration of the franchise?</p>
-<p>But… it’s 2019 and it is not always easy to install a game first released
-back in June 2000 (yes, that’s 19 years ago. Yes, you’re old)! In this post I
-will show you how to install <em>Diablo II</em> with its extension <em>Lord of
-Destruction</em> on Windows, MacOS and Linux (Ubuntu in this case), using
-<a href="https://www.winehq.org" target="_blank" rel="noopener noreferrer"><em>Wine</em></a> as well as optional sandboxing using
-<a href="https://github.com/netblue30/firejail" target="_blank" rel="noopener noreferrer"><em>firejail</em></a>! Let’s get to it…</p>
-<p>If you are running <em>MacOS</em> or <em>Windows</em>, you’re in luck! The official game
-launcher already supports those platforms natively so you can install it and
-play straight away without extra hassle! Here are the links:</p>
-<ul>
-<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Windows – Diablo II</a>.</li>
-<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Windows – Lord of Destruction</a>.</li>
-<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=MAC" target="_blank" rel="noopener noreferrer">MacOS – Diablo II</a>.</li>
-<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=MAC" target="_blank" rel="noopener noreferrer">MacOS – Lord of Destruction</a>.</li>
-</ul>
-<h2>Get a License Key</h2>
-<p>First of, you will need a valid CD-Key for the game (both <em>Diablo II</em> and its
-extension <em>LOD</em>). You can get them on the <a href="https://www.blizzard.com" target="_blank" rel="noopener noreferrer">official website</a>
-for about <em>20 euros</em> from Blizzard (yes, that’s a shame, the game used to cost
-<em>15.99</em> euros a few years ago!), or by registering your old keys if you still
-have the box version (which is what I did).</p>
-<h2>Get the Launcher</h2>
-<p>The second step is to download the Windows launcher of the game which we will
-use in conjunction with Wine to make it work on Linux. You can find the links
-on <a href="https://www.blizzard.com/en-us/download/" target="_blank" rel="noopener noreferrer">Blizzard’s website</a>. Here they
-are if you want to save some time:</p>
-<ul>
-<li><a href="https://eu.battle.net/download/getLegacy?product=D2DV&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Downloader_Diablo2_enUS.exe</a></li>
-<li><a href="https://eu.battle.net/download/getLegacy?product=D2XP&amp;locale=enUS&amp;os=WIN" target="_blank" rel="noopener noreferrer">Downloader_Diablo2_Lord_of_Destruction_enUS.exe</a></li>
-</ul>
-<h2>Installing Latest Wine</h2>
-<p>You could probably use the stock version of wine which ships with your Linux
-distribution but I always like to get the latest shiny version so here we go.
-If you use another distribution than Ubuntu, you can <em>skip this section
-completely</em>. From the <a href="https://wiki.winehq.org/Ubuntu" target="_blank" rel="noopener noreferrer">official wiki</a>:</p>
-<blockquote>
-<p>If your system is 64 bit, enable 32 bit architecture (if you haven’t already):</p>
-<pre class="code" data-lang="sh"><code>sudo dpkg --add-architecture i386
-</code></pre>
-<p>Download and add the repository key:</p>
-<pre class="code" data-lang="sh"><code>wget -nc https://dl.winehq.org/wine-builds/winehq.key
-sudo apt-key add winehq.key
-</code></pre>
-</blockquote>
-<p>Now you need to get the repository matching your release of Ubuntu. For me it
-was <code>bionic</code> (you can get yours using command <code>lsb_release -cs</code>), but check
-official instructions if that does not correspond to yours.</p>
-<blockquote>
-<pre class="code" data-lang="sh"><code>sudo apt-add-repository <span class="hljs-string">&#x27;deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main&#x27;</span>
-sudo apt install --install-recommends winehq-stable
-</code></pre>
-</blockquote>
-<p>Note that I could not install <code>winehq-stable</code> directly and had to first install
-one of its dependencies manually. If you encounter an error, then try to run
-the following command before installing <code>winehq-stable</code> again:</p>
-<pre class="code" data-lang="sh"><code>sudo apt install libasound2-plugins:i386
-</code></pre>
-<p>I am using <strong>version 4.0.2</strong> of <code>wine</code>.</p>
-<h2>[Optional] Installing Firejail</h2>
-<p>Firejail has a special place in my heart. It allows to sandbox any program
-running on Linux using kernel capabilities (some of them you might already know
-from Docker world). From the <a href="https://github.com/netblue30/firejail" target="_blank" rel="noopener noreferrer">official repository</a>:</p>
-<blockquote>
-<p>Firejail is a SUID sandbox program that reduces the risk of security breaches
-by restricting the running environment of untrusted applications using Linux
-namespaces, seccomp-bpf and Linux capabilities. It allows a process and all
-its descendants to have their own private view of the globally shared kernel
-resources, such as the network stack, process table, mount table. Firejail
-can work in a SELinux or AppArmor environment, and it is integrated with
-Linux Control Groups.</p>
-</blockquote>
-<p>There is an extra benefit in my opinion. You can specify a different directory
-to be used as the <code>~/</code> (home) folder of each program you run in a sandbox
-instead of your real home. This is great because it allows to keep files and
-folders of each app nicely isolated. For example I run <code>thunderbird</code>, <code>cliqz</code>
-and other programs in sandboxes and assign them different homes like
-<code>~/.sandboxes/thunderbird</code>, <code>~/.sandboxed/cliqz</code>, etc. This means that I can
-clean-up all files for each program by simply deleting their respective
-folders! That’s super convenient.</p>
-<p>Let’s get back to <em>Diablo II</em>! Install Firejail from your official Linux
-repositories (or <a href="https://github.com/netblue30/firejail#compile-and-install" target="_blank" rel="noopener noreferrer">compile it yourself</a> if that’s
-your thing… that’s what I did). I am currently running <strong>version 0.9.61</strong> but I
-assume this should work with other versions as well.</p>
-<p>Firejail comes with a preset for sandboxing wine which you can find at
-<code>/etc/firejail/wine.profile</code>. That’s the one we will be using!</p>
-<h2>Preparing Wine Home Folder</h2>
-<p>Let’s now prepare the <code>wine</code> folder that we will use in our Firejail sandbox:</p>
-<pre class="code" data-lang="sh"><code><span class="hljs-built_in">mkdir</span> -p ~/.sandboxes/wine
-</code></pre>
-<p>Copy the two downloaders into <code>~/.sandboxes/wine/</code>:</p>
-<ul>
-<li><code>~/.sandboxes/wine/Downloader_Diablo2_enUS.exe</code></li>
-<li><code>~/.sandboxes/wine/Downloader_Diablo2_Lord_of_Destruction_enUS.exe</code></li>
-</ul>
-<h2>Installing Diablo II</h2>
-<p>We can now proceed and install <em>Diablo II</em> base game:</p>
-<pre class="code" data-lang="sh"><code>firejail \
-  --profile=/etc/firejail/wine.profile \
-  --private=~/.sandboxes/wine \
-  wine ~/Downloader_Diablo2_enUS.exe
-</code></pre>
-<p>Here are screenshots for each step of the installation process:</p>
-<figure>
-  <a href="../images/diablo2-install-1.png">
-    <picture>
-      <source srcset="../images/diablo2-install-1.webp" type="image/webp">
-      <source srcset="../images/diablo2-install-1.png" type="image/png">
-      <img loading="lazy" src="../images/diablo2-install-1.png" alt="Press 'OK' to select default download folder." style="width:100%">
-    </picture>
-  </a>
-  <figcaption>Press 'OK' to select default download folder.</figcaption>
-</figure>
-<figure>
-  <a href="../images/diablo2-install-2.png">
-    <picture>
-      <source srcset="../images/diablo2-install-2.webp" type="image/webp">
-      <source srcset="../images/diablo2-install-2.png" type="image/png">
-      <img loading="lazy" src="../images/diablo2-install-2.png" alt="Enjoy the murloc view while downloading the game..." style="width:100%">
-    </picture>
-  </a>
-  <figcaption>Enjoy the murloc view while downloading the game...</figcaption>
-</figure>
-<figure>
-  <a href="../images/diablo2-install-3.png">
-    <picture>
-      <source srcset="../images/diablo2-install-3.webp" type="image/webp">
-      <source srcset="../images/diablo2-install-3.png" type="image/png">
-      <img loading="lazy" src="../images/diablo2-install-3.png" alt="Press 'Install Diablo II'." style="width:100%">
-    </picture>
-  </a>
-  <figcaption>Press 'Install Diablo II'.</figcaption>
-</figure>
-<figure>
-  <a href="../images/diablo2-install-7.png">
-    <picture>
-      <source srcset="../images/diablo2-install-7.webp" type="image/webp">
-      <source srcset="../images/diablo2-install-7.png" type="image/png">
-      <img loading="lazy" src="../images/diablo2-install-7.png" alt="Accept license." style="width:100%">
-    </picture>
-  </a>
-  <figcaption>Accept license.</figcaption>
-</figure>
-<figure>
-  <a href="../images/diablo2-install-6.png">
-    <picture>
-      <source srcset="../images/diablo2-install-6.webp" type="image/webp">
-      <source srcset="../images/diablo2-install-6.png" type="image/png">
-      <img loading="lazy" src="../images/diablo2-install-6.png" alt="Enter you CD-Key." style="width:100%">
-    </picture>
-  </a>
-  <figcaption>Enter you CD-Key.</figcaption>
-</figure>
-<figure>
-  <a href="../images/diablo2-install-5.png">
-    <picture>
-      <source srcset="../images/diablo2-install-5.webp" type="image/webp">
-      <source srcset="../images/diablo2-install-5.png" type="image/png">
-      <img loading="lazy" src="../images/diablo2-install-5.png" alt="Press 'OK' to select default destination directory." style="width:100%">
-    </picture>
-  </a>
-  <figcaption>Press 'OK' to select default destination directory.</figcaption>
-</figure>
-<figure>
-  <a href="../images/diablo2-install-4.png">
-    <picture>
-      <source srcset="../images/diablo2-install-4.webp" type="image/webp">
-      <source srcset="../images/diablo2-install-4.png" type="image/png">
-      <img loading="lazy" src="../images/diablo2-install-4.png" alt="It's so fast that I don't know how I managed to make a screenshot!" style="width:100%">
-    </picture>
-  </a>
-  <figcaption>It's so fast that I don't know how I managed to make a screenshot!</figcaption>
-</figure>
-<p>Press <strong>Back</strong> then <strong>Exit Installer</strong>. Time to install the extension!</p>
-<h2>Installing Lord of Destruction</h2>
-<pre class="code" data-lang="sh"><code>firejail \
-  --profile=/etc/firejail/wine.profile \
-  --private=~/.sandboxes/wine \
-  wine ~/Downloader_Diablo2_Lord_of_Destruction_enUS.exe
-</code></pre>
-<p>I will spare you all the screenshots since the procedure is identical to the
-base version of the game. When you are done, resist the damning temptation and
-<strong>exit the installer</strong>; there is one last thing we have to take care of…</p>
-<h2>Install Latest Patch</h2>
-<p>Before starting the game and finally start playing, you will want to install
-the latest patch for Diablo II: <strong>1.14d</strong>. Usually it can be done by accessing
-<a href="http://Battle.net" target="_blank" rel="noopener noreferrer">Battle.net</a> in-game but for some reason it failed in my case because of a corrupted
-file… Luckily, it’s possible to download and install the update manually. Get
-it from the following link:</p>
-<ul>
-<li><a href="http://ftp.blizzard.com/pub/diablo2exp/patches/PC/LODPatch_114d.exe" target="_blank" rel="noopener noreferrer">LODPatch_114d.exe</a></li>
-</ul>
-<p>Copy it into your <code>wine</code> home folder: <code>~/.sandboxes/wine/LODPatch_114d.exe</code>.
-Then start the update with:</p>
-<pre class="code" data-lang="sh"><code>firejail \
-  --profile=/etc/firejail/wine.profile \
-  --private=~/.sandboxes/wine \
-  wine ~/LODPatch_114d.exe
-</code></pre>
-<h2>Let’s Play!</h2>
-<p>Finally, to launch the game you can use the following command:</p>
-<pre class="code" data-lang="sh"><code>firejail \
-  --profile=/etc/firejail/wine.profile \
-  --private=~/.sandboxes/wine \
-  wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Diablo\ II/Diablo\ II.exe
-</code></pre>
-<p>Have fun!</p>
-<figure>
-  <a href="../images/diablo2-cows.jpg">
-    <picture>
-      <source srcset="../images/diablo2-cows.webp" type="image/webp">
-      <source srcset="../images/diablo2-cows.jpg" type="image/jpeg">
-      <img loading="lazy" src="../images/diablo2-cows.jpg" alt="There is no such thing as the 'Cow Level'." style="width:100%">
-    </picture>
-  </a>
-  <figcaption>There is no such thing as the 'Cow Level'.</figcaption>
-</figure>
 ]]></content:encoded>
         </item>
         <item>
@@ -3195,6 +2963,44 @@ Options:
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
+            <link>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</link>
+            <guid>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</guid>
+            <pubDate>Sat, 25 Nov 2017 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
+fast fuzzy matching and approximate set membership tests, I found myself in a
+situation where I needed more insight about what optimizations <code>V8</code> was
+performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
+compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
+consider!</p>
+<p>This article assumes you’re using
+<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
+extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
+During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
+very useful!</p>
+<h1>Building V8 From Source</h1>
+<h2>Installing depot_tools</h2>
+<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
+<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
+$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
+</code></pre>
+<h2>Compiling V8</h2>
+<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
+<pre class="code" data-lang="sh"><code>$ fetch v8
+</code></pre>
+<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
+version of the sources. It will also configure everything needed for the build.</p>
+<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
+$ ninja -C out.gn/x64.release
+</code></pre>
+<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
+intended by running the tests:</p>
+<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
+</code></pre>
+<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[The wrong way of benchmarking integer comparison functions]]></title>
             <link>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</link>
             <guid>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</guid>
@@ -3323,44 +3129,6 @@ It’s not day and night, but the <em>naive</em>, more readable code is more
 efficient on V8 than the clever one.</p>
 <p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
 there</a></p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
-            <link>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</link>
-            <guid>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</guid>
-            <pubDate>Sat, 25 Nov 2017 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
-fast fuzzy matching and approximate set membership tests, I found myself in a
-situation where I needed more insight about what optimizations <code>V8</code> was
-performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
-compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
-consider!</p>
-<p>This article assumes you’re using
-<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
-extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
-During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
-very useful!</p>
-<h1>Building V8 From Source</h1>
-<h2>Installing depot_tools</h2>
-<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
-<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
-$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
-</code></pre>
-<h2>Compiling V8</h2>
-<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
-<pre class="code" data-lang="sh"><code>$ fetch v8
-</code></pre>
-<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
-version of the sources. It will also configure everything needed for the build.</p>
-<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
-$ ninja -C out.gn/x64.release
-</code></pre>
-<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
-intended by running the tests:</p>
-<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
-</code></pre>
-<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -6964,6 +6732,43 @@ pas le pattern-matching en Hash table lorsque c’est possible.</p>
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
+            <link>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</link>
+            <guid>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</guid>
+            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
+j’ai reçu récemment je me suis heurté à quelques problèmes
+puisque la version dans les dépots de Archlinux ne compilait pas et
+aucun paquet précompilé pour Arm n’était disponible. Je vais donc
+exposer une solution pour pouvoir le compiler et l’installer. Mais
+tout d’abord une petite description du logiciel trouvée sur le site
+des créateurs :</p>
+<blockquote>
+<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
+</blockquote>
+<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
+il suffit de télécharger un patch supplémentaire et de remplacer le
+PKGBUILD fourni par un autre que je vais vous donner. Voici comment
+faire :</p>
+<ol>
+<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
+<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
+<li>Exécutez les commandes suivantes :</li>
+</ol>
+<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
+$ yaourt -G mediatomb
+$ <span class="hljs-built_in">cd</span> mediatomb
+[Copier le patch ici]
+[Copier le fichier PKGBUILD ici]
+$ makepkg -si
+</code></pre>
+<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
+vaut le coup. J’espère que ça servira à certains le temps que les
+paquets dans les dépôts d’archlinux soient de nouveau compilables
+sans modification.</p>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[Ma vision des mathématiques]]></title>
             <link>https://remusao.github.io//posts/mathematiques-vision.html</link>
             <guid>https://remusao.github.io//posts/mathematiques-vision.html</guid>
@@ -7091,43 +6896,6 @@ d’évoluer dans ces univers abstraits, de visualiser et de comprendre
 les œuvres laissées par d’illustres mathématiciens avant nous,
 et de bâtir de nouveaux édifices avec les outils qu’ils nous ont
 légués.</p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
-            <link>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</link>
-            <guid>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</guid>
-            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
-j’ai reçu récemment je me suis heurté à quelques problèmes
-puisque la version dans les dépots de Archlinux ne compilait pas et
-aucun paquet précompilé pour Arm n’était disponible. Je vais donc
-exposer une solution pour pouvoir le compiler et l’installer. Mais
-tout d’abord une petite description du logiciel trouvée sur le site
-des créateurs :</p>
-<blockquote>
-<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
-</blockquote>
-<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
-il suffit de télécharger un patch supplémentaire et de remplacer le
-PKGBUILD fourni par un autre que je vais vous donner. Voici comment
-faire :</p>
-<ol>
-<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
-<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
-<li>Exécutez les commandes suivantes :</li>
-</ol>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
-$ yaourt -G mediatomb
-$ <span class="hljs-built_in">cd</span> mediatomb
-[Copier le patch ici]
-[Copier le fichier PKGBUILD ici]
-$ makepkg -si
-</code></pre>
-<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
-vaut le coup. J’espère que ça servira à certains le temps que les
-paquets dans les dépôts d’archlinux soient de nouveau compilables
-sans modification.</p>
 ]]></content:encoded>
         </item>
         <item>
