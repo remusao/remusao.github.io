@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2025-12-23T05:13:52.798Z</updated>
+    <updated>2025-12-23T06:01:15.014Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -3049,85 +3049,6 @@ the channel or other settings would improve the situation.</li>
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[People in Cuba built their own Internet]]></title>
-        <id>https://remusao.github.io//posts/cuba-internet.html</id>
-        <link href="https://remusao.github.io//posts/cuba-internet.html"/>
-        <updated>2017-12-30T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>Today is the last day of 34c3 and this year was amazing. There is a
-lot to talk about, a lot of information to digest, and so many new
-ideas to experiment with. I plan on writing a review of the talks I
-preferred and outline the take aways in a future post, but for now
-I’d like to talk about one presentation in particular: “The Internet in Cuba:
-A Story of Community Resilience”. You can find the <a href="https://media.ccc.de/v/34c3-8740-the_internet_in_cuba_a_story_of_community_resilience" target="_blank" rel="noopener noreferrer">full video online</a>.
-This talk gave me a lot of hope, and I will tell you why, but
-first, let’s quickly summarize the situation in Cuba, regarding access
-to the Internet (most of the information is from the actual talk).</p>
-<p>The only way to access the Internet in Cuba is through hotspots accessible in
-each city. This is not ideal for several reasons:</p>
-<ol>
-<li>There are not so many hotspots (~500 in the country, according to a recent
-estimation), which means that you need to go there to get an access and it’s
-shared with many people: bandwidth is not great! (maximum 1 MB/s).</li>
-<li>It’s expansive, about 1 CUC/hour (~1 euro per hour).</li>
-</ol>
-<p>There are some alternatives, not sanctioned by the government:</p>
-<ol>
-<li><em>El Paquete</em>, which is basically an external drive you can buy once a week,
-containing data dumped from the internet: TV shows, movies, etc. You can
-check this website to know more about what it contains:
-<a href="http://paquetedecuba.com" target="_blank" rel="noopener noreferrer">paquetedecuba.com</a> (in <em>http</em> only!)</li>
-<li><em>WiFi sharing</em>, where someone shares his connection to a hotspot with other
-people and make them pay a smaller fee (e.g.: using Connectify).</li>
-<li>Isolated networks.</li>
-</ol>
-<p>This last point is the amazing one. There are multiple isolated networks such as
-Universities (and inter-Universities networks), but the most interesting are the
-ones called <em>SNET</em>, which stands for Street Network. In Havana alone, one such
-network connects more than 100k people. And it’s not something provided by an
-FAI, it has been built from the ground up by people! And multiple other cities
-have it too, except they are not connected with each other. And they are not
-connected to the Internet either. In fact, this is forbidden, as it would be
-illegal.</p>
-<p>It’s hard to imagine how it got to that scale, but it has not always
-been that way. In fact, it all started as a multitude of much smaller
-gaming LAN networks used to play multiplayer games. They then realized
-that they could connect with each other, across streets, allowing
-neighborhoods to play or communicate.</p>
-<p>Nowadays the organization is slightly more complex and is composed of different
-levels. For more details you can read directly the <a href="https://conferences.sigcomm.org/imc/2017/papers/imc17-final186.pdf" target="_blank" rel="noopener noreferrer">paper published at
-the Internet Measurement Conference</a>, November 2017 in London. But to
-put it simply, there are local <em>nodes</em> at the scale of neighborhoods,
-connecting up to 200 people. The connection at this scale is made of a
-mix of WiFi connections and Ethernet wires. Nodes are then connected to
-regional <em>pillars</em>, which in turn are connected to a few other pillars. In
-short, <em>SNET</em> is literally an Internet on its own.</p>
-<p>And what do people do on this SNET? Well, basically the same thing people do on
-the Internet:</p>
-<ul>
-<li>They have HTTP websites to serve content.</li>
-<li>Portals to discover more content.</li>
-<li>Gaming (the most popular usage).</li>
-<li>Forums (<em>WifiNet</em>, the biggest one, has 56k active users).</li>
-<li>Real time communications.</li>
-<li>Mirrors of Internet websites such as Wikipedia.</li>
-<li>Sub-communities, one of which is mostly working on open-source stuff; they
-setup their own instance of Gitlab and built their own search engine for
-<em>SNET</em>.</li>
-</ul>
-<p>Of course there are some pain points such as cost of the equipment, lack of
-emails, out-dated software, etc. But overall they are doing a fantastic job
-developing and maintaining such an infrastructure on their own.</p>
-<p>This seriously gives me hope for the future. Because it shows that it
-is possible to build alternative networks or internets at a large scale
-without multi-billion international companies. Of course it’s a lot of
-work, but it’s possible, with hardware that you can buy online today.</p>
-<p>This gives a bit of perspective after net neutrality was killed in the US a few
-days ago. The Cuba situation shows that starting from scratch, with no private
-support, people were able to invent and build the tools they needed to connect
-and communicate with each other.</p>
-]]></content>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[AWS NVMe storage optimized instances]]></title>
         <id>https://remusao.github.io//posts/aws-nvme-storage-instance.html</id>
         <link href="https://remusao.github.io//posts/aws-nvme-storage-instance.html"/>
@@ -3195,6 +3116,44 @@ Options:
     -b --<span class="hljs-built_in">bind</span> ADDRESS   Specify alternate <span class="hljs-built_in">bind</span> address [default: 0.0.0.0]
     -h, --<span class="hljs-built_in">help</span>          Show this <span class="hljs-built_in">help</span> message and <span class="hljs-built_in">exit</span>.
 </code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
+        <id>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</id>
+        <link href="https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html"/>
+        <updated>2017-11-25T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
+fast fuzzy matching and approximate set membership tests, I found myself in a
+situation where I needed more insight about what optimizations <code>V8</code> was
+performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
+compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
+consider!</p>
+<p>This article assumes you’re using
+<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
+extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
+During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
+very useful!</p>
+<h1>Building V8 From Source</h1>
+<h2>Installing depot_tools</h2>
+<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
+<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
+$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
+</code></pre>
+<h2>Compiling V8</h2>
+<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
+<pre class="code" data-lang="sh"><code>$ fetch v8
+</code></pre>
+<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
+version of the sources. It will also configure everything needed for the build.</p>
+<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
+$ ninja -C out.gn/x64.release
+</code></pre>
+<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
+intended by running the tests:</p>
+<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
+</code></pre>
+<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
 ]]></content>
     </entry>
     <entry>
@@ -3326,44 +3285,6 @@ It’s not day and night, but the <em>naive</em>, more readable code is more
 efficient on V8 than the clever one.</p>
 <p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
 there</a></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
-        <id>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</id>
-        <link href="https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html"/>
-        <updated>2017-11-25T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
-fast fuzzy matching and approximate set membership tests, I found myself in a
-situation where I needed more insight about what optimizations <code>V8</code> was
-performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
-compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
-consider!</p>
-<p>This article assumes you’re using
-<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
-extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
-During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
-very useful!</p>
-<h1>Building V8 From Source</h1>
-<h2>Installing depot_tools</h2>
-<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
-<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
-$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
-</code></pre>
-<h2>Compiling V8</h2>
-<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
-<pre class="code" data-lang="sh"><code>$ fetch v8
-</code></pre>
-<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
-version of the sources. It will also configure everything needed for the build.</p>
-<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
-$ ninja -C out.gn/x64.release
-</code></pre>
-<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
-intended by running the tests:</p>
-<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
-</code></pre>
-<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
 ]]></content>
     </entry>
     <entry>
@@ -6967,43 +6888,6 @@ pas le pattern-matching en Hash table lorsque c’est possible.</p>
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
-        <id>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</id>
-        <link href="https://remusao.github.io//posts/mediatomb-arm-archlinux.html"/>
-        <updated>2012-07-31T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
-j’ai reçu récemment je me suis heurté à quelques problèmes
-puisque la version dans les dépots de Archlinux ne compilait pas et
-aucun paquet précompilé pour Arm n’était disponible. Je vais donc
-exposer une solution pour pouvoir le compiler et l’installer. Mais
-tout d’abord une petite description du logiciel trouvée sur le site
-des créateurs :</p>
-<blockquote>
-<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
-</blockquote>
-<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
-il suffit de télécharger un patch supplémentaire et de remplacer le
-PKGBUILD fourni par un autre que je vais vous donner. Voici comment
-faire :</p>
-<ol>
-<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
-<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
-<li>Exécutez les commandes suivantes :</li>
-</ol>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
-$ yaourt -G mediatomb
-$ <span class="hljs-built_in">cd</span> mediatomb
-[Copier le patch ici]
-[Copier le fichier PKGBUILD ici]
-$ makepkg -si
-</code></pre>
-<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
-vaut le coup. J’espère que ça servira à certains le temps que les
-paquets dans les dépôts d’archlinux soient de nouveau compilables
-sans modification.</p>
-]]></content>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[Ma vision des mathématiques]]></title>
         <id>https://remusao.github.io//posts/mathematiques-vision.html</id>
         <link href="https://remusao.github.io//posts/mathematiques-vision.html"/>
@@ -7131,6 +7015,43 @@ d’évoluer dans ces univers abstraits, de visualiser et de comprendre
 les œuvres laissées par d’illustres mathématiciens avant nous,
 et de bâtir de nouveaux édifices avec les outils qu’ils nous ont
 légués.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
+        <id>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</id>
+        <link href="https://remusao.github.io//posts/mediatomb-arm-archlinux.html"/>
+        <updated>2012-07-31T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
+j’ai reçu récemment je me suis heurté à quelques problèmes
+puisque la version dans les dépots de Archlinux ne compilait pas et
+aucun paquet précompilé pour Arm n’était disponible. Je vais donc
+exposer une solution pour pouvoir le compiler et l’installer. Mais
+tout d’abord une petite description du logiciel trouvée sur le site
+des créateurs :</p>
+<blockquote>
+<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
+</blockquote>
+<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
+il suffit de télécharger un patch supplémentaire et de remplacer le
+PKGBUILD fourni par un autre que je vais vous donner. Voici comment
+faire :</p>
+<ol>
+<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
+<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
+<li>Exécutez les commandes suivantes :</li>
+</ol>
+<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
+$ yaourt -G mediatomb
+$ <span class="hljs-built_in">cd</span> mediatomb
+[Copier le patch ici]
+[Copier le fichier PKGBUILD ici]
+$ makepkg -si
+</code></pre>
+<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
+vaut le coup. J’espère que ça servira à certains le temps que les
+paquets dans les dépôts d’archlinux soient de nouveau compilables
+sans modification.</p>
 ]]></content>
     </entry>
     <entry>
