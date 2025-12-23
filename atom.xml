@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2025-12-22T23:00:41.262Z</updated>
+    <updated>2025-12-23T00:00:40.059Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -12,6 +12,120 @@
     <link rel="self" href="https://remusao.github.io/atom.xml"/>
     <subtitle>Simplex Sigillum Veri</subtitle>
     <rights>All rights reserved 2023, Rémi Berson</rights>
+    <entry>
+        <title type="html"><![CDATA[What we know about Qwen3 so far]]></title>
+        <id>https://remusao.github.io//posts/qwen3.html</id>
+        <link href="https://remusao.github.io//posts/qwen3.html"/>
+        <updated>2025-03-29T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p><strong>Disclaimer</strong>: This article was written with the help of an LLM.</p>
+<p><strong>Last update</strong>: Saturday 29th of March 2025</p>
+<p>The following information was derived from ongoing work aiming at adding support for soon-to-be-released Qwen3 to various projects:</p>
+<ul>
+<li><a href="https://github.com/huggingface/transformers/pull/36878" target="_blank" rel="noopener noreferrer">https://github.com/huggingface/transformers/pull/36878</a></li>
+<li><a href="https://github.com/vllm-project/vllm/pull/15289" target="_blank" rel="noopener noreferrer">https://github.com/vllm-project/vllm/pull/15289</a></li>
+<li><a href="https://github.com/InternLM/lmdeploy/pull/3305" target="_blank" rel="noopener noreferrer">https://github.com/InternLM/lmdeploy/pull/3305</a></li>
+<li><a href="https://github.com/sgl-project/sglang/pull/4693" target="_blank" rel="noopener noreferrer">https://github.com/sgl-project/sglang/pull/4693</a></li>
+</ul>
+<h1>What We Know About Qwen3 So Far</h1>
+<p><strong>Qwen3</strong> is a next-generation large language model in the Qwen family, offering a standard Transformer decoder design with the potential for long-context processing. Below, we present both confirmed information as well as some deductions and open questions about what <code>Qwen3</code> (and its MoE counterpart, <code>Qwen3MoE</code>) might bring to the table.</p>
+<h2>1) Confirmed Information About Qwen3</h2>
+<ol>
+<li>
+<p><strong>Model &amp; Variants</strong></p>
+<ul>
+<li>The primary model name is <code>Qwen3</code>, with a Mixture-of-Experts variant: <code>Qwen3MoE</code>.</li>
+<li>Documentation mentions an <code>8B</code> model size for <code>Qwen3</code> and a <code>15B</code> size for <code>Qwen3MoE</code> (with <code>2B</code> active parameters).</li>
+</ul>
+</li>
+<li>
+<p><strong>Core Architecture</strong></p>
+<ul>
+<li>Qwen3 uses a <em>decoder-only Transformer</em> structure.</li>
+<li>It employs <em>rotary position embeddings (RoPE)</em> to encode positions.</li>
+<li><em>RMSNorm</em> is used instead of the more common LayerNorm, and there is also an applied <em>QK-norm</em> step to the query/key projections.</li>
+<li>Each layer consists of self-attention plus an MLP feed-forward block, with the MoE variant swapping in MoE blocks for some layers.</li>
+</ul>
+</li>
+<li>
+<p><strong>Default Hyperparameters (Base Qwen3)</strong></p>
+<ul>
+<li><em>Vocabulary size</em>: <code>151,936</code></li>
+<li><em>Hidden dimension</em>: <code>4096</code></li>
+<li><em>Intermediate dimension</em>: <code>22,016</code></li>
+<li><em>Number of layers</em>: <code>32</code></li>
+<li><em>Attention heads</em>: <code>32</code>, each head dimension at <code>128</code></li>
+<li><em>Max position embeddings</em>: up to <code>32,768</code> tokens</li>
+<li><em>RoPE base</em>: <code>10,000.0</code></li>
+<li>Typically no bias in the Q, K, or V projections, with an option for attention bias if desired.</li>
+<li>“Sliding window” attention can optionally be configured in lower layers (usually <code>4096</code> tokens in the “window”).</li>
+</ul>
+</li>
+<li>
+<p><strong>MoE-Specific Attributes (Qwen3MoE)</strong></p>
+<ul>
+<li>Substitutes certain MLP blocks with MoE layers.</li>
+<li>Additional hyperparameters include the number of experts (<code>128</code>), top-k per-token routing (<code>8</code>), and a router loss factor (<code>0.001</code>), among others.</li>
+<li>Can optionally output gating information (<code>router_logits</code>) that indicates token routing among experts.</li>
+</ul>
+</li>
+<li>
+<p><strong>Extended Context Handling</strong></p>
+<ul>
+<li>The maximum sequence length is set to 32k tokens, suggesting large-context capabilities.</li>
+<li>A “sliding window” mode can be turned on for some layers, indicating a goal of more efficient attention for extended sequences.</li>
+</ul>
+</li>
+<li>
+<p><strong>Multiple Task Heads</strong></p>
+<ul>
+<li>Qwen3 supports a causal language modeling head for text generation, as well as heads for sequence classification, token classification, and QA tasks.</li>
+</ul>
+</li>
+<li>
+<p><strong>Licensing &amp; Release Notes</strong></p>
+<ul>
+<li>Operates under the <strong>Apache 2.0 License</strong>.</li>
+<li>Official usage guidelines, pretrained weights, and final performance claims are not yet included, with placeholders indicating a future public release.</li>
+</ul>
+</li>
+</ol>
+<h2>2) Additional Deductions (Not Fully Confirmed)</h2>
+<ol>
+<li>
+<p><strong>Parameter Counts</strong></p>
+<ul>
+<li>The code references 8B parameters for Qwen3 and ~15B for Qwen3MoE, but there may be other configurations or final parameter counts beyond these documented examples.</li>
+</ul>
+</li>
+<li>
+<p><strong>Performance and Training Data</strong></p>
+<ul>
+<li>The data used, training schedule, and final performance are not yet public. No training steps or official evaluations have been confirmed.</li>
+</ul>
+</li>
+<li>
+<p><strong>Release Timeline</strong></p>
+<ul>
+<li>While mention is made of an upcoming model launch, no definitive timeline or final usage documentation is yet available.</li>
+</ul>
+</li>
+<li>
+<p><strong>Tokenizer &amp; Vocabulary</strong></p>
+<ul>
+<li>Qwen3 apparently leverages a large vocabulary of over 150k tokens, likely similar to a previous iteration. Full details on backward compatibility or merges remain unspecified.</li>
+</ul>
+</li>
+<li>
+<p><strong>Use Cases</strong></p>
+<ul>
+<li>The architecture supports classification, QA, and generative tasks, but real-world usage details, recommended domain coverage, or specialized fine-tuning steps remain unknown.</li>
+</ul>
+</li>
+</ol>
+<h3>Conclusion</h3>
+<p><em>Qwen3</em> (and <em>Qwen3MoE</em>) appear to be successors to the <a href="https://qwenlm.github.io/blog/qwen2.5/" target="_blank" rel="noopener noreferrer">Qwen2.5 family of models</a>, aiming for extensive context handling (at least 32k tokens) and improved efficiency via sliding-window attention or MoE routing. The primary <em>Qwen3</em> version is sized around 8B parameters, while <em>Qwen3MoE</em> is reportedly 15B (2B active parameters), leveraging 128 experts and specialized routing. Both variants incorporate rotary position embeddings, RMSNorm, and an optional QK-norm step in attention. Although official performance metrics and training data details remain undisclosed, these architectural choices suggest strong capabilities for text generation, classification, and QA across large-scale language tasks.</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[A more efficient matching engine for HTTPS Everywhere RuleSets]]></title>
         <id>https://remusao.github.io//posts/efficient-https-everywhere-engine.html</id>
@@ -2427,166 +2541,6 @@ sub-commands presented above.</li>
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Synacor—Down the rabbit hole]]></title>
-        <id>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</id>
-        <link href="https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html"/>
-        <updated>2018-06-10T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>Last year I had the chance to participate in the 2017 edition of <a href="https://adventofcode.com/" target="_blank" rel="noopener noreferrer">Advent
-of Code</a>. That was the first time and I
-<em>really</em> enjoyed it. Having to solve an interesting problem, every
-day, made me learn a lot! It’s also a good occasion to practice some
-skills that might not be otherwise useful in your daily job (and more
-importantly: have fun!).</p>
-<p>While skimming through the discussions on Reddit about possible
-solutions to one of the AoC’s problems, someone mentioned “Synacor”… I
-never heard of it before, but from what I understood it was some kind of
-programming challenge. I did not need more to have a look:
-<a href="https://challenge.synacor.com" target="_blank" rel="noopener noreferrer">challenge.synacor.com</a>.</p>
-<h1>The Challenge</h1>
-<p>The challenge is briefly introduced, the competition took place during
-two conferences in the past and is now over. But you can still download
-the material of the challenge and try to solve it.</p>
-<p>After registering an email address and a password, I could download an
-archive <code>synacor-challenge.tgz</code>. Uncompressed, it contains two files :</p>
-<ol>
-<li><code>arch-spec</code></li>
-<li><code>challenge.bin</code></li>
-</ol>
-<p>The first one describes the challenge. It is about creating “a virtual
-machine capable of running the included binary [challenge.bin]”. It also
-mentions that some “codes” are to be found along the way. The rest of
-the document describes the architecture of the virtual machine:</p>
-<ul>
-<li>16 bits integers stored in little-endian format</li>
-<li>16 bits addressable memory (the program starts at address <code>0</code>)</li>
-<li>8 registers</li>
-<li>1 stack containing 16 bits numbers</li>
-<li>22 instructions: <code>halt</code>, <code>noop</code>, <code>set</code>, <code>push</code>, <code>jpm</code>, <code>add</code>, <code>mult</code>, etc.</li>
-</ul>
-<p>Each instruction is described in details: opcode, number of expected
-arguments and behavior when executed by the virtual machine. So
-far so good, this looks pretty classic. The implementation of such
-virtual machine is pretty straight forward. I choose <code>Haskell</code> for
-the implementation (because why not, and I already implemented some
-<a href="https://github.com/remusao/Hodor" target="_blank" rel="noopener noreferrer">Brainfuck interpreter/transpiler</a>
-before, so I thought I could reuse some learnings from there). Without
-going into too much details, I used the following data structures to
-represent the state of the VM:</p>
-<pre class="code" data-lang="haskell"><code><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Synacor</span> = <span class="hljs-type">Synacor</span></span>
-  { pos :: <span class="hljs-type">Int</span>
-  , mem :: <span class="hljs-type">Map</span> <span class="hljs-type">Register</span> <span class="hljs-type">Word16</span>
-  , stack :: [<span class="hljs-type">Word16</span>]
-  , program :: <span class="hljs-type">Vector</span> <span class="hljs-type">Word16</span>
-  }
-</code></pre>
-<h1>First Results</h1>
-<p>After implementing most of the instructions, I tried to run the program:</p>
-<blockquote>
-<p>Welcome to the Synacor Challenge! Please record your progress by
-putting codes like this one into the challenge website: XXXXXXXXXXX</p>
-<p>Executing self-test…</p>
-</blockquote>
-<p>Nice, so the program actually starts by <em>testing the virtual machine</em>,
-to make sure all instructions are implemented properly. It’s pretty
-cool. It means that you cannot proceed until your VM is fully functional
-(Using Haskell is a good start for that…). After a few iterations of
-trial, error, fix, I completed my implementation until…</p>
-<blockquote>
-<p>self-test complete, all tests pass
-The self-test completion code is: XXXXXXXXXXXX</p>
-</blockquote>
-<p>Youpi! All good… but, wait, something else was displayed on the terminal:</p>
-<p><strong>DISCLAIMER</strong>: The next section of this post contains spoilers and
-parts of solutions for the Synacor challenge. Please only proceed if you
-already solved the challenge, or do not intend to do so.</p>
-<p>…</p>
-<h1>Riddles in the Dark</h1>
-<blockquote>
-<p>== Foothills ==
-You find yourself standing at the base of an enormous mountain. At its
-base to the north, there is a massive doorway. A sign nearby reads
-“Keep out! Definitely no treasure within!”</p>
-<p>Things of interest here:</p>
-<ul>
-<li>tablet</li>
-</ul>
-<p>There are 2 exits:</p>
-<ul>
-<li>doorway</li>
-<li>south</li>
-</ul>
-<p>What do you do?</p>
-</blockquote>
-<p><em>Mind blown</em>. The program you are running is actually a terminal-based
-RPG! How cool is that? Well, very cool, and very smart. I clearly did
-not expect that from the challenge. It’s a bit like trying to open a
-chess (the chess is a program and the virtual machine is the key) and
-then you discover there is another riddle in the chess. So what’s next?
-Well play the game I guess…</p>
-<p>I played for a bit, and discovered one more code in the game (Did I
-already mention how cool all this is?). Which means some (all?) codes
-can be found by playing the game. But then, how do I know if all codes
-are in the game? How deep and rich can this game be? What if it takes 10
-hours to find the codes? I already under-estimated the challenge once,
-let’s not do the same mistake again.</p>
-<p>At this point I thought of two things that could be done:</p>
-<ol>
-<li>Try to extract all text from the file <code>challenge.bin</code> and see if it contains
-any code.</li>
-<li>Modify the VM so that it can play the game by itself, and explore all
-possible paths possible, some kind of depth-first search on the game itself
-in a way.</li>
-<li>Disassemble the program and try to understand its structure. The codes must
-be stored somewhere (or generated somehow), by understanding (and maybe
-changing a bit) the code, it must be possible to bypass the game completely.</li>
-</ol>
-<p>The first approach did not yield any result, which means that codes are
-probably encoded in some way to not be readable. I did not have too much hope
-anyways, but we never know.</p>
-<p>The second approach was the most promising and allowed me to discover a few more
-codes. Here is how it worked:</p>
-<p><strong>First step</strong> – I modified the virtual machine implementation so that it’s 100%
-pure code with no side-effect. The execution now consists in a function
-<code>execNextOpCode</code> which takes as input the state of the program, runs the
-next opcode of the program, then returns a “continuation” which can be
-one of:</p>
-<ul>
-<li><code>Halt</code> - program terminated successfully.</li>
-<li><code>Error String</code> - there was an exception while running the opcode (should
-never happen).</li>
-<li><code>PutChar Char</code> - we should print a character in the terminal.</li>
-<li><code>GetChar (Char -&gt; s)</code> - we should ask some user input, then continue the
-execution of the opcode using the function returned (<code>Char -&gt; s</code>).</li>
-<li><code>Ok</code> - opcode was executed correctly and we can continue running the program.</li>
-</ul>
-<p>The nice thing with this model, is that running an opcode does not alter
-the state of the virtual machine, but instead returns a new virtual
-machine (copy of the initial state). This might seem crazy, but it’s not as
-inefficient as it sounds (and pretty common in an immutable language like
-Haskell). This allows us to parallelize the execution of different branches of a
-program without having to care about controlling side-effects.</p>
-<p><strong>Second step</strong> – write a depth-first search for the game by changing the VM
-execution model in two ways:</p>
-<ol>
-<li>Each output <code>PutChar</code> from the program is stored in an accumulator so that we
-can inspect it later.</li>
-<li>Each time a user input is required by the <code>GetChar</code> continuation code, we
-<em>fork</em> our execution of the program and perform all possible user actions
-concurrently: <em>picking up objects</em>, <em>using objects</em>, <em>visit available
-places</em>.</li>
-<li>We need to detect loops to not explore forever (e.g.: when we come back to an
-already visited location). This is done by comparing the output (accumulated
-<code>PutChar</code> from the program) of a given branch to all previously explored
-branches. If we already generated the same output once, no need to do it
-again.</li>
-</ol>
-<p>This approach allowed me to discover a few more codes, <em>but not all</em>!
-This can mean two things: either not all codes can be discovered through
-the game (likely), or my exploration method is not working as well as it
-should! In both cases, it means I’m not done exploring the rabbit hole…</p>
-]]></content>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[TIL—Python has a built-in persistent key-value store]]></title>
         <id>https://remusao.github.io//posts/python-dbm-module.html</id>
         <link href="https://remusao.github.io//posts/python-dbm-module.html"/>
@@ -2693,62 +2647,6 @@ not read too much into it, unless  your particular use-case involves writing
 10,000 random values then reading them back and nothing else. As everything,
 you should first perform your own measurements based on your own use-case and
 constraints, then make a decision about what technology best serves your need.</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Copy anything to clipboard in HTML and JavaScript]]></title>
-        <id>https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html</id>
-        <link href="https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html"/>
-        <updated>2018-06-09T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>Not long ago, I was looking for a way to copy the content of any HTML element on
-a page to clipboard. What I thought would be an easy task turned out to be more
-complicated than expected. In the end I had to use some trick which I will show
-here.</p>
-<p>The way this will work is as follows: when clicking an element on the page, its
-<code>innerText</code> will be copied to Clipboard. To achieve this we will need to:</p>
-<ul>
-<li>Attach an <code>onclick</code> event listener to our element (or to several elements)</li>
-<li>When a <code>click</code> event is received, emit a fake <code>copy</code> event</li>
-</ul>
-<pre class="code" data-lang="javascript"><code>  <span class="hljs-comment">// This variable will be used to store a reference to the</span>
-  <span class="hljs-comment">// latest element clicked.</span>
-  <span class="hljs-keyword">let</span> selected = <span class="hljs-literal">null</span>;
-
-  <span class="hljs-comment">// Attach our custom copy-to-clipboard-on-click trick to `elt`</span>
-  <span class="hljs-keyword">const</span> elt = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">&#x27;...&#x27;</span>);
-  elt.<span class="hljs-property">onclick</span> = <span class="hljs-function">() =&gt;</span> {
-    <span class="hljs-comment">// Store reference to this element in the global `selected`</span>
-    selected = elt;
-    <span class="hljs-comment">// Emit fake `copy` event</span>
-    <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">execCommand</span>(<span class="hljs-string">&#x27;copy&#x27;</span>);
-    <span class="hljs-comment">// Remove reference from `selected` to allow normal copies</span>
-    <span class="hljs-comment">// to be performed on the page.</span>
-    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> { selected = <span class="hljs-literal">null</span>; }, <span class="hljs-number">1000</span>);
-  };
-</code></pre>
-<ul>
-<li>Listen to this <code>copy</code> event and copy the content of the latest element
-clicked to clipboard.</li>
-</ul>
-<pre class="code" data-lang="javascript"><code>  <span class="hljs-comment">// Intercept copy events</span>
-  <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;copy&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
-    <span class="hljs-keyword">if</span> (selected === <span class="hljs-literal">null</span>) {
-      <span class="hljs-comment">// No element was clicked</span>
-      <span class="hljs-keyword">return</span>;
-    }
-
-    <span class="hljs-comment">// Copy content of clicked element to clipboard</span>
-    e.<span class="hljs-property">clipboardData</span>.<span class="hljs-title function_">setData</span>(
-      <span class="hljs-string">&#x27;text/plain&#x27;</span>,
-      selected.<span class="hljs-property">innerText</span>,
-    );
-
-    <span class="hljs-comment">// We want our data, not data from any selection,</span>
-    <span class="hljs-comment">// to be written to the clipboard</span>
-    e.<span class="hljs-title function_">preventDefault</span>();
-  });
-
-</code></pre>
 ]]></content>
     </entry>
     <entry>
@@ -3081,44 +2979,6 @@ Options:
     -b --<span class="hljs-built_in">bind</span> ADDRESS   Specify alternate <span class="hljs-built_in">bind</span> address [default: 0.0.0.0]
     -h, --<span class="hljs-built_in">help</span>          Show this <span class="hljs-built_in">help</span> message and <span class="hljs-built_in">exit</span>.
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
-        <id>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</id>
-        <link href="https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html"/>
-        <updated>2017-11-25T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
-fast fuzzy matching and approximate set membership tests, I found myself in a
-situation where I needed more insight about what optimizations <code>V8</code> was
-performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
-compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
-consider!</p>
-<p>This article assumes you’re using
-<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
-extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
-During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
-very useful!</p>
-<h1>Building V8 From Source</h1>
-<h2>Installing depot_tools</h2>
-<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
-<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
-$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
-</code></pre>
-<h2>Compiling V8</h2>
-<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
-<pre class="code" data-lang="sh"><code>$ fetch v8
-</code></pre>
-<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
-version of the sources. It will also configure everything needed for the build.</p>
-<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
-$ ninja -C out.gn/x64.release
-</code></pre>
-<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
-intended by running the tests:</p>
-<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
-</code></pre>
-<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
 ]]></content>
     </entry>
     <entry>
@@ -3609,187 +3469,6 @@ found a very simple (and efficient) solution:</p>
 </code></pre>
 <p>That’s it! And it’s using the super efficient <a href="http://www.aosabook.org/en/posa/warp.html" target="_blank" rel="noopener noreferrer">warp</a>
 HTTP server.</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Getting the most out of SQLite3 with Python]]></title>
-        <id>https://remusao.github.io//posts/few-tips-sqlite-perf.html</id>
-        <link href="https://remusao.github.io//posts/few-tips-sqlite-perf.html"/>
-        <updated>2017-10-21T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>I’ve recently made heavy use of <code>sqlite3</code> for a project involving a lot of data
-and processing. My first attempt involved no database at all, and all data would
-be kept in memory and queries would consist in a mix of dictionary lookups,
-iteration, conditions, etc. This was nice, but there is only so much you can fit
-in memory, and re-generating/loading the data from disk to memory became a tedious
-and time consuming process.</p>
-<p>I decided to give <code>sqlite3</code> a try. This allowed an increase in the amount of
-data that could be processed, and reduced the loading time of the application to
-nothing, since only opening a connection to the database was needed. Moreover,
-I could replace a lot of Python logic by SQL queries.</p>
-<p>I’d like to share a few learnings and findings about this experience.</p>
-<p><strong>TL;DR</strong>:</p>
-<ol>
-<li>Use bulk operations (<em>a.k.a.</em> <code>executemany</code>).</li>
-<li>You don’t need <code>cursors</code> (most of the time).</li>
-<li>Cursors can be iterated upon.</li>
-<li>Use context managers.</li>
-<li>Use pragmas (when it makes sense).</li>
-<li>Postpone index creation.</li>
-<li>Use placeholders to interpolate python values.</li>
-</ol>
-<h2>Use Bulk Operations</h2>
-<p>If you need to insert a lot of rows at once in your database, you really
-should not use <code>execute</code>. The <code>sqlite3</code> module provides a way to bulk
-insertions: <code>executemany</code>.</p>
-<p>Instead of doing something like:</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> iter_data():
-    connection.execute(<span class="hljs-string">&#x27;INSERT INTO my_table VALUES (?)&#x27;</span>, row)
-</code></pre>
-<p>You can leverage the fact that <code>executemany</code> accepts as argument a generator of
-<code>tuples</code>:</p>
-<pre class="code" data-lang="python"><code>connection.executemany(
-    <span class="hljs-string">&#x27;INSERT INTO my_table VALUE (?)&#x27;</span>,
-    iter_data()
-)
-</code></pre>
-<p>This is not only more concise, it’s also much more efficient. In fact, <code>sqlite3</code>
-implements <code>execute</code> using <code>executemany</code> behind the scene, but the former
-inserts a single row instead of many.</p>
-<p>I wrote a small benchmark which consists in inserting a million rows into an
-empty table (the database lives in memory):</p>
-<ul>
-<li><code>executemany</code>: <strong>1.6</strong> seconds</li>
-<li><code>execute</code>: 2.7 seconds</li>
-</ul>
-<h2>You Don’t Need Cursors</h2>
-<p>…<em>most of the time</em>.</p>
-<p>One thing I often found confusing at the beginning, was <code>cursor</code> management.
-Examples online and in the documentation often look like:</p>
-<pre class="code" data-lang="python"><code>connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
-cursor = connection.cursor()
-<span class="hljs-comment"># Do something with cursor</span>
-</code></pre>
-<p>But most of the time you don’t need a cursor at all, and you can directly use
-the <code>connection</code> object (it is mentioned at the
-<a href="https://docs.python.org/3.6/library/sqlite3.html#using-shortcut-methods" target="_blank" rel="noopener noreferrer">end of the documentation</a>).</p>
-<p>Operations such as <code>execute</code> and <code>executemany</code> can be called directly on the
-connection and <em>will return a cursor</em>. Here is an example to demonstrate that:</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> sqlite3
-
-connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
-
-<span class="hljs-comment"># Create a table</span>
-connection.execute(<span class="hljs-string">&#x27;CREATE TABLE events(ts, msg)&#x27;</span>)
-
-<span class="hljs-comment"># Insert values</span>
-connection.executemany(
-    <span class="hljs-string">&#x27;INSERT INTO events VALUES (?,?)&#x27;</span>,
-    [
-        (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
-        (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;bar&#x27;</span>),
-        (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;baz&#x27;</span>)
-    ]
-)
-
-<span class="hljs-comment"># Print inserted rows</span>
-<span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
-    <span class="hljs-built_in">print</span>(row)
-</code></pre>
-<h2>Cursors Can Be Iterated Upon</h2>
-<p>You might often see examples making use of <code>fetchone</code> or <code>fetchall</code> on
-the result of a <code>SELECT</code> query. But I find that the most natural way to
-consume the results is to actually iterate on the cursor directly:</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
-    <span class="hljs-built_in">print</span>(row)
-</code></pre>
-<p>This way, you can stop as soon as you got enough results and not waste
-resources. Of course, if you know beforehand how many results you want, you can
-use the <code>LIMIT</code> SQL statement instead, but Python generators are very handy and
-allow you to decouple data generation from data consumption.</p>
-<h2>Use Context Managers</h2>
-<p>Shit happens, even in the middle of a SQL transaction. To avoid having
-to deal manually with <code>rollback</code> or <code>commit</code>, you can simply use the
-<code>connection</code> object as a context manager. In the following example we
-create a table, and insert <em>by mistake</em> duplicated values:</p>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> sqlite3
-connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
-
-<span class="hljs-keyword">with</span> connection:
-    connection.execute(
-        <span class="hljs-string">&#x27;CREATE TABLE events(ts, msg, PRIMARY KEY(ts, msg))&#x27;</span>)
-
-<span class="hljs-keyword">try</span>:
-    <span class="hljs-keyword">with</span> connection:
-        connection.executemany(<span class="hljs-string">&#x27;INSERT INTO events VALUES (?, ?)&#x27;</span>, [
-            (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
-            (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;bar&#x27;</span>),
-            (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;baz&#x27;</span>),
-            (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
-        ])
-<span class="hljs-keyword">except</span> (sqlite3.OperationalError, sqlite3.IntegrityError) <span class="hljs-keyword">as</span> e:
-    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Could not complete operation:&#x27;</span>, e)
-
-<span class="hljs-comment"># No row was inserted because transaction failed</span>
-<span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
-    <span class="hljs-built_in">print</span>(row)
-
-connection.close()
-</code></pre>
-<h2>Use Pragmas</h2>
-<p>…<em>when it makes sense</em></p>
-<p>There are a few <em>pragmas</em> you can use to tweak the behavior of <code>sqlite3</code> in your
-program. In particular, one that could improve the performance is <code>synchronous</code>:</p>
-<pre class="code" data-lang="python"><code>connection.execute(<span class="hljs-string">&#x27;PRAGMA synchronous = OFF&#x27;</span>)
-</code></pre>
-<p>You should be aware though that this can <em>be dangerous</em>. If the application
-crashes unexpectedly in the middle of a transaction, the database will probably
-be left in an inconsistent state. So use with care! But if you want to insert a
-lot of rows faster, that can be an option. A safer option is to use the
-<a href="https://www.sqlite.org/draft/wal.html" target="_blank" rel="noopener noreferrer"><code>WAL</code></a> option instead of disabling
-<code>synchronous</code> completely.</p>
-<pre class="code" data-lang="python"><code>connection.execute(<span class="hljs-string">&#x27;PRAGMA journal_mode = WAL&#x27;</span>)
-</code></pre>
-<h2>Postpone Index Creation</h2>
-<p>Let’s say you need a few indices on your database, and you also need to
-insert a lot of rows while creating them. Postponing the creation of the indices
-to after all rows have been inserted could result in a substantial performance
-improvement.</p>
-<h2>Use Placeholders to Interpolate Python Values</h2>
-<p>It is tempting to use Python string operations to include values into
-queries. <em>Do not</em>! This is highly insecure, and <code>sqlite3</code> gives you a
-better way to do it:</p>
-<pre class="code" data-lang="python"><code><span class="hljs-comment"># Do not do this!</span>
-my_timestamp = <span class="hljs-number">1</span>
-c.execute(<span class="hljs-string">&quot;SELECT * FROM events WHERE ts = &#x27;%s&#x27;&quot;</span> % my_timestamp)
-
-<span class="hljs-comment"># Do this instead</span>
-my_timestamp = (<span class="hljs-number">1</span>,)
-c.execute(<span class="hljs-string">&#x27;SELECT * FROM events WHERE ts = ?&#x27;</span>, my_timestamp)
-</code></pre>
-<p>Also, string interpolation using Python <code>%s</code> (or format, or formatted string
-literals) does not go well with <code>executemany</code>. So there is really no point in
-trying!</p>
-<hr>
-<p>Keep in mind though that these tips might or might not give you a benefit,
-depending on your specific use-case. You should always try for yourself and
-decide if it’s worth it or not.</p>
-<p><em>Edit 28-12-2017</em>: Thanks for all the great feedback from <a href="https://www.reddit.com/r/Python/comments/781q18/getting_the_most_out_of_sqlite3_with_python/" target="_blank" rel="noopener noreferrer">Reddit</a>
-and <a href="https://news.ycombinator.com/item?id=15525715" target="_blank" rel="noopener noreferrer">Hacker News</a>.
-I took the liberty to amend the original article with a few of the suggestions.</p>
-<p>There are a few topics that were not mentioned in this article but are
-definitely worth reading:</p>
-<ul>
-<li><a href="https://docs.python.org/3.6/library/sqlite3.html#controlling-transactions" target="_blank" rel="noopener noreferrer">Using transactions</a>
-can dramatically improve the speed of your code if you need to run several
-SQL statements in a row (it should not be needed if you use <code>executemany</code>).</li>
-<li>If you don’t need to re-use your database across sessions, you can use an
-<a href="https://sqlite.org/inmemorydb.html" target="_blank" rel="noopener noreferrer"><em>in-memory</em></a> database by specifying
-<code>:memory:</code> as a location, which should give you a nice speed-up.</li>
-<li>You can <a href="https://docs.python.org/3.6/library/sqlite3.html#sqlite3.Connection.row_factory" target="_blank" rel="noopener noreferrer">customize <code>row_factory</code></a>
-to get something more useful than <code>tuple</code>s as results from <code>SELECT</code> queries.</li>
-<li>Consider changing <code>isolation_level</code> to <code>DEFERRED</code> or <code>IMMEDIATE</code>.</li>
-</ul>
-<p><em>Edit 30-05-2021</em>: Fixed a missing <code>.connect</code> in the “You Don’t Need Cursors” section. Thanks to <a href="https://github.com/Gelma" target="_blank" rel="noopener noreferrer">Gelma</a> for noticing.</p>
 ]]></content>
     </entry>
     <entry>
