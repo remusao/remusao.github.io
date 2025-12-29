@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2025-12-29T06:17:02.575Z</updated>
+    <updated>2025-12-29T07:15:48.436Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -435,6 +435,130 @@ the HTTPS Everywhere extension.</p>
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Parsing Thunderbird filtering rules]]></title>
+        <id>https://remusao.github.io//posts/parsing-thunderbird-msg-filters.html</id>
+        <link href="https://remusao.github.io//posts/parsing-thunderbird-msg-filters.html"/>
+        <updated>2019-11-24T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p><a href="https://www.thunderbird.net/" target="_blank" rel="noopener noreferrer">Thunderbird</a> is a free email application that’s
+easy to set up and customize - and it’s loaded with great features!</p>
+</blockquote>
+<p>I have been using Thunderbird as my email client of choice for many years, it
+is the hub which allows me to manage all the emails I get: work, multiple
+personal addresses, etc. As of today my combined mail folders are about <code>30GB</code>
+and counting. Still, Thunderbird has been running rock solid and I had no issue
+so far.</p>
+<p>I have to say that I make extensive use of folders, labels and <em>message
+filters</em>. These features combined allow to effortlessly manage a high volume of
+emails by filtering, sorting, tagging, dispatching emails; greatly reducing the
+amount of manual work needed to process then read them.</p>
+<p>As an example, I receive a lot of emails notifications from GitHub, both for work and personal
+OSS projects. I also tend to follow activity of repositories which I find
+interesting; but I do not want to have to go through all these notifications
+myself. A few years ago I adopted the following strategy:</p>
+<ol>
+<li>Create folders or subfolders for each repository:</li>
+</ol>
+<ul>
+<li><code>github/work/repo1</code>,</li>
+<li><code>github/work/repo2</code>,</li>
+<li><code>github/perso/repo3</code>,</li>
+<li>etc.</li>
+</ul>
+<ol start="2">
+<li>Create a first filter rule <em>for each repository</em> to automatically move
+GitHub notifications to their respective folders. This can be achieve by
+detecting <code>notifications@github.com</code> using a condition of the form <code>From is notifications@github.com</code> and adding a <code>Move Message to</code> action.</li>
+<li>Optionally, I create rules to automatically mark as read any
+message which is not directed to me specifically (e.g.: via direct mention
+of my GitHub handler, PR request, issue assigned, etc.); especially on very
+active repositories. This can be achieved by detecting things like
+<code>mention@noreply.github.com</code> or <code>assign@noreply.github.com</code> in the <code>Cc</code>
+field.</li>
+</ol>
+<p>GitHub has a <a href="https://help.github.com/en/github/receiving-notifications-about-activity-on-github/about-email-notifications" target="_blank" rel="noopener noreferrer">full page of documentation</a>
+describing all the values you can use to filter email notifications. This is
+<em>really useful</em>. For example I tag emails where I am directly mentioned in
+<strong>red</strong> but notifications about discussions that I was involved in but not
+directly mentioned with <strong>blue</strong>. This allows to filter at a glance what I
+really need to check, versus what I can check later. In practice, more than 90%
+of notifications do not need to be checked manually. This is huge!</p>
+<p>Unfortunately, as the number of filters grows, I found the built-in interface
+to not be very convenient. Finding or editing rules can become a pain.
+Fortunately, Thunderbird stores all the filters for a given account in a
+single, plain text file named: <code>msgFilterRules.dat</code>, located in your
+Thunderbird profile folder. So I decided to write <a href="https://github.com/remusao/thunderbird-msg-filters" target="_blank" rel="noopener noreferrer">a
+library</a> which allows to
+manipulate these rules through a minimal and type-safe API; in <em>TypeScript</em>.</p>
+<p>The goal of the project is to allow developing more high-level tooling to
+read, transform, extend, update the rules while not having to worry about the
+low-level parsing details. It would also be possible to store the rules in a
+nicer format then use the library to produce the final file which can be
+consumed by Thunderbird.</p>
+<p>To install the library: <code>npm install --save thunderbird-msg-filters</code>.</p>
+<p>You can then use it to parse a <code>msgFilterRules.dat</code> file which you can find in
+your Thunderbird folder (one per email account configured):</p>
+<pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { parse } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
+
+<span class="hljs-comment">// A typical `msgFilterRules.dat` could contain this raw value.</span>
+<span class="hljs-keyword">const</span> rules = <span class="hljs-title function_">parse</span>(<span class="hljs-string">`
+version=&quot;9&quot;
+logging=&quot;no&quot;
+name=&quot;rule 1&quot;
+enabled=&quot;yes&quot;
+type=&quot;17&quot;
+action=&quot;Mark flagged&quot;
+condition=&quot;OR (subject,contains,foo) OR (subject,contains,bar)&quot;
+name=&quot;rule 2&quot;
+enabled=&quot;yes&quot;
+type=&quot;17&quot;
+action=&quot;Mark read&quot;
+action=&quot;JunkScore&quot;
+actionValue=&quot;100&quot;
+condition=&quot;ALL&quot;
+`</span>);
+</code></pre>
+<p>You can also format rules to the same original format:</p>
+<pre class="code" data-lang="typescript"><code><span class="hljs-keyword">import</span> { format } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;thunderbird-msg-filters&#x27;</span>;
+
+<span class="hljs-keyword">const</span> rules = <span class="hljs-title function_">format</span>({
+  <span class="hljs-attr">version</span>: <span class="hljs-string">&#x27;9&#x27;</span>,
+  <span class="hljs-attr">logging</span>: <span class="hljs-string">&#x27;no&#x27;</span>,
+  <span class="hljs-attr">rules</span>: [
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 1&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [{ <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark flagged&#x27;</span>}],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;OR (subject,contains,foo) OR (subject,contains,bar)&#x27;</span>
+    },
+    {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rule 2&#x27;</span>,
+      <span class="hljs-attr">enabled</span>: <span class="hljs-string">&#x27;yes&#x27;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;17&#x27;</span>,
+      <span class="hljs-attr">actions</span>: [
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Mark read&#x27;</span> }
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;JunkScore&#x27;</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;100&#x27;</span> }
+      ],
+      <span class="hljs-attr">condition</span>: <span class="hljs-string">&#x27;ALL&#x27;</span>
+    },
+  ]
+});
+</code></pre>
+<p>The library is currently very young and will probably contain bugs, so use at
+your own risks. Feel free to use it and <a href="https://github.com/remusao/thunderbird-msg-filters/issues/new" target="_blank" rel="noopener noreferrer">open an issue</a>
+for any feedback!</p>
+<p><strong>What’s next?</strong> I plan to use this library to store the message filters rules
+in a separate location and synchronize it potentially between multiple
+computers. The nice thing is that the rules can now be expressed in a typed
+language (TypeScript) which will give me more confidence about their validity.
+It is also much easier to manipulate them from a single file, in a familiar
+developer environment (i.e.: your editor of choice) than through the
+Thunderbird interface.</p>
+<p>GitHub repository: <a href="https://github.com/remusao/thunderbird-msg-filters/" target="_blank" rel="noopener noreferrer">https://github.com/remusao/thunderbird-msg-filters/</a></p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Installing Diablo II]]></title>
         <id>https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html</id>
         <link href="https://remusao.github.io//posts/installing-diablo2-ubuntu-sandboxing.html"/>
@@ -664,6 +788,133 @@ Then start the update with:</p>
   </a>
   <figcaption>There is no such thing as the 'Cow Level'.</figcaption>
 </figure>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Thoughts about unit and integration tests]]></title>
+        <id>https://remusao.github.io//posts/unit-integration-tests.html</id>
+        <link href="https://remusao.github.io//posts/unit-integration-tests.html"/>
+        <updated>2019-10-26T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>Do not feed the anti-patterns!</p>
+</blockquote>
+<p>I recently found myself working with tests—integration and unit—. This
+experience led to some frustration, which got me thinking… Where did the
+frustration come from? How could it be done differently? And ultimately, what
+makes a good test? This post is a collection of thoughts about testing, not an
+exhaustive guide.</p>
+<h2>Unit vs. Integration?</h2>
+<blockquote>
+<p>It does not matter which one you pick first, you might need both eventually…</p>
+</blockquote>
+<p>Before writing any test, you might be wondering <em>which kind of test</em> makes
+sense. Would it be better to cover your new feature with unit or integration
+tests? You might want to pause for a moment and think about the trade-offs of
+the different options.</p>
+<p>Often, <em>unit tests</em> will run in a more controlled environment, maybe with some
+dependencies <a href="https://en.wikipedia.org/wiki/Mock_object" target="_blank" rel="noopener noreferrer">mocked</a>, so that you
+can focus on a specific file, class or function. This means that unit tests are
+more targeted than integration tests. It also means that they might be easier
+to reason about, and quicker to iterate with. As an example, imagine testing a
+JavaScript library; unit tests could be running in Node.js instead of a
+full-blown browser.</p>
+<p>On the other hand, <em>integration tests</em> will potentially target multiple systems
+interacting with each other, running in an environment which is much closer to
+production conditions. Using the same example, your JavaScript library might now be tested
+in a handful of browsers (e.g.: Firefox, Chromium and Safari, with different
+versions of each), while interacting with other libraries. This means that you
+will most likely gain more confidence that the code works in production
+environment, at the cost of a more complex setup.</p>
+<h2>Non-regression Tests</h2>
+<blockquote>
+<p>Non-regression is not the same as <em>non-evolution</em>.</p>
+</blockquote>
+<p>It is desirable to consolidate APIs or components with non-regression tests,
+but be careful not to prevent future evolution! This might happen if you take
+the current production system and generate test-cases by feeding inputs,
+getting the results and writing high-level tests which ensure that the output
+is always the one that was expected <em>at the time test-cases were generated</em>.</p>
+<p>Although this might feel good at first—we have great test coverage after
+all!—, this approach has at least one major short-coming: <em>it’s very hard to
+make the tests evolve in the future</em>. It’s nice to “freeze” the capabilities of
+your system with numerous tests, but unless said system is not meant to evolve
+in the future, the assumptions about expected results will most likely evolve
+over time. This means that when writing tests you probably need to think not
+only about coverage and the expected behavior <em>right now</em>, but also how easy it
+will be to make the tests evolve in the future.</p>
+<p>Tests are tightly related to the code being tested and, if you are not careful,
+rigid tests might make changing the source code much more painful than it
+should be.</p>
+<h2>Your Tests are Code</h2>
+<blockquote>
+<p>Tests are not the destination, they are the starting point and the path.</p>
+</blockquote>
+<p>There is a misunderstanding at the root of all evils: you shall not <em>treat
+your tests differently than your source code</em>. Tests <strong>are</strong> code! To make
+things a bit more concrete, here is a list of assumptions which I think are
+reasonable when it comes to source code but are rarely accepted for tests:</p>
+<ul>
+<li>You expect to be able to <em>build</em> and <em>run</em> your code easily.</li>
+<li>You expect your code to be <em>efficient</em>.</li>
+<li>You expect your code to be <em>understandable</em>.</li>
+<li>You expect your code to be <em>documented</em>.</li>
+<li>You expect your code to be <em>cross-platform</em>.</li>
+<li>You expect your code to be <em>easy to delete</em>!</li>
+<li>You expect your code to <em>not be redundant and use abstractions</em>.</li>
+</ul>
+<p>Whenever one of the expectations holds for your code, try replacing <code>code</code> with
+<code>tests</code> and ask yourself if it is still true. Your code and the tests you write
+to ensure it behaves in a correct way will have to evolve side-by-side in the
+future. You do not want your tests to become a <em>liability</em>.</p>
+<h2>Future-Proof Tests?</h2>
+<blockquote>
+<p>No developer ever reads the same code twice. — Heraclitus</p>
+</blockquote>
+<p>When writing tests, try to express your intent and give cues to the future
+reader —that might be you in a few months!— regarding why a given assertion was
+needed, what behavior is being tested, etc. Alongside the usual features of a
+language such as <em>comments</em>, <em>good names</em> for variables and functions, etc.
+modern testing frameworks give many tools to ease this process: use things like
+<code>describe(...)</code>, <code>it(...)</code> and explicit assertions <code>expect(...).to.be</code>.</p>
+<p>Additionally, as a contributor to a project which has tests, it should be
+reasonnably straightforward to answer the following questions:</p>
+<ul>
+<li>when looking at code, where can I find the existing tests?</li>
+<li>when looking at tests, which code is being tested?</li>
+</ul>
+<p>There should be a clear path to modify both code and tests:</p>
+<ul>
+<li>when changing code, which tests need to be changed?</li>
+<li>when deleting code, which tests need to be deleted?</li>
+</ul>
+<p>A few tips can ease this process. <em>Naming conventions</em> for test files should be
+consistent and finding the tests for a given file or component should not
+involve any interpretation, it should be mechanical (e.g.: tests for <code>module.js</code>
+are always to be found in <code>tests/module.test.js</code>).</p>
+<p>Tests should be organized in a way that follows the code structure closely so
+that changes in the source can be reflected to the tests and <em>vice versa</em>. This
+also applies to the internal structure of the tests. It can be helpful to group
+assertions by behavior or assumptions. It is also helpful to be explicit about
+both success and failure of an assertion!</p>
+<p>This last point is important because if you can quickly grasp the intent while
+reading a test; it allows to decide if an assertion still holds after a change
+in the code, or if it should go away completely.</p>
+<p>Last but not least, avoid repetition in tests. If you see yourself writing the
+same assertions over and over again to tests similar components, it might be
+worth abstracting these away. You will thank yourself in the future when you
+need to amend the tests!</p>
+<h2>By Way of Conclusion</h2>
+<blockquote>
+<p>Always pick the right hammer for your nails…</p>
+</blockquote>
+<p>As mentioned previously, this is not about picking unit tests over integration
+tests. You will likely need both eventually because they are often
+complementary and give you a different kind of confidence in the correctness of
+your code (although some <a href="https://blog.thecodewhisperer.com/permalink/integrated-tests-are-a-scam" target="_blank" rel="noopener noreferrer">argue against integration tests</a>).</p>
+<p>As a take-away, treat your tests the same way you treat your source code and
+hold them both to high standards. Not doing so might lead to a situation where
+your tests become a liability and slow you down instead of empowering you to
+write better and more robust features.</p>
 ]]></content>
     </entry>
     <entry>
@@ -2285,6 +2536,166 @@ constraints, then make a decision about what technology best serves your need.</
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Synacor—Down the rabbit hole]]></title>
+        <id>https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html</id>
+        <link href="https://remusao.github.io//posts/synacor-down-the-rabbit-hole.html"/>
+        <updated>2018-06-10T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>Last year I had the chance to participate in the 2017 edition of <a href="https://adventofcode.com/" target="_blank" rel="noopener noreferrer">Advent
+of Code</a>. That was the first time and I
+<em>really</em> enjoyed it. Having to solve an interesting problem, every
+day, made me learn a lot! It’s also a good occasion to practice some
+skills that might not be otherwise useful in your daily job (and more
+importantly: have fun!).</p>
+<p>While skimming through the discussions on Reddit about possible
+solutions to one of the AoC’s problems, someone mentioned “Synacor”… I
+never heard of it before, but from what I understood it was some kind of
+programming challenge. I did not need more to have a look:
+<a href="https://challenge.synacor.com" target="_blank" rel="noopener noreferrer">challenge.synacor.com</a>.</p>
+<h1>The Challenge</h1>
+<p>The challenge is briefly introduced, the competition took place during
+two conferences in the past and is now over. But you can still download
+the material of the challenge and try to solve it.</p>
+<p>After registering an email address and a password, I could download an
+archive <code>synacor-challenge.tgz</code>. Uncompressed, it contains two files :</p>
+<ol>
+<li><code>arch-spec</code></li>
+<li><code>challenge.bin</code></li>
+</ol>
+<p>The first one describes the challenge. It is about creating “a virtual
+machine capable of running the included binary [challenge.bin]”. It also
+mentions that some “codes” are to be found along the way. The rest of
+the document describes the architecture of the virtual machine:</p>
+<ul>
+<li>16 bits integers stored in little-endian format</li>
+<li>16 bits addressable memory (the program starts at address <code>0</code>)</li>
+<li>8 registers</li>
+<li>1 stack containing 16 bits numbers</li>
+<li>22 instructions: <code>halt</code>, <code>noop</code>, <code>set</code>, <code>push</code>, <code>jpm</code>, <code>add</code>, <code>mult</code>, etc.</li>
+</ul>
+<p>Each instruction is described in details: opcode, number of expected
+arguments and behavior when executed by the virtual machine. So
+far so good, this looks pretty classic. The implementation of such
+virtual machine is pretty straight forward. I choose <code>Haskell</code> for
+the implementation (because why not, and I already implemented some
+<a href="https://github.com/remusao/Hodor" target="_blank" rel="noopener noreferrer">Brainfuck interpreter/transpiler</a>
+before, so I thought I could reuse some learnings from there). Without
+going into too much details, I used the following data structures to
+represent the state of the VM:</p>
+<pre class="code" data-lang="haskell"><code><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Synacor</span> = <span class="hljs-type">Synacor</span></span>
+  { pos :: <span class="hljs-type">Int</span>
+  , mem :: <span class="hljs-type">Map</span> <span class="hljs-type">Register</span> <span class="hljs-type">Word16</span>
+  , stack :: [<span class="hljs-type">Word16</span>]
+  , program :: <span class="hljs-type">Vector</span> <span class="hljs-type">Word16</span>
+  }
+</code></pre>
+<h1>First Results</h1>
+<p>After implementing most of the instructions, I tried to run the program:</p>
+<blockquote>
+<p>Welcome to the Synacor Challenge! Please record your progress by
+putting codes like this one into the challenge website: XXXXXXXXXXX</p>
+<p>Executing self-test…</p>
+</blockquote>
+<p>Nice, so the program actually starts by <em>testing the virtual machine</em>,
+to make sure all instructions are implemented properly. It’s pretty
+cool. It means that you cannot proceed until your VM is fully functional
+(Using Haskell is a good start for that…). After a few iterations of
+trial, error, fix, I completed my implementation until…</p>
+<blockquote>
+<p>self-test complete, all tests pass
+The self-test completion code is: XXXXXXXXXXXX</p>
+</blockquote>
+<p>Youpi! All good… but, wait, something else was displayed on the terminal:</p>
+<p><strong>DISCLAIMER</strong>: The next section of this post contains spoilers and
+parts of solutions for the Synacor challenge. Please only proceed if you
+already solved the challenge, or do not intend to do so.</p>
+<p>…</p>
+<h1>Riddles in the Dark</h1>
+<blockquote>
+<p>== Foothills ==
+You find yourself standing at the base of an enormous mountain. At its
+base to the north, there is a massive doorway. A sign nearby reads
+“Keep out! Definitely no treasure within!”</p>
+<p>Things of interest here:</p>
+<ul>
+<li>tablet</li>
+</ul>
+<p>There are 2 exits:</p>
+<ul>
+<li>doorway</li>
+<li>south</li>
+</ul>
+<p>What do you do?</p>
+</blockquote>
+<p><em>Mind blown</em>. The program you are running is actually a terminal-based
+RPG! How cool is that? Well, very cool, and very smart. I clearly did
+not expect that from the challenge. It’s a bit like trying to open a
+chess (the chess is a program and the virtual machine is the key) and
+then you discover there is another riddle in the chess. So what’s next?
+Well play the game I guess…</p>
+<p>I played for a bit, and discovered one more code in the game (Did I
+already mention how cool all this is?). Which means some (all?) codes
+can be found by playing the game. But then, how do I know if all codes
+are in the game? How deep and rich can this game be? What if it takes 10
+hours to find the codes? I already under-estimated the challenge once,
+let’s not do the same mistake again.</p>
+<p>At this point I thought of two things that could be done:</p>
+<ol>
+<li>Try to extract all text from the file <code>challenge.bin</code> and see if it contains
+any code.</li>
+<li>Modify the VM so that it can play the game by itself, and explore all
+possible paths possible, some kind of depth-first search on the game itself
+in a way.</li>
+<li>Disassemble the program and try to understand its structure. The codes must
+be stored somewhere (or generated somehow), by understanding (and maybe
+changing a bit) the code, it must be possible to bypass the game completely.</li>
+</ol>
+<p>The first approach did not yield any result, which means that codes are
+probably encoded in some way to not be readable. I did not have too much hope
+anyways, but we never know.</p>
+<p>The second approach was the most promising and allowed me to discover a few more
+codes. Here is how it worked:</p>
+<p><strong>First step</strong> – I modified the virtual machine implementation so that it’s 100%
+pure code with no side-effect. The execution now consists in a function
+<code>execNextOpCode</code> which takes as input the state of the program, runs the
+next opcode of the program, then returns a “continuation” which can be
+one of:</p>
+<ul>
+<li><code>Halt</code> - program terminated successfully.</li>
+<li><code>Error String</code> - there was an exception while running the opcode (should
+never happen).</li>
+<li><code>PutChar Char</code> - we should print a character in the terminal.</li>
+<li><code>GetChar (Char -&gt; s)</code> - we should ask some user input, then continue the
+execution of the opcode using the function returned (<code>Char -&gt; s</code>).</li>
+<li><code>Ok</code> - opcode was executed correctly and we can continue running the program.</li>
+</ul>
+<p>The nice thing with this model, is that running an opcode does not alter
+the state of the virtual machine, but instead returns a new virtual
+machine (copy of the initial state). This might seem crazy, but it’s not as
+inefficient as it sounds (and pretty common in an immutable language like
+Haskell). This allows us to parallelize the execution of different branches of a
+program without having to care about controlling side-effects.</p>
+<p><strong>Second step</strong> – write a depth-first search for the game by changing the VM
+execution model in two ways:</p>
+<ol>
+<li>Each output <code>PutChar</code> from the program is stored in an accumulator so that we
+can inspect it later.</li>
+<li>Each time a user input is required by the <code>GetChar</code> continuation code, we
+<em>fork</em> our execution of the program and perform all possible user actions
+concurrently: <em>picking up objects</em>, <em>using objects</em>, <em>visit available
+places</em>.</li>
+<li>We need to detect loops to not explore forever (e.g.: when we come back to an
+already visited location). This is done by comparing the output (accumulated
+<code>PutChar</code> from the program) of a given branch to all previously explored
+branches. If we already generated the same output once, no need to do it
+again.</li>
+</ol>
+<p>This approach allowed me to discover a few more codes, <em>but not all</em>!
+This can mean two things: either not all codes can be discovered through
+the game (likely), or my exploration method is not working as well as it
+should! In both cases, it means I’m not done exploring the rabbit hole…</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Copy anything to clipboard in HTML and JavaScript]]></title>
         <id>https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html</id>
         <link href="https://remusao.github.io//posts/javascript-html-copy-anything-to-clipboard.html"/>
@@ -2804,6 +3215,44 @@ there</a></p>
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
+        <id>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</id>
+        <link href="https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html"/>
+        <updated>2017-11-25T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
+fast fuzzy matching and approximate set membership tests, I found myself in a
+situation where I needed more insight about what optimizations <code>V8</code> was
+performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
+compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
+consider!</p>
+<p>This article assumes you’re using
+<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
+extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
+During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
+very useful!</p>
+<h1>Building V8 From Source</h1>
+<h2>Installing depot_tools</h2>
+<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
+<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
+$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
+</code></pre>
+<h2>Compiling V8</h2>
+<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
+<pre class="code" data-lang="sh"><code>$ fetch v8
+</code></pre>
+<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
+version of the sources. It will also configure everything needed for the build.</p>
+<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
+$ ninja -C out.gn/x64.release
+</code></pre>
+<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
+intended by running the tests:</p>
+<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
+</code></pre>
+<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Generating Ad-Blocker filters from whotracks.me data]]></title>
         <id>https://remusao.github.io//posts/whotracksme-generate-adb-filters.html</id>
         <link href="https://remusao.github.io//posts/whotracksme-generate-adb-filters.html"/>
@@ -3160,6 +3609,187 @@ found a very simple (and efficient) solution:</p>
 </code></pre>
 <p>That’s it! And it’s using the super efficient <a href="http://www.aosabook.org/en/posa/warp.html" target="_blank" rel="noopener noreferrer">warp</a>
 HTTP server.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Getting the most out of SQLite3 with Python]]></title>
+        <id>https://remusao.github.io//posts/few-tips-sqlite-perf.html</id>
+        <link href="https://remusao.github.io//posts/few-tips-sqlite-perf.html"/>
+        <updated>2017-10-21T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>I’ve recently made heavy use of <code>sqlite3</code> for a project involving a lot of data
+and processing. My first attempt involved no database at all, and all data would
+be kept in memory and queries would consist in a mix of dictionary lookups,
+iteration, conditions, etc. This was nice, but there is only so much you can fit
+in memory, and re-generating/loading the data from disk to memory became a tedious
+and time consuming process.</p>
+<p>I decided to give <code>sqlite3</code> a try. This allowed an increase in the amount of
+data that could be processed, and reduced the loading time of the application to
+nothing, since only opening a connection to the database was needed. Moreover,
+I could replace a lot of Python logic by SQL queries.</p>
+<p>I’d like to share a few learnings and findings about this experience.</p>
+<p><strong>TL;DR</strong>:</p>
+<ol>
+<li>Use bulk operations (<em>a.k.a.</em> <code>executemany</code>).</li>
+<li>You don’t need <code>cursors</code> (most of the time).</li>
+<li>Cursors can be iterated upon.</li>
+<li>Use context managers.</li>
+<li>Use pragmas (when it makes sense).</li>
+<li>Postpone index creation.</li>
+<li>Use placeholders to interpolate python values.</li>
+</ol>
+<h2>Use Bulk Operations</h2>
+<p>If you need to insert a lot of rows at once in your database, you really
+should not use <code>execute</code>. The <code>sqlite3</code> module provides a way to bulk
+insertions: <code>executemany</code>.</p>
+<p>Instead of doing something like:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> iter_data():
+    connection.execute(<span class="hljs-string">&#x27;INSERT INTO my_table VALUES (?)&#x27;</span>, row)
+</code></pre>
+<p>You can leverage the fact that <code>executemany</code> accepts as argument a generator of
+<code>tuples</code>:</p>
+<pre class="code" data-lang="python"><code>connection.executemany(
+    <span class="hljs-string">&#x27;INSERT INTO my_table VALUE (?)&#x27;</span>,
+    iter_data()
+)
+</code></pre>
+<p>This is not only more concise, it’s also much more efficient. In fact, <code>sqlite3</code>
+implements <code>execute</code> using <code>executemany</code> behind the scene, but the former
+inserts a single row instead of many.</p>
+<p>I wrote a small benchmark which consists in inserting a million rows into an
+empty table (the database lives in memory):</p>
+<ul>
+<li><code>executemany</code>: <strong>1.6</strong> seconds</li>
+<li><code>execute</code>: 2.7 seconds</li>
+</ul>
+<h2>You Don’t Need Cursors</h2>
+<p>…<em>most of the time</em>.</p>
+<p>One thing I often found confusing at the beginning, was <code>cursor</code> management.
+Examples online and in the documentation often look like:</p>
+<pre class="code" data-lang="python"><code>connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
+cursor = connection.cursor()
+<span class="hljs-comment"># Do something with cursor</span>
+</code></pre>
+<p>But most of the time you don’t need a cursor at all, and you can directly use
+the <code>connection</code> object (it is mentioned at the
+<a href="https://docs.python.org/3.6/library/sqlite3.html#using-shortcut-methods" target="_blank" rel="noopener noreferrer">end of the documentation</a>).</p>
+<p>Operations such as <code>execute</code> and <code>executemany</code> can be called directly on the
+connection and <em>will return a cursor</em>. Here is an example to demonstrate that:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> sqlite3
+
+connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
+
+<span class="hljs-comment"># Create a table</span>
+connection.execute(<span class="hljs-string">&#x27;CREATE TABLE events(ts, msg)&#x27;</span>)
+
+<span class="hljs-comment"># Insert values</span>
+connection.executemany(
+    <span class="hljs-string">&#x27;INSERT INTO events VALUES (?,?)&#x27;</span>,
+    [
+        (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
+        (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;bar&#x27;</span>),
+        (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;baz&#x27;</span>)
+    ]
+)
+
+<span class="hljs-comment"># Print inserted rows</span>
+<span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
+    <span class="hljs-built_in">print</span>(row)
+</code></pre>
+<h2>Cursors Can Be Iterated Upon</h2>
+<p>You might often see examples making use of <code>fetchone</code> or <code>fetchall</code> on
+the result of a <code>SELECT</code> query. But I find that the most natural way to
+consume the results is to actually iterate on the cursor directly:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
+    <span class="hljs-built_in">print</span>(row)
+</code></pre>
+<p>This way, you can stop as soon as you got enough results and not waste
+resources. Of course, if you know beforehand how many results you want, you can
+use the <code>LIMIT</code> SQL statement instead, but Python generators are very handy and
+allow you to decouple data generation from data consumption.</p>
+<h2>Use Context Managers</h2>
+<p>Shit happens, even in the middle of a SQL transaction. To avoid having
+to deal manually with <code>rollback</code> or <code>commit</code>, you can simply use the
+<code>connection</code> object as a context manager. In the following example we
+create a table, and insert <em>by mistake</em> duplicated values:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">import</span> sqlite3
+connection = sqlite3.connect(<span class="hljs-string">&#x27;:memory:&#x27;</span>)
+
+<span class="hljs-keyword">with</span> connection:
+    connection.execute(
+        <span class="hljs-string">&#x27;CREATE TABLE events(ts, msg, PRIMARY KEY(ts, msg))&#x27;</span>)
+
+<span class="hljs-keyword">try</span>:
+    <span class="hljs-keyword">with</span> connection:
+        connection.executemany(<span class="hljs-string">&#x27;INSERT INTO events VALUES (?, ?)&#x27;</span>, [
+            (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
+            (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;bar&#x27;</span>),
+            (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;baz&#x27;</span>),
+            (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;foo&#x27;</span>),
+        ])
+<span class="hljs-keyword">except</span> (sqlite3.OperationalError, sqlite3.IntegrityError) <span class="hljs-keyword">as</span> e:
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Could not complete operation:&#x27;</span>, e)
+
+<span class="hljs-comment"># No row was inserted because transaction failed</span>
+<span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> connection.execute(<span class="hljs-string">&#x27;SELECT * FROM events&#x27;</span>):
+    <span class="hljs-built_in">print</span>(row)
+
+connection.close()
+</code></pre>
+<h2>Use Pragmas</h2>
+<p>…<em>when it makes sense</em></p>
+<p>There are a few <em>pragmas</em> you can use to tweak the behavior of <code>sqlite3</code> in your
+program. In particular, one that could improve the performance is <code>synchronous</code>:</p>
+<pre class="code" data-lang="python"><code>connection.execute(<span class="hljs-string">&#x27;PRAGMA synchronous = OFF&#x27;</span>)
+</code></pre>
+<p>You should be aware though that this can <em>be dangerous</em>. If the application
+crashes unexpectedly in the middle of a transaction, the database will probably
+be left in an inconsistent state. So use with care! But if you want to insert a
+lot of rows faster, that can be an option. A safer option is to use the
+<a href="https://www.sqlite.org/draft/wal.html" target="_blank" rel="noopener noreferrer"><code>WAL</code></a> option instead of disabling
+<code>synchronous</code> completely.</p>
+<pre class="code" data-lang="python"><code>connection.execute(<span class="hljs-string">&#x27;PRAGMA journal_mode = WAL&#x27;</span>)
+</code></pre>
+<h2>Postpone Index Creation</h2>
+<p>Let’s say you need a few indices on your database, and you also need to
+insert a lot of rows while creating them. Postponing the creation of the indices
+to after all rows have been inserted could result in a substantial performance
+improvement.</p>
+<h2>Use Placeholders to Interpolate Python Values</h2>
+<p>It is tempting to use Python string operations to include values into
+queries. <em>Do not</em>! This is highly insecure, and <code>sqlite3</code> gives you a
+better way to do it:</p>
+<pre class="code" data-lang="python"><code><span class="hljs-comment"># Do not do this!</span>
+my_timestamp = <span class="hljs-number">1</span>
+c.execute(<span class="hljs-string">&quot;SELECT * FROM events WHERE ts = &#x27;%s&#x27;&quot;</span> % my_timestamp)
+
+<span class="hljs-comment"># Do this instead</span>
+my_timestamp = (<span class="hljs-number">1</span>,)
+c.execute(<span class="hljs-string">&#x27;SELECT * FROM events WHERE ts = ?&#x27;</span>, my_timestamp)
+</code></pre>
+<p>Also, string interpolation using Python <code>%s</code> (or format, or formatted string
+literals) does not go well with <code>executemany</code>. So there is really no point in
+trying!</p>
+<hr>
+<p>Keep in mind though that these tips might or might not give you a benefit,
+depending on your specific use-case. You should always try for yourself and
+decide if it’s worth it or not.</p>
+<p><em>Edit 28-12-2017</em>: Thanks for all the great feedback from <a href="https://www.reddit.com/r/Python/comments/781q18/getting_the_most_out_of_sqlite3_with_python/" target="_blank" rel="noopener noreferrer">Reddit</a>
+and <a href="https://news.ycombinator.com/item?id=15525715" target="_blank" rel="noopener noreferrer">Hacker News</a>.
+I took the liberty to amend the original article with a few of the suggestions.</p>
+<p>There are a few topics that were not mentioned in this article but are
+definitely worth reading:</p>
+<ul>
+<li><a href="https://docs.python.org/3.6/library/sqlite3.html#controlling-transactions" target="_blank" rel="noopener noreferrer">Using transactions</a>
+can dramatically improve the speed of your code if you need to run several
+SQL statements in a row (it should not be needed if you use <code>executemany</code>).</li>
+<li>If you don’t need to re-use your database across sessions, you can use an
+<a href="https://sqlite.org/inmemorydb.html" target="_blank" rel="noopener noreferrer"><em>in-memory</em></a> database by specifying
+<code>:memory:</code> as a location, which should give you a nice speed-up.</li>
+<li>You can <a href="https://docs.python.org/3.6/library/sqlite3.html#sqlite3.Connection.row_factory" target="_blank" rel="noopener noreferrer">customize <code>row_factory</code></a>
+to get something more useful than <code>tuple</code>s as results from <code>SELECT</code> queries.</li>
+<li>Consider changing <code>isolation_level</code> to <code>DEFERRED</code> or <code>IMMEDIATE</code>.</li>
+</ul>
+<p><em>Edit 30-05-2021</em>: Fixed a missing <code>.connect</code> in the “You Don’t Need Cursors” section. Thanks to <a href="https://github.com/Gelma" target="_blank" rel="noopener noreferrer">Gelma</a> for noticing.</p>
 ]]></content>
     </entry>
     <entry>
