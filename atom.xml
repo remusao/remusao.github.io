@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2025-12-30T04:28:05.857Z</updated>
+    <updated>2025-12-30T05:13:47.221Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -6853,6 +6853,43 @@ pas le pattern-matching en Hash table lorsque c’est possible.</p>
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
+        <id>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</id>
+        <link href="https://remusao.github.io//posts/mediatomb-arm-archlinux.html"/>
+        <updated>2012-07-31T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
+j’ai reçu récemment je me suis heurté à quelques problèmes
+puisque la version dans les dépots de Archlinux ne compilait pas et
+aucun paquet précompilé pour Arm n’était disponible. Je vais donc
+exposer une solution pour pouvoir le compiler et l’installer. Mais
+tout d’abord une petite description du logiciel trouvée sur le site
+des créateurs :</p>
+<blockquote>
+<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
+</blockquote>
+<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
+il suffit de télécharger un patch supplémentaire et de remplacer le
+PKGBUILD fourni par un autre que je vais vous donner. Voici comment
+faire :</p>
+<ol>
+<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
+<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
+<li>Exécutez les commandes suivantes :</li>
+</ol>
+<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
+$ yaourt -G mediatomb
+$ <span class="hljs-built_in">cd</span> mediatomb
+[Copier le patch ici]
+[Copier le fichier PKGBUILD ici]
+$ makepkg -si
+</code></pre>
+<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
+vaut le coup. J’espère que ça servira à certains le temps que les
+paquets dans les dépôts d’archlinux soient de nouveau compilables
+sans modification.</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Ma vision des mathématiques]]></title>
         <id>https://remusao.github.io//posts/mathematiques-vision.html</id>
         <link href="https://remusao.github.io//posts/mathematiques-vision.html"/>
@@ -6983,40 +7020,31 @@ légués.</p>
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
-        <id>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</id>
-        <link href="https://remusao.github.io//posts/mediatomb-arm-archlinux.html"/>
+        <title type="html"><![CDATA[Visualiser la structure d’un projet python]]></title>
+        <id>https://remusao.github.io//posts/visualize-project-structure-python.html</id>
+        <link href="https://remusao.github.io//posts/visualize-project-structure-python.html"/>
         <updated>2012-07-31T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
-j’ai reçu récemment je me suis heurté à quelques problèmes
-puisque la version dans les dépots de Archlinux ne compilait pas et
-aucun paquet précompilé pour Arm n’était disponible. Je vais donc
-exposer une solution pour pouvoir le compiler et l’installer. Mais
-tout d’abord une petite description du logiciel trouvée sur le site
-des créateurs :</p>
-<blockquote>
-<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
-</blockquote>
-<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
-il suffit de télécharger un patch supplémentaire et de remplacer le
-PKGBUILD fourni par un autre que je vais vous donner. Voici comment
-faire :</p>
+        <content type="html"><![CDATA[<p>Lors d’une de mes dernières contributions à un projet écrit en
+Python, j’ai voulu trouver un moyen de rapidement pouvoir visualiser
+la structure d’un projet selon plusieurs critères (dépendances
+entres les modules, héritages entre les objets, etc.). J’ai donc
+écris un script Python qui permet de générer un graphe à partir de
+différentes données.</p>
+<p><a href="https://github.com/remusao/PyProjectViewer" target="_blank" rel="noopener noreferrer">Project sur GitHub</a></p>
+<p>J’ai essayé de faire en sorte de rentre le projet flexible afin de
+pouvoir scanner d’autres types de données à l’avenir (et pourquoi
+pas d’autres langages). Pour le moment on peut générer le graphe des
+importations ainsi que le graphe de l’héritage.</p>
+<p>Le projet est divisé en deux parties :</p>
 <ol>
-<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
-<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
-<li>Exécutez les commandes suivantes :</li>
+<li>Les fichiers Scan, qui doivent respecter l’interface d’un scanner.</li>
+<li>Un objet modelViewer qui s’occupe de parcourir tout votre projet et d’appeler son scanner sur chaque fichier.</li>
 </ol>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
-$ yaourt -G mediatomb
-$ <span class="hljs-built_in">cd</span> mediatomb
-[Copier le patch ici]
-[Copier le fichier PKGBUILD ici]
-$ makepkg -si
-</code></pre>
-<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
-vaut le coup. J’espère que ça servira à certains le temps que les
-paquets dans les dépôts d’archlinux soient de nouveau compilables
-sans modification.</p>
+<p>Ainsi on peut tout à fait rajouter des Scanners à volonté. Pour
+finir, voici un graphe de dépendance d’un de mes projets en Python.
+Le graphe est coloré et chaque module (chaque dossier) possède sa
+propre couleur.</p>
+<p>N’hésitez pas à faire des remarques ou à proposer des améliorations !</p>
 ]]></content>
     </entry>
     <entry>
@@ -7060,34 +7088,6 @@ quelques paquets elle est pleine à 94%. Je l’utilise actuellement
 pour streamer du contenu présent sur un de mes disques durs externe via
 Mediatomb. Cela permet d’accéder à vos vidéos, photos, musiques
 depuis n’importe quel périphérique supportant la technologie uPnP.</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Visualiser la structure d’un projet python]]></title>
-        <id>https://remusao.github.io//posts/visualize-project-structure-python.html</id>
-        <link href="https://remusao.github.io//posts/visualize-project-structure-python.html"/>
-        <updated>2012-07-31T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>Lors d’une de mes dernières contributions à un projet écrit en
-Python, j’ai voulu trouver un moyen de rapidement pouvoir visualiser
-la structure d’un projet selon plusieurs critères (dépendances
-entres les modules, héritages entre les objets, etc.). J’ai donc
-écris un script Python qui permet de générer un graphe à partir de
-différentes données.</p>
-<p><a href="https://github.com/remusao/PyProjectViewer" target="_blank" rel="noopener noreferrer">Project sur GitHub</a></p>
-<p>J’ai essayé de faire en sorte de rentre le projet flexible afin de
-pouvoir scanner d’autres types de données à l’avenir (et pourquoi
-pas d’autres langages). Pour le moment on peut générer le graphe des
-importations ainsi que le graphe de l’héritage.</p>
-<p>Le projet est divisé en deux parties :</p>
-<ol>
-<li>Les fichiers Scan, qui doivent respecter l’interface d’un scanner.</li>
-<li>Un objet modelViewer qui s’occupe de parcourir tout votre projet et d’appeler son scanner sur chaque fichier.</li>
-</ol>
-<p>Ainsi on peut tout à fait rajouter des Scanners à volonté. Pour
-finir, voici un graphe de dépendance d’un de mes projets en Python.
-Le graphe est coloré et chaque module (chaque dossier) possède sa
-propre couleur.</p>
-<p>N’hésitez pas à faire des remarques ou à proposer des améliorations !</p>
 ]]></content>
     </entry>
     <entry>
