@@ -19,7 +19,7 @@
   "homepage": "https://github.com/remusao/remusao.github.io#readme",
   "devDependencies": {
     "@types/compression": "^1.7.2",
-    "@types/csso": "^5.0.0",
+    "@types/csso": "^5.0.4",
     "@types/dompurify": "2.3.4",
     "@types/express": "^4.17.14",
     "@types/finalhandler": "^1.2.0",
