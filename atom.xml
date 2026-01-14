@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2026-01-14T22:00:28.352Z</updated>
+    <updated>2026-01-14T23:00:22.539Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -6983,6 +6983,43 @@ légués.</p>
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
+        <id>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</id>
+        <link href="https://remusao.github.io//posts/mediatomb-arm-archlinux.html"/>
+        <updated>2012-07-31T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
+j’ai reçu récemment je me suis heurté à quelques problèmes
+puisque la version dans les dépots de Archlinux ne compilait pas et
+aucun paquet précompilé pour Arm n’était disponible. Je vais donc
+exposer une solution pour pouvoir le compiler et l’installer. Mais
+tout d’abord une petite description du logiciel trouvée sur le site
+des créateurs :</p>
+<blockquote>
+<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
+</blockquote>
+<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
+il suffit de télécharger un patch supplémentaire et de remplacer le
+PKGBUILD fourni par un autre que je vais vous donner. Voici comment
+faire :</p>
+<ol>
+<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
+<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
+<li>Exécutez les commandes suivantes :</li>
+</ol>
+<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
+$ yaourt -G mediatomb
+$ <span class="hljs-built_in">cd</span> mediatomb
+[Copier le patch ici]
+[Copier le fichier PKGBUILD ici]
+$ makepkg -si
+</code></pre>
+<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
+vaut le coup. J’espère que ça servira à certains le temps que les
+paquets dans les dépôts d’archlinux soient de nouveau compilables
+sans modification.</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[Raspberry Pi]]></title>
         <id>https://remusao.github.io//posts/raspberry-pi.html</id>
         <link href="https://remusao.github.io//posts/raspberry-pi.html"/>
@@ -7051,43 +7088,6 @@ finir, voici un graphe de dépendance d’un de mes projets en Python.
 Le graphe est coloré et chaque module (chaque dossier) possède sa
 propre couleur.</p>
 <p>N’hésitez pas à faire des remarques ou à proposer des améliorations !</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
-        <id>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</id>
-        <link href="https://remusao.github.io//posts/mediatomb-arm-archlinux.html"/>
-        <updated>2012-07-31T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
-j’ai reçu récemment je me suis heurté à quelques problèmes
-puisque la version dans les dépots de Archlinux ne compilait pas et
-aucun paquet précompilé pour Arm n’était disponible. Je vais donc
-exposer une solution pour pouvoir le compiler et l’installer. Mais
-tout d’abord une petite description du logiciel trouvée sur le site
-des créateurs :</p>
-<blockquote>
-<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
-</blockquote>
-<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
-il suffit de télécharger un patch supplémentaire et de remplacer le
-PKGBUILD fourni par un autre que je vais vous donner. Voici comment
-faire :</p>
-<ol>
-<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
-<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
-<li>Exécutez les commandes suivantes :</li>
-</ol>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
-$ yaourt -G mediatomb
-$ <span class="hljs-built_in">cd</span> mediatomb
-[Copier le patch ici]
-[Copier le fichier PKGBUILD ici]
-$ makepkg -si
-</code></pre>
-<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
-vaut le coup. J’espère que ça servira à certains le temps que les
-paquets dans les dépôts d’archlinux soient de nouveau compilables
-sans modification.</p>
 ]]></content>
     </entry>
     <entry>
@@ -7295,129 +7295,6 @@ sous-dossiers à partir de la position courante comme ceci :</p>
       <span class="hljs-keyword">else</span>:
         <span class="hljs-comment"># Traitement sur le fichier f</span>
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[The Sieve—Even faster!]]></title>
-        <id>https://remusao.github.io//posts/sieve-even-faster.html</id>
-        <link href="https://remusao.github.io//posts/sieve-even-faster.html"/>
-        <updated>2011-12-27T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p><strong>Disclaimer</strong>: This is an old article and information may be out-dated. You can
-find one of the (if not <em>the</em>) fastest implementation there: <a href="http://primesieve.org/" target="_blank" rel="noopener noreferrer">http://primesieve.org/</a></p>
-<p>It has been a while since I posted my last article on the blog, my
-studies didn’t leave me enough time for writing. But during Christmas
-holidays I found some time to share with you some discoveries and
-developments that I made recently on the Sieve of Eratosthenes.
-This article follows the previous article on the Sieve and aim to
-present some optimizations and an attempt to determine the complexity of
-the algorithm.</p>
-<h2>Last optimizations</h2>
-<p>Optimizations that follow are the result of several comments on the
-above implementations:</p>
-<ul>
-<li>Could we not reduce the memory footprint of the program by working
-only on arrays of bits instead of chars ? (We could divide the memory
-used by 8).</li>
-<li>In the main loop, our variable i ranges from 1 in 1, and values
-are not always prime numbers, so there is no need to eliminate their
-multiples.</li>
-</ul>
-<p>For the second optimization, we just have to get the next number that
-has not yet been eliminated. With a simple loop. We then gain precious
-seconds at runtime.</p>
-<p>Regarding the first optimization, it turns out that it’s not easy
-to work directly on the bits in C, except with bit fields, but this
-is complicated in the case of the Sieve of Eratosthenes. So I decided
-to implement the algorithm in C++, which offers the type bool, which
-takes only one bit in memory as well as Bitset, which are nothing more
-than arrays of bits, provided with various operations. Thanks to a
-std::vector (or a simple array) of bool the memory usage of the program
-is reduced by 8, which is pretty good. But it’s possible to use a data
-structure more efficient. You certainly heard about Boost, a library
-which provide many very powerful tools for C++, and among this tools
-is the Bitset (it also exists in STD, but it is less efficient). Using
-Bitset, we gain a little in runtime.</p>
-<p>Note that Boost Bitset are initialized to 0 by default, so we must
-consider that a number is prime if the value associated in the array is
-0 (and not 1 as in a previous implementations).</p>
-<pre class="code" data-lang="c++"><code><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cmath&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/dynamic_bitset.hpp&gt;</span></span>
-
-<span class="hljs-function"><span class="hljs-type">void</span>
-<span class="hljs-title">print_tab</span> <span class="hljs-params">(boost::dynamic_bitset&lt;&gt;&amp; tab)</span>
-</span>{
-  std::cout &lt;&lt; <span class="hljs-number">2</span> &lt;&lt; std::endl;
-  <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> i = <span class="hljs-number">1</span>; i &lt; tab.<span class="hljs-built_in">size</span> (); i++)
-    <span class="hljs-keyword">if</span> (!tab[i])
-      std::cout &lt;&lt; <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span> &lt;&lt; std::endl;
-}
-
-<span class="hljs-function"><span class="hljs-type">void</span>
-<span class="hljs-title">erato</span> <span class="hljs-params">(boost::dynamic_bitset&lt;&gt;&amp; tab)</span>
-</span>{
-  <span class="hljs-type">unsigned</span> i = <span class="hljs-number">0</span>;
-  <span class="hljs-type">unsigned</span> j, step, borne = <span class="hljs-built_in">sqrt</span> (tab.<span class="hljs-built_in">size</span> ());
-
-  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; borne; i++)
-  {
-    step = <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span>;
-    <span class="hljs-keyword">for</span> (j = i + step; j &lt; tab.<span class="hljs-built_in">size</span> (); j += step)
-      tab[j] = <span class="hljs-number">1</span>;
-
-    <span class="hljs-keyword">while</span> (tab[i])
-      i++;
-  }
-}
-
-<span class="hljs-function"><span class="hljs-type">int</span>
-<span class="hljs-title">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> **argv)</span>
-</span>{
-  <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>)
-  {
-    std::cout &lt;&lt; <span class="hljs-string">&quot;Please, you must give a number as argument.&quot;</span> &lt;&lt; std::endl;
-    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
-  }
-
-  <span class="hljs-type">unsigned</span> size = <span class="hljs-number">0</span>;
-  <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> i = <span class="hljs-number">0</span>; argv[<span class="hljs-number">1</span>][i]; i++)
-    size = size * <span class="hljs-number">10</span> + (argv[<span class="hljs-number">1</span>][i] - <span class="hljs-string">&#x27;0&#x27;</span>);
-
-  boost::dynamic_bitset&lt;&gt;* tab = <span class="hljs-keyword">new</span> boost::dynamic_bitset&lt;&gt; (size / <span class="hljs-number">2</span>);
-
-  <span class="hljs-built_in">erato</span> (*tab);
-  <span class="hljs-comment">//print_tab (*tab);</span>
-}
-</code></pre>
-<p>With this algorithm we get much better performance than with the
-previous implementation.</p>
-<h2>Complexity approximation</h2>
-<p>The complexity of an algorithm is used to express the number of
-operations needed to execution depending on the size of the input (in
-our case it will be the limit up to which we want to calculate the prime
-numbers).</p>
-<p>Soon I will post a more accurate approximation of the complexity of this
-algorithm, but my initial investigations suggest that the complexity is
-linear (3xN?).</p>
-<h2>The last words</h2>
-<p>After presenting a number of optimizations to the algorithm of the
-Sieve of Eratosthenes, we saw that it is always possible to improve
-a program, and this, in two lines of research. First, one can often
-optimize the algorithm itself, by choosing appropriate data structures,
-trying to reduce the memory footprint or by reducing the number of
-calculations needed to compute the result, etc. … One can also optimize
-the implementation of the algorithm, it’s often the last step, during
-which we will try to find tips, related to language itself, that allow
-us to make our program faster by changing the compiler flags (-O,
--march, etc. …), etc. …</p>
-<p>The last implementation presented in this article is far from being the
-most optimized, we could still find ways to improve performances, for
-exemple by eliminating multiples of 3, 5 and 7 at the initialization
-of the array or by using bit masks to eliminate several multiples at a
-time. However, keep in mind that it is difficult to keep the compactness
-and readability of our algorithm with such optimizations.</p>
-<p>If you know other optimizations, or have any comments on this article,
-feel free to contact me or leave a comment below.</p>
 ]]></content>
     </entry>
     <entry>
@@ -7632,6 +7509,129 @@ will be presented in this variable.</p>
 we will use it like this. Later, during the profiling phase, if it turns
 out that this is part of the program is the slowest, we could optimize
 it.</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[The Sieve—Even faster!]]></title>
+        <id>https://remusao.github.io//posts/sieve-even-faster.html</id>
+        <link href="https://remusao.github.io//posts/sieve-even-faster.html"/>
+        <updated>2011-12-27T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p><strong>Disclaimer</strong>: This is an old article and information may be out-dated. You can
+find one of the (if not <em>the</em>) fastest implementation there: <a href="http://primesieve.org/" target="_blank" rel="noopener noreferrer">http://primesieve.org/</a></p>
+<p>It has been a while since I posted my last article on the blog, my
+studies didn’t leave me enough time for writing. But during Christmas
+holidays I found some time to share with you some discoveries and
+developments that I made recently on the Sieve of Eratosthenes.
+This article follows the previous article on the Sieve and aim to
+present some optimizations and an attempt to determine the complexity of
+the algorithm.</p>
+<h2>Last optimizations</h2>
+<p>Optimizations that follow are the result of several comments on the
+above implementations:</p>
+<ul>
+<li>Could we not reduce the memory footprint of the program by working
+only on arrays of bits instead of chars ? (We could divide the memory
+used by 8).</li>
+<li>In the main loop, our variable i ranges from 1 in 1, and values
+are not always prime numbers, so there is no need to eliminate their
+multiples.</li>
+</ul>
+<p>For the second optimization, we just have to get the next number that
+has not yet been eliminated. With a simple loop. We then gain precious
+seconds at runtime.</p>
+<p>Regarding the first optimization, it turns out that it’s not easy
+to work directly on the bits in C, except with bit fields, but this
+is complicated in the case of the Sieve of Eratosthenes. So I decided
+to implement the algorithm in C++, which offers the type bool, which
+takes only one bit in memory as well as Bitset, which are nothing more
+than arrays of bits, provided with various operations. Thanks to a
+std::vector (or a simple array) of bool the memory usage of the program
+is reduced by 8, which is pretty good. But it’s possible to use a data
+structure more efficient. You certainly heard about Boost, a library
+which provide many very powerful tools for C++, and among this tools
+is the Bitset (it also exists in STD, but it is less efficient). Using
+Bitset, we gain a little in runtime.</p>
+<p>Note that Boost Bitset are initialized to 0 by default, so we must
+consider that a number is prime if the value associated in the array is
+0 (and not 1 as in a previous implementations).</p>
+<pre class="code" data-lang="c++"><code><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cmath&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;boost/dynamic_bitset.hpp&gt;</span></span>
+
+<span class="hljs-function"><span class="hljs-type">void</span>
+<span class="hljs-title">print_tab</span> <span class="hljs-params">(boost::dynamic_bitset&lt;&gt;&amp; tab)</span>
+</span>{
+  std::cout &lt;&lt; <span class="hljs-number">2</span> &lt;&lt; std::endl;
+  <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> i = <span class="hljs-number">1</span>; i &lt; tab.<span class="hljs-built_in">size</span> (); i++)
+    <span class="hljs-keyword">if</span> (!tab[i])
+      std::cout &lt;&lt; <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span> &lt;&lt; std::endl;
+}
+
+<span class="hljs-function"><span class="hljs-type">void</span>
+<span class="hljs-title">erato</span> <span class="hljs-params">(boost::dynamic_bitset&lt;&gt;&amp; tab)</span>
+</span>{
+  <span class="hljs-type">unsigned</span> i = <span class="hljs-number">0</span>;
+  <span class="hljs-type">unsigned</span> j, step, borne = <span class="hljs-built_in">sqrt</span> (tab.<span class="hljs-built_in">size</span> ());
+
+  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; borne; i++)
+  {
+    step = <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (j = i + step; j &lt; tab.<span class="hljs-built_in">size</span> (); j += step)
+      tab[j] = <span class="hljs-number">1</span>;
+
+    <span class="hljs-keyword">while</span> (tab[i])
+      i++;
+  }
+}
+
+<span class="hljs-function"><span class="hljs-type">int</span>
+<span class="hljs-title">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> **argv)</span>
+</span>{
+  <span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>)
+  {
+    std::cout &lt;&lt; <span class="hljs-string">&quot;Please, you must give a number as argument.&quot;</span> &lt;&lt; std::endl;
+    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+  }
+
+  <span class="hljs-type">unsigned</span> size = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> i = <span class="hljs-number">0</span>; argv[<span class="hljs-number">1</span>][i]; i++)
+    size = size * <span class="hljs-number">10</span> + (argv[<span class="hljs-number">1</span>][i] - <span class="hljs-string">&#x27;0&#x27;</span>);
+
+  boost::dynamic_bitset&lt;&gt;* tab = <span class="hljs-keyword">new</span> boost::dynamic_bitset&lt;&gt; (size / <span class="hljs-number">2</span>);
+
+  <span class="hljs-built_in">erato</span> (*tab);
+  <span class="hljs-comment">//print_tab (*tab);</span>
+}
+</code></pre>
+<p>With this algorithm we get much better performance than with the
+previous implementation.</p>
+<h2>Complexity approximation</h2>
+<p>The complexity of an algorithm is used to express the number of
+operations needed to execution depending on the size of the input (in
+our case it will be the limit up to which we want to calculate the prime
+numbers).</p>
+<p>Soon I will post a more accurate approximation of the complexity of this
+algorithm, but my initial investigations suggest that the complexity is
+linear (3xN?).</p>
+<h2>The last words</h2>
+<p>After presenting a number of optimizations to the algorithm of the
+Sieve of Eratosthenes, we saw that it is always possible to improve
+a program, and this, in two lines of research. First, one can often
+optimize the algorithm itself, by choosing appropriate data structures,
+trying to reduce the memory footprint or by reducing the number of
+calculations needed to compute the result, etc. … One can also optimize
+the implementation of the algorithm, it’s often the last step, during
+which we will try to find tips, related to language itself, that allow
+us to make our program faster by changing the compiler flags (-O,
+-march, etc. …), etc. …</p>
+<p>The last implementation presented in this article is far from being the
+most optimized, we could still find ways to improve performances, for
+exemple by eliminating multiples of 3, 5 and 7 at the initialization
+of the array or by using bit masks to eliminate several multiples at a
+time. However, keep in mind that it is difficult to keep the compactness
+and readability of our algorithm with such optimizations.</p>
+<p>If you know other optimizations, or have any comments on this article,
+feel free to contact me or leave a comment below.</p>
 ]]></content>
     </entry>
     <entry>
