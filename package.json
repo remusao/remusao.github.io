@@ -32,7 +32,7 @@
     "@types/serve-static": "^1.15.0",
     "@types/sharp": "^0.31.0",
     "prettier": "^2.7.1",
-    "stylelint": "^14.14.1",
+    "stylelint": "^17.0.0",
     "stylelint-config-recommended": "^9.0.0",
     "ts-node": "^10.9.1",
     "tslint": "^6.1.3",
