@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2026-01-29T22:13:53.464Z</updated>
+    <updated>2026-01-29T23:13:54.971Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -7091,6 +7091,42 @@ propre couleur.</p>
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Python—Le saviez-vous ?]]></title>
+        <id>https://remusao.github.io//posts/python-did-you-know.html</id>
+        <link href="https://remusao.github.io//posts/python-did-you-know.html"/>
+        <updated>2012-02-05T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>J’en apprends tous les jours sur le Python, et tous les jours je
+suis émerveillé par la richesse de ce langage. Je fais actuellement
+quelques recherches sur des utilisations avancées des décorateurs
+(afin de faire de la méta-programmation par exemple), j’ai découvert
+deux chose :</p>
+<ol>
+<li>Il est tout à fait possible en Python de déclarer des fonctions à
+l’intérieur d’autres fonctions. Par exemple, le code suivant est
+tout à fait valide :</li>
+</ol>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():
+  <span class="hljs-keyword">def</span> <span class="hljs-title function_">toto</span>():
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;toto&#x27;</span>)
+    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>
+  <span class="hljs-keyword">return</span> toto()
+</code></pre>
+<ol start="2">
+<li>Il est également possible de créer des classes à l’intérieur de fonctions :</li>
+</ol>
+<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">dessine_moi_une_classe</span>():
+  <span class="hljs-keyword">class</span> <span class="hljs-title class_">Classe</span>():
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">dessine</span>(<span class="hljs-params">self</span>):
+      <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;classe&#x27;</span>)
+
+  c = Classe()
+  <span class="hljs-keyword">return</span> c
+</code></pre>
+<p>Bref, tout ceci pour dire que le Python est un langage d’une richesse
+insoupçonnée :)</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[10 bonnes raisons de coder en Python]]></title>
         <id>https://remusao.github.io//posts/10-reasons-to-use-python.html</id>
         <link href="https://remusao.github.io//posts/10-reasons-to-use-python.html"/>
@@ -7148,42 +7184,6 @@ nombre de plateforme, le Python est un langage portatif et libre.</li>
 <p><em>Bonus</em> Mais Python c’est aussi un langage de script :p Alors il fera
 également très bien l’affaire pour jouer le rôle de « glus » dans
 vos projets les plus fous.</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Python—Le saviez-vous ?]]></title>
-        <id>https://remusao.github.io//posts/python-did-you-know.html</id>
-        <link href="https://remusao.github.io//posts/python-did-you-know.html"/>
-        <updated>2012-02-05T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>J’en apprends tous les jours sur le Python, et tous les jours je
-suis émerveillé par la richesse de ce langage. Je fais actuellement
-quelques recherches sur des utilisations avancées des décorateurs
-(afin de faire de la méta-programmation par exemple), j’ai découvert
-deux chose :</p>
-<ol>
-<li>Il est tout à fait possible en Python de déclarer des fonctions à
-l’intérieur d’autres fonctions. Par exemple, le code suivant est
-tout à fait valide :</li>
-</ol>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():
-  <span class="hljs-keyword">def</span> <span class="hljs-title function_">toto</span>():
-    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;toto&#x27;</span>)
-    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>
-  <span class="hljs-keyword">return</span> toto()
-</code></pre>
-<ol start="2">
-<li>Il est également possible de créer des classes à l’intérieur de fonctions :</li>
-</ol>
-<pre class="code" data-lang="python"><code><span class="hljs-keyword">def</span> <span class="hljs-title function_">dessine_moi_une_classe</span>():
-  <span class="hljs-keyword">class</span> <span class="hljs-title class_">Classe</span>():
-    <span class="hljs-keyword">def</span> <span class="hljs-title function_">dessine</span>(<span class="hljs-params">self</span>):
-      <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;classe&#x27;</span>)
-
-  c = Classe()
-  <span class="hljs-keyword">return</span> c
-</code></pre>
-<p>Bref, tout ceci pour dire que le Python est un langage d’une richesse
-insoupçonnée :)</p>
 ]]></content>
     </entry>
     <entry>
