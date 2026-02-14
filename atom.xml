@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://remusao.github.io</id>
     <title>Simplex Sigillum Veri</title>
-    <updated>2026-02-14T08:15:27.939Z</updated>
+    <updated>2026-02-14T09:17:18.028Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Rémi Berson</name>
@@ -3084,6 +3084,44 @@ Options:
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
+        <id>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</id>
+        <link href="https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html"/>
+        <updated>2017-11-25T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
+fast fuzzy matching and approximate set membership tests, I found myself in a
+situation where I needed more insight about what optimizations <code>V8</code> was
+performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
+compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
+consider!</p>
+<p>This article assumes you’re using
+<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
+extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
+During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
+very useful!</p>
+<h1>Building V8 From Source</h1>
+<h2>Installing depot_tools</h2>
+<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
+<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
+$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
+</code></pre>
+<h2>Compiling V8</h2>
+<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
+<pre class="code" data-lang="sh"><code>$ fetch v8
+</code></pre>
+<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
+version of the sources. It will also configure everything needed for the build.</p>
+<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
+$ ninja -C out.gn/x64.release
+</code></pre>
+<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
+intended by running the tests:</p>
+<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
+</code></pre>
+<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[The wrong way of benchmarking integer comparison functions]]></title>
         <id>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</id>
         <link href="https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html"/>
@@ -3212,44 +3250,6 @@ It’s not day and night, but the <em>naive</em>, more readable code is more
 efficient on V8 than the clever one.</p>
 <p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
 there</a></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
-        <id>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</id>
-        <link href="https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html"/>
-        <updated>2017-11-25T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
-fast fuzzy matching and approximate set membership tests, I found myself in a
-situation where I needed more insight about what optimizations <code>V8</code> was
-performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
-compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
-consider!</p>
-<p>This article assumes you’re using
-<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
-extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
-During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
-very useful!</p>
-<h1>Building V8 From Source</h1>
-<h2>Installing depot_tools</h2>
-<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
-<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
-$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
-</code></pre>
-<h2>Compiling V8</h2>
-<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
-<pre class="code" data-lang="sh"><code>$ fetch v8
-</code></pre>
-<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
-version of the sources. It will also configure everything needed for the build.</p>
-<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
-$ ninja -C out.gn/x64.release
-</code></pre>
-<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
-intended by running the tests:</p>
-<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
-</code></pre>
-<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
 ]]></content>
     </entry>
     <entry>
@@ -6750,6 +6750,38 @@ le monde dans lequel nous vivons.</p>
 ]]></content>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Ascii—Astuces]]></title>
+        <id>https://remusao.github.io//posts/ascii-astuces.html</id>
+        <link href="https://remusao.github.io//posts/ascii-astuces.html"/>
+        <updated>2012-12-25T00:00:00.000Z</updated>
+        <content type="html"><![CDATA[<p>Voici quelques petites astuces afin de manipuler plus simplement des
+caractères encodés en ASCII.</p>
+<h2>Changer la casse</h2>
+<p>Cette astuce est indiquée dans le page de <code>man(1)</code> ascii, mais je l’ai
+découverte très récemment car je n’avais pas eu le réflexe de lire
+les paragraphes se trouvant à la suite de la table ASCII sur cette
+page. Afin de changer la casse d’une lettre (c’est à dire
+passer de minuscule à majuscule, ou l’inverse), il suffit de changer
+le 5ième bit. Celui-ci est à 1 pour les minuscules et à 0 pour les
+majuscules. Donc en effectuant un <code>XOR 32</code> avec une lettre on change sa
+casse. C’est tout de même pratique !</p>
+<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;A&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;a&#x27;</span>
+<span class="hljs-string">&#x27;a&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;A&#x27;</span>
+</code></pre>
+<h2>Manipuler les chiffres</h2>
+<p>Afin de convertir un entier entre 0 et 9 en son équivalent en
+caractère ASCII (‘0’ à ‘9’), on ajoute (ou soustrait selon le
+sens de la conversion) la valeur de ‘0’. On peut aussi remarquer
+qu’entre un entier et son équivalent en ASCII seuls 2 bits changent.
+Il s’agit donc de mettre les 6ième et 5ième bits à 1 (ou 0 si on
+désire passer d’un caractère à un entier). Il suffit donc d’un
+simple <code>XOR 48</code>, comme ceci :</p>
+<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;9&#x27;</span> ^ <span class="hljs-number">48</span> == <span class="hljs-number">9</span>
+</code></pre>
+<p>Ces deux astuces sont assez basiques, mais cela peut toujours servir !</p>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[C++—Taille d'un tableau static en temps constant]]></title>
         <id>https://remusao.github.io//posts/cpp-static-array-size.html</id>
         <link href="https://remusao.github.io//posts/cpp-static-array-size.html"/>
@@ -6783,38 +6815,6 @@ Si notre fonction <code>size</code> avait simplement pris un pointeur en argumen
 ça n’aurait pas marché puisque le compilateur ne garde pas
 l’information de la taille, et considère l’argument comme un simple
 pointeur.</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Ascii—Astuces]]></title>
-        <id>https://remusao.github.io//posts/ascii-astuces.html</id>
-        <link href="https://remusao.github.io//posts/ascii-astuces.html"/>
-        <updated>2012-12-25T00:00:00.000Z</updated>
-        <content type="html"><![CDATA[<p>Voici quelques petites astuces afin de manipuler plus simplement des
-caractères encodés en ASCII.</p>
-<h2>Changer la casse</h2>
-<p>Cette astuce est indiquée dans le page de <code>man(1)</code> ascii, mais je l’ai
-découverte très récemment car je n’avais pas eu le réflexe de lire
-les paragraphes se trouvant à la suite de la table ASCII sur cette
-page. Afin de changer la casse d’une lettre (c’est à dire
-passer de minuscule à majuscule, ou l’inverse), il suffit de changer
-le 5ième bit. Celui-ci est à 1 pour les minuscules et à 0 pour les
-majuscules. Donc en effectuant un <code>XOR 32</code> avec une lettre on change sa
-casse. C’est tout de même pratique !</p>
-<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;A&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;a&#x27;</span>
-<span class="hljs-string">&#x27;a&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;A&#x27;</span>
-</code></pre>
-<h2>Manipuler les chiffres</h2>
-<p>Afin de convertir un entier entre 0 et 9 en son équivalent en
-caractère ASCII (‘0’ à ‘9’), on ajoute (ou soustrait selon le
-sens de la conversion) la valeur de ‘0’. On peut aussi remarquer
-qu’entre un entier et son équivalent en ASCII seuls 2 bits changent.
-Il s’agit donc de mettre les 6ième et 5ième bits à 1 (ou 0 si on
-désire passer d’un caractère à un entier). Il suffit donc d’un
-simple <code>XOR 48</code>, comme ceci :</p>
-<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;9&#x27;</span> ^ <span class="hljs-number">48</span> == <span class="hljs-number">9</span>
-</code></pre>
-<p>Ces deux astuces sont assez basiques, mais cela peut toujours servir !</p>
 ]]></content>
     </entry>
     <entry>
