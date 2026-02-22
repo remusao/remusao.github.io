@@ -4,7 +4,7 @@
         <title>Simplex Sigillum Veri</title>
         <link>https://remusao.github.io</link>
         <description>Simplex Sigillum Veri</description>
-        <lastBuildDate>Sun, 22 Feb 2026 18:15:51 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 22 Feb 2026 19:14:57 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <copyright>All rights reserved 2023, Rémi Berson</copyright>
@@ -3081,44 +3081,6 @@ Options:
 ]]></content:encoded>
         </item>
         <item>
-            <title><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
-            <link>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</link>
-            <guid>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</guid>
-            <pubDate>Sat, 25 Nov 2017 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
-fast fuzzy matching and approximate set membership tests, I found myself in a
-situation where I needed more insight about what optimizations <code>V8</code> was
-performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
-compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
-consider!</p>
-<p>This article assumes you’re using
-<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
-extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
-During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
-very useful!</p>
-<h1>Building V8 From Source</h1>
-<h2>Installing depot_tools</h2>
-<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
-<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
-$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
-</code></pre>
-<h2>Compiling V8</h2>
-<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
-<pre class="code" data-lang="sh"><code>$ fetch v8
-</code></pre>
-<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
-version of the sources. It will also configure everything needed for the build.</p>
-<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
-$ ninja -C out.gn/x64.release
-</code></pre>
-<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
-intended by running the tests:</p>
-<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
-</code></pre>
-<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
-]]></content:encoded>
-        </item>
-        <item>
             <title><![CDATA[The wrong way of benchmarking integer comparison functions]]></title>
             <link>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</link>
             <guid>https://remusao.github.io//posts/wrong-way-benchmarking-integer-comparison.html</guid>
@@ -3247,6 +3209,44 @@ It’s not day and night, but the <em>naive</em>, more readable code is more
 efficient on V8 than the clever one.</p>
 <p>The complete version of the code used in this <a href="/snippets/compare-benchmark.js" target="_blank" rel="noopener noreferrer">available
 there</a></p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Compiling V8 on Ubuntu 16.04]]></title>
+            <link>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</link>
+            <guid>https://remusao.github.io//posts/compiling-v8-ubuntu-16-04.html</guid>
+            <pubDate>Sat, 25 Nov 2017 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>While preparing another article about fast hashing and how to use it for very
+fast fuzzy matching and approximate set membership tests, I found myself in a
+situation where I needed more insight about what optimizations <code>V8</code> was
+performing under the hood. I wanted to see what <code>d8</code> offers in this regard so I
+compiled <code>v8</code> from source. It was relatively easy, but there are a few things to
+consider!</p>
+<p>This article assumes you’re using
+<code>Ubuntu</code>, but it should work as well for other platforms. You can check for any
+extra steps from the <a href="https://github.com/v8/v8/wiki/Building-from-Source" target="_blank" rel="noopener noreferrer">official wiki</a>.
+During the redaction of this article, I also found this <a href="http://www.mattzeunert.com/2015/08/19/viewing-assembly-code-generated-by-v8.html" target="_blank" rel="noopener noreferrer">other blog post</a>
+very useful!</p>
+<h1>Building V8 From Source</h1>
+<h2>Installing depot_tools</h2>
+<p>The <code>V8</code> toolchain requires scripts from <a href="https://www.chromium.org/developers/how-tos/install-depot-tools" target="_blank" rel="noopener noreferrer">depot_tools</a>.</p>
+<pre class="code" data-lang="sh"><code>$ git <span class="hljs-built_in">clone</span> https://chromium.googlesource.com/chromium/tools/depot_tools.git
+$ <span class="hljs-built_in">export</span> PATH=`<span class="hljs-built_in">pwd</span>`/depot_tools:<span class="hljs-string">&quot;<span class="hljs-variable">$PATH</span>&quot;</span>
+</code></pre>
+<h2>Compiling V8</h2>
+<p>Now that everything is available in <code>PATH</code>, let’s clone and compile <code>V8</code>:</p>
+<pre class="code" data-lang="sh"><code>$ fetch v8
+</code></pre>
+<p>This might take a while. It will create a new <code>v8</code> folder containing the latest
+version of the sources. It will also configure everything needed for the build.</p>
+<pre class="code" data-lang="sh"><code>$ ./tools/dev/v8gen.py x64.release
+$ ninja -C out.gn/x64.release
+</code></pre>
+<p>Have a tea or a coffee, then come back and check if the compiled <code>v8</code> works as
+intended by running the tests:</p>
+<pre class="code" data-lang="sh"><code>$ tools/run-tests.py --gn
+</code></pre>
+<p>If everything went well, this file should exist: <code>./out.gn/x64.release/d8</code>.</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -6747,6 +6747,38 @@ le monde dans lequel nous vivons.</p>
 ]]></content:encoded>
         </item>
         <item>
+            <title><![CDATA[Ascii—Astuces]]></title>
+            <link>https://remusao.github.io//posts/ascii-astuces.html</link>
+            <guid>https://remusao.github.io//posts/ascii-astuces.html</guid>
+            <pubDate>Tue, 25 Dec 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>Voici quelques petites astuces afin de manipuler plus simplement des
+caractères encodés en ASCII.</p>
+<h2>Changer la casse</h2>
+<p>Cette astuce est indiquée dans le page de <code>man(1)</code> ascii, mais je l’ai
+découverte très récemment car je n’avais pas eu le réflexe de lire
+les paragraphes se trouvant à la suite de la table ASCII sur cette
+page. Afin de changer la casse d’une lettre (c’est à dire
+passer de minuscule à majuscule, ou l’inverse), il suffit de changer
+le 5ième bit. Celui-ci est à 1 pour les minuscules et à 0 pour les
+majuscules. Donc en effectuant un <code>XOR 32</code> avec une lettre on change sa
+casse. C’est tout de même pratique !</p>
+<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;A&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;a&#x27;</span>
+<span class="hljs-string">&#x27;a&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;A&#x27;</span>
+</code></pre>
+<h2>Manipuler les chiffres</h2>
+<p>Afin de convertir un entier entre 0 et 9 en son équivalent en
+caractère ASCII (‘0’ à ‘9’), on ajoute (ou soustrait selon le
+sens de la conversion) la valeur de ‘0’. On peut aussi remarquer
+qu’entre un entier et son équivalent en ASCII seuls 2 bits changent.
+Il s’agit donc de mettre les 6ième et 5ième bits à 1 (ou 0 si on
+désire passer d’un caractère à un entier). Il suffit donc d’un
+simple <code>XOR 48</code>, comme ceci :</p>
+<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;9&#x27;</span> ^ <span class="hljs-number">48</span> == <span class="hljs-number">9</span>
+</code></pre>
+<p>Ces deux astuces sont assez basiques, mais cela peut toujours servir !</p>
+]]></content:encoded>
+        </item>
+        <item>
             <title><![CDATA[C++—Taille d'un tableau static en temps constant]]></title>
             <link>https://remusao.github.io//posts/cpp-static-array-size.html</link>
             <guid>https://remusao.github.io//posts/cpp-static-array-size.html</guid>
@@ -6783,38 +6815,6 @@ pointeur.</p>
 ]]></content:encoded>
         </item>
         <item>
-            <title><![CDATA[Ascii—Astuces]]></title>
-            <link>https://remusao.github.io//posts/ascii-astuces.html</link>
-            <guid>https://remusao.github.io//posts/ascii-astuces.html</guid>
-            <pubDate>Tue, 25 Dec 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>Voici quelques petites astuces afin de manipuler plus simplement des
-caractères encodés en ASCII.</p>
-<h2>Changer la casse</h2>
-<p>Cette astuce est indiquée dans le page de <code>man(1)</code> ascii, mais je l’ai
-découverte très récemment car je n’avais pas eu le réflexe de lire
-les paragraphes se trouvant à la suite de la table ASCII sur cette
-page. Afin de changer la casse d’une lettre (c’est à dire
-passer de minuscule à majuscule, ou l’inverse), il suffit de changer
-le 5ième bit. Celui-ci est à 1 pour les minuscules et à 0 pour les
-majuscules. Donc en effectuant un <code>XOR 32</code> avec une lettre on change sa
-casse. C’est tout de même pratique !</p>
-<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;A&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;a&#x27;</span>
-<span class="hljs-string">&#x27;a&#x27;</span> ^ <span class="hljs-number">32</span> == <span class="hljs-string">&#x27;A&#x27;</span>
-</code></pre>
-<h2>Manipuler les chiffres</h2>
-<p>Afin de convertir un entier entre 0 et 9 en son équivalent en
-caractère ASCII (‘0’ à ‘9’), on ajoute (ou soustrait selon le
-sens de la conversion) la valeur de ‘0’. On peut aussi remarquer
-qu’entre un entier et son équivalent en ASCII seuls 2 bits changent.
-Il s’agit donc de mettre les 6ième et 5ième bits à 1 (ou 0 si on
-désire passer d’un caractère à un entier). Il suffit donc d’un
-simple <code>XOR 48</code>, comme ceci :</p>
-<pre class="code" data-lang="c"><code><span class="hljs-string">&#x27;9&#x27;</span> ^ <span class="hljs-number">48</span> == <span class="hljs-number">9</span>
-</code></pre>
-<p>Ces deux astuces sont assez basiques, mais cela peut toujours servir !</p>
-]]></content:encoded>
-        </item>
-        <item>
             <title><![CDATA[Ocaml—Hash table vs. pattern matching]]></title>
             <link>https://remusao.github.io//posts/ocaml-pattern-matching-vs-hashtable.html</link>
             <guid>https://remusao.github.io//posts/ocaml-pattern-matching-vs-hashtable.html</guid>
@@ -6847,6 +6847,43 @@ de mémoire vive. Voici le résultat:</p>
 </ul>
 <p>Victoire pour les Hashtables. Dommage que le compilateur n’optimise
 pas le pattern-matching en Hash table lorsque c’est possible.</p>
+]]></content:encoded>
+        </item>
+        <item>
+            <title><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
+            <link>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</link>
+            <guid>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</guid>
+            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
+            <content:encoded><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
+j’ai reçu récemment je me suis heurté à quelques problèmes
+puisque la version dans les dépots de Archlinux ne compilait pas et
+aucun paquet précompilé pour Arm n’était disponible. Je vais donc
+exposer une solution pour pouvoir le compiler et l’installer. Mais
+tout d’abord une petite description du logiciel trouvée sur le site
+des créateurs :</p>
+<blockquote>
+<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
+</blockquote>
+<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
+il suffit de télécharger un patch supplémentaire et de remplacer le
+PKGBUILD fourni par un autre que je vais vous donner. Voici comment
+faire :</p>
+<ol>
+<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
+<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
+<li>Exécutez les commandes suivantes :</li>
+</ol>
+<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
+$ yaourt -G mediatomb
+$ <span class="hljs-built_in">cd</span> mediatomb
+[Copier le patch ici]
+[Copier le fichier PKGBUILD ici]
+$ makepkg -si
+</code></pre>
+<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
+vaut le coup. J’espère que ça servira à certains le temps que les
+paquets dans les dépôts d’archlinux soient de nouveau compilables
+sans modification.</p>
 ]]></content:encoded>
         </item>
         <item>
@@ -6977,43 +7014,6 @@ d’évoluer dans ces univers abstraits, de visualiser et de comprendre
 les œuvres laissées par d’illustres mathématiciens avant nous,
 et de bâtir de nouveaux édifices avec les outils qu’ils nous ont
 légués.</p>
-]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Compiler Mediatomb sur Arch Linux ARM]]></title>
-            <link>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</link>
-            <guid>https://remusao.github.io//posts/mediatomb-arm-archlinux.html</guid>
-            <pubDate>Tue, 31 Jul 2012 00:00:00 GMT</pubDate>
-            <content:encoded><![CDATA[<p>En voulant installer le logiciel mediatomb sur le Raspberry Pi que
-j’ai reçu récemment je me suis heurté à quelques problèmes
-puisque la version dans les dépots de Archlinux ne compilait pas et
-aucun paquet précompilé pour Arm n’était disponible. Je vais donc
-exposer une solution pour pouvoir le compiler et l’installer. Mais
-tout d’abord une petite description du logiciel trouvée sur le site
-des créateurs :</p>
-<blockquote>
-<p>MediaTomb is an open source (GPL) UPnP MediaServer with a nice web user interface, it allows you to stream your digital media through your home network and listen to/watch it on a variety of UPnP compatible devices.</p>
-</blockquote>
-<p>La marche à suivre pour arriver à compiler le paquet est assez simple,
-il suffit de télécharger un patch supplémentaire et de remplacer le
-PKGBUILD fourni par un autre que je vais vous donner. Voici comment
-faire :</p>
-<ol>
-<li>Premièrement vous devez télécharger le patch suivant : <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=libavformat_0.11_support.patch;att=1;bug=677959" target="_blank" rel="noopener noreferrer">patch</a>.</li>
-<li>Téléchargez également le fichier PKGBUILD suivant : <a href="http://www.pythux.com/exemples/PKGBUILD" target="_blank" rel="noopener noreferrer">PKGBUILD</a>.</li>
-<li>Exécutez les commandes suivantes :</li>
-</ol>
-<pre class="code" data-lang="sh"><code>$ <span class="hljs-built_in">cd</span> /tmp
-$ yaourt -G mediatomb
-$ <span class="hljs-built_in">cd</span> mediatomb
-[Copier le patch ici]
-[Copier le fichier PKGBUILD ici]
-$ makepkg -si
-</code></pre>
-<p>Sur le raspberry Pi la compilation prend un certain temps, mais ça
-vaut le coup. J’espère que ça servira à certains le temps que les
-paquets dans les dépôts d’archlinux soient de nouveau compilables
-sans modification.</p>
 ]]></content:encoded>
         </item>
         <item>
