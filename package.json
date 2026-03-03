@@ -53,7 +53,7 @@
     "finalhandler": "^1.2.0",
     "glob": "^8.0.3",
     "got": "^11.8.2",
-    "highlight.js": "^11.6.0",
+    "highlight.js": "^11.11.1",
     "html-minifier": "^4.0.0",
     "jsdom": "^20.0.2",
     "markdown-it": "^13.0.1",
